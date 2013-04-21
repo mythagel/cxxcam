@@ -39,9 +39,11 @@ typedef CGAL::Nef_polyhedron_3<Exact_Kernel> Nef_polyhedron_3;
 typedef Exact_Kernel::Point_3 Point_3;
 
 // Meshing
+typedef CGAL::Mesh_polyhedron_3<Exact_Kernel>::type Exact_Polyhedron;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Inexact_Kernel;
-typedef CGAL::Mesh_polyhedron_3<Inexact_Kernel>::type PolyhedronK;
-typedef CGAL::Polyhedral_mesh_domain_with_features_3<Inexact_Kernel, PolyhedronK> Mesh_domain;
+typedef CGAL::Mesh_polyhedron_3<Inexact_Kernel>::type Inexact_Polyhedron;
+
+typedef CGAL::Polyhedral_mesh_domain_with_features_3<Inexact_Kernel, Inexact_Polyhedron> Mesh_domain;
 typedef CGAL::Mesh_triangulation_3<Mesh_domain>::type Tr;
 typedef CGAL::Mesh_complex_3_in_triangulation_3<Tr> C3t3;
 typedef CGAL::Mesh_criteria_3<Tr> Mesh_criteria;
@@ -170,7 +172,7 @@ nef_polyhedron_t nef_polyhedron_t::glide(const polyline_t& path) const
 
 double nef_polyhedron_t::volume() const
 {
-	PolyhedronK PK;
+	Inexact_Polyhedron PK;
 	/*
 	 * TODO convert nef_polyhedron to exact polyhedron and then convert
 	 * exact polyhedron to inexact for meshing.
