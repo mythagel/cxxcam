@@ -9,6 +9,18 @@
 #define NEF_POLYHEDRON_H_
 #include <iosfwd>
 #include <memory>
+#include <vector>
+
+struct polyline_t
+{
+	struct point
+	{
+		double x;
+		double y;
+		double z;
+	};
+	std::vector<point> line;
+};
 
 /*
  * Wrapper class for CGAL::Nef_polyhedron_3 to avoid long build times.
@@ -48,7 +60,8 @@ public:
 	bool operator<=(const nef_polyhedron_t& poly) const;
 	bool operator>=(const nef_polyhedron_t& poly) const;
 
-	nef_polyhedron_t glide(/*polyline*/) const;
+	nef_polyhedron_t glide(const polyline_t& path) const;
+	double volume() const;
 
 	~nef_polyhedron_t() = default;
 };
