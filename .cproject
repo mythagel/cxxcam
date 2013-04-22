@@ -51,6 +51,7 @@
 									<listOptionValue builtIn="false" value="gmp"/>
 									<listOptionValue builtIn="false" value="mpfr"/>
 									<listOptionValue builtIn="false" value="boost_thread-mt"/>
+									<listOptionValue builtIn="false" value="boost_system-mt"/>
 								</option>
 								<option defaultValue="true" id="gnu.cpp.link.option.shared.148547768" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1610284843" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -114,6 +115,7 @@
 									<listOptionValue builtIn="false" value="gmp"/>
 									<listOptionValue builtIn="false" value="mpfr"/>
 									<listOptionValue builtIn="false" value="boost_thread-mt"/>
+									<listOptionValue builtIn="false" value="boost_system-mt"/>
 								</option>
 								<option defaultValue="true" id="gnu.cpp.link.option.shared.428708087" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.96489622" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
