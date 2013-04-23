@@ -249,6 +249,27 @@ nef_polyhedron_t nef_polyhedron_t::glide(const polyline_t& path) const
 	}
 }
 
+//template<typename Tr>
+//double calculate_volume(const Tr& triangulation)
+//{
+//	std::vector<double> volumes;
+//	volumes.reserve(triangulation.number_of_finite_cells());
+//
+//	for(auto it = triangulation.finite_cells_begin(); it != triangulation.finite_cells_end(); ++it)
+//	{
+//		auto tetr = triangulation.tetrahedron(it);
+//		volumes.push_back(tetr.volume());
+//	}
+//
+//	std::sort(volumes.begin(), volumes.end());
+//
+//	double volume{};
+//	for(double vol : volumes)
+//		volume += vol;
+//
+//	return volume;
+//}
+
 double nef_polyhedron_t::volume() const
 {
 	Mesh_polyhedron_3 PK;
