@@ -12,18 +12,11 @@
 
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/IO/Nef_polyhedron_iostream_3.h>
-
-#if 1
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-typedef CGAL::Exact_predicates_exact_constructions_kernel Exact_Kernel;
-#else
-#include <CGAL/Gmpz.h>
-#include <CGAL/Extended_homogeneous.h>
-typedef CGAL::Extended_homogeneous<CGAL::Gmpz> Exact_Kernel;
-#endif
 
 // glide
 #include <CGAL/minkowski_sum_3.h>
+#include <utility>
 
 // Meshing (for volume)
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -43,6 +36,7 @@ typedef CGAL::Extended_homogeneous<CGAL::Gmpz> Exact_Kernel;
 #include <CGAL/Inverse_index.h>
 #include <CGAL/Polyhedron_incremental_builder_3.h>
 
+typedef CGAL::Exact_predicates_exact_constructions_kernel Exact_Kernel;
 typedef CGAL::Nef_polyhedron_3<Exact_Kernel> Nef_polyhedron_3;
 typedef CGAL::Mesh_polyhedron_3<Exact_Kernel>::type Polyhedron_3;
 typedef Exact_Kernel::Point_3 Point_3;
@@ -57,15 +51,6 @@ typedef CGAL::Mesh_complex_3_in_triangulation_3<Tr> C3t3;
 typedef CGAL::Mesh_criteria_3<Tr> Mesh_criteria;
 
 // Copy
-#ifdef CGAL_POLYHEDRON_COPY_3_H
-template <class Poly_A, class Poly_B>
-void copy_to(const Poly_A& poly_a, Poly_B& poly_b)
-{
-  CGAL::Polyhedron_copy_3<Poly_A, typename Poly_B::HalfedgeDS> modifier(poly_a);
-  poly_b.delegate(modifier);
-  CGAL_assertion(poly_b.is_valid());
-}
-#else
 template <class Polyhedron_input, class Polyhedron_output>
 struct Copy_polyhedron_to
  : public CGAL::Modifier_base<typename Polyhedron_output::HalfedgeDS>
@@ -125,7 +110,6 @@ void copy_to(const Poly_A& poly_a, Poly_B& poly_b)
 	poly_b.delegate(modifier);
 	CGAL_assertion(poly_b.is_valid());
 }
-#endif
 
 struct nef_polyhedron_t::private_t
 {
@@ -233,42 +217,17 @@ nef_polyhedron_t nef_polyhedron_t::glide(const polyline_t& path) const
 	for(auto& point : path.line)
 		point_line.emplace_back(point.x, point.y, point.z);
 
-	polyline poly = { point_range(point_line.begin(), point_line.end()) };
+	polyline poly = { point_range(begin(point_line), end(point_line)) };
 	Nef_polyhedron_3 N1(poly.begin(), poly.end(), Nef_polyhedron_3::Polylines_tag());
 
 	auto glided_priv = std::make_shared<private_t>(CGAL::minkowski_sum_3(priv->nef, N1));
 
 	if (glided_priv->nef.is_simple())
-	{
 		return { glided_priv };
-	}
 	else
-	{
 		// TODO result is not a 2-manifold. what now?
 		return {};
-	}
 }
-
-//template<typename Tr>
-//double calculate_volume(const Tr& triangulation)
-//{
-//	std::vector<double> volumes;
-//	volumes.reserve(triangulation.number_of_finite_cells());
-//
-//	for(auto it = triangulation.finite_cells_begin(); it != triangulation.finite_cells_end(); ++it)
-//	{
-//		auto tetr = triangulation.tetrahedron(it);
-//		volumes.push_back(tetr.volume());
-//	}
-//
-//	std::sort(volumes.begin(), volumes.end());
-//
-//	double volume{};
-//	for(double vol : volumes)
-//		volume += vol;
-//
-//	return volume;
-//}
 
 double nef_polyhedron_t::volume() const
 {
@@ -287,15 +246,20 @@ double nef_polyhedron_t::volume() const
 	Mesh_criteria criteria(CGAL::parameters::facet_angle = 25, CGAL::parameters::facet_size = 0.15,
 			CGAL::parameters::facet_distance = 0.008, CGAL::parameters::cell_radius_edge_ratio = 3);
 
-	C3t3 c3t3 = CGAL::make_mesh_3<C3t3>(domain, criteria, CGAL::parameters::no_perturb(), CGAL::parameters::no_exude());
+	auto c3t3 = CGAL::make_mesh_3<C3t3>(domain, criteria, CGAL::parameters::no_perturb(), CGAL::parameters::no_exude());
 
-	Tr triangulation = c3t3.triangulation();
+	auto triangulation = c3t3.triangulation();
+
 	double volume(0);
-	for(Tr::Finite_cells_iterator it = triangulation.finite_cells_begin(); it != triangulation.finite_cells_end(); ++it)
+//	std::vector<double> volumes;
+//	volumes.reserve(triangulation.number_of_finite_cells());
+	for(auto it = triangulation.finite_cells_begin(); it != triangulation.finite_cells_end(); ++it)
 	{
-		typename Tr::Tetrahedron tetr = triangulation.tetrahedron(it);
+		auto tetr = triangulation.tetrahedron(it);
 		volume += tetr.volume();
 	}
+//	std::sort(volumes.begin(), volumes.end());
+//	return std::accumulate(volumes.begin(), volumes.end(), 0.0);
 
 	return volume;
 }
