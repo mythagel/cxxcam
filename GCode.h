@@ -49,7 +49,7 @@ public:
 	// Debug output
 	std::string str() const;
 
-	~GCode();
+	~GCode() = default;
 };
 
 #endif /* GCODE_H_ */

@@ -79,8 +79,3 @@ bool Position::operator!=(const Position& pos) const
 			(V != pos.V) ||
 			(W != pos.W);
 }
-
-Position::~Position()
-{
-}
-

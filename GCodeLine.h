@@ -36,7 +36,7 @@ public:
 	// Debug output
 	std::string str() const;
 
-	~GCodeLine();
+	~GCodeLine() = default;
 };
 
 #endif /* GCODELINE_H_ */

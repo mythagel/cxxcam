@@ -7,22 +7,18 @@
 
 #include "ToolTable.h"
 
-ToolTable::ToolTable()
-{
-}
-
 bool ToolTable::AddTool(int id, const Tool& tool)
 {
-	std::map<int, Tool>::const_iterator it = m_Tools.find(id);
+	auto it = m_Tools.find(id);
 	if(it != m_Tools.end())
 		return false;
 
-	m_Tools.insert(std::make_pair(id, tool));
+	m_Tools.insert({id, tool});
 	return true;
 }
 bool ToolTable::Get(int id, Tool* tool)
 {
-	std::map<int, Tool>::const_iterator it = m_Tools.find(id);
+	auto it = m_Tools.find(id);
 	if(it == m_Tools.end())
 		return false;
 
@@ -31,15 +27,10 @@ bool ToolTable::Get(int id, Tool* tool)
 }
 bool ToolTable::RemoveTool(int id)
 {
-	std::map<int, Tool>::iterator it = m_Tools.find(id);
+	auto it = m_Tools.find(id);
 	if(it == m_Tools.end())
 		return false;
 
 	m_Tools.erase(it);
 	return true;
 }
-
-ToolTable::~ToolTable()
-{
-}
-

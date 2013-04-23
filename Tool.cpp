@@ -25,8 +25,3 @@ Tool::Type Tool::ToolType() const
 {
 	return m_Type;
 }
-
-Tool::~Tool()
-{
-}
-

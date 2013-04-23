@@ -80,22 +80,18 @@ bool Spindle::Entry::operator<(const Entry& other) const
 	return false;
 }
 
-Spindle::Spindle()
+unsigned long Spindle::Normalise(unsigned long requested_speed) const
 {
-}
-
-unsigned long Spindle::Normalise(unsigned long requested_speed)
-{
-	for(std::set<Entry>::const_iterator it = m_Entries.begin(); it != m_Entries.end(); ++it)
-		if(it->Contains(requested_speed))
+	for(auto& entry : m_Entries)
+		if(entry.Contains(requested_speed))
 			return requested_speed;
 
-	unsigned long real_speed(requested_speed);
+	auto real_speed = requested_speed;
 
-	long min_distance(std::numeric_limits<long>::max());
-	for(std::set<Entry>::const_iterator it = m_Entries.begin(); it != m_Entries.end(); ++it)
+	auto min_distance = std::numeric_limits<long>::max();
+	for(auto& entry : m_Entries)
 	{
-		long distance = it->Distance(requested_speed);
+		auto distance = entry.Distance(requested_speed);
 		if(std::abs(distance) < std::abs(min_distance))
 		{
 			min_distance = distance;
@@ -108,7 +104,7 @@ unsigned long Spindle::Normalise(unsigned long requested_speed)
 
 void Spindle::AddRange(unsigned long range_start, unsigned long range_end)
 {
-	m_Entries.insert(Entry(range_start, range_end));
+	m_Entries.insert({range_start, range_end});
 }
 void Spindle::AddDiscrete(unsigned long discrete_value)
 {
@@ -139,8 +135,3 @@ std::string Spindle::str() const
 
 	return s.str();
 }
-
-Spindle::~Spindle()
-{
-}
-

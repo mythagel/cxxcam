@@ -43,7 +43,7 @@ public:
 	// Debug output
 	std::string str() const;
 
-	~GCodeBlock();
+	~GCodeBlock() = default;
 };
 
 #endif /* GCODEBLOCK_H_ */

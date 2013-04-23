@@ -8,22 +8,20 @@
 #ifndef AXIS_H_
 #define AXIS_H_
 
+/*
+ * TODO UDL type?
+ * move_to(15.5_X, 4.0_Y)
+ */
+
 class Axis
 {
 public:
-	enum Type
+	// Need better name than Type
+	enum class Type
 	{
-		axis_X,
-		axis_Y,
-		axis_Z,
-
-		axis_A,
-		axis_B,
-		axis_C,
-
-		axis_U,
-		axis_V,
-		axis_W,
+		X, Y, Z,
+		A, B, C,
+		U, V, W,
 	};
 protected:
 	Type m_Type;
@@ -36,7 +34,7 @@ public:
 	operator Type() const;
 	operator double() const;
 
-	~Axis();
+	~Axis() = default;
 };
 
 class X : public Axis
@@ -44,7 +42,7 @@ class X : public Axis
 public:
 	X();
 	explicit X(double value);
-	~X();
+	~X() = default;
 };
 
 class Y : public Axis
@@ -52,7 +50,7 @@ class Y : public Axis
 public:
 	Y();
 	explicit Y(double value);
-	~Y();
+	~Y() = default;
 };
 
 class Z : public Axis
@@ -60,7 +58,7 @@ class Z : public Axis
 public:
 	Z();
 	explicit Z(double value);
-	~Z();
+	~Z() = default;
 };
 
 class A : public Axis
@@ -68,7 +66,7 @@ class A : public Axis
 public:
 	A();
 	explicit A(double value);
-	~A();
+	~A() = default;
 };
 
 class B : public Axis
@@ -76,7 +74,7 @@ class B : public Axis
 public:
 	B();
 	explicit B(double value);
-	~B();
+	~B() = default;
 };
 
 class C : public Axis

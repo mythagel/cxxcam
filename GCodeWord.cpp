@@ -139,8 +139,3 @@ std::string GCodeWord::str() const
 
 	return s.str();
 }
-
-GCodeWord::~GCodeWord()
-{
-}
-

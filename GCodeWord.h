@@ -54,7 +54,7 @@ public:
 	// Debug output
 	std::string str() const;
 
-	~GCodeWord();
+	~GCodeWord() = default;
 };
 
 #endif /* GCODEWORD_H_ */

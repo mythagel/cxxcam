@@ -31,7 +31,7 @@ public:
 	bool operator==(const Position& pos) const;
 	bool operator!=(const Position& pos) const;
 
-	~Position();
+	~Position() = default;
 };
 
 #endif /* POSITION_H_ */

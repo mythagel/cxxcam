@@ -53,7 +53,7 @@ public:
 	std::string Name() const;
 	Type ToolType() const;
 
-	~Tool();
+	~Tool() = default;
 };
 
 #endif /* TOOL_H_ */

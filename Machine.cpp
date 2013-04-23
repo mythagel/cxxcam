@@ -73,7 +73,7 @@ const GCodeWord Machine::M09(GCodeWord::M, 9);
 void Machine::Preamble()
 {
 	const Type& m_Type = m_Private->m_Type;
-	MachineState& m_State = m_Private->m_State;
+	const MachineState& m_State = m_Private->m_State;
 	GCode& m_GCode = m_Private->m_GCode;
 
 	std::stringstream c;
@@ -81,10 +81,10 @@ void Machine::Preamble()
 
 	switch(m_Type)
 	{
-		case type_Mill:
+		case Type::Mill:
 			c << "Mill  ";
 			break;
-		case type_Lathe:
+		case Type::Lathe:
 			c << "Lathe  ";
 			break;
 	}
@@ -95,27 +95,27 @@ void Machine::Preamble()
 
 	switch(m_State.m_Plane)
 	{
-		case plane_XY:
+		case Plane::XY:
 			c << "XY  ";
 			line += G17;
 			break;
-		case plane_ZX:
+		case Plane::ZX:
 			c << "ZX  ";
 			line += G18;
 			break;
-		case plane_YZ:
+		case Plane::YZ:
 			c << "YZ  ";
 			line += G19;
 			break;
-		case plane_UV:
+		case Plane::UV:
 			c << "UV  ";
 			line += G17_1;
 			break;
-		case plane_WU:
+		case Plane::WU:
 			c << "WU  ";
 			line += G18_1;
 			break;
-		case plane_VW:
+		case Plane::VW:
 			c << "VW  ";
 			line += G19_1;
 			break;
@@ -123,11 +123,11 @@ void Machine::Preamble()
 
 	switch(m_State.m_Units)
 	{
-		case units_Metric:
+		case Units::Metric:
 			c << "Metric  ";
 			line += G21;
 			break;
-		case units_Imperial:
+		case Units::Imperial:
 			c << "Imperial  ";
 			line += G20;
 			break;
@@ -147,11 +147,11 @@ void Machine::Preamble()
 
 	switch(m_State.m_Motion)
 	{
-		case motion_Absolute:
+		case Motion::Absolute:
 			c << "Absolute  ";
 			line += G90;
 			break;
-		case motion_Incremental:
+		case Motion::Incremental:
 			c << "Incremental  ";
 			line += G91;
 			break;
@@ -159,11 +159,11 @@ void Machine::Preamble()
 
 	switch(m_State.m_ArcMotion)
 	{
-		case motion_Absolute:
+		case Motion::Absolute:
 			c << "Absolute Arc  ";
 			line += G90_1;
 			break;
-		case motion_Incremental:
+		case Motion::Incremental:
 			c << "Incremental Arc  ";
 			line += G91_1;
 			break;
@@ -171,15 +171,15 @@ void Machine::Preamble()
 
 	switch(m_State.m_FeedRateMode)
 	{
-		case feedMode_InverseTime:
+		case FeedRateMode::InverseTime:
 			c << "Inverse Time  ";
 			line += G93;
 			break;
-		case feedMode_UnitsPerMinute:
+		case FeedRateMode::UnitsPerMinute:
 			c << "Units Per Minute  ";
 			line += G94;
 			break;
-		case feedMode_UnitsPerRevolution:
+		case FeedRateMode::UnitsPerRevolution:
 			c << "Units Per Revolution  ";
 			line += G95;
 			break;
@@ -203,38 +203,29 @@ GCodeWord Machine::AxisToWord(const Axis& axis)
 {
 	switch(axis)
 	{
-		case Axis::axis_X:
-			return GCodeWord(GCodeWord::X, axis);
-			break;
-		case Axis::axis_Y:
-			return GCodeWord(GCodeWord::Y, axis);
-			break;
-		case Axis::axis_Z:
-			return GCodeWord(GCodeWord::Z, axis);
-			break;
+		case Axis::Type::X:
+			return {GCodeWord::X, axis};
+		case Axis::Type::Y:
+			return {GCodeWord::Y, axis};
+		case Axis::Type::Z:
+			return {GCodeWord::Z, axis};
 
-		case Axis::axis_A:
-			return GCodeWord(GCodeWord::A, axis);
-			break;
-		case Axis::axis_B:
-			return GCodeWord(GCodeWord::B, axis);
-			break;
-		case Axis::axis_C:
-			return GCodeWord(GCodeWord::C, axis);
-			break;
+		case Axis::Type::A:
+			return {GCodeWord::A, axis};
+		case Axis::Type::B:
+			return {GCodeWord::B, axis};
+		case Axis::Type::C:
+			return {GCodeWord::C, axis};
 
-		case Axis::axis_U:
-			return GCodeWord(GCodeWord::U, axis);
-			break;
-		case Axis::axis_V:
-			return GCodeWord(GCodeWord::V, axis);
-			break;
-		case Axis::axis_W:
-			return GCodeWord(GCodeWord::W, axis);
-			break;
+		case Axis::Type::U:
+			return {GCodeWord::U, axis};
+		case Axis::Type::V:
+			return {GCodeWord::V, axis};
+		case Axis::Type::W:
+			return {GCodeWord::W, axis};
 	}
 
-	return M01;
+	throw std::logic_error("Unknown Axis.");
 }
 
 double Machine::MillFeedRate(double chip_load, int flutes, double spindle_speed)
@@ -255,33 +246,33 @@ void Machine::UpdatePosition(const Axis& axis)
 
 	switch(axis)
 	{
-		case Axis::axis_X:
+		case Axis::Type::X:
 			val = &m_State.m_Current.X;
 			break;
-		case Axis::axis_Y:
+		case Axis::Type::Y:
 			val = &m_State.m_Current.Y;
 			break;
-		case Axis::axis_Z:
+		case Axis::Type::Z:
 			val = &m_State.m_Current.Z;
 			break;
 
-		case Axis::axis_A:
+		case Axis::Type::A:
 			val = &m_State.m_Current.A;
 			break;
-		case Axis::axis_B:
+		case Axis::Type::B:
 			val = &m_State.m_Current.B;
 			break;
-		case Axis::axis_C:
+		case Axis::Type::C:
 			val = &m_State.m_Current.C;
 			break;
 
-		case Axis::axis_U:
+		case Axis::Type::U:
 			val = &m_State.m_Current.U;
 			break;
-		case Axis::axis_V:
+		case Axis::Type::V:
 			val = &m_State.m_Current.V;
 			break;
-		case Axis::axis_W:
+		case Axis::Type::W:
 			val = &m_State.m_Current.W;
 			break;
 	}
@@ -290,10 +281,10 @@ void Machine::UpdatePosition(const Axis& axis)
 	{
 		switch(m_State.m_Motion)
 		{
-			case motion_Absolute:
+			case Motion::Absolute:
 				*val = axis;
 				break;
-			case motion_Incremental:
+			case Motion::Incremental:
 				*val += static_cast<double>(axis);
 				break;
 		}
@@ -308,13 +299,13 @@ Machine::Machine(Type type, const std::string& gcode_variant)
 
 	switch(m_Type)
 	{
-		case type_Mill:
-			m_State.m_Plane = plane_XY;
-			m_State.m_FeedRateMode = feedMode_UnitsPerMinute;
+		case Type::Mill:
+			m_State.m_Plane = Plane::XY;
+			m_State.m_FeedRateMode = FeedRateMode::UnitsPerMinute;
 			break;
-		case type_Lathe:
-			m_State.m_Plane = plane_ZX;
-			m_State.m_FeedRateMode = feedMode_UnitsPerRevolution;
+		case Type::Lathe:
+			m_State.m_Plane = Plane::ZX;
+			m_State.m_FeedRateMode = FeedRateMode::UnitsPerRevolution;
 			break;
 	}
 
@@ -334,8 +325,8 @@ void Machine::dump() const
 {
 	MachineState& m_State = m_Private->m_State;
 
-	if(m_State.m_SpindleRotation != rotation_Stop)
-		std::cerr << m_State.m_SpindleSpeed << " RPM " << (m_State.m_SpindleRotation == rotation_Clockwise ? "Clockwise" : "Counter-Clockwise") << "\n";
+	if(m_State.m_SpindleRotation != Rotation::Stop)
+		std::cerr << m_State.m_SpindleSpeed << " RPM " << (m_State.m_SpindleRotation == Rotation::Clockwise ? "Clockwise" : "Counter-Clockwise") << "\n";
 	std::cerr << m_State.m_Current.str() << "\n";
 }
 
@@ -344,11 +335,11 @@ bool Machine::AddTool(int id, const Tool& tool)
 	const Type& m_Type = m_Private->m_Type;
 	switch(m_Type)
 	{
-		case type_Mill:
+		case Type::Mill:
 			if(tool.ToolType() != Tool::type_Mill)
 				throw std::logic_error("Must use Mill tool with Mill.");
 			break;
-		case type_Lathe:
+		case Type::Lathe:
 			if(tool.ToolType() != Tool::type_Lathe)
 				throw std::logic_error("Must use Lathe tool with Lathe.");
 			break;
@@ -535,10 +526,10 @@ void Machine::SetMotion(Motion m)
 
 		switch(m_State.m_Motion)
 		{
-			case motion_Absolute:
+			case Motion::Absolute:
 				m_GCode.AddLine(GCodeLine(G90, "Switch to Absolute Motion"));
 				break;
-			case motion_Incremental:
+			case Motion::Incremental:
 				m_GCode.AddLine(GCodeLine(G91, "Switch to Incremental Motion"));
 				break;
 		}
@@ -555,10 +546,10 @@ void Machine::SetArcMotion(Motion m)
 
 		switch(m_State.m_ArcMotion)
 		{
-			case motion_Absolute:
+			case Motion::Absolute:
 				m_GCode.AddLine(GCodeLine(G90_1, "Switch to Absolute Arc Motion"));
 				break;
-			case motion_Incremental:
+			case Motion::Incremental:
 				m_GCode.AddLine(GCodeLine(G91_1, "Switch to Incremental Arc Motion"));
 				break;
 		}
@@ -575,10 +566,10 @@ void Machine::SetUnits(Units u)
 
 		switch(m_State.m_Units)
 		{
-			case units_Metric:
+			case Units::Metric:
 				m_GCode.AddLine(GCodeLine(G21, "Switch to Metric (Millimeters)"));
 				break;
-			case units_Imperial:
+			case Units::Imperial:
 				m_GCode.AddLine(GCodeLine(G20, "Switch to Imperial (Inches)"));
 				break;
 		}
@@ -590,27 +581,27 @@ void Machine::SetUnits(Units u)
 
 			switch(m_State.m_FeedRateMode)
 			{
-				case feedMode_InverseTime:
+				case FeedRateMode::InverseTime:
 					c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
 					break;
-				case feedMode_UnitsPerMinute:
+				case FeedRateMode::UnitsPerMinute:
 					switch(m_State.m_Units)
 					{
-						case units_Metric:
+						case Units::Metric:
 							c << m_State.m_FeedRate << "mm per minute";
 							break;
-						case units_Imperial:
+						case Units::Imperial:
 							c << m_State.m_FeedRate << "\" per minute";
 							break;
 					}
 					break;
-				case feedMode_UnitsPerRevolution:
+				case FeedRateMode::UnitsPerRevolution:
 					switch(m_State.m_Units)
 					{
-						case units_Metric:
+						case Units::Metric:
 							c << m_State.m_FeedRate << "mm per revolution";
 							break;
-						case units_Imperial:
+						case Units::Imperial:
 							c << m_State.m_FeedRate << "\" per revolution";
 							break;
 					}
@@ -631,22 +622,22 @@ void Machine::SetPlane(Plane p)
 
 		switch(m_State.m_Plane)
 		{
-			case plane_XY:
+			case Plane::XY:
 				m_GCode.AddLine(GCodeLine(G17, "Switch to XY Plane"));
 				break;
-			case plane_ZX:
+			case Plane::ZX:
 				m_GCode.AddLine(GCodeLine(G18, "Switch to ZX Plane"));
 				break;
-			case plane_YZ:
+			case Plane::YZ:
 				m_GCode.AddLine(GCodeLine(G19, "Switch to YZ Plane"));
 				break;
-			case plane_UV:
+			case Plane::UV:
 				m_GCode.AddLine(GCodeLine(G17_1, "Switch to UV Plane"));
 				break;
-			case plane_WU:
+			case Plane::WU:
 				m_GCode.AddLine(GCodeLine(G18_1, "Switch to WU Plane"));
 				break;
-			case plane_VW:
+			case Plane::VW:
 				m_GCode.AddLine(GCodeLine(G19_1, "Switch to VW Plane"));
 				break;
 		}
@@ -663,13 +654,13 @@ void Machine::SetFeedRateMode(FeedRateMode f)
 
 		switch(m_State.m_FeedRateMode)
 		{
-			case feedMode_InverseTime:
+			case FeedRateMode::InverseTime:
 				m_GCode.AddLine(GCodeLine(G93, "Switch to Inverse Time Feed Rate Mode"));
 				break;
-			case feedMode_UnitsPerMinute:
+			case FeedRateMode::UnitsPerMinute:
 				m_GCode.AddLine(GCodeLine(G94, "Switch to Units Per Minute Feed Rate Mode"));
 				break;
-			case feedMode_UnitsPerRevolution:
+			case FeedRateMode::UnitsPerRevolution:
 				m_GCode.AddLine(GCodeLine(G95, "Switch to Units Per Revolution Feed Rate Mode"));
 				break;
 		}
@@ -681,27 +672,27 @@ void Machine::SetFeedRateMode(FeedRateMode f)
 
 			switch(m_State.m_FeedRateMode)
 			{
-				case feedMode_InverseTime:
+				case FeedRateMode::InverseTime:
 					c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
 					break;
-				case feedMode_UnitsPerMinute:
+				case FeedRateMode::UnitsPerMinute:
 					switch(m_State.m_Units)
 					{
-						case units_Metric:
+						case Units::Metric:
 							c << m_State.m_FeedRate << "mm per minute";
 							break;
-						case units_Imperial:
+						case Units::Imperial:
 							c << m_State.m_FeedRate << "\" per minute";
 							break;
 					}
 					break;
-				case feedMode_UnitsPerRevolution:
+				case FeedRateMode::UnitsPerRevolution:
 					switch(m_State.m_Units)
 					{
-						case units_Metric:
+						case Units::Metric:
 							c << m_State.m_FeedRate << "mm per revolution";
 							break;
-						case units_Imperial:
+						case Units::Imperial:
 							c << m_State.m_FeedRate << "\" per revolution";
 							break;
 					}
@@ -725,27 +716,27 @@ void Machine::SetFeedRate(double f)
 		{
 			switch(m_State.m_FeedRateMode)
 			{
-				case feedMode_InverseTime:
+				case FeedRateMode::InverseTime:
 					c << "Feed Time: " << 1/f << " minutes";
 					break;
-				case feedMode_UnitsPerMinute:
+				case FeedRateMode::UnitsPerMinute:
 					switch(m_State.m_Units)
 					{
-						case units_Metric:
+						case Units::Metric:
 							c << f << "mm per minute";
 							break;
-						case units_Imperial:
+						case Units::Imperial:
 							c << f << "\" per minute";
 							break;
 					}
 					break;
-				case feedMode_UnitsPerRevolution:
+				case FeedRateMode::UnitsPerRevolution:
 					switch(m_State.m_Units)
 					{
-						case units_Metric:
+						case Units::Metric:
 							c << f << "mm per revolution";
 							break;
-						case units_Imperial:
+						case Units::Imperial:
 							c << f << "\" per revolution";
 							break;
 					}
@@ -754,7 +745,7 @@ void Machine::SetFeedRate(double f)
 		}
 
 		GCodeLine line(c.str());
-		if(m_State.m_FeedRateMode != feedMode_InverseTime)
+		if(m_State.m_FeedRateMode != FeedRateMode::InverseTime)
 			line += GCodeWord(GCodeWord::F, f);
 		m_GCode.AddLine(line);
 	}
@@ -777,19 +768,19 @@ void Machine::StartSpindle(unsigned long s, Rotation r)
 		std::stringstream c;
 		switch(m_State.m_SpindleRotation)
 		{
-			case rotation_Stop:
+			case Rotation::Stop:
 				m_State.m_SpindleSpeed = 0;
 				line += M05;
 				c << "Stop Spindle";
 				break;
-			case rotation_Clockwise:
+			case Rotation::Clockwise:
 				line += M03;
 				line += GCodeWord(GCodeWord::S, s);
 				c << "Start Spindle Clockwise " << s << " RPM";
 				if(m_State.m_SpindleSpeed != requested_speed)
 					c << " (" << requested_speed << " RPM Requested)";
 				break;
-			case rotation_CounterClockwise:
+			case Rotation::CounterClockwise:
 				line += M04;
 				line += GCodeWord(GCodeWord::S, s);
 				c << "Start Spindle Counter Clockwise " << s << " RPM";
@@ -806,10 +797,10 @@ void Machine::StopSpindle()
 	MachineState& m_State = m_Private->m_State;
 	GCode& m_GCode = m_Private->m_GCode;
 
-	if(m_State.m_SpindleRotation != rotation_Stop || m_State.m_SpindleSpeed > 0)
+	if(m_State.m_SpindleRotation != Rotation::Stop || m_State.m_SpindleSpeed > 0)
 	{
 		m_State.m_SpindleSpeed = 0;
-		m_State.m_SpindleRotation = rotation_Stop;
+		m_State.m_SpindleRotation = Rotation::Stop;
 
 		m_GCode.AddLine(GCodeLine(M05, "Stop Spindle"));
 	}
@@ -889,7 +880,7 @@ void Machine::Linear(const Axis& axis0)
 {
 	MachineState& m_State = m_Private->m_State;
 
-	if(m_State.m_SpindleRotation == rotation_Stop)
+	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw std::logic_error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
 		throw std::logic_error("Feedrate is 0.0");
@@ -899,7 +890,7 @@ void Machine::Linear(const Axis& axis0)
 	line += G01;
 	line += AxisToWord(axis0); UpdatePosition(axis0);
 
-	if(m_State.m_FeedRateMode == feedMode_InverseTime)
+	if(m_State.m_FeedRateMode == FeedRateMode::InverseTime)
 	{
 		std::stringstream c;
 		c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
@@ -912,7 +903,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1)
 {
 	MachineState& m_State = m_Private->m_State;
 
-	if(m_State.m_SpindleRotation == rotation_Stop)
+	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw std::logic_error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
 		throw std::logic_error("Feedrate is 0.0");
@@ -923,7 +914,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1)
 	line += AxisToWord(axis0); UpdatePosition(axis0);
 	line += AxisToWord(axis1); UpdatePosition(axis1);
 
-	if(m_State.m_FeedRateMode == feedMode_InverseTime)
+	if(m_State.m_FeedRateMode == FeedRateMode::InverseTime)
 	{
 		std::stringstream c;
 		c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
@@ -936,7 +927,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2)
 {
 	MachineState& m_State = m_Private->m_State;
 
-	if(m_State.m_SpindleRotation == rotation_Stop)
+	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw std::logic_error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
 		throw std::logic_error("Feedrate is 0.0");
@@ -948,7 +939,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2)
 	line += AxisToWord(axis1); UpdatePosition(axis1);
 	line += AxisToWord(axis2); UpdatePosition(axis2);
 
-	if(m_State.m_FeedRateMode == feedMode_InverseTime)
+	if(m_State.m_FeedRateMode == FeedRateMode::InverseTime)
 	{
 		std::stringstream c;
 		c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
@@ -961,7 +952,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2, co
 {
 	MachineState& m_State = m_Private->m_State;
 
-	if(m_State.m_SpindleRotation == rotation_Stop)
+	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw std::logic_error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
 		throw std::logic_error("Feedrate is 0.0");
@@ -974,7 +965,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2, co
 	line += AxisToWord(axis2); UpdatePosition(axis2);
 	line += AxisToWord(axis3); UpdatePosition(axis3);
 
-	if(m_State.m_FeedRateMode == feedMode_InverseTime)
+	if(m_State.m_FeedRateMode == FeedRateMode::InverseTime)
 	{
 		std::stringstream c;
 		c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
@@ -987,7 +978,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2, co
 {
 	MachineState& m_State = m_Private->m_State;
 
-	if(m_State.m_SpindleRotation == rotation_Stop)
+	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw std::logic_error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
 		throw std::logic_error("Feedrate is 0.0");
@@ -1001,7 +992,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2, co
 	line += AxisToWord(axis3); UpdatePosition(axis3);
 	line += AxisToWord(axis4); UpdatePosition(axis4);
 
-	if(m_State.m_FeedRateMode == feedMode_InverseTime)
+	if(m_State.m_FeedRateMode == FeedRateMode::InverseTime)
 	{
 		std::stringstream c;
 		c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
@@ -1014,7 +1005,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2, co
 {
 	MachineState& m_State = m_Private->m_State;
 
-	if(m_State.m_SpindleRotation == rotation_Stop)
+	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw std::logic_error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
 		throw std::logic_error("Feedrate is 0.0");
@@ -1029,7 +1020,7 @@ void Machine::Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2, co
 	line += AxisToWord(axis4); UpdatePosition(axis4);
 	line += AxisToWord(axis5); UpdatePosition(axis5);
 
-	if(m_State.m_FeedRateMode == feedMode_InverseTime)
+	if(m_State.m_FeedRateMode == FeedRateMode::InverseTime)
 	{
 		std::stringstream c;
 		c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";

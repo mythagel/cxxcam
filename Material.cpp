@@ -21,8 +21,3 @@ double Material_t::Hardness() const
 {
 	return m_Brinell;
 }
-
-Material_t::~Material_t()
-{
-}
-

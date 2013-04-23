@@ -9,18 +9,13 @@
 #include <cassert>
 #include <fstream>
 
-Stock::Stock()
-{
-}
-
 Stock Stock::Rectangle(double length, double width, double height)
 {
-	Stock stock;
-	return stock;
+	return {};
 }
 Stock Stock::Cylinder(double radius, double height)
 {
-	return Stock();
+	return {};
 }
 
 bool Stock::Write(const std::string& filename, Format format) const
@@ -45,8 +40,3 @@ bool Stock::Write(const std::string& filename, Format format) const
 	}
 	return false;
 }
-
-Stock::~Stock()
-{
-}
-

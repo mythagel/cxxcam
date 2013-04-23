@@ -46,7 +46,7 @@ GCode::GCode(const std::string& variant)
 bool GCode::AddLine(const GCodeLine& line)
 {
 	if(m_Blocks.empty())
-		m_Blocks.push_back(GCodeBlock("", MachineState()));
+		m_Blocks.emplace_back("", MachineState());
 
 	m_Blocks.back() += line;
 	return true;
@@ -63,25 +63,25 @@ void GCode::NewBlock(const std::string& name, const MachineState& initial_state)
 			m_Blocks.back() = GCodeBlock(name, initial_state);
 		return;
 	}
-	m_Blocks.push_back(GCodeBlock(name, initial_state));
+	m_Blocks.emplace_back(name, initial_state);
 }
 
 GCodeBlock& GCode::CurrentBlock()
 {
 	if(m_Blocks.empty())
-		m_Blocks.push_back(GCodeBlock("", MachineState()));
+		m_Blocks.emplace_back("", MachineState());
 
 	return m_Blocks.back();
 }
 
 void GCode::EndBlock()
 {
-	m_Blocks.push_back(GCodeBlock("", MachineState()));
+	m_Blocks.emplace_back("", MachineState());
 }
 
 std::string GCode::str() const
 {
-	std::stringstream s;
+	std::ostringstream s;
 
 	for(std::vector<GCodeBlock>::const_iterator it = m_Blocks.begin(); it != m_Blocks.end(); ++it)
 	{
@@ -91,8 +91,3 @@ std::string GCode::str() const
 
 	return s.str();
 }
-
-GCode::~GCode()
-{
-}
-

@@ -26,78 +26,56 @@ Axis::operator double() const
 	return m_Value;
 }
 
-Axis::~Axis()
-{
-}
-
 X::X()
- : Axis(axis_X)
+ : Axis(Type::X)
 {
 }
 X::X(double value)
- : Axis(axis_X, value)
-{
-}
-X::~X()
+ : Axis(Type::X, value)
 {
 }
 
 Y::Y()
- : Axis(axis_Y)
+ : Axis(Type::Y)
 {
 }
 Y::Y(double value)
- : Axis(axis_Y, value)
-{
-}
-Y::~Y()
+ : Axis(Type::Y, value)
 {
 }
 
 Z::Z()
- : Axis(axis_Z)
+ : Axis(Type::Z)
 {
 }
 Z::Z(double value)
- : Axis(axis_Z, value)
-{
-}
-Z::~Z()
+ : Axis(Type::Z, value)
 {
 }
 
 A::A()
- : Axis(axis_A)
+ : Axis(Type::A)
 {
 }
 A::A(double value)
- : Axis(axis_A, value)
-{
-}
-A::~A()
+ : Axis(Type::A, value)
 {
 }
 
 B::B()
- : Axis(axis_B)
+ : Axis(Type::B)
 {
 }
 B::B(double value)
- : Axis(axis_B, value)
-{
-}
-B::~B()
+ : Axis(Type::B, value)
 {
 }
 
 C::C()
- : Axis(axis_C)
+ : Axis(Type::C)
 {
 }
 C::C(double value)
- : Axis(axis_C, value)
-{
-}
-C::~C()
+ : Axis(Type::C, value)
 {
 }

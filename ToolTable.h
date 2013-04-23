@@ -15,13 +15,13 @@ class ToolTable
 private:
 	std::map<int, Tool> m_Tools;
 public:
-	ToolTable();
+	ToolTable() = default;
 
 	bool AddTool(int id, const Tool& tool);
 	bool Get(int id, Tool* tool);
 	bool RemoveTool(int id);
 
-	~ToolTable();
+	~ToolTable() = default;
 };
 
 #endif /* TOOLTABLE_H_ */

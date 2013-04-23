@@ -37,21 +37,21 @@ bool GCodeBlock::empty() const
 
 GCodeBlock& GCodeBlock::operator+=(const GCodeLine& line)
 {
-	m_Lines.push_back(GCodeLine(line));
+	m_Lines.push_back(line);
 	return *this;
 }
 
 GCodeBlock& GCodeBlock::operator+=(const GCodeWord& word)
 {
 	if(m_Lines.empty())
-		m_Lines.push_back(GCodeLine(word));
+		m_Lines.emplace_back(word);
 	else
 		m_Lines.back() += word;
 	return *this;
 }
 void GCodeBlock::NewLine()
 {
-	m_Lines.push_back(GCodeLine());
+	m_Lines.emplace_back();
 }
 
 std::string GCodeBlock::str() const
@@ -75,8 +75,3 @@ std::string GCodeBlock::str() const
 
 	return s.str();
 }
-
-GCodeBlock::~GCodeBlock()
-{
-}
-

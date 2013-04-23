@@ -75,8 +75,3 @@ std::string GCodeLine::str() const
 
 	return s.str();
 }
-
-GCodeLine::~GCodeLine()
-{
-}
-

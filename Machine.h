@@ -55,10 +55,10 @@ private:
 	static const GCodeWord M06;
 	static const GCodeWord M09;
 public:
-	enum Type
+	enum class Type
 	{
-		type_Mill,
-		type_Lathe
+		Mill,
+		Lathe
 	};
 
 	enum BlockRestore
@@ -76,46 +76,46 @@ public:
 		block_RestorePosition = 1 << 8
 	};
 
-	enum Units
+	enum class Units
 	{
-		units_Metric,
-		units_Imperial
+		Metric,
+		Imperial
 	};
 
-	enum Plane
+	enum class Plane
 	{
-	    plane_XY,
-	    plane_ZX,
-	    plane_YZ,
-	    plane_UV,
-	    plane_WU,
-	    plane_VW
+	    XY,
+	    ZX,
+	    YZ,
+	    UV,
+	    WU,
+	    VW
 	};
 
-	enum Motion
+	enum class Motion
 	{
-		motion_Absolute,
-		motion_Incremental
+		Absolute,
+		Incremental
 	};
 
-	enum FeedRateMode
+	enum class FeedRateMode
 	{
-		feedMode_InverseTime,
-		feedMode_UnitsPerMinute,
-		feedMode_UnitsPerRevolution
+		InverseTime,
+		UnitsPerMinute,
+		UnitsPerRevolution
 	};
 
-	enum Rotation
+	enum class Rotation
 	{
-		rotation_Stop,
-		rotation_Clockwise,
-		rotation_CounterClockwise
+		Stop,
+		Clockwise,
+		CounterClockwise
 	};
 
-	enum Direction
+	enum class Direction
 	{
-		direction_Clockwise,
-		direction_CounterClockwise
+		Clockwise,
+		CounterClockwise
 	};
 private:
 	struct Private;
@@ -168,7 +168,7 @@ public:
 	void SetFeedRateMode(FeedRateMode f);
 	void SetFeedRate(double f);
 
-	void StartSpindle(unsigned long s, Rotation r = rotation_Clockwise);
+	void StartSpindle(unsigned long s, Rotation r = Rotation::Clockwise);
 	void StopSpindle();
 
 
