@@ -8,7 +8,7 @@ IF(UNIX)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++11")
 ENDIF()
 
-INCLUDE_DIRECTORIES(${PROJECT_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CXXCAM_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED Axis.cpp GCode.cpp GCodeWord.cpp MachineState.cpp nef_polyhedron.cpp Spindle.cpp Tool.cpp GCodeBlock.cpp GCodeLine.cpp Machine.cpp Material.cpp Position.cpp Stock.cpp ToolTable.cpp)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES})
