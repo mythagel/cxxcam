@@ -22,19 +22,15 @@ bool Stock::Write(const std::string& filename, Format format) const
 {
 	switch(format)
 	{
-		case format_OFF:
+		case Format::OFF:
+			return false;
+		case Format::NEF:
 		{
-//			std::ofstream out(filename.c_str());
-//			if(!out)
-//				return false;
-//
-//			Nef_polyhedron_3 Model = m_Private->Model;
-//			assert(Model.is_simple());
-//
-//			Exact_Polyhedron_3 Polyhedron;
-//			Model.convert_to_polyhedron(Polyhedron);
-//			out << Polyhedron;
-			return true;
+			std::ofstream out(filename);
+			if(!out)
+				return false;
+
+			out << m_Nef;
 			break;
 		}
 	}

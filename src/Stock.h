@@ -32,9 +32,10 @@ private:
 	std::shared_ptr<Material_t> Material;
 	nef_polyhedron_t m_Nef;
 public:
-	enum Format
+	enum class Format
 	{
-		format_OFF
+		NEF,
+		OFF
 	};
 public:
 	Stock() = default;
@@ -42,7 +43,7 @@ public:
 	static Stock Rectangle(double length, double width, double height);
 	static Stock Cylinder(double radius, double height);
 
-	bool Write(const std::string& filename, Format format) const;
+	bool Write(const std::string& filename, Format format = Format::NEF) const;
 
 	~Stock() = default;
 };

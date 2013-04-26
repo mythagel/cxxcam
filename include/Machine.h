@@ -119,7 +119,7 @@ public:
 	};
 private:
 	struct Private;
-	std::shared_ptr<Private> m_Private;
+	std::unique_ptr<Private> m_Private;
 protected:
 	void Preamble();
 
@@ -135,8 +135,11 @@ public:
 	 * have struct defs for each stock type: rectangle, cylinder, import (saved OFF file)
 	 */
 	Machine(Type type, const std::string& gcode_variant);
-	explicit Machine(const Machine& m);
+
+	Machine(const Machine& m);
 	Machine& operator=(const Machine& m);
+	Machine(Machine&&) = default;
+	Machine& operator=(Machine&&) = default;
 
 	void dump() const;
 

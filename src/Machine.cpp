@@ -16,6 +16,15 @@
 #include <sstream>
 #include <stdexcept>
 
+namespace
+{
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args)
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+}
+
 struct Machine::Private
 {
 	const Type m_Type;
@@ -292,7 +301,7 @@ void Machine::UpdatePosition(const Axis& axis)
 }
 
 Machine::Machine(Type type, const std::string& gcode_variant)
- : m_Private(std::make_shared<Private>(type, gcode_variant))
+ : m_Private(make_unique<Private>(type, gcode_variant))
 {
 	const Type& m_Type = m_Private->m_Type;
 	MachineState& m_State = m_Private->m_State;
@@ -312,12 +321,12 @@ Machine::Machine(Type type, const std::string& gcode_variant)
 	Preamble();
 }
 Machine::Machine(const Machine& m)
- : m_Private(std::make_shared<Private>(*m.m_Private))
+ : m_Private(make_unique<Private>(*m.m_Private))
 {
 }
 Machine& Machine::operator=(const Machine& m)
 {
-	m_Private = std::make_shared<Private>(*m.m_Private);
+	m_Private = make_unique<Private>(*m.m_Private);
 	return *this;
 }
 
