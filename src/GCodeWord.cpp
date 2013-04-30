@@ -18,6 +18,16 @@ GCodeWord::GCodeWord(Word word, double value, const std::string& comment)
 {
 }
 
+GCodeWord::operator GCodeWord::Word() const
+{
+	return m_Word;
+}
+
+double GCodeWord::Value() const
+{
+	return m_Value;
+}
+
 void GCodeWord::Comment(const std::string& comment)
 {
 	m_Comment = comment;
@@ -25,11 +35,6 @@ void GCodeWord::Comment(const std::string& comment)
 std::string GCodeWord::Comment() const
 {
 	return m_Comment;
-}
-
-GCodeWord::operator GCodeWord::Word() const
-{
-	return m_Word;
 }
 
 std::string GCodeWord::str() const

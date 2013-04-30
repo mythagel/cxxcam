@@ -9,6 +9,7 @@
 #define MACHINE_H_
 #include <string>
 #include <memory>
+#include <vector>
 #include "GCodeWord.h"
 #include "Axis.h"
 #include "Tool.h"
@@ -204,6 +205,7 @@ public:
 	 * Note that this is not coordinated motion, each axis could move independently.
 	 * TODO: expand the tool motion along all possible paths and check for intersection with the stock
 	 */
+	void Rapid(const std::vector<Axis>& axi);
 	void Rapid(const Axis& axis0);
 	void Rapid(const Axis& axis0, const Axis& axis1);
 	void Rapid(const Axis& axis0, const Axis& axis1, const Axis& axis2);
@@ -215,6 +217,7 @@ public:
 	 * Coordinated linear motion. Spindle must be on. Feedrate must be non-zero.
 	 * TODO: calculate feed rate
 	 */
+	void Linear(const std::vector<Axis>& axi);
 	void Linear(const Axis& axis0);
 	void Linear(const Axis& axis0, const Axis& axis1);
 	void Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2);

@@ -57,7 +57,7 @@ void GCodeBlock::NewLine()
 std::string GCodeBlock::str() const
 {
 	if(m_Lines.empty())
-		return "";
+		return {};
 
 	std::stringstream s;
 
@@ -68,9 +68,9 @@ std::string GCodeBlock::str() const
 		s << c.str();
 	}
 
-	for(std::vector<GCodeLine>::const_iterator it = m_Lines.begin(); it != m_Lines.end(); ++it)
+	for(auto& line : m_Lines)
 	{
-		s << it->str();
+		s << line.str();
 	}
 
 	return s.str();

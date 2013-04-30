@@ -46,10 +46,11 @@ public:
 	GCodeWord(Word word, double value);
 	GCodeWord(Word word, double value, const std::string& comment);
 
+	operator Word() const;
+	double Value() const;
+
 	void Comment(const std::string& comment);
 	std::string Comment() const;
-
-	operator Word() const;
 
 	// Debug output
 	std::string str() const;

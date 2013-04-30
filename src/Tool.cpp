@@ -8,7 +8,7 @@
 #include "Tool.h"
 
 Tool::Tool()
- : m_Name("Invalid"), m_Type(type_Mill)
+ : m_Name("Invalid"), m_Type(Type::Mill)
 {
 }
 Tool::Tool(const std::string& name, Type type)

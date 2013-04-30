@@ -83,10 +83,10 @@ std::string GCode::str() const
 {
 	std::ostringstream s;
 
-	for(std::vector<GCodeBlock>::const_iterator it = m_Blocks.begin(); it != m_Blocks.end(); ++it)
+	for(auto& block : m_Blocks)
 	{
-		if(!it->empty())
-			s << it->str() << eol();
+		if(!block.empty())
+			s << block.str() << eol();
 	}
 
 	return s.str();

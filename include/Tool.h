@@ -16,10 +16,10 @@
 class Tool
 {
 public:
-	enum Type
+	enum class Type
 	{
-		type_Mill,
-		type_Lathe
+		Mill,
+		Lathe
 	};
 private:
 	std::string m_Name;

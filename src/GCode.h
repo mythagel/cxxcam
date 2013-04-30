@@ -13,7 +13,9 @@
 #include <string>
 
 /*
- * Helper class owned by Machine that assists with the output of GCode.
+ * Helper class owned by Machine that assists with the storage and output of GCode.
+ *
+ * TODO aligned output for comments within a block.
  */
 class GCode
 {

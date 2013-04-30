@@ -345,11 +345,11 @@ bool Machine::AddTool(int id, const Tool& tool)
 	switch(m_Type)
 	{
 		case Type::Mill:
-			if(tool.ToolType() != Tool::type_Mill)
+			if(tool.ToolType() != Tool::Type::Mill)
 				throw std::logic_error("Must use Mill tool with Mill.");
 			break;
 		case Type::Lathe:
-			if(tool.ToolType() != Tool::type_Lathe)
+			if(tool.ToolType() != Tool::Type::Lathe)
 				throw std::logic_error("Must use Lathe tool with Lathe.");
 			break;
 	}
@@ -815,6 +815,18 @@ void Machine::StopSpindle()
 	}
 }
 
+void Machine::Rapid(const std::vector<Axis>& axi)
+{
+	GCodeLine line;
+
+	line += G00;
+	for(auto& axis : axi)
+	{
+		line += AxisToWord(axis);
+		UpdatePosition(axis);
+	}
+	m_Private->m_GCode.AddLine(line);
+}
 void Machine::Rapid(const Axis& axis0)
 {
 	GCodeLine line;
@@ -885,6 +897,33 @@ void Machine::Rapid(const Axis& axis0, const Axis& axis1, const Axis& axis2, con
 	m_Private->m_GCode.AddLine(line);
 }
 
+void Machine::Linear(const std::vector<Axis>& axi)
+{
+	MachineState& m_State = m_Private->m_State;
+
+	if(m_State.m_SpindleRotation == Rotation::Stop)
+		throw std::logic_error("Spindle is stopped");
+	if(m_State.m_FeedRate == 0.0)
+		throw std::logic_error("Feedrate is 0.0");
+
+	GCodeLine line;
+
+	line += G01;
+	for(auto& axis : axi)
+	{
+		line += AxisToWord(axis);
+		UpdatePosition(axis);
+	}
+
+	if(m_State.m_FeedRateMode == FeedRateMode::InverseTime)
+	{
+		std::stringstream c;
+		c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
+		line += GCodeWord(GCodeWord::F, m_State.m_FeedRate, c.str());
+	}
+
+	m_Private->m_GCode.AddLine(line);
+}
 void Machine::Linear(const Axis& axis0)
 {
 	MachineState& m_State = m_Private->m_State;

@@ -22,7 +22,7 @@ public:
 
 	GCodeLine();
 	explicit GCodeLine(const std::string& comment);
-	explicit GCodeLine(const GCodeWord& word, const std::string& comment = std::string());
+	explicit GCodeLine(const GCodeWord& word, const std::string& comment = {});
 
 	const_iterator begin() const;
 	const_iterator end() const;
