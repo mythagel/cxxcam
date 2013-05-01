@@ -118,9 +118,7 @@ std::ostream& operator<<(std::ostream& os, const Code& gcode)
 		for(auto& line : block)
 		{
 			if(gcode.m_LineNumbers)
-			{
-				// TODO
-			}
+				os << 'N' << block_id << '.' << line_id << ' ';
 
 			std::copy(line.begin(), line.end(), std::ostream_iterator<Word>(os, " "));
 			if(!line.Comment().empty())
