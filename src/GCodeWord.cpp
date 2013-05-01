@@ -7,6 +7,8 @@
 
 #include "GCodeWord.h"
 #include <sstream>
+#include <ostream>
+#include <stdexcept>
 
 namespace gcode
 {
@@ -26,11 +28,6 @@ Word::operator Word::Code() const
 	return m_Code;
 }
 
-double Word::Value() const
-{
-	return m_Value;
-}
-
 void Word::Comment(const std::string& comment)
 {
 	m_Comment = comment;
@@ -40,106 +37,68 @@ std::string Word::Comment() const
 	return m_Comment;
 }
 
-std::ostream& operator<<(std::ostream& os, const Word& word)
+std::string to_string(Word::Code code)
 {
-	switch(word)
+	switch(code)
 	{
 		case Word::A:
-			os << 'A';
-			os << word.Value();
-			break;
+			return "A";
 		case Word::B:
-			os << 'B';
-			os << word.Value();
-			break;
+			return "B";
 		case Word::C:
-			os << 'C';
-			os << word.Value();
-			break;
+			return "C";
 		case Word::D:
-			os << 'D';
-			os << word.Value();
-			break;
+			return "D";
 		case Word::F:
-			os << 'F';
-			os << word.Value();
-			break;
+			return "F";
 		case Word::G:
-			os << 'G';
-			os << word.Value();
-			break;
+			return "G";
 		case Word::H:
-			os << 'H';
-			os << word.Value();
-			break;
+			return "H";
 		case Word::I:
-			os << 'I';
-			os << word.Value();
-			break;
+			return "I";
 		case Word::J:
-			os << 'J';
-			os << word.Value();
-			break;
+			return "J";
 		case Word::K:
-			os << 'K';
-			os << word.Value();
-			break;
+			return "K";
 		case Word::L:
-			os << 'L';
-			os << word.Value();
-			break;
+			return "L";
 		case Word::M:
-			os << 'M';
-			os << word.Value();
-			break;
+			return "M";
 		case Word::P:
-			os << 'P';
-			os << word.Value();
-			break;
+			return "P";
 		case Word::Q:
-			os << 'Q';
-			os << word.Value();
-			break;
+			return "Q";
 		case Word::R:
-			os << 'R';
-			os << word.Value();
-			break;
+			return "R";
 		case Word::S:
-			os << 'S';
-			os << word.Value();
-			break;
+			return "S";
 		case Word::T:
-			os << 'T';
-			os << word.Value();
-			break;
+			return "T";
 		case Word::U:
-			os << 'U';
-			os << word.Value();
-			break;
+			return "U";
 		case Word::V:
-			os << 'V';
-			os << word.Value();
-			break;
+			return "V";
 		case Word::W:
-			os << 'W';
-			os << word.Value();
-			break;
+			return "W";
 		case Word::X:
-			os << 'X';
-			os << word.Value();
-			break;
+			return "X";
 		case Word::Y:
-			os << 'Y';
-			os << word.Value();
-			break;
+			return "Y";
 		case Word::Z:
-			os << 'Z';
-			os << word.Value();
-			break;
+			return "Z";
 	}
 
-	if(!word.Comment().empty())
-		os << " (" << word.Comment() << ")";
+	throw std::logic_error("Unknown GCode word.");
+}
+
+std::ostream& operator<<(std::ostream& os, const Word& word)
+{
+	os << to_string(word) << word.m_Value;
+	auto comment = word.Comment();
+
+	if(!comment.empty())
+		os << " (" << comment << ")";
 
 	return os;
 }
