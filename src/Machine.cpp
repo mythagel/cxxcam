@@ -820,12 +820,12 @@ void Machine::StopSpindle()
 	}
 }
 
-void Machine::Rapid(const std::vector<Axis>& axi)
+void Machine::Rapid(const std::vector<Axis>& axes)
 {
 	Line line;
 
 	line += G00;
-	for(auto& axis : axi)
+	for(auto& axis : axes)
 	{
 		line += AxisToWord(axis);
 		UpdatePosition(axis);
@@ -902,7 +902,7 @@ void Machine::Rapid(const Axis& axis0, const Axis& axis1, const Axis& axis2, con
 	m_Private->m_GCode.AddLine(line);
 }
 
-void Machine::Linear(const std::vector<Axis>& axi)
+void Machine::Linear(const std::vector<Axis>& axes)
 {
 	auto& m_State = m_Private->m_State;
 
@@ -914,7 +914,7 @@ void Machine::Linear(const std::vector<Axis>& axi)
 	Line line;
 
 	line += G01;
-	for(auto& axis : axi)
+	for(auto& axis : axes)
 	{
 		line += AxisToWord(axis);
 		UpdatePosition(axis);
