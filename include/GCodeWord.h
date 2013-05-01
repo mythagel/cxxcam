@@ -10,10 +10,13 @@
 #include <string>
 #include <iosfwd>
 
-class GCodeWord
+namespace gcode
+{
+
+class Word
 {
 public:
-	enum Word
+	enum Code
 	{
 		A,	// A axis of machine
 		B,	// B axis of machine
@@ -40,22 +43,24 @@ public:
 		Z	// Z axis of machine
 	};
 private:
-	Word m_Word;
+	Code m_Code;
 	double m_Value;
 	std::string m_Comment;
 public:
-	GCodeWord(Word word, double value);
-	GCodeWord(Word word, double value, const std::string& comment);
+	Word(Code code, double value);
+	Word(Code code, double value, const std::string& comment);
 
-	operator Word() const;
+	operator Code() const;
 	double Value() const;
 
 	void Comment(const std::string& comment);
 	std::string Comment() const;
 
-	~GCodeWord() = default;
+	~Word() = default;
 };
 
-std::ostream& operator<<(std::ostream& os, const GCodeWord& word);
+std::ostream& operator<<(std::ostream& os, const Word& word);
+
+}
 
 #endif /* GCODEWORD_H_ */

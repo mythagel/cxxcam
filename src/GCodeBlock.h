@@ -12,21 +12,25 @@
 #include "GCodeLine.h"
 #include "MachineState.h"
 
+namespace gcode
+{
+
 /*
- * A block is a collective sequence of GCodeLines with a similar purpose.
+ * A block is a collective sequence of Lines with a similar purpose.
+ * Not to be confused with a GCode 'block' which is a synonym for line
  */
-class GCodeBlock
+class Block
 {
 private:
 	std::string m_Name;
-	std::vector<GCodeLine> m_Lines;
+	std::vector<Line> m_Lines;
 
 	MachineState m_InitialState;
 public:
 
-	typedef std::vector<GCodeLine>::const_iterator const_iterator;
+	typedef std::vector<Line>::const_iterator const_iterator;
 
-	GCodeBlock(const std::string& name, const MachineState& initial_state);
+	Block(const std::string& name, const MachineState& initial_state);
 
 	std::string Name() const;
 	MachineState State() const;
@@ -35,14 +39,16 @@ public:
 	const_iterator end() const;
 	bool empty() const;
 
-	void append(const GCodeLine& line);
-	void append(const GCodeWord& word);
+	void append(const Line& line);
+	void append(const Word& word);
 
 	void NewLine();
 
 	std::string debug_str() const;
 
-	~GCodeBlock() = default;
+	~Block() = default;
 };
+
+}
 
 #endif /* GCODEBLOCK_H_ */

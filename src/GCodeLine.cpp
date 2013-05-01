@@ -8,48 +8,51 @@
 #include "GCodeLine.h"
 #include <sstream>
 
-GCodeLine::GCodeLine()
+namespace gcode
+{
+
+Line::Line()
 {
 }
-GCodeLine::GCodeLine(const std::string& comment)
+Line::Line(const std::string& comment)
 {
 	m_Comment = comment;
 }
-GCodeLine::GCodeLine(const GCodeWord& word, const std::string& comment)
+Line::Line(const Word& word, const std::string& comment)
 {
 	m_Words.push_back(word);
 	m_Comment = comment;
 }
 
-GCodeLine::const_iterator GCodeLine::begin() const
+Line::const_iterator Line::begin() const
 {
 	return m_Words.begin();
 }
-GCodeLine::const_iterator GCodeLine::end() const
+Line::const_iterator Line::end() const
 {
 	return m_Words.end();
 }
-bool GCodeLine::empty() const
+bool Line::empty() const
 {
 	return m_Words.empty();
 }
 
-void GCodeLine::Comment(const std::string& comment)
+void Line::Comment(const std::string& comment)
 {
 	m_Comment = comment;
 }
-std::string GCodeLine::Comment() const
+std::string Line::Comment() const
 {
 	return m_Comment;
 }
 
-GCodeLine& GCodeLine::operator+=(const GCodeWord& word)
+Line& Line::operator+=(const Word& word)
 {
 	m_Words.push_back(word);
 	return *this;
 }
 
-std::string GCodeLine::debug_str() const
+std::string Line::debug_str() const
 {
 	std::stringstream s;
 
@@ -71,4 +74,6 @@ std::string GCodeLine::debug_str() const
 	s << '\n';
 
 	return s.str();
+}
+
 }

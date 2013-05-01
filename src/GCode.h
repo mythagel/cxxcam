@@ -13,14 +13,17 @@
 #include <string>
 #include <iosfwd>
 
+namespace gcode
+{
+
 /*
  * Helper class owned by Machine that assists with the storage and output of GCode.
  *
  * TODO aligned output for comments within a block.
  */
-class GCode
+class Code
 {
-friend std::ostream& operator<<(std::ostream& os, const GCode& gcode);
+friend std::ostream& operator<<(std::ostream& os, const Code& gcode);
 public:
 	enum Variant
 	{
@@ -33,7 +36,7 @@ public:
 		CRLF
 	};
 
-	typedef std::vector<GCodeBlock>::const_iterator const_iterator;
+	typedef std::vector<Block>::const_iterator const_iterator;
 
 private:
 	Variant m_Variant;
@@ -42,26 +45,28 @@ private:
 	bool m_UpperCase;
 	EndOfLine m_EndOfLine;
 
-	std::vector<GCodeBlock> m_Blocks;
+	std::vector<Block> m_Blocks;
 protected:
 	const char* eol() const;
 public:
-	GCode(const std::string& variant);
+	Code(const std::string& variant);
 
 	const_iterator begin() const;
 	const_iterator end() const;
 	bool empty() const;
 
-	bool AddLine(const GCodeLine& line);
+	bool AddLine(const Line& line);
 	void NewBlock(const std::string& name, const MachineState& initial_state);
-	GCodeBlock& CurrentBlock();
+	Block& CurrentBlock();
 	void EndBlock();
 
 	std::string debug_str() const;
 
-	~GCode() = default;
+	~Code() = default;
 };
 
-std::ostream& operator<<(std::ostream& os, const GCode& gcode);
+std::ostream& operator<<(std::ostream& os, const Code& gcode);
+
+}
 
 #endif /* GCODE_H_ */

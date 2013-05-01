@@ -20,41 +20,41 @@
 class Machine
 {
 private:
-	static const GCodeWord G00;
-	static const GCodeWord G01;
-	static const GCodeWord G17;
-	static const GCodeWord G18;
-	static const GCodeWord G19;
-	static const GCodeWord G17_1;
-	static const GCodeWord G18_1;
-	static const GCodeWord G19_1;
-	static const GCodeWord G20;
-	static const GCodeWord G21;
-	static const GCodeWord G40;
-	static const GCodeWord G49;
-	static const GCodeWord G54;
+	static const gcode::Word G00;
+	static const gcode::Word G01;
+	static const gcode::Word G17;
+	static const gcode::Word G18;
+	static const gcode::Word G19;
+	static const gcode::Word G17_1;
+	static const gcode::Word G18_1;
+	static const gcode::Word G19_1;
+	static const gcode::Word G20;
+	static const gcode::Word G21;
+	static const gcode::Word G40;
+	static const gcode::Word G49;
+	static const gcode::Word G54;
 
-	static const GCodeWord G61;
-	static const GCodeWord G61_1;
-	static const GCodeWord G64;
+	static const gcode::Word G61;
+	static const gcode::Word G61_1;
+	static const gcode::Word G64;
 
-	static const GCodeWord G80;
-	static const GCodeWord G90;
-	static const GCodeWord G90_1;
-	static const GCodeWord G91;
-	static const GCodeWord G91_1;
-	static const GCodeWord G93;
-	static const GCodeWord G94;
-	static const GCodeWord G95;
-	static const GCodeWord G97;
+	static const gcode::Word G80;
+	static const gcode::Word G90;
+	static const gcode::Word G90_1;
+	static const gcode::Word G91;
+	static const gcode::Word G91_1;
+	static const gcode::Word G93;
+	static const gcode::Word G94;
+	static const gcode::Word G95;
+	static const gcode::Word G97;
 
-	static const GCodeWord M01;
-	static const GCodeWord M02;
-	static const GCodeWord M03;
-	static const GCodeWord M04;
-	static const GCodeWord M05;
-	static const GCodeWord M06;
-	static const GCodeWord M09;
+	static const gcode::Word M01;
+	static const gcode::Word M02;
+	static const gcode::Word M03;
+	static const gcode::Word M04;
+	static const gcode::Word M05;
+	static const gcode::Word M06;
+	static const gcode::Word M09;
 public:
 	enum class Type
 	{
@@ -124,7 +124,7 @@ private:
 protected:
 	void Preamble();
 
-	static GCodeWord AxisToWord(const Axis& axis);
+	static gcode::Word AxisToWord(const Axis& axis);
 	static double MillFeedRate(double chip_load, int flutes, double spindle_speed);
 	static double MillSpindleSpeed(double cutting_speed, double cutter_diameter);
 

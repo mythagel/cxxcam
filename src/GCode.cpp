@@ -10,7 +10,10 @@
 #include <algorithm>
 #include <iterator>
 
-const char* GCode::eol() const
+namespace gcode
+{
+
+const char* Code::eol() const
 {
 	switch(m_EndOfLine)
 	{
@@ -24,7 +27,7 @@ const char* GCode::eol() const
 	return "\n";
 }
 
-GCode::GCode(const std::string& variant)
+Code::Code(const std::string& variant)
 {
 	if(variant == "LinuxCNC")
 		m_Variant = variant_LinuxCNC;
@@ -44,20 +47,20 @@ GCode::GCode(const std::string& variant)
 	}
 }
 
-GCode::const_iterator GCode::begin() const
+Code::const_iterator Code::begin() const
 {
 	return m_Blocks.begin();
 }
-GCode::const_iterator GCode::end() const
+Code::const_iterator Code::end() const
 {
 	return m_Blocks.end();
 }
-bool GCode::empty() const
+bool Code::empty() const
 {
 	return m_Blocks.empty();
 }
 
-bool GCode::AddLine(const GCodeLine& line)
+bool Code::AddLine(const Line& line)
 {
 	if(m_Blocks.empty())
 		m_Blocks.emplace_back("", MachineState());
@@ -66,7 +69,7 @@ bool GCode::AddLine(const GCodeLine& line)
 	return true;
 }
 
-void GCode::NewBlock(const std::string& name, const MachineState& initial_state)
+void Code::NewBlock(const std::string& name, const MachineState& initial_state)
 {
 	/*
 	 * If the last block on the stack is empty, rename and reuse it.
@@ -74,13 +77,13 @@ void GCode::NewBlock(const std::string& name, const MachineState& initial_state)
 	if(!m_Blocks.empty() && m_Blocks.back().empty())
 	{
 		if(m_Blocks.back().Name().empty())
-			m_Blocks.back() = GCodeBlock(name, initial_state);
+			m_Blocks.back() = Block(name, initial_state);
 		return;
 	}
 	m_Blocks.emplace_back(name, initial_state);
 }
 
-GCodeBlock& GCode::CurrentBlock()
+Block& Code::CurrentBlock()
 {
 	if(m_Blocks.empty())
 		m_Blocks.emplace_back("", MachineState());
@@ -88,12 +91,12 @@ GCodeBlock& GCode::CurrentBlock()
 	return m_Blocks.back();
 }
 
-void GCode::EndBlock()
+void Code::EndBlock()
 {
 	m_Blocks.emplace_back("", MachineState());
 }
 
-std::string GCode::debug_str() const
+std::string Code::debug_str() const
 {
 	std::ostringstream s;
 	for(auto& block : m_Blocks)
@@ -102,24 +105,35 @@ std::string GCode::debug_str() const
 	return s.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const GCode& gcode)
+std::ostream& operator<<(std::ostream& os, const Code& gcode)
 {
 	auto eol = gcode.eol();
+	std::size_t block_id = 0;
 	for(auto& block : gcode)
 	{
 		if(!block.Name().empty())
 			os << "; " << block.Name() << eol;
 
+		std::size_t line_id = 0;
 		for(auto& line : block)
 		{
-			std::copy(line.begin(), line.end(), std::ostream_iterator<GCodeWord>(os, " "));
+			if(gcode.m_LineNumbers)
+			{
+				// TODO
+			}
 
+			std::copy(line.begin(), line.end(), std::ostream_iterator<Word>(os, " "));
 			if(!line.Comment().empty())
 				os << "; " << line.Comment();
 
 			os << eol;
+			++line_id;
 		}
+
 		os << eol;
+		++block_id;
 	}
 	return os;
+}
+
 }
