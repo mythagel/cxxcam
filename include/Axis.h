@@ -82,7 +82,7 @@ class C : public Axis
 public:
 	C();
 	explicit C(double value);
-	~C();
+	~C() = default;
 };
 
 #endif /* AXIS_H_ */
