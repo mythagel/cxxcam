@@ -8,6 +8,7 @@
 #ifndef GCODEWORD_H_
 #define GCODEWORD_H_
 #include <string>
+#include <iosfwd>
 
 class GCodeWord
 {
@@ -52,10 +53,9 @@ public:
 	void Comment(const std::string& comment);
 	std::string Comment() const;
 
-	// Debug output
-	std::string str() const;
-
 	~GCodeWord() = default;
 };
+
+std::ostream& operator<<(std::ostream& os, const GCodeWord& word);
 
 #endif /* GCODEWORD_H_ */

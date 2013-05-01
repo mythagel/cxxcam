@@ -37,110 +37,106 @@ std::string GCodeWord::Comment() const
 	return m_Comment;
 }
 
-std::string GCodeWord::str() const
+std::ostream& operator<<(std::ostream& os, const GCodeWord& word)
 {
-	std::stringstream s;
-
-	switch(m_Word)
+	switch(word)
 	{
-		case A:
-			s << 'A';
-			s << m_Value;
+		case GCodeWord::A:
+			os << 'A';
+			os << word.Value();
 			break;
-		case B:
-			s << 'B';
-			s << m_Value;
+		case GCodeWord::B:
+			os << 'B';
+			os << word.Value();
 			break;
-		case C:
-			s << 'C';
-			s << m_Value;
+		case GCodeWord::C:
+			os << 'C';
+			os << word.Value();
 			break;
-		case D:
-			s << 'D';
-			s << m_Value;
+		case GCodeWord::D:
+			os << 'D';
+			os << word.Value();
 			break;
-		case F:
-			s << 'F';
-			s << m_Value;
+		case GCodeWord::F:
+			os << 'F';
+			os << word.Value();
 			break;
-		case G:
-			s << 'G';
-			s << m_Value;
+		case GCodeWord::G:
+			os << 'G';
+			os << word.Value();
 			break;
-		case H:
-			s << 'H';
-			s << m_Value;
+		case GCodeWord::H:
+			os << 'H';
+			os << word.Value();
 			break;
-		case I:
-			s << 'I';
-			s << m_Value;
+		case GCodeWord::I:
+			os << 'I';
+			os << word.Value();
 			break;
-		case J:
-			s << 'J';
-			s << m_Value;
+		case GCodeWord::J:
+			os << 'J';
+			os << word.Value();
 			break;
-		case K:
-			s << 'K';
-			s << m_Value;
+		case GCodeWord::K:
+			os << 'K';
+			os << word.Value();
 			break;
-		case L:
-			s << 'L';
-			s << m_Value;
+		case GCodeWord::L:
+			os << 'L';
+			os << word.Value();
 			break;
-		case M:
-			s << 'M';
-			s << m_Value;
+		case GCodeWord::M:
+			os << 'M';
+			os << word.Value();
 			break;
-		case P:
-			s << 'P';
-			s << m_Value;
+		case GCodeWord::P:
+			os << 'P';
+			os << word.Value();
 			break;
-		case Q:
-			s << 'Q';
-			s << m_Value;
+		case GCodeWord::Q:
+			os << 'Q';
+			os << word.Value();
 			break;
-		case R:
-			s << 'R';
-			s << m_Value;
+		case GCodeWord::R:
+			os << 'R';
+			os << word.Value();
 			break;
-		case S:
-			s << 'S';
-			s << m_Value;
+		case GCodeWord::S:
+			os << 'S';
+			os << word.Value();
 			break;
-		case T:
-			s << 'T';
-			s << m_Value;
+		case GCodeWord::T:
+			os << 'T';
+			os << word.Value();
 			break;
-		case U:
-			s << 'U';
-			s << m_Value;
+		case GCodeWord::U:
+			os << 'U';
+			os << word.Value();
 			break;
-		case V:
-			s << 'V';
-			s << m_Value;
+		case GCodeWord::V:
+			os << 'V';
+			os << word.Value();
 			break;
-		case W:
-			s << 'W';
-			s << m_Value;
+		case GCodeWord::W:
+			os << 'W';
+			os << word.Value();
 			break;
-		case X:
-			s << 'X';
-			s << m_Value;
+		case GCodeWord::X:
+			os << 'X';
+			os << word.Value();
 			break;
-		case Y:
-			s << 'Y';
-			s << m_Value;
+		case GCodeWord::Y:
+			os << 'Y';
+			os << word.Value();
 			break;
-		case Z:
-			s << 'Z';
-			s << m_Value;
+		case GCodeWord::Z:
+			os << 'Z';
+			os << word.Value();
 			break;
 	}
 
-	if(!Comment().empty())
-	{
-		s << " (" << Comment() << ")";
-	}
+	if(!word.Comment().empty())
+		os << " (" << word.Comment() << ")";
 
-	return s.str();
+	return os;
 }

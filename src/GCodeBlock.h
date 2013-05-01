@@ -35,13 +35,12 @@ public:
 	const_iterator end() const;
 	bool empty() const;
 
-	GCodeBlock& operator+=(const GCodeLine& line);
+	void append(const GCodeLine& line);
+	void append(const GCodeWord& word);
 
-	GCodeBlock& operator+=(const GCodeWord& word);
 	void NewLine();
 
-	// Debug output
-	std::string str() const;
+	std::string debug_str() const;
 
 	~GCodeBlock() = default;
 };

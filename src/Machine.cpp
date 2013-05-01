@@ -1082,6 +1082,6 @@ Machine::~Machine()
 {
 	m_Private->m_GCode.AddLine(GCodeLine(M02, "End of program."));
 
-	std::cout << m_Private->m_GCode.str();
+	std::cout << m_Private->m_GCode;
 }
 

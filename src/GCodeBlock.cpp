@@ -35,43 +35,35 @@ bool GCodeBlock::empty() const
 	return m_Lines.empty();
 }
 
-GCodeBlock& GCodeBlock::operator+=(const GCodeLine& line)
+void GCodeBlock::append(const GCodeLine& line)
 {
 	m_Lines.push_back(line);
-	return *this;
 }
 
-GCodeBlock& GCodeBlock::operator+=(const GCodeWord& word)
+void GCodeBlock::append(const GCodeWord& word)
 {
 	if(m_Lines.empty())
 		m_Lines.emplace_back(word);
 	else
 		m_Lines.back() += word;
-	return *this;
 }
 void GCodeBlock::NewLine()
 {
 	m_Lines.emplace_back();
 }
 
-std::string GCodeBlock::str() const
+std::string GCodeBlock::debug_str() const
 {
-	if(m_Lines.empty())
+	if(empty())
 		return {};
 
-	std::stringstream s;
+	std::ostringstream s;
 
 	if(!m_Name.empty())
-	{
-		GCodeLine c;
-		c.Comment(m_Name);
-		s << c.str();
-	}
+		s << GCodeLine(m_Name).debug_str();
 
 	for(auto& line : m_Lines)
-	{
-		s << line.str();
-	}
+		s << line.debug_str();
 
 	return s.str();
 }

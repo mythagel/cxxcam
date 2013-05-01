@@ -49,17 +49,14 @@ GCodeLine& GCodeLine::operator+=(const GCodeWord& word)
 	return *this;
 }
 
-std::string GCodeLine::str() const
+std::string GCodeLine::debug_str() const
 {
 	std::stringstream s;
 
-	GCodeLine::const_iterator word = begin();
+	auto word = begin();
 	while(word != end())
 	{
-		s << word->str();
-
-		++word;
-
+		s << *word++;
 		if(word != end())
 			s << " ";
 	}

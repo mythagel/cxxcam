@@ -6,8 +6,9 @@
  */
 
 #include "GCode.h"
-#include <iostream>
 #include <sstream>
+#include <algorithm>
+#include <iterator>
 
 const char* GCode::eol() const
 {
@@ -43,12 +44,25 @@ GCode::GCode(const std::string& variant)
 	}
 }
 
+GCode::const_iterator GCode::begin() const
+{
+	return m_Blocks.begin();
+}
+GCode::const_iterator GCode::end() const
+{
+	return m_Blocks.end();
+}
+bool GCode::empty() const
+{
+	return m_Blocks.empty();
+}
+
 bool GCode::AddLine(const GCodeLine& line)
 {
 	if(m_Blocks.empty())
 		m_Blocks.emplace_back("", MachineState());
 
-	m_Blocks.back() += line;
+	m_Blocks.back().append(line);
 	return true;
 }
 
@@ -79,15 +93,33 @@ void GCode::EndBlock()
 	m_Blocks.emplace_back("", MachineState());
 }
 
-std::string GCode::str() const
+std::string GCode::debug_str() const
 {
 	std::ostringstream s;
-
 	for(auto& block : m_Blocks)
-	{
-		if(!block.empty())
-			s << block.str() << eol();
-	}
+		s << block.debug_str() << '\n';
 
 	return s.str();
+}
+
+std::ostream& operator<<(std::ostream& os, const GCode& gcode)
+{
+	auto eol = gcode.eol();
+	for(auto& block : gcode)
+	{
+		if(!block.Name().empty())
+			os << "; " << block.Name() << eol;
+
+		for(auto& line : block)
+		{
+			std::copy(line.begin(), line.end(), std::ostream_iterator<GCodeWord>(os, " "));
+
+			if(!line.Comment().empty())
+				os << "; " << line.Comment();
+
+			os << eol;
+		}
+		os << eol;
+	}
+	return os;
 }

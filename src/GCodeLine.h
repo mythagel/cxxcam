@@ -33,8 +33,7 @@ public:
 
 	GCodeLine& operator+=(const GCodeWord& word);
 
-	// Debug output
-	std::string str() const;
+	std::string debug_str() const;
 
 	~GCodeLine() = default;
 };

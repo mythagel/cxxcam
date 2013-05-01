@@ -11,6 +11,7 @@
 #include "GCodeBlock.h"
 #include <vector>
 #include <string>
+#include <iosfwd>
 
 /*
  * Helper class owned by Machine that assists with the storage and output of GCode.
@@ -19,6 +20,7 @@
  */
 class GCode
 {
+friend std::ostream& operator<<(std::ostream& os, const GCode& gcode);
 public:
 	enum Variant
 	{
@@ -30,6 +32,9 @@ public:
 		LF,
 		CRLF
 	};
+
+	typedef std::vector<GCodeBlock>::const_iterator const_iterator;
+
 private:
 	Variant m_Variant;
 	bool m_LineNumbers;
@@ -43,15 +48,20 @@ protected:
 public:
 	GCode(const std::string& variant);
 
+	const_iterator begin() const;
+	const_iterator end() const;
+	bool empty() const;
+
 	bool AddLine(const GCodeLine& line);
 	void NewBlock(const std::string& name, const MachineState& initial_state);
 	GCodeBlock& CurrentBlock();
 	void EndBlock();
 
-	// Debug output
-	std::string str() const;
+	std::string debug_str() const;
 
 	~GCode() = default;
 };
+
+std::ostream& operator<<(std::ostream& os, const GCode& gcode);
 
 #endif /* GCODE_H_ */
