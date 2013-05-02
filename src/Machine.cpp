@@ -442,28 +442,6 @@ void Machine::EndBlock(int restore)
 	auto& m_State = m_Private->m_State;
 	auto& m_GCode = m_Private->m_GCode;
 
-//	if(restore == block_RestoreState)
-//	{
-//		m_GCode.AddLine(Line("Restore State"));
-//
-//		GCodeBlock& block = m_GCode.CurrentBlock();
-//		const MachineState& saved_state = block.State();
-//
-//		SetUnits(saved_state.m_Units);
-//		SetPlane(saved_state.m_Plane);
-//		SetMotion(saved_state.m_Motion);
-//		SetArcMotion(saved_state.m_ArcMotion);
-//		SetFeedRateMode(saved_state.m_FeedRateMode);
-//		SetFeedRate(saved_state.m_FeedRate);
-//		StartSpindle(saved_state.m_SpindleSpeed, saved_state.m_SpindleRotation);
-//		ToolChange(saved_state.m_CurrentTool);
-//
-//		if(m_State.m_Current != saved_state.m_Current)
-//		{
-//			// TODO determine how to safely rapid to the previous position.
-//		}
-//	}
-//	else if(restore)
 	if(restore)
 	{
 		m_GCode.AddLine(Line("Restore State"));
