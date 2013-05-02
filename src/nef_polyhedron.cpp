@@ -220,7 +220,9 @@ nef_polyhedron_t nef_polyhedron_t::glide(const polyline_t& path) const
 	polyline poly = { point_range(begin(point_line), end(point_line)) };
 	Nef_polyhedron_3 N1(poly.begin(), poly.end(), Nef_polyhedron_3::Polylines_tag());
 
-	auto glided_priv = std::make_shared<private_t>(CGAL::minkowski_sum_3(priv->nef, N1));
+	// Need to make a copy because minkowski_sum_3 can modify its arguments
+	auto nef = priv->nef;
+	auto glided_priv = std::make_shared<private_t>(CGAL::minkowski_sum_3(nef, N1));
 
 	if (glided_priv->nef.is_simple())
 		return { glided_priv };
