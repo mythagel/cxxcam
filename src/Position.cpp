@@ -9,6 +9,11 @@
 #include <sstream>
 #include <tuple>
 
+auto to_tuple(const Position& pos) -> decltype(std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W))
+{
+	return std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W);
+}
+
 Position::Position()
  : X(),
    Y(),
@@ -54,9 +59,9 @@ std::string Position::str() const
 
 bool Position::operator==(const Position& pos) const
 {
-	return std::tie(X, Y, Z, A, B, C, U, V, W) == std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W);
+	return to_tuple(*this) == to_tuple(pos);
 }
 bool Position::operator!=(const Position& pos) const
 {
-	return std::tie(X, Y, Z, A, B, C, U, V, W) != std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W);
+	return to_tuple(*this) != to_tuple(pos);
 }

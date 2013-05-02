@@ -6,6 +6,12 @@
  */
 
 #include "MachineState.h"
+#include <tuple>
+
+auto to_tuple(const MachineState& state) -> decltype(std::tie(state.m_Units, state.m_Plane, state.m_Motion, state.m_ArcMotion, state.m_FeedRateMode, state.m_SpindleRotation, state.m_FeedRate, state.m_SpindleSpeed, state.m_CurrentTool, state.m_Current))
+{
+	return std::tie(state.m_Units, state.m_Plane, state.m_Motion, state.m_ArcMotion, state.m_FeedRateMode, state.m_SpindleRotation, state.m_FeedRate, state.m_SpindleSpeed, state.m_CurrentTool, state.m_Current);
+}
 
 MachineState::MachineState()
  : m_Units(Machine::Units::Metric), m_Plane(Machine::Plane::XY), m_Motion(Machine::Motion::Absolute), m_ArcMotion(Machine::Motion::Incremental), m_FeedRateMode(Machine::FeedRateMode::UnitsPerMinute),
@@ -16,29 +22,9 @@ MachineState::MachineState()
 
 bool MachineState::operator==(const MachineState& state) const
 {
-	return (m_Units == state.m_Units) &&
-			(m_Plane == state.m_Plane) &&
-			(m_Motion == state.m_Motion) &&
-			(m_ArcMotion == state.m_ArcMotion) &&
-			(m_FeedRateMode == state.m_FeedRateMode) &&
-			(m_SpindleRotation == state.m_SpindleRotation) &&
-
-			(m_FeedRate == state.m_FeedRate) &&
-			(m_SpindleSpeed == state.m_SpindleSpeed) &&
-			(m_CurrentTool == state.m_CurrentTool) &&
-			(m_Current == state.m_Current);
+	return to_tuple(*this) == to_tuple(state);
 }
 bool MachineState::operator!=(const MachineState& state) const
 {
-	return (m_Units != state.m_Units) ||
-			(m_Plane != state.m_Plane) ||
-			(m_Motion != state.m_Motion) ||
-			(m_ArcMotion != state.m_ArcMotion) ||
-			(m_FeedRateMode != state.m_FeedRateMode) ||
-			(m_SpindleRotation != state.m_SpindleRotation) ||
-
-			(m_FeedRate != state.m_FeedRate) ||
-			(m_SpindleSpeed != state.m_SpindleSpeed) ||
-			(m_CurrentTool != state.m_CurrentTool) ||
-			(m_Current != state.m_Current);
+	return to_tuple(*this) != to_tuple(state);
 }
