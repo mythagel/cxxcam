@@ -61,8 +61,6 @@ public:
 	void EndBlock();
 
 	std::string debug_str() const;
-
-	~Code() = default;
 };
 
 std::ostream& operator<<(std::ostream& os, const Code& gcode);

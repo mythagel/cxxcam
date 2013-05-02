@@ -37,8 +37,6 @@ public:
 	Line& operator+=(const Word& word);
 
 	std::string debug_str() const;
-
-	~Line() = default;
 };
 
 }

@@ -11,7 +11,6 @@
 
 struct Position
 {
-public:
 	double X;
 	double Y;
 	double Z;
@@ -23,15 +22,13 @@ public:
 	double U;
 	double V;
 	double W;
-public:
+
 	Position();
 
 	std::string str() const;
 
 	bool operator==(const Position& pos) const;
 	bool operator!=(const Position& pos) const;
-
-	~Position() = default;
 };
 
 #endif /* POSITION_H_ */

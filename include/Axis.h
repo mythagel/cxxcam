@@ -33,8 +33,6 @@ public:
 
 	operator Type() const;
 	operator double() const;
-
-	~Axis() = default;
 };
 
 class X : public Axis
@@ -42,7 +40,6 @@ class X : public Axis
 public:
 	X();
 	explicit X(double value);
-	~X() = default;
 };
 
 class Y : public Axis
@@ -50,7 +47,6 @@ class Y : public Axis
 public:
 	Y();
 	explicit Y(double value);
-	~Y() = default;
 };
 
 class Z : public Axis
@@ -58,7 +54,6 @@ class Z : public Axis
 public:
 	Z();
 	explicit Z(double value);
-	~Z() = default;
 };
 
 class A : public Axis
@@ -66,7 +61,6 @@ class A : public Axis
 public:
 	A();
 	explicit A(double value);
-	~A() = default;
 };
 
 class B : public Axis
@@ -74,7 +68,6 @@ class B : public Axis
 public:
 	B();
 	explicit B(double value);
-	~B() = default;
 };
 
 class C : public Axis
@@ -82,7 +75,6 @@ class C : public Axis
 public:
 	C();
 	explicit C(double value);
-	~C() = default;
 };
 
 #endif /* AXIS_H_ */

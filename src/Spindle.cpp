@@ -115,13 +115,12 @@ std::string Spindle::str() const
 {
 	std::stringstream s;
 
-	std::set<Entry>::const_iterator it = m_Entries.begin();
-	while(it != m_Entries.end())
+	for(auto it = m_Entries.begin(); it != m_Entries.end(); )
 	{
 		switch(it->m_Type)
 		{
 			case Entry::type_Range:
-				s << it->m_RangeStart << " - " << it->m_RangeEnd;
+				s << it->m_RangeStart << "-" << it->m_RangeEnd;
 				break;
 			case Entry::type_Discrete:
 				s << it->m_Discrete;

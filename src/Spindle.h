@@ -44,8 +44,6 @@ private:
 
 	std::set<Entry> m_Entries;
 public:
-	Spindle() = default;
-
 	/*
 	 * Given a requested speed, find the closest real machine speed possible.
 	 */
@@ -55,8 +53,6 @@ public:
 	void AddDiscrete(unsigned long discrete_value);
 
 	std::string str() const;
-
-	~Spindle() = default;
 };
 
 #endif /* SPINDLE_H_ */

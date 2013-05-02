@@ -7,6 +7,7 @@
 
 #include "Position.h"
 #include <sstream>
+#include <tuple>
 
 Position::Position()
  : X(),
@@ -53,29 +54,9 @@ std::string Position::str() const
 
 bool Position::operator==(const Position& pos) const
 {
-	return 	(X == pos.X) &&
-			(Y == pos.Y) &&
-			(Z == pos.Z) &&
-
-			(A == pos.A) &&
-			(B == pos.B) &&
-			(C == pos.C) &&
-
-			(U == pos.U) &&
-			(V == pos.V) &&
-			(W == pos.W);
+	return std::tie(X, Y, Z, A, B, C, U, V, W) == std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W);
 }
 bool Position::operator!=(const Position& pos) const
 {
-	return 	(X != pos.X) ||
-			(Y != pos.Y) ||
-			(Z != pos.Z) ||
-
-			(A != pos.A) ||
-			(B != pos.B) ||
-			(C != pos.C) ||
-
-			(U != pos.U) ||
-			(V != pos.V) ||
-			(W != pos.W);
+	return std::tie(X, Y, Z, A, B, C, U, V, W) != std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W);
 }

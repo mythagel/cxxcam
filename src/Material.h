@@ -41,8 +41,6 @@ public:
 
 	std::string Name() const;
 	double Hardness() const;
-
-	~Material_t() = default;
 };
 
 #endif /* MATERIAL_H_ */

@@ -30,8 +30,6 @@ struct MachineState
 
 	bool operator==(const MachineState& state) const;
 	bool operator!=(const MachineState& state) const;
-
-	~MachineState() = default;
 };
 
 #endif /* MACHINESTATE_H_ */

@@ -55,8 +55,6 @@ public:
 
 	void Comment(const std::string& comment);
 	std::string Comment() const;
-
-	~Word() = default;
 };
 
 std::string to_string(Word::Code code);

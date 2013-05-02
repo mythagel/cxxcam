@@ -52,8 +52,6 @@ public:
 
 	std::string Name() const;
 	Type ToolType() const;
-
-	~Tool() = default;
 };
 
 #endif /* TOOL_H_ */

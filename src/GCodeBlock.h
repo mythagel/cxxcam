@@ -45,8 +45,6 @@ public:
 	void NewLine();
 
 	std::string debug_str() const;
-
-	~Block() = default;
 };
 
 }

@@ -38,14 +38,10 @@ public:
 		OFF
 	};
 public:
-	Stock() = default;
-
 	static Stock Rectangle(double length, double width, double height);
 	static Stock Cylinder(double radius, double height);
 
 	bool Write(const std::string& filename, Format format = Format::NEF) const;
-
-	~Stock() = default;
 };
 
 #endif /* STOCK_H_ */

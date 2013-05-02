@@ -62,8 +62,6 @@ public:
 
 	nef_polyhedron_t glide(const polyline_t& path) const;
 	double volume() const;
-
-	~nef_polyhedron_t() = default;
 };
 
 std::ostream& operator<<(std::ostream&, const nef_polyhedron_t&);
