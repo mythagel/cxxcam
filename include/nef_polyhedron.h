@@ -28,6 +28,7 @@ struct polyline_t
  */
 class nef_polyhedron_t
 {
+friend nef_polyhedron_t make_block(double x0, double y0, double z0, double x1, double y1, double z1);
 private:
 	struct private_t;
 	std::shared_ptr<private_t> priv;
@@ -66,5 +67,7 @@ public:
 
 std::ostream& operator<<(std::ostream&, const nef_polyhedron_t&);
 std::istream& operator>>(std::istream&, nef_polyhedron_t&);
+
+nef_polyhedron_t make_block(double x0, double y0, double z0, double x1, double y1, double z1);
 
 #endif /* NEF_POLYHEDRON_H_ */
