@@ -65,7 +65,7 @@ public:
 	enum BlockRestore
 	{
 		block_PreserveState = 0,
-		block_RestoreState = -1,
+		block_RestoreState = ~0,
 		block_RestoreUnits = 1 << 0,
 		block_RestorePlane = 1 << 1,
 		block_RestoreMotion = 1 << 2,
