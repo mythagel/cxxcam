@@ -12,6 +12,7 @@
 #include <cassert>
 
 #include <CGAL/Nef_polyhedron_3.h>
+#include <CGAL/Polyhedron_3.h>
 #include <CGAL/IO/Nef_polyhedron_iostream_3.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
@@ -39,7 +40,8 @@
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel Exact_Kernel;
 typedef CGAL::Nef_polyhedron_3<Exact_Kernel> Nef_polyhedron_3;
-typedef CGAL::Mesh_polyhedron_3<Exact_Kernel>::type Polyhedron_3;
+typedef CGAL::Mesh_polyhedron_3<Exact_Kernel>::type Exact_Mesh_Polyhedron_3;
+typedef CGAL::Polyhedron_3<Exact_Kernel> Polyhedron_3;
 typedef Exact_Kernel::Point_3 Point_3;
 
 // Meshing
@@ -235,7 +237,7 @@ double nef_polyhedron_t::volume() const
 {
 	Mesh_polyhedron_3 PK;
 	{
-		Polyhedron_3 EP;
+		Exact_Mesh_Polyhedron_3 EP;
 		priv->nef.convert_to_polyhedron(EP);
 		copy_to(EP, PK);
 	}
@@ -356,9 +358,7 @@ nef_polyhedron_t make_block(double x0, double y0, double z0, double x1, double y
 	CGAL_assertion(poly.is_closed());
 	CGAL_assertion(poly.is_valid());
 
-	// TODO investigate poly -> nef conversion failing - using same kernel.
-//	auto priv = std::make_shared<nef_polyhedron_t::private_t>( Nef_polyhedron_3(poly) );
-//	return { priv };
-	return {};
+	auto priv = std::make_shared<nef_polyhedron_t::private_t>( Nef_polyhedron_3(poly) );
+	return { priv };
 }
 
