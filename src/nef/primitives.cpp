@@ -1,9 +1,8 @@
 /*
- * nef_primitives.cpp
+ * primitives.cpp
  *
  *  Created on: 06/05/2013
  *      Author: nicholas
- * Aieeeeeeeee: g++ peaks as 3.8gb ram building this file.
  */
 
 #include "primitives.h"

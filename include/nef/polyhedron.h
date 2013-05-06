@@ -1,5 +1,5 @@
 /*
- * nef_polyhedron.h
+ * polyhedron.h
  *
  *  Created on: 04/02/2013
  *      Author: nicholas
@@ -9,21 +9,11 @@
 #define NEF_POLYHEDRON_H_
 #include <iosfwd>
 #include <memory>
-#include <vector>
 
 namespace nef
 {
 
-struct polyline_t
-{
-	struct point
-	{
-		double x;
-		double y;
-		double z;
-	};
-	std::vector<point> line;
-};
+struct polyline_t;
 
 /*
  * Wrapper class for CGAL::Nef_polyhedron_3 to avoid long build times.
@@ -31,7 +21,11 @@ struct polyline_t
  */
 class polyhedron_t
 {
+
 friend polyhedron_t make_block(double x0, double y0, double z0, double x1, double y1, double z1);
+friend polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path);
+friend double volume(const polyhedron_t& polyhedron);
+
 private:
 	struct private_t;
 	std::shared_ptr<private_t> priv;
@@ -63,9 +57,6 @@ public:
 	bool operator>(const polyhedron_t& poly) const;
 	bool operator<=(const polyhedron_t& poly) const;
 	bool operator>=(const polyhedron_t& poly) const;
-
-	polyhedron_t glide(const polyline_t& path) const;
-	double volume() const;
 };
 
 std::ostream& operator<<(std::ostream&, const polyhedron_t&);

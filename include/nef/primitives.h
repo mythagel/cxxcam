@@ -1,5 +1,5 @@
 /*
- * nef_primitives.h
+ * primitives.h
  *
  *  Created on: 06/05/2013
  *      Author: nicholas

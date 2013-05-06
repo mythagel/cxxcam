@@ -9,6 +9,14 @@
 #define NEF_COPY_TO_H_
 #include "cgal.h"
 
+// Copy between kernels
+// Would like to use this but it doesn't seem to build.
+//#include <CGAL/Polyhedron_copy_3.h>
+// soo....
+#include <CGAL/Modifier_base.h>
+#include <CGAL/Inverse_index.h>
+#include <CGAL/Polyhedron_incremental_builder_3.h>
+
 template <class Polyhedron_input, class Polyhedron_output>
 struct Copy_polyhedron_to
  : public CGAL::Modifier_base<typename Polyhedron_output::HalfedgeDS>
