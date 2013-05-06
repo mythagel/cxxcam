@@ -25,7 +25,7 @@ public:
 private:
 	std::string m_Name;
 	Type m_Type;
-	nef_polyhedron_t m_Nef;
+	nef::polyhedron_t m_Nef;
 
 	struct Lathe
 	{

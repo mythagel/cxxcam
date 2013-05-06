@@ -30,7 +30,7 @@ class Stock
 {
 private:
 	std::shared_ptr<Material_t> Material;
-	nef_polyhedron_t m_Nef;
+	nef::polyhedron_t m_Nef;
 public:
 	enum class Format
 	{
