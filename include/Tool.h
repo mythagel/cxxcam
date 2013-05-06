@@ -12,6 +12,7 @@
 
 /*
  * Representation of the cutting tool used to remove material from the Stock.
+ * TODO create nef object for the tool object.
  */
 class Tool
 {
