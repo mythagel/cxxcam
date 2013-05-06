@@ -26,8 +26,6 @@
 #include <CGAL/minkowski_sum_3.h>
 
 // Meshing
-typedef CGAL::Mesh_polyhedron_3<Exact_Kernel>::type Exact_Mesh_Polyhedron_3;
-
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Inexact_Kernel;
 typedef CGAL::Mesh_polyhedron_3<Inexact_Kernel>::type Mesh_polyhedron_3;
 
@@ -66,6 +64,8 @@ double volume(const polyhedron_t& polyhedron)
 {
 	Mesh_polyhedron_3 PK;
 	{
+		typedef CGAL::Mesh_polyhedron_3<Exact_Kernel>::type Exact_Mesh_Polyhedron_3;
+	
 		Exact_Mesh_Polyhedron_3 EP;
 		polyhedron.priv->nef.convert_to_polyhedron(EP);
 		copy_to(EP, PK);
