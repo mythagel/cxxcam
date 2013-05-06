@@ -10,7 +10,7 @@
 #include <string>
 #include <memory>
 #include "Material.h"
-#include "nef_polyhedron.h"
+#include "nef/nef_polyhedron.h"
 
 /*
  * Stores a description and model of the stock from which material will be removed.
