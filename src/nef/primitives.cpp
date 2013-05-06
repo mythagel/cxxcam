@@ -8,6 +8,7 @@
 #include "primitives.h"
 #include "private.h"
 #include "cgal.h"
+#include <initializer_list>
 
 namespace nef
 {
@@ -35,7 +36,7 @@ public:
 		{
 			builder.add_vertex(point);
 		};
-		auto add_facet = [&builder](const std::vector<int>& vertices)
+		auto add_facet = [&builder](std::initializer_list<int> vertices)
 		{
 			builder.begin_facet();
 			for(auto vertex : vertices)
