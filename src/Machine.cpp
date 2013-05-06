@@ -8,6 +8,8 @@
 #include "Machine.h"
 #include "MachineState.h"
 #include "GCode.h"
+#include "Axis.h"
+#include "Tool.h"
 #include "ToolTable.h"
 #include "Stock.h"
 #include "Spindle.h"
@@ -372,6 +374,11 @@ void Machine::AddSpindleDiscrete(unsigned long discrete_value)
 {
 	m_Private->m_Spindle.AddDiscrete(discrete_value);
 }
+void Machine::SetStock(const Stock& stock)
+{
+	m_Private->m_Stock = stock;
+}
+
 void Machine::SetTool(int id)
 {
 	auto& m_GCode = m_Private->m_GCode;

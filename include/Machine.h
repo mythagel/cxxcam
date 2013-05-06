@@ -11,8 +11,10 @@
 #include <memory>
 #include <vector>
 #include "GCodeWord.h"
-#include "Axis.h"
-#include "Tool.h"
+
+class Axis;
+class Tool;
+class Stock;
 
 /*
  * The CNC machine itself.
@@ -151,6 +153,8 @@ public:
 
 	void AddSpindleRange(unsigned long range_start, unsigned long range_end);
 	void AddSpindleDiscrete(unsigned long discrete_value);
+
+	void SetStock(const Stock& stock);
 
 	// CNC Setup
 
