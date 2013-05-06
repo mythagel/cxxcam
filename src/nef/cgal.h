@@ -18,5 +18,4 @@ typedef CGAL::Nef_polyhedron_3<Exact_Kernel> Nef_polyhedron_3;
 typedef CGAL::Polyhedron_3<Exact_Kernel> Polyhedron_3;
 typedef Exact_Kernel::Point_3 Point_3;
 
-
 #endif /* NEF_CGAL_H_ */
