@@ -6,7 +6,7 @@
  * Aieeeeeeeee: g++ peaks as 3.8gb ram building this file.
  */
 
-#include "nef_primitives.h"
+#include "primitives.h"
 #include "private.h"
 #include "cgal.h"
 

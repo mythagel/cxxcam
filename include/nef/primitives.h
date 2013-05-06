@@ -7,7 +7,7 @@
 
 #ifndef NEF_PRIMITIVES_H_
 #define NEF_PRIMITIVES_H_
-#include "nef_polyhedron.h"
+#include "polyhedron.h"
 
 namespace nef
 {

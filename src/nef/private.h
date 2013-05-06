@@ -7,7 +7,7 @@
 
 #ifndef NEF_POLYHEDRON_PRIVATE_H_
 #define NEF_POLYHEDRON_PRIVATE_H_
-#include "nef_polyhedron.h"
+#include "polyhedron.h"
 #include "cgal.h"
 
 namespace nef

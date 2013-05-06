@@ -6,7 +6,7 @@
  * Aieeeeeeeee: g++ peaks as 3.8gb ram building this file.
  */
 
-#include "nef_polyhedron.h"
+#include "polyhedron.h"
 #include "private.h"
 #include <istream>
 #include <ostream>

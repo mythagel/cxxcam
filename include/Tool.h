@@ -8,7 +8,7 @@
 #ifndef TOOL_H_
 #define TOOL_H_
 #include <string>
-#include "nef/nef_polyhedron.h"
+#include "nef/polyhedron.h"
 
 /*
  * Representation of the cutting tool used to remove material from the Stock.
