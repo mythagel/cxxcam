@@ -25,6 +25,10 @@ struct polyline_t
 /*
  * Wrapper class for CGAL::Nef_polyhedron_3 to avoid long build times.
  * Intention is to add higher level interfaces (i.e. volume calculation)
+ * TODO
+ * Move nef into its own library.
+ * make functions to build new primitive shapes and have higher level csg ops
+ * built on the nef base.
  */
 class nef_polyhedron_t
 {
