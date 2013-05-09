@@ -33,6 +33,7 @@ namespace nef
 polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t slices)
 {
 	using namespace dolfin;
+	
 	Polyhedron_3 P;
 	make_sphere(Sphere(Point(x, y, z), r, slices), P);
 
@@ -43,8 +44,10 @@ polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t sli
 polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2)
 {
 	using namespace dolfin;
+	
 	Polyhedron_3 P;
 	make_box(Box(x1, y1, z1, x2, y2, z2), P);
+	
 	auto priv = std::make_shared<polyhedron_t::private_t>( P );
 	return { priv };
 }
@@ -52,8 +55,10 @@ polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, dou
 polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices)
 {
 	using namespace dolfin;
+	
 	Polyhedron_3 P;
 	make_cone(Cone(Point(x1, y1, z1), Point(x2, y2, z2), top_radius, bottom_radius, slices), P);
+	
 	auto priv = std::make_shared<polyhedron_t::private_t>( P );
 	return { priv };
 }

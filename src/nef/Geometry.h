@@ -44,15 +44,13 @@ inline void add_facet(CGAL::Polyhedron_incremental_builder_3<HalfedgeDS>& builde
 		builder.add_vertex_to_facet(vertex);
 	builder.end_facet();
 }
-//-----------------------------------------------------------------------------
+
 template<typename HalfedgeDS, typename Point_3>
 inline void add_vertex(CGAL::Polyhedron_incremental_builder_3<HalfedgeDS>& builder, const Point_3& point)
 {
 	builder.add_vertex(point);
 }
-//-----------------------------------------------------------------------------
-// Sphere
-//-----------------------------------------------------------------------------
+
 template<typename Polyhedron_3>
 class Build_sphere : public CGAL::Modifier_base<typename Polyhedron_3::HalfedgeDS>
 {
@@ -199,14 +197,13 @@ public:
 		const Point axis = (cone.top - cone.bottom) / (cone.top - cone.bottom).norm();
 		Point initial = generate_orthogonal(axis);
 
-		CGAL::Polyhedron_incremental_builder_3<typename Polyhedron_3::HalfedgeDS> builder(hds, true);
-
 		const int num_sides = cone.slices;
 		const bool top_degenerate = near(cone.top_radius, 0.0);
 		const bool bottom_degenerate = near(cone.bottom_radius, 0.0);
 
 		const int num_vertices = (top_degenerate || bottom_degenerate) ? num_sides + 2 : num_sides * 2 + 2;
 
+		CGAL::Polyhedron_incremental_builder_3<typename Polyhedron_3::HalfedgeDS> builder(hds, true);
 		builder.begin_surface(num_vertices, num_sides * 4);
 
 		const double delta_theta = 2.0 * PI / num_sides;
