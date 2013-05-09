@@ -25,11 +25,16 @@
 #include "Tool.h"
 
 Tool::Tool()
- : m_Name("Invalid"), m_Type(Type::Mill)
+ : m_Name("Invalid")
 {
 }
-Tool::Tool(const std::string& name, Type type)
- : m_Name(name), m_Type(type)
+
+Tool::Tool(const std::string& name, const Mill& mill)
+ : m_Name(name), m_Type(Type::Mill), m_Mill(mill)
+{
+}
+Tool::Tool(const std::string& name, const Lathe& lathe)
+ : m_Name(name), m_Type(Type::Lathe), m_Lathe(lathe)
 {
 }
 

@@ -39,18 +39,18 @@ public:
 		Mill,
 		Lathe
 	};
-private:
-	std::string m_Name;
-	Type m_Type;
-	nef::polyhedron_t m_Nef;
-
-	struct Lathe
-	{
-
-	};
-
+	
 	struct Mill
 	{
+		enum class Type
+		{
+			End,
+			Ball,
+			Radius,
+			Face,
+			FlyCutter
+		} type;
+	
 		// Whether the tool is suitable for plunge cuts.
 		bool center_cutting;
 
@@ -64,9 +64,25 @@ private:
 
 		double length;
 	};
+	
+	struct Lathe
+	{
+
+	};
+private:
+	std::string m_Name;
+	Type m_Type;
+	union
+	{
+		Mill m_Mill;
+		Lathe m_Lathe;
+	};
+	nef::polyhedron_t m_Nef;
 public:
 	Tool();
-	Tool(const std::string& name, Type type);
+	
+	Tool(const std::string& name, const Mill& mill);
+	Tool(const std::string& name, const Lathe& lathe);
 
 	std::string Name() const;
 	Type ToolType() const;
