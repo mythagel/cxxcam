@@ -37,12 +37,8 @@ struct Sphere
 	/// Create sphere at x = (x0, x1, x2) with radius r.
 	///
 	/// *Arguments*
-	///     x0 (double)
-	///         x0-coordinate of center.
-	///     x1 (double)
-	///         x1-coordinate of center.
-	///     x2 (double)
-	///         x2-coordinate of center.
+	///     c (Point)
+	///         Center of sphere.
 	///     r (double)
 	///         radius.
 	Sphere(Point c, double r, std::size_t slices = 16);
@@ -88,11 +84,11 @@ struct Cone
 	///     top (Point)
 	///         Center at top of cone.
 	///     top_radius(double)
-	///         Radius bottom of cone.
+	///         Radius top of cone.
 	///     bottom(Point)
-	///         Center at top of cone.
+	///         Center at bottom of cone.
 	///     bottom_radius (double)
-	///         radius at top of cone.
+	///         radius at bottom of cone.
 	///     slices (std::size_t)
 	///         number of faces on the side when generating a
 	///         polyhedral approximation.
@@ -115,7 +111,7 @@ struct Cylinder : public Cone
 	///     top (Point)
 	///         Center at top of cylinder.
 	///     bottom(Point)
-	///         Center at top of cylinder.
+	///         Center at bottom of cylinder.
 	///     r (double)
 	///         radius of cylinder.
 	///     slices (std::size_t)
