@@ -36,6 +36,8 @@ namespace detail
 
 static const double PI = 3.14159265358979323846;
 
+// TODO Correct narrowing conversion warnings this code causes.
+// Note that DOLFIN code below relies on integer ops for correctness.
 template<typename HalfedgeDS>
 inline void add_facet(CGAL::Polyhedron_incremental_builder_3<HalfedgeDS>& builder, std::initializer_list<std::size_t> vertices)
 {
