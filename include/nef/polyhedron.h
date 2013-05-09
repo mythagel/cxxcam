@@ -39,7 +39,9 @@ struct polyline_t;
 class polyhedron_t
 {
 
-friend polyhedron_t make_block(double x0, double y0, double z0, double x1, double y1, double z1);
+friend polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t slices);
+friend polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2);
+friend polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices);
 friend polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path);
 friend double volume(const polyhedron_t& polyhedron);
 

@@ -29,7 +29,9 @@
 namespace nef
 {
 
-polyhedron_t make_block(double x0, double y0, double z0, double x1, double y1, double z1);
+polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t slices);
+polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2);
+polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices);
 
 }
 

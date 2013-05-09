@@ -25,87 +25,36 @@
 #include "primitives.h"
 #include "private.h"
 #include "cgal.h"
-#include <initializer_list>
+#include "Geometry.h"
 
 namespace nef
 {
 
-/*
- * Inspired by CGAL geometry converters in dolfin
- */
-template <class Polyhedron>
-class Build_block
- : public CGAL::Modifier_base<typename Polyhedron::HalfedgeDS>
+polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t slices)
 {
-public:
-	Build_block(double x0, double y0, double z0, double x1, double y1, double z1)
-	 : _x0(std::min(x0, x1)), _y0(std::min(y0, y1)), _z0(std::min(z0, z1)),
-	   _x1(std::max(x0, x1)), _y1(std::max(y0, y1)), _z1(std::max(z0, z1))
-	{
-	}
+	using namespace dolfin;
+	Polyhedron_3 P;
+	make_sphere(Sphere(Point(x, y, z), r, slices), P);
 
-	void operator()(typename Polyhedron::HalfedgeDS& hds)
-	{
-		typedef CGAL::Polyhedron_incremental_builder_3<typename Polyhedron::HalfedgeDS> Polyhedron_incremental_builder_3;
-		Polyhedron_incremental_builder_3 builder(hds, true);
+	auto priv = std::make_shared<polyhedron_t::private_t>( P );
+	return { priv };
+}
 
-		auto add_vertex = [&builder](const typename Polyhedron_incremental_builder_3::Point_3& point)
-		{
-			builder.add_vertex(point);
-		};
-		auto add_facet = [&builder](std::initializer_list<int> vertices)
-		{
-			builder.begin_facet();
-			for(auto vertex : vertices)
-				builder.add_vertex_to_facet(vertex);
-			builder.end_facet();
-		};
-
-		builder.begin_surface(8, 12);
-
-		add_vertex({_x1, _y0, _z0});
-		add_vertex({_x0, _y0, _z1});
-		add_vertex({_x0, _y0, _z0});
-		add_vertex({_x0, _y1, _z0});
-		add_vertex({_x1, _y0, _z1});
-		add_vertex({_x0, _y1, _z1});
-		add_vertex({_x1, _y1, _z0});
-		add_vertex({_x1, _y1, _z1});
-
-		add_facet({1, 2, 3});
-		add_facet({1, 3, 5});
-		add_facet({1, 5, 4});
-		add_facet({4, 5, 7});
-		add_facet({4, 7, 0});
-		add_facet({0, 7, 6});
-		add_facet({0, 6, 2});
-		add_facet({2, 6, 3});
-		add_facet({7, 5, 6});
-		add_facet({6, 5, 3});
-		add_facet({1, 4, 2});
-		add_facet({2, 4, 0});
-
-		builder.end_surface();
-	}
-private:
-	double _x0;
-	double _y0;
-	double _z0;
-
-	double _x1;
-	double _y1;
-	double _z1;
-};
-
-polyhedron_t make_block(double x0, double y0, double z0, double x1, double y1, double z1)
+polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2)
 {
-	Polyhedron_3 poly;
-	Build_block<Polyhedron_3> builder(x0, y0, z0, x1, y1, z1);
-	poly.delegate(builder);
-	CGAL_assertion(poly.is_closed());
-	CGAL_assertion(poly.is_valid());
+	using namespace dolfin;
+	Polyhedron_3 P;
+	make_box(Box(x1, y1, z1, x2, y2, z2), P);
+	auto priv = std::make_shared<polyhedron_t::private_t>( P );
+	return { priv };
+}
 
-	auto priv = std::make_shared<polyhedron_t::private_t>( Nef_polyhedron_3(poly) );
+polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices)
+{
+	using namespace dolfin;
+	Polyhedron_3 P;
+	make_cone(Cone(Point(x1, y1, z1), Point(x2, y2, z2), top_radius, bottom_radius, slices), P);
+	auto priv = std::make_shared<polyhedron_t::private_t>( P );
 	return { priv };
 }
 
