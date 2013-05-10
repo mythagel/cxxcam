@@ -227,24 +227,12 @@ public:
 	 * TODO: expand the tool motion along all possible paths and check for intersection with the stock
 	 */
 	void Rapid(const std::vector<Axis>& axes);
-	void Rapid(const Axis& axis0);
-	void Rapid(const Axis& axis0, const Axis& axis1);
-	void Rapid(const Axis& axis0, const Axis& axis1, const Axis& axis2);
-	void Rapid(const Axis& axis0, const Axis& axis1, const Axis& axis2, const Axis& axis3);
-	void Rapid(const Axis& axis0, const Axis& axis1, const Axis& axis2, const Axis& axis3, const Axis& axis4);
-	void Rapid(const Axis& axis0, const Axis& axis1, const Axis& axis2, const Axis& axis3, const Axis& axis4, const Axis& axis5);
 
 	/*
 	 * Coordinated linear motion. Spindle must be on. Feedrate must be non-zero.
 	 * TODO: calculate feed rate
 	 */
 	void Linear(const std::vector<Axis>& axes);
-	void Linear(const Axis& axis0);
-	void Linear(const Axis& axis0, const Axis& axis1);
-	void Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2);
-	void Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2, const Axis& axis3);
-	void Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2, const Axis& axis3, const Axis& axis4);
-	void Linear(const Axis& axis0, const Axis& axis1, const Axis& axis2, const Axis& axis3, const Axis& axis4, const Axis& axis5);
 
 	/*
 	 * Coordinated helical motion. Spindle must be on. Feedrate must be non-zero.

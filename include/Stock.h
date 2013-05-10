@@ -24,10 +24,10 @@
 
 #ifndef STOCK_H_
 #define STOCK_H_
-#include <string>
 #include <memory>
 #include "Material.h"
 #include "nef/polyhedron.h"
+#include <iosfwd>
 
 /*
  * Stores a description and model of the stock from which material will be removed.
@@ -55,10 +55,10 @@ public:
 		OFF
 	};
 public:
-	static Stock Rectangle(double length, double width, double height);
-	static Stock Cylinder(double radius, double height);
+	Stock() = default;
+	Stock(const nef::polyhedron_t& nef);
 
-	bool Write(const std::string& filename, Format format = Format::NEF) const;
+	bool Write(std::ostream& os, Format format = Format::NEF) const;
 };
 
 #endif /* STOCK_H_ */

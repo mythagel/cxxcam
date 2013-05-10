@@ -25,31 +25,32 @@
 #include "Stock.h"
 #include <cassert>
 #include <fstream>
+#include "nef/ops.h"
+#include <ostream>
 
-Stock Stock::Rectangle(double length, double width, double height)
+Stock::Stock(const nef::polyhedron_t& nef)
+ : m_Nef(nef)
 {
-	return {};
-}
-Stock Stock::Cylinder(double radius, double height)
-{
-	return {};
 }
 
-bool Stock::Write(const std::string& filename, Format format) const
+bool Stock::Write(std::ostream& os, Format format) const
 {
+	if(!os)
+		return false;
+				
 	switch(format)
 	{
 		case Format::OFF:
-			return false;
+		{
+			write_off(os, m_Nef);
+			return true;
+		}
 		case Format::NEF:
 		{
-			std::ofstream out(filename);
-			if(!out)
-				return false;
-
-			out << m_Nef;
-			break;
+			os << m_Nef;
+			return true;
 		}
 	}
+	
 	return false;
 }
