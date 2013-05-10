@@ -60,9 +60,14 @@ private:
 	};
 
 	std::set<Entry> m_Entries;
+	unsigned long m_Tolerance;
 public:
+	Spindle(unsigned long tolerance = 100);
+
 	/*
 	 * Given a requested speed, find the closest real machine speed possible.
+	 * Will throw an exception if the attainable speed is outside the
+	 * given tolerance.
 	 */
 	unsigned long Normalise(unsigned long requested_speed) const;
 

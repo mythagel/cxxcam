@@ -26,6 +26,7 @@
 #include <sstream>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
 
 Spindle::Entry::Entry(unsigned long range_start, unsigned long range_end)
  : m_Type(type_Range), m_RangeStart(range_start), m_RangeEnd(range_end)
@@ -97,6 +98,11 @@ bool Spindle::Entry::operator<(const Entry& other) const
 	return false;
 }
 
+Spindle::Spindle(unsigned long tolerance)
+ : m_Tolerance(tolerance)
+{
+}
+
 unsigned long Spindle::Normalise(unsigned long requested_speed) const
 {
 	for(auto& entry : m_Entries)
@@ -116,6 +122,9 @@ unsigned long Spindle::Normalise(unsigned long requested_speed) const
 		}
 	}
 
+	if(min_distance > m_Tolerance)
+		throw std::runtime_error("Requested speed outside of active tolerance.");
+
 	return real_speed;
 }
 
@@ -132,7 +141,7 @@ std::string Spindle::str() const
 {
 	std::stringstream s;
 
-	for(auto it = m_Entries.begin(); it != m_Entries.end(); )
+	for(auto it = begin(m_Entries); it != end(m_Entries); )
 	{
 		switch(it->m_Type)
 		{
