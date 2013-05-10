@@ -56,12 +56,12 @@ public:
 
 		int flutes;
 		double flute_length;
+		double core_diameter;
 
+		// Used for model generation
 		double cutting_length;
 		double mill_diameter;
 		double shank_diameter;
-		double core_diameter;
-
 		double length;
 	};
 	
@@ -77,7 +77,7 @@ private:
 		Mill m_Mill;
 		Lathe m_Lathe;
 	};
-	nef::polyhedron_t m_Nef;
+	nef::polyhedron_t m_Model;
 public:
 	Tool();
 	

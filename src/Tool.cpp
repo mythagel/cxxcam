@@ -24,38 +24,32 @@
 
 #include "Tool.h"
 #include "nef/primitives.h"
+#include <stdexcept>
 
 namespace
 {
-struct EndMill
-{
-	double shank_diameter;
-	double shank_length;
 
-	double cutting_diameter;
-	double cutting_length;
-};
-
-nef::polyhedron_t make_tool(const EndMill& em)
+nef::polyhedron_t make_mill_tool(const Tool::Mill& em)
 {
 	using namespace nef;
 
 	// TODO determine slices based on height under arc + accuracy.
-	auto flutes = make_cone(0, 0, em.cutting_length, 0, 0, 0, em.cutting_diameter, em.cutting_diameter, 64);
-	// Shank tapers to cutting diameter.
+	auto shank = make_cone(0, 0, em.length, 0, 0, em.cutting_length, em.shank_diameter, em.shank_diameter, 64);
+	
+	switch(em.type)
+	{
+		case Tool::Mill::Type::End:
+		{
+			auto flutes = make_cone(0, 0, em.cutting_length, 0, 0, 0, em.mill_diameter, em.mill_diameter, 64);
+			return shank + flutes;
+		}
+	}
+
+// Shank tapers to cutting diameter.
 //	auto shank = make_cone(0, 0, em.cutting_length+em.shank_length, 0, 0, em.cutting_length, em.shank_diameter, em.cutting_diameter, 64);
-	// Shank and cutting diameter are independant.
-	auto shank = make_cone(0, 0, em.cutting_length+em.shank_length, 0, 0, em.cutting_length, em.shank_diameter, em.shank_diameter, 64);
 
-	return shank + flutes;
+	throw std::runtime_error("Unable to create tool geometry model");
 }
-
-/* Example
-	EndMill em = {5, 40, 3, 20};
-	auto tool = make_tool(em);
-
-	write_off(std::cout, tool);
-*/
 
 }
 
@@ -65,7 +59,7 @@ Tool::Tool()
 }
 
 Tool::Tool(const std::string& name, const Mill& mill)
- : m_Name(name), m_Type(Type::Mill), m_Mill(mill)
+ : m_Name(name), m_Type(Type::Mill), m_Mill(mill), m_Model(make_mill_tool(m_Mill))
 {
 }
 Tool::Tool(const std::string& name, const Lathe& lathe)
@@ -82,3 +76,4 @@ Tool::Type Tool::ToolType() const
 {
 	return m_Type;
 }
+
