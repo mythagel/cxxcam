@@ -275,8 +275,7 @@ void Machine::UpdatePosition(const Axis& axis)
 {
 	auto& m_State = m_Private->m_State;
 
-	double* val(0);
-
+	double* val = nullptr;
 	switch(axis)
 	{
 		case Axis::Type::X:
@@ -310,17 +309,17 @@ void Machine::UpdatePosition(const Axis& axis)
 			break;
 	}
 
-	if(val)
+	if(!val)
+		throw std::logic_error("Unknown Axis");
+
+	switch(m_State.m_Motion)
 	{
-		switch(m_State.m_Motion)
-		{
-			case Motion::Absolute:
-				*val = axis;
-				break;
-			case Motion::Incremental:
-				*val += static_cast<double>(axis);
-				break;
-		}
+		case Motion::Absolute:
+			*val = axis;
+			break;
+		case Motion::Incremental:
+			*val += axis;
+			break;
 	}
 }
 
