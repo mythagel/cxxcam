@@ -863,6 +863,52 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	m_Private->m_GCode.AddLine(line);
 }
 
+void Machine::Arc(Direction dir, Axis helix)
+{
+	auto& m_State = m_Private->m_State;
+
+	if(m_State.m_SpindleRotation == Rotation::Stop)
+		throw std::logic_error("Spindle is stopped");
+	if(m_State.m_FeedRate == 0.0)
+		throw std::logic_error("Feedrate is 0.0");
+	
+	switch(m_State.m_Plane)
+	{
+		case Plane::XY:
+			if(helix != Axis::Type::Z)
+				throw std::logic_error("In XY Plane helix axis must be Z");
+			// G2 or G3 <X- Y- Z- I- J- P->
+			// Z - helix
+			// I - X offset
+			// J - Y offset
+			// P - number of turns
+			break;
+		case Plane::ZX:
+			if(helix != Axis::Type::Y)
+				throw std::logic_error("In ZX Plane helix axis must be Y");
+			// G2 or G3 <X- Z- Y- I- K- P->
+			// Y - helix
+			// I - X offset
+			// K - Z offset
+			// P - number of turns
+			break;
+		case Plane::YZ:
+			if(helix != Axis::Type::X)
+				throw std::logic_error("In YZ Plane helix axis must be X");
+			// G2 or G3 <Y- Z- X- J- K- P->
+			// X - helix
+			// J - Y offset
+			// K - Z offset
+			// P - number of turns
+			break;
+		case Plane::UV:
+		case Plane::WU:
+		case Plane::VW:
+			throw std::logic_error("Arc defined only on Planes XY, ZX, YZ");
+			break;
+	}
+}
+
 Machine::~Machine()
 {
 	m_Private->m_GCode.AddLine(Line(M02, "End of program."));

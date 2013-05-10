@@ -150,10 +150,6 @@ protected:
 	void UpdatePosition(const Axis& axis);
 public:
 
-	/*
-	 * TODO design and write an interface for Stock that avoids binding in the interface
-	 * have struct defs for each stock type: rectangle, cylinder, import (saved OFF file)
-	 */
 	Machine(Type type, const std::string& gcode_variant);
 
 	Machine(const Machine& m);
@@ -235,10 +231,11 @@ public:
 	void Linear(const std::vector<Axis>& axes);
 
 	/*
-	 * Coordinated helical motion. Spindle must be on. Feedrate must be non-zero.
+	 * Coordinated arc motion. Spindle must be on. Feedrate must be non-zero.
 	 * TODO Arcs.
+	 * TODO Implement Offset class similar to Axis to represent IJK offsets
 	 */
-	// void Arc(Direction dir)
+	void Arc(Direction dir, Axis helix);
 
 //	void Plunge(double z, double helix);
 
