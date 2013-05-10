@@ -44,6 +44,8 @@ struct polyline_t
 polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path);
 double volume(const polyhedron_t& polyhedron);
 
+void write_off(std::ostream&, const polyhedron_t& poly);
+
 }
 
 #endif /* NEF_OPS_H_ */

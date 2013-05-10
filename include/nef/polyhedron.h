@@ -42,17 +42,19 @@ class polyhedron_t
 friend polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t slices);
 friend polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2);
 friend polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices);
+
 friend polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path);
 friend double volume(const polyhedron_t& polyhedron);
+
+friend std::ostream& operator<<(std::ostream&, const polyhedron_t&);
+friend std::istream& operator>>(std::istream&, polyhedron_t&);
+friend void write_off(std::ostream&, const polyhedron_t& poly);
 
 private:
 	struct private_t;
 	std::shared_ptr<private_t> priv;
 	polyhedron_t(const std::shared_ptr<private_t>& priv);
 	void ensure_unique();
-
-	friend std::ostream& operator<<(std::ostream&, const polyhedron_t&);
-	friend std::istream& operator>>(std::istream&, polyhedron_t&);
 public:
 	polyhedron_t();
 	polyhedron_t(const polyhedron_t&) = default;

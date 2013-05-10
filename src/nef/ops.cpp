@@ -26,6 +26,7 @@
 #include "copy_to.h"
 #include <utility>
 #include <cassert>
+#include <stdexcept>
 
 #include "cgal.h"
 
@@ -41,6 +42,9 @@
 
 // glide
 #include <CGAL/minkowski_sum_3.h>
+
+// Output
+#include <CGAL/IO/Polyhedron_iostream.h>
 
 // Meshing
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Inexact_Kernel;
@@ -116,6 +120,20 @@ double volume(const polyhedron_t& polyhedron)
 //	return std::accumulate(volumes.begin(), volumes.end(), 0.0);
 
 	return volume;
+}
+
+void write_off(std::ostream& os, const polyhedron_t& poly)
+{
+	if(poly.priv->nef.is_simple())
+	{
+		Polyhedron_3 P;
+		poly.priv->nef.convert_to_polyhedron(P);
+		os << P;
+	}
+	else
+	{
+		throw std::runtime_error("polyhedron is not 2-manifold.");
+	}
 }
 
 }
