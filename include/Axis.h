@@ -38,7 +38,7 @@ public:
 	{
 		X, Y, Z,
 		A, B, C,
-		U, V, W,
+		U, V, W,	// Unimplemented.
 	};
 protected:
 	Type m_Type;
