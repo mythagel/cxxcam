@@ -29,7 +29,7 @@
 #include <ostream>
 
 Stock::Stock(const nef::polyhedron_t& nef)
- : m_Nef(nef)
+ : Model(nef)
 {
 }
 
@@ -42,12 +42,12 @@ bool Stock::Write(std::ostream& os, Format format) const
 	{
 		case Format::OFF:
 		{
-			write_off(os, m_Nef);
+			write_off(os, Model);
 			return true;
 		}
 		case Format::NEF:
 		{
-			os << m_Nef;
+			os << Model;
 			return true;
 		}
 	}
