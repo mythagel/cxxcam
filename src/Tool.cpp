@@ -23,6 +23,41 @@
  */
 
 #include "Tool.h"
+#include "nef/primitives.h"
+
+namespace
+{
+struct EndMill
+{
+	double shank_diameter;
+	double shank_length;
+
+	double cutting_diameter;
+	double cutting_length;
+};
+
+nef::polyhedron_t make_tool(const EndMill& em)
+{
+	using namespace nef;
+
+	// TODO determine slices based on height under arc + accuracy.
+	auto flutes = make_cone(0, 0, em.cutting_length, 0, 0, 0, em.cutting_diameter, em.cutting_diameter, 64);
+	// Shank tapers to cutting diameter.
+//	auto shank = make_cone(0, 0, em.cutting_length+em.shank_length, 0, 0, em.cutting_length, em.shank_diameter, em.cutting_diameter, 64);
+	// Shank and cutting diameter are independant.
+	auto shank = make_cone(0, 0, em.cutting_length+em.shank_length, 0, 0, em.cutting_length, em.shank_diameter, em.shank_diameter, 64);
+
+	return shank + flutes;
+}
+
+/* Example
+	EndMill em = {5, 40, 3, 20};
+	auto tool = make_tool(em);
+
+	write_off(std::cout, tool);
+*/
+
+}
 
 Tool::Tool()
  : m_Name("Invalid")
