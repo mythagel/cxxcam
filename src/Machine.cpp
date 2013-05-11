@@ -837,7 +837,7 @@ void Machine::Rapid(const std::vector<Axis>& axes)
 	m_Private->m_GCode.AddLine(line);
 	
 	auto end = m_Private->m_State.m_Current;
-	// calculate possible motion path (not a line but a polygon.)
+	// calculate possible motion path (not a line but a polyhedron.)
 }
 
 void Machine::Linear(const std::vector<Axis>& axes)
@@ -870,7 +870,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	m_Private->m_GCode.AddLine(line);
 	
 	auto end = m_Private->m_State.m_Current;
-	// line from start to end expand tool along path.
+	// line from start to end expand tool along path and subtract tool path from stock.
 }
 
 void Machine::Arc(Direction dir, Axis helix)
