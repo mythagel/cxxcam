@@ -41,6 +41,8 @@ class Machine
 private:
 	static const gcode::Word G00;
 	static const gcode::Word G01;
+	static const gcode::Word G02;
+	static const gcode::Word G03;
 	static const gcode::Word G17;
 	static const gcode::Word G18;
 	static const gcode::Word G19;

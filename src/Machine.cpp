@@ -69,6 +69,8 @@ Machine::Private::Private(Type type, const std::string& gcode_variant)
 
 const Word Machine::G00(Word::G, 0);
 const Word Machine::G01(Word::G, 1);
+const Word Machine::G02(Word::G, 2);
+const Word Machine::G03(Word::G, 3);
 const Word Machine::G17(Word::G, 17);
 const Word Machine::G18(Word::G, 18);
 const Word Machine::G19(Word::G, 19);
@@ -823,8 +825,9 @@ void Machine::StopSpindle()
 
 void Machine::Rapid(const std::vector<Axis>& axes)
 {
-	Line line;
+	auto start = m_Private->m_State.m_Current;
 
+	Line line;
 	line += G00;
 	for(auto& axis : axes)
 	{
@@ -832,10 +835,15 @@ void Machine::Rapid(const std::vector<Axis>& axes)
 		UpdatePosition(axis);
 	}
 	m_Private->m_GCode.AddLine(line);
+	
+	auto end = m_Private->m_State.m_Current;
+	// calculate possible motion path (not a line but a polygon.)
 }
 
 void Machine::Linear(const std::vector<Axis>& axes)
 {
+	auto start = m_Private->m_State.m_Current;
+
 	auto& m_State = m_Private->m_State;
 
 	if(m_State.m_SpindleRotation == Rotation::Stop)
@@ -860,16 +868,32 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	}
 
 	m_Private->m_GCode.AddLine(line);
+	
+	auto end = m_Private->m_State.m_Current;
+	// line from start to end expand tool along path.
 }
 
 void Machine::Arc(Direction dir, Axis helix)
 {
+	auto start = m_Private->m_State.m_Current;
+	
 	auto& m_State = m_Private->m_State;
 
 	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw std::logic_error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
 		throw std::logic_error("Feedrate is 0.0");
+	
+	Line line;
+	switch(dir)
+	{
+		case Direction::Clockwise:
+			line += G02;
+			break;
+		case Direction::CounterClockwise:
+			line += G03;
+			break;
+	}
 	
 	switch(m_State.m_Plane)
 	{
@@ -903,9 +927,14 @@ void Machine::Arc(Direction dir, Axis helix)
 		case Plane::UV:
 		case Plane::WU:
 		case Plane::VW:
-			throw std::logic_error("Arc defined only on Planes XY, ZX, YZ");
+			throw std::logic_error("Arc defined only on Planes XY, ZX, & YZ");
 			break;
 	}
+	
+	m_Private->m_GCode.AddLine(line);
+	
+	auto end = m_Private->m_State.m_Current;
+	// arc from start to end expand tool along path.
 }
 
 Machine::~Machine()
