@@ -30,6 +30,7 @@
 #include "GCodeWord.h"
 
 class Axis;
+class Offset;
 class Tool;
 class Stock;
 
@@ -235,9 +236,8 @@ public:
 	/*
 	 * Coordinated arc motion. Spindle must be on. Feedrate must be non-zero.
 	 * TODO Arcs.
-	 * TODO Implement Offset class similar to Axis to represent IJK offsets
 	 */
-	void Arc(Direction dir, Axis helix);
+	void Arc(Direction dir, const std::vector<Axis>& axes, const std::vector<Offset>& offsets);
 
 //	void Plunge(double z, double helix);
 

@@ -26,6 +26,7 @@
 #include "MachineState.h"
 #include "GCode.h"
 #include "Axis.h"
+#include "Offset.h"
 #include "Tool.h"
 #include "ToolTable.h"
 #include "Stock.h"
@@ -873,7 +874,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	// line from start to end expand tool along path and subtract tool path from stock.
 }
 
-void Machine::Arc(Direction dir, Axis helix)
+void Machine::Arc(Direction dir, const std::vector<Axis>& axes, const std::vector<Offset>& offsets)
 {
 	auto start = m_Private->m_State.m_Current;
 	
@@ -884,6 +885,9 @@ void Machine::Arc(Direction dir, Axis helix)
 	if(m_State.m_FeedRate == 0.0)
 		throw std::logic_error("Feedrate is 0.0");
 	
+	// TODO CRASH DISASTER helix is optional!
+	auto helix = axes[2];
+
 	Line line;
 	switch(dir)
 	{
