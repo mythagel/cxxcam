@@ -237,7 +237,7 @@ public:
 	 * Coordinated arc motion. Spindle must be on. Feedrate must be non-zero.
 	 * TODO Arcs.
 	 */
-	void Arc(Direction dir, const std::vector<Axis>& axes, const std::vector<Offset>& offsets);
+	void Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& offsets);
 
 //	void Plunge(double z, double helix);
 

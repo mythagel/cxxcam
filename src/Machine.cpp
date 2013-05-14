@@ -874,7 +874,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	// line from start to end expand tool along path and subtract tool path from stock.
 }
 
-void Machine::Arc(Direction dir, const std::vector<Axis>& axes, const std::vector<Offset>& offsets)
+void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& offsets)
 {
 	auto start = m_Private->m_State.m_Current;
 	
@@ -885,9 +885,6 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& axes, const std::vecto
 	if(m_State.m_FeedRate == 0.0)
 		throw std::logic_error("Feedrate is 0.0");
 	
-	// TODO CRASH DISASTER helix is optional!
-	auto helix = axes[2];
-
 	Line line;
 	switch(dir)
 	{
@@ -902,32 +899,44 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& axes, const std::vecto
 	switch(m_State.m_Plane)
 	{
 		case Plane::XY:
-			if(helix != Axis::Type::Z)
-				throw std::logic_error("In XY Plane helix axis must be Z");
+		{
+//			auto helix = end_pos[2];
+//
+//			if(helix != Axis::Type::Z)
+//				throw std::logic_error("In XY Plane helix axis must be Z");
 			// G2 or G3 <X- Y- Z- I- J- P->
 			// Z - helix
 			// I - X offset
 			// J - Y offset
 			// P - number of turns
 			break;
+		}
 		case Plane::ZX:
-			if(helix != Axis::Type::Y)
-				throw std::logic_error("In ZX Plane helix axis must be Y");
+		{
+//			auto helix = end_pos[2];
+//
+//			if(helix != Axis::Type::Y)
+//				throw std::logic_error("In ZX Plane helix axis must be Y");
 			// G2 or G3 <X- Z- Y- I- K- P->
 			// Y - helix
 			// I - X offset
 			// K - Z offset
 			// P - number of turns
 			break;
+		}
 		case Plane::YZ:
-			if(helix != Axis::Type::X)
-				throw std::logic_error("In YZ Plane helix axis must be X");
+		{
+//			auto helix = end_pos[2];
+//
+//			if(helix != Axis::Type::X)
+//				throw std::logic_error("In YZ Plane helix axis must be X");
 			// G2 or G3 <Y- Z- X- J- K- P->
 			// X - helix
 			// J - Y offset
 			// K - Z offset
 			// P - number of turns
 			break;
+		}
 		case Plane::UV:
 		case Plane::WU:
 		case Plane::VW:
