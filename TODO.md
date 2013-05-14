@@ -1,6 +1,6 @@
 # TODO List #
 
-### Design issues ###
+## Design issues ##
  * At what level should the cxxcam interface exist?
    I.e. should the automatic feed rate code exist in js or c++. There are arguments for both - but leaning towards implementing these functions in js. cxxcam must provide a base on which to build these functions.
     - Determine minimal machining primitives upon which js interface can be developed
@@ -10,13 +10,24 @@
           - material removal volume
           - cutter engagement
           - have generic interface for algorithms for speed and feed selection so they can be tested. 
+             - Will be implemented in js anyway.
        * intersection tests for rapids (semi-trivial)
+       * collision tests for workholding
+       * machine limits tests
        * checked gcode generation (check spindle is on for cuts, etc.) (trivial)
        * procedural interface for gcode generation (for loops etc expanded by the engine) (trivial)
        * automatic/heuristic tool selection
-       * 
+       * Finished model export
 
-### High Level ###
+##Action Plan##
+ 1. Arcs are a required primitive
+ 2. Write some machining code using jscam
+    * Get some usage experience
+    * Manual everything(feed rate etc.)
+    * Reproduce existing gcode programs
+ 3. Complete model generation (i.e. remove material from stock object)
+
+## High Level ##
  * Auto feedrate / spindle speeds
     - Enhance spindle to report spindle speed requests outside of some specified tolerance. (i.e. 30,000rpm request for machine with max 500rpm)
  * Complete Tool class
@@ -32,7 +43,8 @@
  * Material removal volume for each operation
     - Calculate volume of material that tool can remove and ensure that volume is appropriate.
  * Arc motion
- * Plunge motion (Primitive function?)
+ * Plunge motion
+    * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
  * GCode Generation
@@ -43,7 +55,7 @@
     - Document in comments relevant parameters (Stock dimensions, position, tools used, etc.)
  * Machine zero & Limits
 
-### Code ###
+## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Change private / protected static methods to free functions.
  * Formalise result of nef glide when result is not 2-manifold
