@@ -106,6 +106,60 @@ const Word Machine::M05(Word::M, 5);
 const Word Machine::M06(Word::M, 6);
 const Word Machine::M09(Word::M, 9);
 
+Word AxisToWord(const Axis& axis)
+{
+	switch(axis)
+	{
+		case Axis::Type::X:
+			return {Word::X, axis};
+		case Axis::Type::Y:
+			return {Word::Y, axis};
+		case Axis::Type::Z:
+			return {Word::Z, axis};
+
+		case Axis::Type::A:
+			return {Word::A, axis};
+		case Axis::Type::B:
+			return {Word::B, axis};
+		case Axis::Type::C:
+			return {Word::C, axis};
+
+		case Axis::Type::U:
+			return {Word::U, axis};
+		case Axis::Type::V:
+			return {Word::V, axis};
+		case Axis::Type::W:
+			return {Word::W, axis};
+	}
+
+	throw std::logic_error("Unknown Axis.");
+}
+
+gcode::Word OffsetToWord(const Offset& offset)
+{
+	switch(offset)
+	{
+		case Offset::Type::I:
+			return {Word::I, offset};
+		case Offset::Type::J:
+			return {Word::J, offset};
+		case Offset::Type::K:
+			return {Word::K, offset};
+	}
+
+	throw std::logic_error("Unknown Offset.");
+}
+
+double MillFeedRate(double chip_load, int flutes, double spindle_speed)
+{
+	return chip_load * flutes * spindle_speed;
+}
+
+double MillSpindleSpeed(double cutting_speed, double cutter_diameter)
+{
+	return cutting_speed / (3.14159 * cutter_diameter);
+}
+
 void Machine::Preamble()
 {
 	const auto& m_Type = m_Private->m_Type;
@@ -233,45 +287,6 @@ void Machine::Preamble()
 	m_GCode.NewBlock(c.str(), m_State);
 	m_GCode.AddLine(line);
 	m_GCode.EndBlock();
-}
-
-Word Machine::AxisToWord(const Axis& axis)
-{
-	switch(axis)
-	{
-		case Axis::Type::X:
-			return {Word::X, axis};
-		case Axis::Type::Y:
-			return {Word::Y, axis};
-		case Axis::Type::Z:
-			return {Word::Z, axis};
-
-		case Axis::Type::A:
-			return {Word::A, axis};
-		case Axis::Type::B:
-			return {Word::B, axis};
-		case Axis::Type::C:
-			return {Word::C, axis};
-
-		case Axis::Type::U:
-			return {Word::U, axis};
-		case Axis::Type::V:
-			return {Word::V, axis};
-		case Axis::Type::W:
-			return {Word::W, axis};
-	}
-
-	throw std::logic_error("Unknown Axis.");
-}
-
-double Machine::MillFeedRate(double chip_load, int flutes, double spindle_speed)
-{
-	return chip_load * flutes * spindle_speed;
-}
-
-double Machine::MillSpindleSpeed(double cutting_speed, double cutter_diameter)
-{
-	return cutting_speed / (3.14159 * cutter_diameter);
 }
 
 void Machine::UpdatePosition(const Axis& axis)
@@ -874,7 +889,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	// line from start to end expand tool along path and subtract tool path from stock.
 }
 
-void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& offsets)
+void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& center, unsigned int turns)
 {
 	auto start = m_Private->m_State.m_Current;
 	
@@ -900,41 +915,122 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	{
 		case Plane::XY:
 		{
-//			auto helix = end_pos[2];
-//
-//			if(helix != Axis::Type::Z)
-//				throw std::logic_error("In XY Plane helix axis must be Z");
-			// G2 or G3 <X- Y- Z- I- J- P->
-			// Z - helix
-			// I - X offset
-			// J - Y offset
-			// P - number of turns
+			for(auto& axis : end_pos)
+			{
+				switch(axis)
+				{
+					case Axis::Type::X:
+					case Axis::Type::Y:
+					{
+						line += AxisToWord(axis);
+						break;
+					}
+					case Axis::Type::Z:
+					{
+						auto word = AxisToWord(axis);
+						word.Comment("Helix");
+						line += word;
+						break;
+					}
+					default:
+						throw std::runtime_error("Allowed axes: X, Y, & Z (Helix)");
+				}
+			}
+
+			for(auto& offset : center)
+			{
+				switch(offset)
+				{
+					case Offset::Type::I:
+					case Offset::Type::J:
+					{
+						line += OffsetToWord(offset);
+						break;
+					}
+					default:
+						throw std::runtime_error("Allowed offsets: I & J");
+				}
+			}
 			break;
 		}
 		case Plane::ZX:
 		{
-//			auto helix = end_pos[2];
-//
-//			if(helix != Axis::Type::Y)
-//				throw std::logic_error("In ZX Plane helix axis must be Y");
-			// G2 or G3 <X- Z- Y- I- K- P->
-			// Y - helix
-			// I - X offset
-			// K - Z offset
-			// P - number of turns
+			for(auto& axis : end_pos)
+			{
+				switch(axis)
+				{
+					case Axis::Type::X:
+					case Axis::Type::Z:
+					{
+						line += AxisToWord(axis);
+						break;
+					}
+					case Axis::Type::Y:
+					{
+						auto word = AxisToWord(axis);
+						word.Comment("Helix");
+						line += word;
+						break;
+					}
+					default:
+						throw std::runtime_error("Allowed axes: X, Z, & Y (Helix)");
+				}
+			}
+
+			for(auto& offset : center)
+			{
+				switch(offset)
+				{
+					case Offset::Type::I:
+					case Offset::Type::K:
+					{
+						line += OffsetToWord(offset);
+						break;
+					}
+					default:
+						throw std::runtime_error("Allowed offsets: I & K");
+				}
+			}
 			break;
 		}
 		case Plane::YZ:
 		{
-//			auto helix = end_pos[2];
-//
-//			if(helix != Axis::Type::X)
-//				throw std::logic_error("In YZ Plane helix axis must be X");
-			// G2 or G3 <Y- Z- X- J- K- P->
-			// X - helix
-			// J - Y offset
-			// K - Z offset
-			// P - number of turns
+			for(auto& axis : end_pos)
+			{
+				switch(axis)
+				{
+					case Axis::Type::Y:
+					case Axis::Type::Z:
+					{
+						line += AxisToWord(axis);
+						break;
+					}
+					case Axis::Type::X:
+					{
+						auto word = AxisToWord(axis);
+						word.Comment("Helix");
+						line += word;
+						break;
+					}
+					default:
+						throw std::runtime_error("Allowed axes: Y, Z, & X (Helix)");
+				}
+			}
+
+			for(auto& offset : center)
+			{
+				switch(offset)
+				{
+					case Offset::Type::J:
+					case Offset::Type::K:
+					{
+						line += OffsetToWord(offset);
+						break;
+					}
+					default:
+						throw std::runtime_error("Allowed offsets: J & K");
+				}
+			}
 			break;
 		}
 		case Plane::UV:
@@ -944,6 +1040,9 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 			break;
 	}
 	
+	if(turns > 1)
+		line += Word(Word::P, turns);
+
 	m_Private->m_GCode.AddLine(line);
 	
 	auto end = m_Private->m_State.m_Current;

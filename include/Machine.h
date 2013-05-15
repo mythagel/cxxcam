@@ -34,6 +34,11 @@ class Offset;
 class Tool;
 class Stock;
 
+gcode::Word AxisToWord(const Axis& axis);
+gcode::Word OffsetToWord(const Offset& offset);
+double MillFeedRate(double chip_load, int flutes, double spindle_speed);
+double MillSpindleSpeed(double cutting_speed, double cutter_diameter);
+
 /*
  * The CNC machine itself.
  */
@@ -145,11 +150,6 @@ private:
 	std::unique_ptr<Private> m_Private;
 protected:
 	void Preamble();
-
-	static gcode::Word AxisToWord(const Axis& axis);
-	static double MillFeedRate(double chip_load, int flutes, double spindle_speed);
-	static double MillSpindleSpeed(double cutting_speed, double cutter_diameter);
-
 	void UpdatePosition(const Axis& axis);
 public:
 
@@ -237,7 +237,7 @@ public:
 	 * Coordinated arc motion. Spindle must be on. Feedrate must be non-zero.
 	 * TODO Arcs.
 	 */
-	void Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& offsets);
+	void Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& center, unsigned int turns = 1);
 
 //	void Plunge(double z, double helix);
 
