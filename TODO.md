@@ -20,7 +20,7 @@
        * Finished model export
 
 ##Action Plan##
- 1. Arcs are a required primitive
+ 1. Arcs are a required primitive (Basics working since b14a1fecf1670cf2b00e8bbd878c3f6ecddd5766)
  2. Write some machining code using jscam
     * Get some usage experience
     * Manual everything(feed rate etc.)
