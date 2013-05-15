@@ -20,7 +20,7 @@
        * Finished model export
 
 ##Action Plan##
- 1. Arcs are a required primitive (Basics working since b14a1fecf1670cf2b00e8bbd878c3f6ecddd5766)
+ 1. ~~Arcs are a required primitive~~
  2. Write some machining code using jscam
     * Get some usage experience
     * Manual everything(feed rate etc.)
@@ -29,10 +29,10 @@
 
 ## High Level ##
  * Auto feedrate / spindle speeds
-    - Enhance spindle to report spindle speed requests outside of some specified tolerance. (i.e. 30,000rpm request for machine with max 500rpm)
+    - ~~Enhance spindle to report spindle speed requests outside of some specified tolerance. (i.e. 30,000rpm request for machine with max 500rpm)~~
  * Complete Tool class
     - Needs nef model loading / generation
-    - Store properties for different tool types
+    - ~~Store properties for different tool types~~
  * Complete Stock class
     - Needs model loading & generation
     - Needs intersection tests
@@ -42,7 +42,7 @@
  * Toolpath expansion & intersection tests for rapids
  * Material removal volume for each operation
     - Calculate volume of material that tool can remove and ensure that volume is appropriate.
- * Arc motion
+ * ~~Arc motion~~
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Restore position
@@ -58,5 +58,5 @@
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Change private / protected static methods to free functions.
- * Formalise result of nef glide when result is not 2-manifold
+ * ~~Formalise result of nef glide when result is not 2-manifold~~
 
