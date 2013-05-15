@@ -911,6 +911,10 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 			break;
 	}
 	
+	/*
+	 * TODO cleanup code (remove duplication)
+	 * TODO Implement additional logic checks (atm will accept empty arc command which is invalid
+	 */
 	switch(m_State.m_Plane)
 	{
 		case Plane::XY:
