@@ -122,7 +122,7 @@ unsigned long Spindle::Normalise(unsigned long requested_speed) const
 		}
 	}
 
-	if(min_distance > m_Tolerance)
+	if(std::abs(min_distance) > m_Tolerance)
 	{
 		std::ostringstream s;
 		s << "Requested speed " << requested_speed << " outside of active tolerance (" << min_distance << ").";
