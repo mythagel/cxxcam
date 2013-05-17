@@ -52,6 +52,7 @@
     - Export generated GCode as string
     - Aligned comments within a gcode block
     - Generate according to Variant (e.g. gcode case and precision are unimplemented)
+       - Implement 6 digit precision output.
     - Document in comments relevant parameters (Stock dimensions, position, tools used, etc.)
  * Machine zero & Limits
  * Work offsets (G54, etc)
@@ -60,4 +61,3 @@
  * Ensure exceptions do not change state (to allow recovery)
  * Change private / protected static methods to free functions.
  * ~~Formalise result of nef glide when result is not 2-manifold~~
-
