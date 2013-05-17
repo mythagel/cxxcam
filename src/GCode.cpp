@@ -125,7 +125,7 @@ std::string Code::debug_str() const
 
 std::ostream& operator<<(std::ostream& os, const Code& gcode)
 {
-	os << std::setprecision(gcode.m_Precision);
+	os << std::setprecision(gcode.m_Precision) << std::fixed;
 	
 	auto eol = gcode.eol();
 	std::size_t block_id = 0;
