@@ -26,6 +26,7 @@
 #include <sstream>
 #include <ostream>
 #include <stdexcept>
+#include <iomanip>
 
 namespace gcode
 {
@@ -111,7 +112,17 @@ std::string to_string(Word::Code code)
 
 std::ostream& operator<<(std::ostream& os, const Word& word)
 {
-	os << to_string(word) << word.m_Value;
+	os << to_string(word);
+	{
+		std::ostringstream ss;
+		ss << std::fixed << std::setprecision(6) << word.m_Value;
+		auto s = ss.str();
+		
+		s.erase(s.find_last_not_of('0') + 1, std::string::npos);
+		if(s.back() == '.')
+			s.pop_back();
+		os << s;
+	}
 	auto comment = word.Comment();
 
 	if(!comment.empty())
