@@ -54,6 +54,7 @@
     - Generate according to Variant (e.g. gcode case and precision are unimplemented)
     - Document in comments relevant parameters (Stock dimensions, position, tools used, etc.)
  * Machine zero & Limits
+ * Work offsets (G54, etc)
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
