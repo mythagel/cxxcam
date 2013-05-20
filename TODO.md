@@ -28,6 +28,13 @@
  3. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
+ * Interface changes
+    - Experience shows that access to properties is needed
+    - Create interface with machine object with properties for tool, feed_rate etc.
+    - Allows read and write access through normal interface.
+ * Create comments from js.
+ * Work offsets (G54, etc)
+    - More important than previously imagined.
  * Auto feedrate / spindle speeds
     - ~~Enhance spindle to report spindle speed requests outside of some specified tolerance. (i.e. 30,000rpm request for machine with max 500rpm)~~
  * Complete Tool class
@@ -49,6 +56,7 @@
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
  * GCode Generation
+    - GCode generated to json array
     - Export generated GCode as lines and sequences of words (needed for js post-processing)
     - Export generated GCode as string
     - Aligned comments within a gcode block
@@ -56,7 +64,12 @@
        - Implement 6 digit precision output.
     - Document in comments relevant parameters (Stock dimensions, position, tools used, etc.)
  * Machine zero & Limits
- * Work offsets (G54, etc)
+ * One file is the complete part
+    - With multiple operations underneath
+    - Should be able to generate gcode for ops individually.
+    - one file is NOT the complete object - only a single part.
+ * LOGO / Turtle style interface for experimentation (implemented 100% in js)
+ * Output image of toolpath (js or cxxcam)
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
