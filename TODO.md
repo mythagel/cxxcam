@@ -47,6 +47,7 @@
     * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
+    - First version rapid to clearance plane, move, then rapid back to previous z height.
  * GCode Generation
     - Export generated GCode as lines and sequences of words (needed for js post-processing)
     - Export generated GCode as string
