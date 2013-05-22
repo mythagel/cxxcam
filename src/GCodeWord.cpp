@@ -46,6 +46,11 @@ Word::operator Word::Code() const
 	return m_Code;
 }
 
+double Word::Value() const
+{
+	return m_Value;
+}
+
 void Word::Comment(const std::string& comment)
 {
 	m_Comment = comment;
@@ -115,7 +120,7 @@ std::ostream& operator<<(std::ostream& os, const Word& word)
 	os << to_string(word);
 	{
 		std::ostringstream ss;
-		ss << std::fixed << std::setprecision(6) << word.m_Value;
+		ss << std::fixed << std::setprecision(6) << word.Value();
 		auto s = ss.str();
 		
 		s.erase(s.find_last_not_of('0') + 1, std::string::npos);

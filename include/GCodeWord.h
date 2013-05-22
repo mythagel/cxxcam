@@ -32,7 +32,6 @@ namespace gcode
 
 class Word
 {
-	friend std::ostream& operator<<(std::ostream& os, const Word& word);
 public:
 	enum Code
 	{
@@ -69,6 +68,7 @@ public:
 	Word(Code code, double value, const std::string& comment);
 
 	operator Code() const;
+	double Value() const;
 
 	void Comment(const std::string& comment);
 	std::string Comment() const;
