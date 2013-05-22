@@ -1053,6 +1053,36 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	// arc from start to end expand tool along path.
 }
 
+std::vector<Machine::block_t> Machine::Generate() const
+{
+	auto& m_GCode = m_Private->m_GCode;
+	
+	std::vector<Machine::block_t> blocks;
+	for(auto& block : m_GCode)
+	{
+		block_t b;
+		b.name = block.Name();
+
+		for(auto& line : block)
+		{
+			block_t::line_t l;
+			l.words = std::vector<Word>(line.begin(), line.end());
+			l.comment = line.Comment();
+			b.lines.push_back(l);
+		}
+		
+		blocks.push_back(b);
+	}
+	
+	{
+		block_t b;
+		b.lines.push_back({{M02}, "End of program."});
+		blocks.push_back(b);
+	}
+	
+	return blocks;
+}
+
 Machine::~Machine()
 {
 	m_Private->m_GCode.AddLine(Line(M02, "End of program."));

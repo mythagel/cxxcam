@@ -241,6 +241,22 @@ public:
 
 //	void Plunge(double z, double helix);
 
+	/*
+	 * TODO better interface here...
+	 */
+	struct block_t
+	{
+		struct line_t
+		{
+			std::vector<gcode::Word> words;
+			std::string comment;
+		};
+	
+		std::string name;
+		std::vector<line_t> lines;
+	};
+	std::vector<block_t> Generate() const;
+
 	~Machine();
 };
 
