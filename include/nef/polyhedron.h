@@ -30,6 +30,7 @@
 namespace nef
 {
 
+struct object_t;
 struct polyline_t;
 
 /*
@@ -48,6 +49,8 @@ friend double volume(const polyhedron_t& polyhedron);
 
 friend std::ostream& operator<<(std::ostream&, const polyhedron_t&);
 friend std::istream& operator>>(std::istream&, polyhedron_t&);
+
+friend object_t to_object(const polyhedron_t& poly);
 friend void write_off(std::ostream&, const polyhedron_t& poly);
 
 private:

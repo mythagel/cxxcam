@@ -24,10 +24,57 @@
 #include "io.h"
 #include "private.h"
 #include <CGAL/IO/Polyhedron_iostream.h>
+#include <CGAL/iterator.h>
 #include <ostream>
+#include <cassert>
 
 namespace nef
 {
+
+object_t to_object(const polyhedron_t& poly)
+{
+	typedef Polyhedron_3::Halfedge_around_facet_circulator Halfedge_around_facet_circulator;
+	typedef typename Polyhedron_3::Vertex_const_iterator Vertex_const_iterator;
+	
+	if(poly.priv->nef.is_simple())
+	{
+		Polyhedron_3 P;
+		poly.priv->nef.convert_to_polyhedron(P);
+		
+		object_t o;
+		
+		o.vertices.reserve(P.size_of_vertices());
+		for(auto vi = P.vertices_begin(); vi != P.vertices_end(); ++vi)
+			o.vertices.push_back({to_double(vi->point().x()), to_double(vi->point().y()), to_double(vi->point().z())});
+		
+		typedef CGAL::Inverse_index<Vertex_const_iterator> Index;
+		Index index(P.vertices_begin(), P.vertices_end());
+		
+		o.faces.reserve(P.size_of_facets());
+		for(auto fi = P.facets_begin(); fi != P.facets_end(); ++fi)
+		{
+			auto hc = fi->facet_begin();
+			auto hc_end = hc;
+			
+			auto n = circulator_size(hc);
+			assert(n >= 3);
+			
+		    o.faces.emplace_back();
+		    object_t::face& f = o.faces.back();
+		    f.reserve(n);
+			do
+			{
+				f.push_back(index[Vertex_const_iterator(hc->vertex())]);
+				++hc;
+			} while(hc != hc_end);
+		}
+		return o;
+	}
+	else
+	{
+		throw std::runtime_error("polyhedron is not 2-manifold.");
+	}
+}
 
 void write_off(std::ostream& os, const polyhedron_t& poly)
 {

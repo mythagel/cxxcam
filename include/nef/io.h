@@ -26,9 +26,27 @@
 #define NEF_IO_H_
 #include "polyhedron.h"
 #include <iosfwd>
+#include <vector>
 
 namespace nef
 {
+
+// TODO better name
+struct object_t
+{
+	struct vertex
+	{
+		double x;
+		double y;
+		double z;
+	};
+	typedef std::vector<std::size_t> face;
+	
+	std::vector<vertex> vertices;
+	std::vector<face> faces;
+};
+
+object_t to_object(const polyhedron_t& poly);
 
 void write_off(std::ostream&, const polyhedron_t& poly);
 
