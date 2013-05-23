@@ -33,24 +33,3 @@ Stock::Stock(const nef::polyhedron_t& nef)
 {
 }
 
-bool Stock::Write(std::ostream& os, Format format) const
-{
-	if(!os)
-		return false;
-				
-	switch(format)
-	{
-		case Format::OFF:
-		{
-			write_off(os, Model);
-			return true;
-		}
-		case Format::NEF:
-		{
-			os << Model;
-			return true;
-		}
-	}
-	
-	return false;
-}

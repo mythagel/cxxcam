@@ -27,6 +27,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <iosfwd>
 #include "GCodeWord.h"
 
 class Axis;
@@ -44,6 +45,7 @@ double MillSpindleSpeed(double cutting_speed, double cutter_diameter);
  */
 class Machine
 {
+friend std::ostream& operator<<(std::ostream& os, const Machine& machine);
 private:
 	static const gcode::Word G00;
 	static const gcode::Word G01;
@@ -171,6 +173,7 @@ public:
 	void AddSpindleDiscrete(unsigned long discrete_value);
 
 	void SetStock(const Stock& stock);
+	Stock GetStock() const;
 
 	// CNC Setup
 
@@ -253,7 +256,9 @@ public:
 	};
 	std::vector<line_t> Generate() const;
 
-	~Machine();
+	~Machine() = default;
 };
+
+std::ostream& operator<<(std::ostream& os, const Machine& machine);
 
 #endif /* MACHINE_H_ */

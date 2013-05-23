@@ -38,16 +38,8 @@ struct Stock
 	std::shared_ptr<Material_t> Material;
 	nef::polyhedron_t Model;
 
-	enum class Format
-	{
-		NEF,
-		OFF
-	};
-
 	Stock() = default;
 	Stock(const nef::polyhedron_t& nef);
-
-	bool Write(std::ostream& os, Format format = Format::NEF) const;
 };
 
 #endif /* STOCK_H_ */

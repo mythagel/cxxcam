@@ -412,6 +412,10 @@ void Machine::SetStock(const Stock& stock)
 {
 	m_Private->m_Stock = stock;
 }
+Stock Machine::GetStock() const
+{
+	m_Private->m_Stock;
+}
 
 void Machine::SetTool(int id)
 {
@@ -1073,12 +1077,11 @@ std::vector<Machine::line_t> Machine::Generate() const
 	return lines;
 }
 
-Machine::~Machine()
+std::ostream& operator<<(std::ostream& os, const Machine& machine)
 {
-	m_Private->m_GCode.AddLine(Line(M02, "End of program."));
-
-	std::cout << m_Private->m_GCode;
-	
-	m_Private->m_Stock.Write(std::cout, Stock::Format::OFF);
+	auto gcode = machine.m_Private->m_GCode;
+	gcode.AddLine(Line(Machine::M02, "End of program."));
+	os << gcode;
+	return os;
 }
 
