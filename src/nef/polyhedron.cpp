@@ -117,6 +117,10 @@ bool polyhedron_t::operator>=(const polyhedron_t& poly) const
 	return priv->nef >= poly.priv->nef;
 }
 
+polyhedron_t::~polyhedron_t()
+{
+}
+
 std::ostream& operator<<(std::ostream& os, const polyhedron_t& poly)
 {
 	return os << poly.priv->nef;

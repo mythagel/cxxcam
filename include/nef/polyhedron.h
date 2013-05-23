@@ -81,6 +81,8 @@ public:
 	bool operator>(const polyhedron_t& poly) const;
 	bool operator<=(const polyhedron_t& poly) const;
 	bool operator>=(const polyhedron_t& poly) const;
+	
+	~polyhedron_t();
 };
 
 std::ostream& operator<<(std::ostream&, const polyhedron_t&);
