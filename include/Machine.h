@@ -256,7 +256,7 @@ public:
 	};
 	std::vector<line_t> Generate() const;
 
-	~Machine() = default;
+	~Machine();
 };
 
 std::ostream& operator<<(std::ostream& os, const Machine& machine);

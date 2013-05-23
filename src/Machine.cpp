@@ -1077,6 +1077,10 @@ std::vector<Machine::line_t> Machine::Generate() const
 	return lines;
 }
 
+Machine::~Machine()
+{
+}
+
 std::ostream& operator<<(std::ostream& os, const Machine& machine)
 {
 	auto gcode = machine.m_Private->m_GCode;
