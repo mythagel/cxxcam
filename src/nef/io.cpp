@@ -16,34 +16,32 @@
  */
 
 /*
- * ops.h
+ * io.cpp
  *
- *  Created on: 06/05/2013
+ *  Created on: 23/05/2013
  *      Author: nicholas
  */
-
-#ifndef NEF_OPS_H_
-#define NEF_OPS_H_
-#include "polyhedron.h"
-#include <vector>
+#include "io.h"
+#include "private.h"
+#include <CGAL/IO/Polyhedron_iostream.h>
+#include <ostream>
 
 namespace nef
 {
 
-struct polyline_t
+void write_off(std::ostream& os, const polyhedron_t& poly)
 {
-	struct point
+	if(poly.priv->nef.is_simple())
 	{
-		double x;
-		double y;
-		double z;
-	};
-	std::vector<point> line;
-};
-
-polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path);
-double volume(const polyhedron_t& polyhedron);
+		Polyhedron_3 P;
+		poly.priv->nef.convert_to_polyhedron(P);
+		os << P;
+	}
+	else
+	{
+		throw std::runtime_error("polyhedron is not 2-manifold.");
+	}
+}
 
 }
 
-#endif /* NEF_OPS_H_ */

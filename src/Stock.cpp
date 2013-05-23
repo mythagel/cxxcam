@@ -25,7 +25,7 @@
 #include "Stock.h"
 #include <cassert>
 #include <fstream>
-#include "nef/ops.h"
+#include "nef/io.h"
 #include <ostream>
 
 Stock::Stock(const nef::polyhedron_t& nef)

@@ -27,6 +27,7 @@
 #include <utility>
 #include <cassert>
 #include <stdexcept>
+#include <algorithm>
 
 #include "cgal.h"
 
@@ -42,9 +43,6 @@
 
 // glide
 #include <CGAL/minkowski_sum_3.h>
-
-// Output
-#include <CGAL/IO/Polyhedron_iostream.h>
 
 // Meshing
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Inexact_Kernel;
@@ -108,32 +106,15 @@ double volume(const polyhedron_t& polyhedron)
 
 	auto triangulation = c3t3.triangulation();
 
-	double volume(0);
-//	std::vector<double> volumes;
-//	volumes.reserve(triangulation.number_of_finite_cells());
+	std::vector<double> volumes;
+	volumes.reserve(triangulation.number_of_finite_cells());
 	for(auto it = triangulation.finite_cells_begin(); it != triangulation.finite_cells_end(); ++it)
 	{
 		auto tetr = triangulation.tetrahedron(it);
-		volume += tetr.volume();
+		volumes.push_back(tetr.volume());
 	}
-//	std::sort(volumes.begin(), volumes.end());
-//	return std::accumulate(volumes.begin(), volumes.end(), 0.0);
-
-	return volume;
-}
-
-void write_off(std::ostream& os, const polyhedron_t& poly)
-{
-	if(poly.priv->nef.is_simple())
-	{
-		Polyhedron_3 P;
-		poly.priv->nef.convert_to_polyhedron(P);
-		os << P;
-	}
-	else
-	{
-		throw std::runtime_error("polyhedron is not 2-manifold.");
-	}
+	std::sort(volumes.begin(), volumes.end());
+	return std::accumulate(volumes.begin(), volumes.end(), 0.0);
 }
 
 }
