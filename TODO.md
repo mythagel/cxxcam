@@ -56,12 +56,12 @@
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
  * GCode Generation
-    - GCode generated to json array
-    - Export generated GCode as lines and sequences of words (needed for js post-processing)
-    - Export generated GCode as string
+    - ~~GCode generated to json array~~
+    - ~~Export generated GCode as lines and sequences of words (needed for js post-processing)~~
+    - ~~Export generated GCode as string~~ (Unneeded - can be generated in js from json)
     - Aligned comments within a gcode block
-    - Generate according to Variant (e.g. gcode case and precision are unimplemented)
-       - Implement 6 digit precision output.
+    - ~~Generate according to Variant (e.g. gcode case and precision are unimplemented)~~
+       - ~~Implement 6 digit precision output.~~
     - Document in comments relevant parameters (Stock dimensions, position, tools used, etc.)
  * Machine zero & Limits
  * One file is the complete part
