@@ -9,17 +9,11 @@ using namespace nef;
 Invalid memory accesses under valgrind exposed with this test.
 */
 
-polyhedron_t make_tool()
+int main()
 {
 	auto shank = make_cone(0, 0, 100, 0, 0, 40, 10, 10, 64);
 	auto flutes = make_cone(0, 0, 40, 0, 0, 0, 10, 10, 64);
-	return shank + flutes;
-}
-
-int main()
-{
-	auto p4 = make_tool();
-	write_off(std::cout, p4);
-	
+	auto x = shank + flutes;
+	write_off(std::cout, x);
 	return 0;
 }
