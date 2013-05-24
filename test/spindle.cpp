@@ -7,7 +7,7 @@ int main()
 		Spindle s;
 		s.AddRange(0, 3000);
 		std::cerr << "Machine Range: " << s.str() << "\n";
-		std::cerr << "500 RPM: " << s.Normalise(500) << ", 4000 RPM: " << s.Normalise(4000) << "\n";
+		std::cerr << "500 RPM: " << s.Normalise(500) << ", 3100 RPM: " << s.Normalise(3100) << "\n";
 	}
 	{
 		Spindle s;
@@ -27,7 +27,22 @@ int main()
 		s.AddDiscrete(10000);
 		s.AddDiscrete(1500);
 		std::cerr << "Machine Range: " << s.str() << "\n";
-		std::cerr << "500 RPM: " << s.Normalise(500) << ", 1600 RPM: " << s.Normalise(1600) << ", 2000 RPM: " << s.Normalise(2000) << "\n";
+		std::cerr << "500 RPM: " << s.Normalise(500) << ", 1600 RPM: " << s.Normalise(1600) << ", 2900 RPM: " << s.Normalise(2900) << "\n";
+	}
+	
+	{
+		Spindle s;
+		s.AddRange(0, 3000);
+		std::cerr << "Machine Range: " << s.str() << "\n";
+		
+		try
+		{
+			s.Normalise(4000);
+		}
+		catch(const std::exception& ex)
+		{
+			// TODO exception expected!
+		}
 	}
 	return 0;
 }
