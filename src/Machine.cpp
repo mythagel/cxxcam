@@ -414,7 +414,7 @@ void Machine::SetStock(const Stock& stock)
 }
 Stock Machine::GetStock() const
 {
-	m_Private->m_Stock;
+	return m_Private->m_Stock;
 }
 
 void Machine::SetTool(int id)
