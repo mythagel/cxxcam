@@ -7,9 +7,11 @@ using namespace nef;
 
 int main()
 {
-	auto x1 = make_sphere(0, 0, 0, 2, 16);
-	auto x2 = make_sphere(1, 1, 1, 1, 16);
+	auto empty = to_object(polyhedron_t{});
+	
+	auto x1 = make_box(0, 0, 0, 1, 1, 1);
+	auto x2 = make_box(0, 0, 1, 2, 2, 2);
 	auto x = x1 + x2;
-	write_off(std::cout, x);
+	auto o = to_object(x);
 	return 0;
 }

@@ -9,7 +9,7 @@ MACRO(MAKE_TEST testname)
 	ADD_DEPENDENCIES(check ${testname})
 ENDMACRO()
 
-FOREACH(test mill_basic lathe_basic spindle nef_basic nef_tools nef_cube nef_cube2 nef_sphere)
+FOREACH(test mill_basic lathe_basic spindle nef_basic nef_tools nef_cube nef_cube2 nef_sphere nef_cube_io nef_sphere_io)
 	MAKE_TEST(${test})
 ENDFOREACH()
 
