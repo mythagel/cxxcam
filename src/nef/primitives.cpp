@@ -26,6 +26,7 @@
 #include "private.h"
 #include "cgal.h"
 #include "Geometry.h"
+#include <cassert>
 
 namespace nef
 {
@@ -36,6 +37,8 @@ polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t sli
 	
 	Polyhedron_3 P;
 	make_sphere(Sphere(Point(x, y, z), r, slices), P);
+	assert(P.is_valid());
+	assert(P.is_closed());
 
 	auto priv = std::make_shared<polyhedron_t::private_t>( P );
 	return { priv };
@@ -47,7 +50,9 @@ polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, dou
 	
 	Polyhedron_3 P;
 	make_box(Box(x1, y1, z1, x2, y2, z2), P);
-	
+	assert(P.is_valid());
+	assert(P.is_closed());
+
 	auto priv = std::make_shared<polyhedron_t::private_t>( P );
 	return { priv };
 }
@@ -58,7 +63,9 @@ polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, do
 	
 	Polyhedron_3 P;
 	make_cone(Cone(Point(x1, y1, z1), Point(x2, y2, z2), top_radius, bottom_radius, slices), P);
-	
+	assert(P.is_valid());
+	assert(P.is_closed());
+
 	auto priv = std::make_shared<polyhedron_t::private_t>( P );
 	return { priv };
 }

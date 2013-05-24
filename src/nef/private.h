@@ -26,6 +26,7 @@
 #define NEF_POLYHEDRON_PRIVATE_H_
 #include "polyhedron.h"
 #include "cgal.h"
+#include <cassert>
 
 namespace nef
 {
@@ -36,7 +37,15 @@ struct polyhedron_t::private_t
 	private_t(const Nef_polyhedron_3& nef)
 	 : nef(nef)
 	{
+		regularise();
+		assert(nef.is_simple());
 	}
+	
+	inline void regularise()
+	{
+		nef = nef.regularization();
+	}
+	
 	Nef_polyhedron_3 nef;
 };
 

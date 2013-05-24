@@ -71,24 +71,28 @@ polyhedron_t& polyhedron_t::operator*=(const polyhedron_t& poly)
 {
 	ensure_unique();
 	priv->nef *= poly.priv->nef;
+	priv->regularise();
 	return *this;
 }
 polyhedron_t& polyhedron_t::operator+=(const polyhedron_t& poly)
 {
 	ensure_unique();
 	priv->nef += poly.priv->nef;
+	priv->regularise();
 	return *this;
 }
 polyhedron_t& polyhedron_t::operator-=(const polyhedron_t& poly)
 {
 	ensure_unique();
 	priv->nef -= poly.priv->nef;
+	priv->regularise();
 	return *this;
 }
 polyhedron_t& polyhedron_t::operator^=(const polyhedron_t& poly)
 {
 	ensure_unique();
 	priv->nef ^= poly.priv->nef;
+	priv->regularise();
 	return *this;
 }
 
