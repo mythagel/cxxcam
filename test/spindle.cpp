@@ -30,20 +30,19 @@ int main()
 		std::cerr << "500 RPM: " << s.Normalise(500) << ", 1600 RPM: " << s.Normalise(1600) << ", 2900 RPM: " << s.Normalise(2900) << "\n";
 	}
 	
+	Spindle s;
+	s.AddRange(0, 3000);
+	std::cerr << "Machine Range: " << s.str() << "\n";
+	
+	try
 	{
-		Spindle s;
-		s.AddRange(0, 3000);
-		std::cerr << "Machine Range: " << s.str() << "\n";
-		
-		try
-		{
-			s.Normalise(4000);
-		}
-		catch(const std::exception& ex)
-		{
-			// TODO exception expected!
-		}
+		s.Normalise(4000);
 	}
-	return 0;
+	catch(const std::exception& ex)
+	{
+		// TODO exception expected!
+		return 0;
+	}
+	return 1;
 }
 
