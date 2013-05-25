@@ -41,11 +41,11 @@ Line::Line(const Word& word, const std::string& comment)
 	m_Comment = comment;
 }
 
-Line::const_iterator Line::begin() const
+auto Line::begin() const -> const_iterator
 {
 	return m_Words.begin();
 }
-Line::const_iterator Line::end() const
+auto Line::end() const -> const_iterator
 {
 	return m_Words.end();
 }

@@ -42,11 +42,11 @@ MachineState Block::State() const
 	return m_InitialState;
 }
 
-Block::const_iterator Block::begin() const
+auto Block::begin() const -> const_iterator
 {
 	return m_Lines.begin();
 }
-Block::const_iterator Block::end() const
+auto Block::end() const -> const_iterator
 {
 	return m_Lines.end();
 }

@@ -64,11 +64,11 @@ Code::Code(const std::string& variant)
 	}
 }
 
-Code::const_iterator Code::begin() const
+auto Code::begin() const -> const_iterator
 {
 	return m_Blocks.begin();
 }
-Code::const_iterator Code::end() const
+auto Code::end() const -> const_iterator
 {
 	return m_Blocks.end();
 }
