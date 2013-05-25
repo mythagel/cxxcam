@@ -28,6 +28,7 @@
 #include <memory>
 #include <vector>
 #include <iosfwd>
+#include <utility>
 #include "GCodeWord.h"
 
 class Axis;
@@ -212,8 +213,10 @@ public:
 	// Keep feed rate up and allow deviation by p units from programmed path + fold paths colinear by q units.
 	void AccuracyPathBlending(double p, double q);
 
-	void SetCoordinateSystem(CoordinateSystem cs);
+	// Stateful properties
+
 	// TODO possible functions to set coordinate system offsets (i.e. G10 L2)
+	void SetCoordinateSystem(CoordinateSystem cs);
 	void SetMotion(Motion m);
 	void SetArcMotion(Motion m);
 	void SetUnits(Units u);
@@ -223,7 +226,6 @@ public:
 
 	void StartSpindle(unsigned long s, Rotation r = Rotation::Clockwise);
 	void StopSpindle();
-
 
 	// CNC Machine Setup
 
@@ -241,11 +243,20 @@ public:
 	void SetTool(int id);
 	void ToolChange(int id);
 
+	CoordinateSystem GetCoordinateSystem() const;
+	Motion GetMotion() const;
+	Motion GetArcMotion() const;
+	Units GetUnits() const;
+	Plane GetPlane() const;
+	std::pair<double, FeedRateMode> GetFeedRate() const;
+	std::pair<unsigned long, Rotation> GetSpindleState() const;
+	Tool GetTool() const;
+
 	void NewBlock(const std::string& name);
 	void EndBlock(int restore = block_PreserveState);
 
 	void OptionalPause(const std::string& comment = std::string());
-
+	void Comment(const std::string& comment);
 
 	// CNC Motion
 

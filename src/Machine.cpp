@@ -528,6 +528,51 @@ void Machine::ToolChange(int id)
 	}
 }
 
+auto Machine::GetCoordinateSystem() const -> CoordinateSystem
+{
+	auto& m_State = m_Private->m_State;
+	return m_State.m_CoordinateSystem;
+}
+auto Machine::GetMotion() const -> Motion
+{
+	auto& m_State = m_Private->m_State;
+	return m_State.m_Motion;
+}
+auto Machine::GetArcMotion() const -> Motion
+{
+	auto& m_State = m_Private->m_State;
+	return m_State.m_ArcMotion;
+}
+auto Machine::GetUnits() const -> Units
+{
+	auto& m_State = m_Private->m_State;
+	return m_State.m_Units;
+}
+auto Machine::GetPlane() const -> Plane
+{
+	auto& m_State = m_Private->m_State;
+	return m_State.m_Plane;
+}
+auto Machine::GetFeedRate() const -> std::pair<double, FeedRateMode>
+{
+	auto& m_State = m_Private->m_State;
+	return {m_State.m_FeedRate, m_State.m_FeedRateMode};
+}
+auto Machine::GetSpindleState() const -> std::pair<unsigned long, Rotation>
+{
+	auto& m_State = m_Private->m_State;
+	return {m_State.m_SpindleSpeed, m_State.m_SpindleRotation};
+}
+Tool Machine::GetTool() const
+{
+	auto& m_State = m_Private->m_State;
+	Tool tool;
+	if(m_Private->m_ToolTable.Get(m_State.m_CurrentTool, &tool))
+		return tool;
+	
+	throw std::runtime_error("Unknown tool");
+}
+
 void Machine::NewBlock(const std::string& name)
 {
 	m_Private->m_GCode.NewBlock(name, m_Private->m_State);
@@ -602,6 +647,11 @@ void Machine::AccuracyPathBlending(double p, double q)
 void Machine::OptionalPause(const std::string& comment)
 {
 	m_Private->m_GCode.AddLine(Line(M01, comment));
+}
+
+void Machine::Comment(const std::string& comment)
+{
+	m_Private->m_GCode.AddLine(Line(comment));
 }
 
 void Machine::SetCoordinateSystem(CoordinateSystem cs)
@@ -1154,7 +1204,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	// arc from start to end expand tool along path.
 }
 
-std::vector<Machine::line_t> Machine::Generate() const
+auto Machine::Generate() const -> std::vector<line_t>
 {
 	auto& m_GCode = m_Private->m_GCode;
 	
