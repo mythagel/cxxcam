@@ -82,7 +82,16 @@ const Word Machine::G20(Word::G, 20);
 const Word Machine::G21(Word::G, 21);
 const Word Machine::G40(Word::G, 40);
 const Word Machine::G49(Word::G, 49);
+
 const Word Machine::G54(Word::G, 54);
+const Word Machine::G55(Word::G, 55);
+const Word Machine::G56(Word::G, 56);
+const Word Machine::G57(Word::G, 57);
+const Word Machine::G58(Word::G, 58);
+const Word Machine::G59(Word::G, 59);
+const Word Machine::G59_1(Word::G, 59.1);
+const Word Machine::G59_2(Word::G, 59.2);
+const Word Machine::G59_3(Word::G, 59.3);
 
 const Word Machine::G61(Word::G, 61);
 const Word Machine::G61_1(Word::G, 61.1);
@@ -229,8 +238,49 @@ void Machine::Preamble()
 	// Cancel Tool Length Compensation
 	line += G49;
 
-	// Select coordinate system 1
-	line += G54;
+	// Select coordinate system
+	switch(m_State.m_CoordinateSystem)
+	{
+		case CoordinateSystem::Active:
+			throw std::logic_error("Active coordinate system invalid in preamble.");
+			break;
+		case CoordinateSystem::P1:
+			c << "CS 1  ";
+			line += G54;
+			break;
+		case CoordinateSystem::P2:
+			c << "CS 2  ";
+			line += G55;
+			break;
+		case CoordinateSystem::P3:
+			c << "CS 3  ";
+			line += G56;
+			break;
+		case CoordinateSystem::P4:
+			c << "CS 4  ";
+			line += G57;
+			break;
+		case CoordinateSystem::P5:
+			c << "CS 5  ";
+			line += G58;
+			break;
+		case CoordinateSystem::P6:
+			c << "CS 6  ";
+			line += G59;
+			break;
+		case CoordinateSystem::P7:
+			c << "CS 7  ";
+			line += G59_1;
+			break;
+		case CoordinateSystem::P8:
+			c << "CS 8  ";
+			line += G59_2;
+			break;
+		case CoordinateSystem::P9:
+			c << "CS 9  ";
+			line += G59_3;
+			break;
+	}
 
 	// Cancel canned cycles
 	line += G80;
@@ -498,6 +548,8 @@ void Machine::EndBlock(int restore)
 			SetUnits(saved_state.m_Units);
 		if(restore & block_RestorePlane)
 			SetPlane(saved_state.m_Plane);
+		if(restore & block_RestoreCoordinateSystem)
+			SetCoordinateSystem(saved_state.m_CoordinateSystem);
 		if(restore & block_RestoreMotion)
 			SetMotion(saved_state.m_Motion);
 		if(restore & block_RestoreArcMotion)
@@ -550,6 +602,51 @@ void Machine::AccuracyPathBlending(double p, double q)
 void Machine::OptionalPause(const std::string& comment)
 {
 	m_Private->m_GCode.AddLine(Line(M01, comment));
+}
+
+void Machine::SetCoordinateSystem(CoordinateSystem cs)
+{
+	auto& m_State = m_Private->m_State;
+	auto& m_GCode = m_Private->m_GCode;
+
+	if(m_State.m_CoordinateSystem != cs)
+	{
+		m_State.m_CoordinateSystem = cs;
+
+		switch(m_State.m_CoordinateSystem)
+		{
+			case CoordinateSystem::Active:
+				throw std::runtime_error("Cannot change to Active coordinate system");
+				break;
+			case CoordinateSystem::P1:
+				m_GCode.AddLine(Line(G54, "Switch to CS 1"));
+				break;
+			case CoordinateSystem::P2:
+				m_GCode.AddLine(Line(G55, "Switch to CS 2"));
+				break;
+			case CoordinateSystem::P3:
+				m_GCode.AddLine(Line(G56, "Switch to CS 3"));
+				break;
+			case CoordinateSystem::P4:
+				m_GCode.AddLine(Line(G57, "Switch to CS 4"));
+				break;
+			case CoordinateSystem::P5:
+				m_GCode.AddLine(Line(G58, "Switch to CS 5"));
+				break;
+			case CoordinateSystem::P6:
+				m_GCode.AddLine(Line(G59, "Switch to CS 6"));
+				break;
+			case CoordinateSystem::P7:
+				m_GCode.AddLine(Line(G59_1, "Switch to CS 7"));
+				break;
+			case CoordinateSystem::P8:
+				m_GCode.AddLine(Line(G59_2, "Switch to CS 8"));
+				break;
+			case CoordinateSystem::P9:
+				m_GCode.AddLine(Line(G59_3, "Switch to CS 9"));
+				break;
+		}
+	}
 }
 
 void Machine::SetMotion(Motion m)

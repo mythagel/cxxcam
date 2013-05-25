@@ -32,6 +32,7 @@ struct MachineState
 	// Machine State
 	Machine::Units m_Units;
 	Machine::Plane m_Plane;
+	Machine::CoordinateSystem m_CoordinateSystem;
 	Machine::Motion m_Motion;
 	Machine::Motion m_ArcMotion;
 	Machine::FeedRateMode m_FeedRateMode;

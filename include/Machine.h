@@ -61,7 +61,16 @@ private:
 	static const gcode::Word G21;
 	static const gcode::Word G40;
 	static const gcode::Word G49;
+	
 	static const gcode::Word G54;
+	static const gcode::Word G55;
+	static const gcode::Word G56;
+	static const gcode::Word G57;
+	static const gcode::Word G58;
+	static const gcode::Word G59;
+	static const gcode::Word G59_1;
+	static const gcode::Word G59_2;
+	static const gcode::Word G59_3;
 
 	static const gcode::Word G61;
 	static const gcode::Word G61_1;
@@ -97,13 +106,14 @@ public:
 		block_RestoreState = ~0,
 		block_RestoreUnits = 1 << 0,
 		block_RestorePlane = 1 << 1,
-		block_RestoreMotion = 1 << 2,
-		block_RestoreArcMotion = 1 << 3,
-		block_RestoreFeedRateMode = 1 << 4,
-		block_RestoreFeedRate = 1 << 5,
-		block_RestoreSpindle = 1 << 6,
-		block_RestoreTool = 1 << 7,
-		block_RestorePosition = 1 << 8
+		block_RestoreCoordinateSystem = 1 << 2,
+		block_RestoreMotion = 1 << 3,
+		block_RestoreArcMotion = 1 << 4,
+		block_RestoreFeedRateMode = 1 << 5,
+		block_RestoreFeedRate = 1 << 6,
+		block_RestoreSpindle = 1 << 7,
+		block_RestoreTool = 1 << 8,
+		block_RestorePosition = 1 << 9
 	};
 
 	enum class Units
@@ -120,6 +130,20 @@ public:
 	    UV,
 	    WU,
 	    VW
+	};
+
+	enum class CoordinateSystem
+	{
+		Active,
+		P1,
+		P2,
+		P3,
+		P4,
+		P5,
+		P6,
+		P7,
+		P8,
+		P9
 	};
 
 	enum class Motion
@@ -188,6 +212,7 @@ public:
 	// Keep feed rate up and allow deviation by p units from programmed path + fold paths colinear by q units.
 	void AccuracyPathBlending(double p, double q);
 
+	void SetCoordinateSystem(CoordinateSystem cs);
 	void SetMotion(Motion m);
 	void SetArcMotion(Motion m);
 	void SetUnits(Units u);
