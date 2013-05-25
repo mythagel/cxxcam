@@ -264,7 +264,6 @@ public:
 
 	/*
 	 * Coordinated arc motion. Spindle must be on. Feedrate must be non-zero.
-	 * TODO Arcs.
 	 */
 	void Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& center, unsigned int turns = 1);
 
