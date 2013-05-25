@@ -213,6 +213,7 @@ public:
 	void AccuracyPathBlending(double p, double q);
 
 	void SetCoordinateSystem(CoordinateSystem cs);
+	// TODO possible functions to set coordinate system offsets (i.e. G10 L2)
 	void SetMotion(Motion m);
 	void SetArcMotion(Motion m);
 	void SetUnits(Units u);
