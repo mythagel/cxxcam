@@ -29,9 +29,9 @@
 
 ## High Level ##
  * Interface changes
-    - Experience shows that access to properties is needed
-    - Create interface with machine object with properties for tool, feed_rate etc.
-    - Allows read and write access through normal interface.
+    - ~~Experience shows that access to properties is needed~~
+    - ~~Create interface with machine object with properties for tool, feed_rate etc.~~
+    - ~~Allows read and write access through normal interface.~~
  * Create comments from js.
  * Work offsets (G54, etc)
     - More important than previously imagined.
