@@ -85,6 +85,8 @@ public:
 
 	std::string Name() const;
 	Type ToolType() const;
+	Mill GetMill() const;
+	Lathe GetLathe() const;
 };
 
 #endif /* TOOL_H_ */

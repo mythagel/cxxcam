@@ -77,3 +77,19 @@ Tool::Type Tool::ToolType() const
 	return m_Type;
 }
 
+auto Tool::GetMill() const -> Mill
+{
+	if(m_Type != Type::Mill)
+		throw std::logic_error("GetMill: Tool is not Mill type.");
+	
+	return m_Mill;
+}
+
+auto Tool::GetLathe() const -> Lathe
+{
+	if(m_Type != Type::Lathe)
+		throw std::logic_error("GetLathe: Tool is not Lathe type.");
+	
+	return m_Lathe;
+}
+
