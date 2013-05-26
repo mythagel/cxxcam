@@ -32,16 +32,16 @@
     - ~~Experience shows that access to properties is needed~~
     - ~~Create interface with machine object with properties for tool, feed_rate etc.~~
     - ~~Allows read and write access through normal interface.~~
- * Create comments from js.
- * Work offsets (G54, etc)
-    - More important than previously imagined.
+ * ~~Create comments from js.~~
+ * ~~Work offsets (G54, etc)~~
+    - ~~More important than previously imagined.~~
  * Auto feedrate / spindle speeds
     - ~~Enhance spindle to report spindle speed requests outside of some specified tolerance. (i.e. 30,000rpm request for machine with max 500rpm)~~
  * Complete Tool class
-    - Needs nef model loading / generation
+    - Needs nef model loading / ~~generation~~
     - ~~Store properties for different tool types~~
  * Complete Stock class
-    - Needs model loading & generation
+    - Needs model loading & ~~generation~~
     - Needs intersection tests
     - Needs material properties
     - Top of stock check at Z0
