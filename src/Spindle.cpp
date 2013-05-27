@@ -26,7 +26,7 @@
 #include <sstream>
 #include <cmath>
 #include <limits>
-#include <stdexcept>
+#include "Error.h"
 
 Spindle::Entry::Entry(unsigned long range_start, unsigned long range_end)
  : m_Type(type_Range), m_RangeStart(range_start), m_RangeEnd(range_end)
@@ -126,7 +126,7 @@ unsigned long Spindle::Normalise(unsigned long requested_speed) const
 	{
 		std::ostringstream s;
 		s << "Requested speed " << requested_speed << " outside of active tolerance (limit: " << m_Tolerance << "rpm; min: " << std::abs(min_distance) << ").";
-		throw std::runtime_error(s.str());
+		throw error(s.str());
 	}
 
 	return real_speed;

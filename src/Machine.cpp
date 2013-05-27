@@ -35,6 +35,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include "Error.h"
 
 namespace
 {
@@ -242,7 +243,7 @@ void Machine::Preamble()
 	switch(m_State.m_CoordinateSystem)
 	{
 		case CoordinateSystem::Active:
-			throw std::logic_error("Active coordinate system invalid in preamble.");
+			throw error("Active coordinate system invalid in preamble.");
 			break;
 		case CoordinateSystem::P1:
 			c << "CS 1  ";
@@ -437,11 +438,11 @@ bool Machine::AddTool(int id, const Tool& tool)
 	{
 		case Type::Mill:
 			if(tool.ToolType() != Tool::Type::Mill)
-				throw std::logic_error("Must use Mill tool with Mill.");
+				throw error("Must use Mill tool with Mill.");
 			break;
 		case Type::Lathe:
 			if(tool.ToolType() != Tool::Type::Lathe)
-				throw std::logic_error("Must use Lathe tool with Lathe.");
+				throw error("Must use Lathe tool with Lathe.");
 			break;
 	}
 	return m_Private->m_ToolTable.AddTool(id, tool);
@@ -486,7 +487,7 @@ void Machine::SetTool(int id)
 		// Unknown tool.
 		std::stringstream s;
 		s << "Preload Unknown tool id: " << id;
-		throw std::logic_error(s.str());
+		throw error(s.str());
 	}
 }
 void Machine::ToolChange(int id)
@@ -523,7 +524,7 @@ void Machine::ToolChange(int id)
 			// Unknown tool.
 			std::stringstream s;
 			s << "Unknown tool id: " << id;
-			throw std::logic_error(s.str());
+			throw error(s.str());
 		}
 	}
 }
@@ -570,7 +571,7 @@ Tool Machine::GetTool() const
 	if(m_Private->m_ToolTable.Get(m_State.m_CurrentTool, &tool))
 		return tool;
 	
-	throw std::runtime_error("Unknown tool");
+	throw error("Unknown tool");
 }
 
 void Machine::NewBlock(const std::string& name)
@@ -666,7 +667,7 @@ void Machine::SetCoordinateSystem(CoordinateSystem cs)
 		switch(m_State.m_CoordinateSystem)
 		{
 			case CoordinateSystem::Active:
-				throw std::runtime_error("Cannot change to Active coordinate system");
+				throw error("Cannot change to Active coordinate system");
 				break;
 			case CoordinateSystem::P1:
 				m_GCode.AddLine(Line(G54, "Switch to CS 1"));
@@ -1014,9 +1015,9 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	auto& m_State = m_Private->m_State;
 
 	if(m_State.m_SpindleRotation == Rotation::Stop)
-		throw std::logic_error("Spindle is stopped");
+		throw error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
-		throw std::logic_error("Feedrate is 0.0");
+		throw error("Feedrate is 0.0");
 
 	Line line;
 
@@ -1047,9 +1048,9 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	auto& m_State = m_Private->m_State;
 
 	if(m_State.m_SpindleRotation == Rotation::Stop)
-		throw std::logic_error("Spindle is stopped");
+		throw error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
-		throw std::logic_error("Feedrate is 0.0");
+		throw error("Feedrate is 0.0");
 	
 	Line line;
 	switch(dir)
@@ -1088,7 +1089,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 						break;
 					}
 					default:
-						throw std::runtime_error("Allowed axes: X, Y, & Z (Helix)");
+						throw error("Allowed axes: X, Y, & Z (Helix)");
 				}
 			}
 
@@ -1103,7 +1104,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 						break;
 					}
 					default:
-						throw std::runtime_error("Allowed offsets: I & J");
+						throw error("Allowed offsets: I & J");
 				}
 			}
 			break;
@@ -1128,7 +1129,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 						break;
 					}
 					default:
-						throw std::runtime_error("Allowed axes: X, Z, & Y (Helix)");
+						throw error("Allowed axes: X, Z, & Y (Helix)");
 				}
 			}
 
@@ -1143,7 +1144,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 						break;
 					}
 					default:
-						throw std::runtime_error("Allowed offsets: I & K");
+						throw error("Allowed offsets: I & K");
 				}
 			}
 			break;
@@ -1168,7 +1169,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 						break;
 					}
 					default:
-						throw std::runtime_error("Allowed axes: Y, Z, & X (Helix)");
+						throw error("Allowed axes: Y, Z, & X (Helix)");
 				}
 			}
 
@@ -1183,7 +1184,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 						break;
 					}
 					default:
-						throw std::runtime_error("Allowed offsets: J & K");
+						throw error("Allowed offsets: J & K");
 				}
 			}
 			break;
@@ -1191,7 +1192,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 		case Plane::UV:
 		case Plane::WU:
 		case Plane::VW:
-			throw std::logic_error("Arc defined only on Planes XY, ZX, & YZ");
+			throw error("Arc defined only on Planes XY, ZX, & YZ");
 			break;
 	}
 	

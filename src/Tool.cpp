@@ -24,7 +24,7 @@
 
 #include "Tool.h"
 #include "nef/primitives.h"
-#include <stdexcept>
+#include "Error.h"
 
 namespace
 {
@@ -48,7 +48,7 @@ nef::polyhedron_t make_mill_tool(const Tool::Mill& em)
 // Shank tapers to cutting diameter.
 //	auto shank = make_cone(0, 0, em.cutting_length+em.shank_length, 0, 0, em.cutting_length, em.shank_diameter, em.cutting_diameter, 64);
 
-	throw std::runtime_error("Unable to create tool geometry model");
+	throw error("Unable to create tool geometry model");
 }
 
 }
@@ -80,7 +80,7 @@ Tool::Type Tool::ToolType() const
 auto Tool::GetMill() const -> Mill
 {
 	if(m_Type != Type::Mill)
-		throw std::logic_error("GetMill: Tool is not Mill type.");
+		throw error("GetMill: Tool is not Mill type.");
 	
 	return m_Mill;
 }
@@ -88,7 +88,7 @@ auto Tool::GetMill() const -> Mill
 auto Tool::GetLathe() const -> Lathe
 {
 	if(m_Type != Type::Lathe)
-		throw std::logic_error("GetLathe: Tool is not Lathe type.");
+		throw error("GetLathe: Tool is not Lathe type.");
 	
 	return m_Lathe;
 }
