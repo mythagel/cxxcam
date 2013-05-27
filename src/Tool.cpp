@@ -46,6 +46,8 @@ nef::polyhedron_t make_mill_tool(const Tool::Mill& em)
 			auto flutes = make_cone(0, 0, em.cutting_length, 0, 0, 0, em.mill_diameter, em.mill_diameter, 64);
 			return shank + flutes;
 		}
+		default:
+			throw error("Unimplemented mill type.");
 	}
 
 // Shank tapers to cutting diameter.

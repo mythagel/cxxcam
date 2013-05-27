@@ -996,7 +996,7 @@ void Machine::StopSpindle()
 
 void Machine::Rapid(const std::vector<Axis>& axes)
 {
-	auto start = m_Private->m_State.m_Current;
+	//auto start = m_Private->m_State.m_Current;
 
 	Line line;
 	line += G00;
@@ -1007,13 +1007,13 @@ void Machine::Rapid(const std::vector<Axis>& axes)
 	}
 	m_Private->m_GCode.AddLine(line);
 	
-	auto end = m_Private->m_State.m_Current;
+	//auto end = m_Private->m_State.m_Current;
 	// calculate possible motion path (not a line but a polyhedron.)
 }
 
 void Machine::Linear(const std::vector<Axis>& axes)
 {
-	auto start = m_Private->m_State.m_Current;
+	//auto start = m_Private->m_State.m_Current;
 
 	auto& m_State = m_Private->m_State;
 
@@ -1040,13 +1040,13 @@ void Machine::Linear(const std::vector<Axis>& axes)
 
 	m_Private->m_GCode.AddLine(line);
 	
-	auto end = m_Private->m_State.m_Current;
+	//auto end = m_Private->m_State.m_Current;
 	// line from start to end expand tool along path and subtract tool path from stock.
 }
 
 void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& center, unsigned int turns)
 {
-	auto start = m_Private->m_State.m_Current;
+	//auto start = m_Private->m_State.m_Current;
 	
 	auto& m_State = m_Private->m_State;
 
@@ -1204,7 +1204,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 
 	m_Private->m_GCode.AddLine(line);
 	
-	auto end = m_Private->m_State.m_Current;
+	//auto end = m_Private->m_State.m_Current;
 	// arc from start to end expand tool along path.
 }
 
