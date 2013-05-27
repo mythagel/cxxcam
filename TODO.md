@@ -20,12 +20,11 @@
        * Finished model export
 
 ##Action Plan##
- 1. ~~Arcs are a required primitive~~
- 2. Write ~~some~~ more machining code using jscam
+ 1. Write ~~some~~ more machining code using jscam
     * Get ~~some~~ more usage experience
     * Manual everything(feed rate etc.)
     * Reproduce existing gcode programs
- 3. Complete model generation (i.e. remove material from stock object)
+ 2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
  * Auto feedrate / spindle speeds
