@@ -25,6 +25,8 @@
 #include "GCodeLine.h"
 #include <sstream>
 
+namespace cxxcam
+{
 namespace gcode
 {
 
@@ -94,3 +96,5 @@ std::string Line::debug_str() const
 }
 
 }
+}
+

@@ -25,6 +25,9 @@
 #ifndef OFFSET_H_
 #define OFFSET_H_
 
+namespace cxxcam
+{
+
 /*
  * TODO UDL type?
  */
@@ -69,5 +72,7 @@ public:
 	K();
 	explicit K(double value);
 };
+
+}
 
 #endif /* OFFSET_H_ */

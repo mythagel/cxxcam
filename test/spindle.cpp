@@ -2,6 +2,8 @@
 #include "Error.h"
 #include <iostream>
 
+using namespace cxxcam;
+
 int main()
 {
 	{

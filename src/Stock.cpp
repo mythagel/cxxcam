@@ -28,8 +28,13 @@
 #include "nef/io.h"
 #include <ostream>
 
+namespace cxxcam
+{
+
 Stock::Stock(const nef::polyhedron_t& nef)
  : Model(nef)
 {
+}
+
 }
 

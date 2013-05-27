@@ -25,6 +25,9 @@
 #ifndef AXIS_H_
 #define AXIS_H_
 
+namespace cxxcam
+{
+
 /*
  * TODO UDL type?
  * move_to(15.5_X, 4.0_Y)
@@ -93,5 +96,7 @@ public:
 	C();
 	explicit C(double value);
 };
+
+}
 
 #endif /* AXIS_H_ */

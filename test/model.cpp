@@ -2,6 +2,8 @@
 #include "Stock.h"
 #include "nef/io.h"
 
+using namespace cxxcam;
+
 int main()
 {
 	Machine m(Machine::Type::Mill, "LinuxCNC");

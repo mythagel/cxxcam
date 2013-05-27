@@ -29,6 +29,8 @@
 #include "GCodeLine.h"
 #include "MachineState.h"
 
+namespace cxxcam
+{
 namespace gcode
 {
 
@@ -64,6 +66,7 @@ public:
 	std::string debug_str() const;
 };
 
+}
 }
 
 #endif /* GCODEBLOCK_H_ */

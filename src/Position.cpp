@@ -26,9 +26,15 @@
 #include <sstream>
 #include <tuple>
 
+namespace cxxcam
+{
+
+namespace
+{
 auto to_tuple(const Position& pos) -> decltype(std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W))
 {
 	return std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W);
+}
 }
 
 Position::Position()
@@ -82,3 +88,6 @@ bool Position::operator!=(const Position& pos) const
 {
 	return to_tuple(*this) != to_tuple(pos);
 }
+
+}
+

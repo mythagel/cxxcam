@@ -24,6 +24,9 @@
 
 #include "ToolTable.h"
 
+namespace cxxcam
+{
+
 bool ToolTable::AddTool(int id, const Tool& tool)
 {
 	auto it = m_Tools.find(id);
@@ -51,3 +54,6 @@ bool ToolTable::RemoveTool(int id)
 	m_Tools.erase(it);
 	return true;
 }
+
+}
+

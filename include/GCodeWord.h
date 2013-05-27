@@ -27,6 +27,8 @@
 #include <string>
 #include <iosfwd>
 
+namespace cxxcam
+{
 namespace gcode
 {
 
@@ -77,6 +79,7 @@ public:
 std::string to_string(Word::Code code);
 std::ostream& operator<<(std::ostream& os, const Word& word);
 
+}
 }
 
 #endif /* GCODEWORD_H_ */

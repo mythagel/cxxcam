@@ -24,6 +24,9 @@
 
 #include "Offset.h"
 
+namespace cxxcam
+{
+
 Offset::Offset(Type type)
  : m_Type(type), m_Value()
 {
@@ -69,3 +72,6 @@ K::K(double value)
  : Offset(Type::K, value)
 {
 }
+
+}
+

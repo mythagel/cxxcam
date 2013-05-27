@@ -46,6 +46,9 @@ std::unique_ptr<T> make_unique(Args&&... args)
 }
 }
 
+namespace cxxcam
+{
+
 using gcode::Word;
 using gcode::Line;
 using gcode::Block;
@@ -1235,5 +1238,7 @@ std::ostream& operator<<(std::ostream& os, const Machine& machine)
 	gcode.AddLine(Line(Machine::M02, "End of program."));
 	os << gcode;
 	return os;
+}
+
 }
 

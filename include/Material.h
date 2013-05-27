@@ -26,6 +26,9 @@
 #define MATERIAL_H_
 #include <string>
 
+namespace cxxcam
+{
+
 /*
  * A representation of the material the stock is made out of.
  *
@@ -59,5 +62,7 @@ public:
 	std::string Name() const;
 	double Hardness() const;
 };
+
+}
 
 #endif /* MATERIAL_H_ */

@@ -26,6 +26,9 @@
 #include "nef/primitives.h"
 #include "Error.h"
 
+namespace cxxcam
+{
+
 namespace
 {
 
@@ -91,5 +94,7 @@ auto Tool::GetLathe() const -> Lathe
 		throw error("GetLathe: Tool is not Lathe type.");
 	
 	return m_Lathe;
+}
+
 }
 

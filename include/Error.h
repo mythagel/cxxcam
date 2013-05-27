@@ -26,6 +26,9 @@
 #define ERROR_H_
 #include <stdexcept>
 
+namespace cxxcam
+{
+
 class error : public std::runtime_error
 {
 public:
@@ -34,5 +37,7 @@ public:
 	{
 	}
 };
+
+}
 
 #endif /* ERROR_H_ */

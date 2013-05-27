@@ -24,6 +24,9 @@
 
 #include "Material.h"
 
+namespace cxxcam
+{
+
 Material_t::Material_t(const std::string& name, double brinell)
  : m_Name(name), m_Brinell(brinell)
 {
@@ -38,3 +41,6 @@ double Material_t::Hardness() const
 {
 	return m_Brinell;
 }
+
+}
+

@@ -27,6 +27,9 @@
 #include <string>
 #include "nef/polyhedron.h"
 
+namespace cxxcam
+{
+
 /*
  * Representation of the cutting tool used to remove material from the Stock.
  */
@@ -88,5 +91,7 @@ public:
 	Mill GetMill() const;
 	Lathe GetLathe() const;
 };
+
+}
 
 #endif /* TOOL_H_ */

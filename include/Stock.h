@@ -29,6 +29,9 @@
 #include "nef/polyhedron.h"
 #include <iosfwd>
 
+namespace cxxcam
+{
+
 /*
  * Stores a description and model of the stock from which material will be removed.
  * Also should reference properties on the material the stock is made out of.
@@ -41,5 +44,7 @@ struct Stock
 	Stock() = default;
 	Stock(const nef::polyhedron_t& nef);
 };
+
+}
 
 #endif /* STOCK_H_ */

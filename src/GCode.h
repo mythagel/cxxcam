@@ -30,6 +30,8 @@
 #include <string>
 #include <iosfwd>
 
+namespace cxxcam
+{
 namespace gcode
 {
 
@@ -82,6 +84,7 @@ public:
 
 std::ostream& operator<<(std::ostream& os, const Code& gcode);
 
+}
 }
 
 #endif /* GCODE_H_ */

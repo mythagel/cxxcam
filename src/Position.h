@@ -26,6 +26,9 @@
 #define POSITION_H_
 #include <string>
 
+namespace cxxcam
+{
+
 struct Position
 {
 	double X;
@@ -47,5 +50,7 @@ struct Position
 	bool operator==(const Position& pos) const;
 	bool operator!=(const Position& pos) const;
 };
+
+}
 
 #endif /* POSITION_H_ */

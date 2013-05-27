@@ -28,6 +28,9 @@
 #include <limits>
 #include "Error.h"
 
+namespace cxxcam
+{
+
 Spindle::Entry::Entry(unsigned long range_start, unsigned long range_end)
  : m_Type(type_Range), m_RangeStart(range_start), m_RangeEnd(range_end)
 {
@@ -122,7 +125,7 @@ unsigned long Spindle::Normalise(unsigned long requested_speed) const
 		}
 	}
 
-	if(std::abs(min_distance) > m_Tolerance)
+	if(static_cast<unsigned long>(std::abs(min_distance)) > m_Tolerance)
 	{
 		std::ostringstream s;
 		s << "Requested speed " << requested_speed << " outside of active tolerance (limit: " << m_Tolerance << "rpm; min: " << std::abs(min_distance) << ").";
@@ -164,3 +167,6 @@ std::string Spindle::str() const
 
 	return s.str();
 }
+
+}
+

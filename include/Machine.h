@@ -31,6 +31,9 @@
 #include <utility>
 #include "GCodeWord.h"
 
+namespace cxxcam
+{
+
 class Axis;
 class Offset;
 class Tool;
@@ -296,5 +299,7 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const Machine& machine);
+
+}
 
 #endif /* MACHINE_H_ */

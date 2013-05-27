@@ -27,6 +27,9 @@
 #include "Position.h"
 #include "Machine.h"
 
+namespace cxxcam
+{
+
 struct MachineState
 {
 	// Machine State
@@ -49,5 +52,7 @@ struct MachineState
 	bool operator==(const MachineState& state) const;
 	bool operator!=(const MachineState& state) const;
 };
+
+}
 
 #endif /* MACHINESTATE_H_ */

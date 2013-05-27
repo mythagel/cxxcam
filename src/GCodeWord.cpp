@@ -28,6 +28,8 @@
 #include <stdexcept>
 #include <iomanip>
 
+namespace cxxcam
+{
 namespace gcode
 {
 
@@ -137,3 +139,5 @@ std::ostream& operator<<(std::ostream& os, const Word& word)
 }
 
 }
+}
+

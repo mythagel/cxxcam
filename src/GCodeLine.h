@@ -28,6 +28,8 @@
 #include <string>
 #include "GCodeWord.h"
 
+namespace cxxcam
+{
 namespace gcode
 {
 
@@ -56,6 +58,7 @@ public:
 	std::string debug_str() const;
 };
 
+}
 }
 
 #endif /* GCODELINE_H_ */

@@ -27,6 +27,9 @@
 #include <map>
 #include "Tool.h"
 
+namespace cxxcam
+{
+
 class ToolTable
 {
 private:
@@ -36,5 +39,7 @@ public:
 	bool Get(int id, Tool* tool);
 	bool RemoveTool(int id);
 };
+
+}
 
 #endif /* TOOLTABLE_H_ */

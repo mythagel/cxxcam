@@ -24,6 +24,9 @@
 
 #include "Axis.h"
 
+namespace cxxcam
+{
+
 Axis::Axis(Type type)
  : m_Type(type), m_Value()
 {
@@ -96,3 +99,6 @@ C::C(double value)
  : Axis(Type::C, value)
 {
 }
+
+}
+

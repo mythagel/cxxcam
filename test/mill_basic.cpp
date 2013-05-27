@@ -2,6 +2,8 @@
 #include "Tool.h"
 #include "Axis.h"
 
+using namespace cxxcam;
+
 int main()
 {
 	Machine m(Machine::Type::Mill, "LinuxCNC");

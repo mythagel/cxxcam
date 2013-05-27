@@ -27,6 +27,8 @@
 #include <algorithm>
 #include <iterator>
 
+namespace cxxcam
+{
 namespace gcode
 {
 
@@ -152,3 +154,5 @@ std::ostream& operator<<(std::ostream& os, const Code& gcode)
 }
 
 }
+}
+

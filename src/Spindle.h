@@ -27,6 +27,9 @@
 #include <string>
 #include <set>
 
+namespace cxxcam
+{
+
 /*
  * Represents real spindle speeds attainable by a particular machine.
  */
@@ -76,5 +79,7 @@ public:
 
 	std::string str() const;
 };
+
+}
 
 #endif /* SPINDLE_H_ */

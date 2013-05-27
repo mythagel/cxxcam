@@ -25,6 +25,8 @@
 #include "GCodeBlock.h"
 #include <sstream>
 
+namespace cxxcam
+{
 namespace gcode
 {
 
@@ -89,3 +91,5 @@ std::string Block::debug_str() const
 }
 
 }
+}
+
