@@ -26,6 +26,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include "Error.h"
 
 namespace cxxcam
 {
@@ -50,8 +51,10 @@ Code::Code(const std::string& variant)
 {
 	if(variant == "LinuxCNC")
 		m_Variant = variant_LinuxCNC;
-	else
+	else if(variant == "Generic")
 		m_Variant = variant_LinuxCNC;
+	else
+		throw error("Unknown GCode variant");
 
 	switch(m_Variant)
 	{
