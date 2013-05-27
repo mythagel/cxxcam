@@ -436,6 +436,9 @@ void Machine::dump() const
 
 bool Machine::AddTool(int id, const Tool& tool)
 {
+	if(id == 0)
+		throw error("Tool ID must be > 0");
+
 	const auto& m_Type = m_Private->m_Type;
 	switch(m_Type)
 	{
@@ -452,6 +455,9 @@ bool Machine::AddTool(int id, const Tool& tool)
 }
 bool Machine::RemoveTool(int id)
 {
+	if(id == 0)
+		throw error("Tool ID must be > 0");
+
 	return m_Private->m_ToolTable.RemoveTool(id);
 }
 void Machine::AddSpindleRange(unsigned long range_start, unsigned long range_end)
