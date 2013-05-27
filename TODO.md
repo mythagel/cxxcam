@@ -28,13 +28,6 @@
  3. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * Interface changes
-    - ~~Experience shows that access to properties is needed~~
-    - ~~Create interface with machine object with properties for tool, feed_rate etc.~~
-    - ~~Allows read and write access through normal interface.~~
- * ~~Create comments from js.~~
- * ~~Work offsets (G54, etc)~~
-    - ~~More important than previously imagined.~~
  * Auto feedrate / spindle speeds
     - ~~Enhance spindle to report spindle speed requests outside of some specified tolerance. (i.e. 30,000rpm request for machine with max 500rpm)~~
  * Complete Tool class
@@ -49,7 +42,6 @@
  * Toolpath expansion & intersection tests for rapids
  * Material removal volume for each operation
     - Calculate volume of material that tool can remove and ensure that volume is appropriate.
- * ~~Arc motion~~
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Restore position
@@ -70,6 +62,14 @@
     - one file is NOT the complete object - only a single part.
  * LOGO / Turtle style interface for experimentation (implemented 100% in js)
  * Output image of toolpath (js or cxxcam)
+ * ~~Interface changes~~
+    - ~~Experience shows that access to properties is needed~~
+    - ~~Create interface with machine object with properties for tool, feed_rate etc.~~
+    - ~~Allows read and write access through normal interface.~~
+ * ~~Create comments from js.~~
+ * ~~Work offsets (G54, etc)~~
+    - ~~More important than previously imagined.~~
+ * ~~Arc motion~~
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
