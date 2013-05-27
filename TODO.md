@@ -72,7 +72,7 @@
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
- * Proper exception type.
+ * ~~Proper exception type.~~
  * Namespaces.
  * Disable Tool 0
  * ~~Change private / protected static methods to free functions.~~
