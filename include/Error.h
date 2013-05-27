@@ -26,7 +26,7 @@
 #define ERROR_H_
 #include <stdexcept>
 
-class error : std::runtime_error
+class error : public std::runtime_error
 {
 public:
 	error(const std::string& what)

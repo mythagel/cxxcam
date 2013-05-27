@@ -1,4 +1,5 @@
 #include "Spindle.h"
+#include "Error.h"
 #include <iostream>
 
 int main()
@@ -38,7 +39,7 @@ int main()
 	{
 		s.Normalise(4000);
 	}
-	catch(const std::exception& ex)
+	catch(const error& ex)
 	{
 		// TODO exception expected!
 		return 0;
