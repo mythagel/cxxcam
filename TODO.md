@@ -27,6 +27,12 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
+ * Machine Limits
+    - Max travel per axis
+    - Torque at various rpm (Horsepower)
+    - Max Feed rate per axis (z is probably slower)
+    - Max rapid rate per axis
+    - 
  * Auto feedrate / spindle speeds
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
@@ -47,7 +53,6 @@
  * GCode Generation
     - Aligned comments within a gcode block
     - Document in comments relevant parameters (Stock dimensions, position, tools used, etc.)
- * Machine zero & Limits
  * One file is the complete part
     - With multiple operations underneath
     - Should be able to generate gcode for ops individually.
