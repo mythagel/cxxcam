@@ -8,11 +8,14 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
+ * Enforce units via type system.
+    - Already encountering possible issues with mismatched units.
  * Machine Limits
     - Max travel per axis
     - Torque at various rpm (Horsepower)
     - Max Feed rate per axis (z is probably slower)
     - Max rapid rate per axis
+ * Push and Pop state.
  * Auto feedrate / spindle speeds
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
