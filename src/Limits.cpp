@@ -70,22 +70,22 @@ double Torque::Get(unsigned long rpm) const
 
 void FeedRate::SetGlobal(double limit_mmpm)
 {
-	m_Global = limit;
+	m_Global = limit_mmpm;
 }
 void FeedRate::Set(Axis::Type axis, double limit_mmpm)
 {
-	m_Limits[axis] = limit;
+	m_Limits[axis] = limit_mmpm;
 }
 void FeedRate::Validate(Axis::Type axis, double rate_mmpm) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
 	{
-		if(rate > it->second)
+		if(rate_mmpm > it->second)
 			throw error("FeedRate outside specified limit for axis");
 	}
 	
-	if(rate > m_Global)
+	if(rate_mmpm > m_Global)
 		throw error("FeedRate outside specified global limit");
 }
 double FeedRate::Max(Axis::Type axis) const
