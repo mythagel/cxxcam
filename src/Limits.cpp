@@ -68,15 +68,15 @@ double Torque::Get(unsigned long rpm) const
 	return 0.0;
 }
 
-void FeedRate::SetGlobal(double limit)
+void FeedRate::SetGlobal(double limit_mmpm)
 {
 	m_Global = limit;
 }
-void FeedRate::Set(Axis::Type axis, double limit)
+void FeedRate::Set(Axis::Type axis, double limit_mmpm)
 {
 	m_Limits[axis] = limit;
 }
-void FeedRate::Validate(Axis::Type axis, double rate) const
+void FeedRate::Validate(Axis::Type axis, double rate_mmpm) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
