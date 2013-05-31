@@ -196,10 +196,10 @@ public:
 
 	// push current state to stack
 	void PushState();
-	// pop head off stack & discard (maintain active state)
-	void PopState();
 	// Restore state from head of stack (restore previous state)
-	void RestoreState();
+	void PopState();
+	// pop head off stack & discard (maintain active state)
+	void DiscardState();
 
 	// Machine Setup
 

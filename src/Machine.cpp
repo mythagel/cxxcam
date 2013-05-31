@@ -439,14 +439,14 @@ void Machine::PopState()
 	if(m_State.empty())
 		throw error("No saved state to restore.");
 	
+	m_Private = std::move(m_State.top());
 	m_State.pop();
 }
-void Machine::RestoreState()
+void Machine::DiscardState()
 {
 	if(m_State.empty())
-		throw error("No saved state to restore.");
+		throw error("No saved state to discard.");
 	
-	m_Private = std::move(m_State.top());
 	m_State.pop();
 }
 
