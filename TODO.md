@@ -49,12 +49,6 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
- * One file is the complete part
-    - With multiple operations underneath
-    - Should be able to generate gcode for ops individually.
-    - one file is NOT the complete object - only a single part.
- * LOGO / Turtle style interface for experimentation (implemented 100% in js)
- * Output image of toolpath (js or cxxcam)
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
