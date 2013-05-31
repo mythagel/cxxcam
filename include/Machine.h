@@ -29,6 +29,7 @@
 #include <vector>
 #include <iosfwd>
 #include <utility>
+#include <stack>
 #include "GCodeWord.h"
 
 namespace cxxcam
@@ -178,6 +179,7 @@ public:
 private:
 	struct Private;
 	std::unique_ptr<Private> m_Private;
+	std::stack<decltype(m_Private)> m_State;
 protected:
 	void Preamble();
 	void UpdatePosition(const Axis& axis);
@@ -191,6 +193,13 @@ public:
 	Machine& operator=(Machine&&) = default;
 
 	void dump() const;
+
+	// push current state to stack
+	void PushState();
+	// pop head off stack & discard (maintain active state)
+	void PopState();
+	// Restore state from head of stack (restore previous state)
+	void RestoreState();
 
 	// Machine Setup
 

@@ -430,6 +430,26 @@ Machine& Machine::operator=(const Machine& m)
 	return *this;
 }
 
+void Machine::PushState()
+{
+	m_State.push(make_unique<Private>(*m_Private));
+}
+void Machine::PopState()
+{
+	if(m_State.empty())
+		throw error("No saved state to restore.");
+	
+	m_State.pop();
+}
+void Machine::RestoreState()
+{
+	if(m_State.empty())
+		throw error("No saved state to restore.");
+	
+	m_Private = std::move(m_State.top());
+	m_State.pop();
+}
+
 void Machine::dump() const
 {
 	auto& m_State = m_Private->m_State;
