@@ -25,6 +25,7 @@
 #ifndef LIMITS_H_
 #define LIMITS_H_
 #include "Axis.h"
+#include "Units.h"
 #include <map>
 #include <set>
 
@@ -39,17 +40,17 @@ namespace limits
 class Travel
 {
 private:
-	std::map<Axis::Type, double> m_Limits;
+	std::map<Axis::Type, units::millimeters<double>> m_Limits;
 public:
 	
-	void SetLimit(Axis::Type axis, double limit);
+	void SetLimit(Axis::Type axis, units::millimeters<double> limit);
 	
 	// Throws cxxcam::error if out of limits
-	void Validate(Axis::Type axis, double travel) const;
+	void Validate(Axis::Type axis, units::millimeters<double> travel) const;
 	
 	// returns 0.0 for unspecified limit
 	// likely to be changed
-	double MaxTravel(Axis::Type axis) const;
+	units::millimeters<double> MaxTravel(Axis::Type axis) const;
 };
 
 /*

@@ -27,14 +27,17 @@
 
 namespace cxxcam
 {
+
+using units::millimeters;
+
 namespace limits
 {
 
-void Travel::SetLimit(Axis::Type axis, double limit)
+void Travel::SetLimit(Axis::Type axis, millimeters<double> limit)
 {
 	m_Limits[axis] = limit;
 }
-void Travel::Validate(Axis::Type axis, double travel) const
+void Travel::Validate(Axis::Type axis, millimeters<double> travel) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
@@ -43,13 +46,13 @@ void Travel::Validate(Axis::Type axis, double travel) const
 			throw error("Travel outside specified limit for axis");
 	}
 }
-double Travel::MaxTravel(Axis::Type axis) const
+millimeters<double> Travel::MaxTravel(Axis::Type axis) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
 		return it->second;
 	
-	return 0.0;
+	return millimeters<double>(0.0);
 }
 
 void Torque::SetTorque(unsigned long rpm, double torque_Nm)
