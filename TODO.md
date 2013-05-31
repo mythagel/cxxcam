@@ -15,7 +15,6 @@
     - Torque at various rpm (Horsepower)
     - Max Feed rate per axis (z is probably slower)
     - Max rapid rate per axis
- * Push and Pop state.
  * Auto feedrate / spindle speeds
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
@@ -33,6 +32,7 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Push and Pop state.~~
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
