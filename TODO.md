@@ -8,6 +8,8 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
+ * Enforce units via type system.
+    - Already encountering possible issues with mismatched units.
  * Machine Limits
     - Max travel per axis
     - Torque at various rpm (Horsepower)
