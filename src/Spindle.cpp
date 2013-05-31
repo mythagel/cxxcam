@@ -135,6 +135,11 @@ unsigned long Spindle::Normalise(unsigned long requested_speed) const
 	return real_speed;
 }
 
+double Spindle::Torque(unsigned long speed) const
+{
+	return m_Torque.Get(speed);
+}
+
 void Spindle::AddRange(unsigned long range_start, unsigned long range_end)
 {
 	m_Entries.insert({range_start, range_end});
@@ -142,6 +147,10 @@ void Spindle::AddRange(unsigned long range_start, unsigned long range_end)
 void Spindle::AddDiscrete(unsigned long discrete_value)
 {
 	m_Entries.insert(Entry(discrete_value));
+}
+void Spindle::SetTorque(unsigned long rpm, double torque_Nm)
+{
+	m_Torque.SetTorque(rpm, torque_Nm);
 }
 
 std::string Spindle::str() const

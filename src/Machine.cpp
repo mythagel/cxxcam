@@ -31,6 +31,7 @@
 #include "ToolTable.h"
 #include "Stock.h"
 #include "Spindle.h"
+#include "Limits.h"
 
 #include <iostream>
 #include <sstream>
@@ -63,6 +64,10 @@ struct Machine::Private
 	Spindle m_Spindle;
 	ToolTable m_ToolTable;
 	Stock m_Stock;
+	
+	limits::Travel m_TravelLimit;
+	limits::FeedRate m_FeedRateLimit;
+	limits::Rapids m_RapidsLimit;
 
 	Private(Type type, const std::string& gcode_variant);
 };

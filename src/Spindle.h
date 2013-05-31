@@ -26,6 +26,7 @@
 #define SPINDLE_H_
 #include <string>
 #include <set>
+#include "Limits.h"
 
 namespace cxxcam
 {
@@ -64,6 +65,7 @@ private:
 
 	std::set<Entry> m_Entries;
 	unsigned long m_Tolerance;
+	limits::Torque m_Torque;
 public:
 	Spindle(unsigned long tolerance = 100);
 
@@ -74,8 +76,14 @@ public:
 	 */
 	unsigned long Normalise(unsigned long requested_speed) const;
 
+	/*
+	 * Return the torque at a given attainable speed.
+	 */
+	double Torque(unsigned long speed) const;
+
 	void AddRange(unsigned long range_start, unsigned long range_end);
 	void AddDiscrete(unsigned long discrete_value);
+	void SetTorque(unsigned long rpm, double torque_Nm);
 
 	std::string str() const;
 };

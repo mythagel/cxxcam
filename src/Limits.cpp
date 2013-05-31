@@ -58,6 +58,12 @@ void Torque::SetTorque(unsigned long rpm, double torque_Nm)
 }
 double Torque::Get(unsigned long rpm) const
 {
+	if(m_Samples.empty())
+		return 0.0;
+	
+	if(m_Samples.size() < 2)
+		throw error("Need min & max torque samples at minimum");
+	
 	// TODO
 	return 0.0;
 }
