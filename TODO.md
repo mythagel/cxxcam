@@ -49,9 +49,6 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
- * GCode Generation
-    - Aligned comments within a gcode block
-    - Document in comments relevant parameters (Stock dimensions, position, tools used, etc.)
  * One file is the complete part
     - With multiple operations underneath
     - Should be able to generate gcode for ops individually.
