@@ -40,17 +40,17 @@ namespace limits
 class Travel
 {
 private:
-	std::map<Axis::Type, units::millimeters<double>> m_Limits;
+	std::map<Axis::Type, units::length> m_Limits;
 public:
 	
-	void SetLimit(Axis::Type axis, units::millimeters<double> limit);
+	void SetLimit(Axis::Type axis, units::length limit);
 	
 	// Throws cxxcam::error if out of limits
-	void Validate(Axis::Type axis, units::millimeters<double> travel) const;
+	void Validate(Axis::Type axis, units::length travel) const;
 	
 	// returns 0.0 for unspecified limit
 	// likely to be changed
-	units::millimeters<double> MaxTravel(Axis::Type axis) const;
+	units::length MaxTravel(Axis::Type axis) const;
 };
 
 /*
@@ -65,7 +65,7 @@ private:
 	struct sample
 	{
 		unsigned long rpm;
-		double torque_Nm;
+		units::torque torque;
 		bool operator<(const sample& o) const
 		{
 			return rpm < o.rpm;
@@ -73,10 +73,10 @@ private:
 	};
 	std::set<sample> m_Samples;
 public:
-	void SetTorque(unsigned long rpm, double torque_Nm);
+	void SetTorque(unsigned long rpm, units::torque torque);
 	
 	// TODO
-	double Get(unsigned long rpm) const;
+	units::torque Get(unsigned long rpm) const;
 };
 
 /*
@@ -88,18 +88,18 @@ public:
 class FeedRate
 {
 private:
-	std::map<Axis::Type, units::millimeters_per_minute<double>> m_Limits;
-	units::millimeters_per_minute<double> m_Global;
+	std::map<Axis::Type, units::velocity> m_Limits;
+	units::velocity m_Global;
 public:
-	void SetGlobal(units::millimeters_per_minute<double> limit_mmpm);
-	void Set(Axis::Type axis, units::millimeters_per_minute<double> limit_mmpm);
+	void SetGlobal(units::velocity limit);
+	void Set(Axis::Type axis, units::velocity limit);
 	
 	// Throws cxxcam::error if out of limits
-	void Validate(Axis::Type axis, units::millimeters_per_minute<double> rate_mmpm) const;
+	void Validate(Axis::Type axis, units::velocity rate) const;
 	
 	// returns global for unspecified limit
 	// likely to be changed
-	units::millimeters_per_minute<double> Max(Axis::Type axis) const;
+	units::velocity Max(Axis::Type axis) const;
 };
 
 /*
@@ -109,18 +109,18 @@ public:
 class Rapids
 {
 private:
-	std::map<Axis::Type, double> m_Limits;
-	double m_Global = 0.0;
+	std::map<Axis::Type, units::velocity> m_Limits;
+	units::velocity m_Global;
 public:
-	void SetGlobal(double limit);
-	void Set(Axis::Type axis, double limit);
+	void SetGlobal(units::velocity limit);
+	void Set(Axis::Type axis, units::velocity limit);
 	
 	// Throws cxxcam::error if out of limits
-	void Validate(Axis::Type axis, double rate) const;
+	void Validate(Axis::Type axis, units::velocity rate) const;
 	
 	// returns global for unspecified limit
 	// likely to be changed
-	double Max(Axis::Type axis) const;
+	units::velocity Max(Axis::Type axis) const;
 };
 
 }

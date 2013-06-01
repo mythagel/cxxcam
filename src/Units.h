@@ -24,83 +24,24 @@
 
 #ifndef UNITS_H_
 #define UNITS_H_
+#include <boost/units/quantity.hpp>
+#include <boost/units/io.hpp>
+
+#include <boost/units/systems/si.hpp>
+#include <boost/units/systems/si/io.hpp>
+
+#include <boost/units/systems/si/length.hpp>
+#include <boost/units/systems/si/torque.hpp>
+#include <boost/units/systems/si/velocity.hpp>
 
 namespace cxxcam
 {
 namespace units
 {
 
-namespace detail
-{
-template<typename T>
-class scalar_unit_base
-{
-protected:
-	T val;
-	
-	explicit scalar_unit_base(T val = T{})
-	 : val(val)
-	{
-	}
-public:
-	explicit operator T() const
-	{
-		return val;
-	}
-	
-	bool operator<(const scalar_unit_base& o) const
-	{
-		return val < o.val;
-	}
-	bool operator>(const scalar_unit_base& o) const
-	{
-		return val > o.val;
-	}
-};
-
-template<typename T>
-class length_base : public scalar_unit_base<T>
-{
-protected:
-	explicit length_base(T val = T{})
-	 : scalar_unit_base<T>(val)
-	{
-	}
-public:
-};
-
-template<typename T>
-class velocity_base : public scalar_unit_base<T>
-{
-protected:
-	explicit velocity_base(T val = T{})
-	 : scalar_unit_base<T>(val)
-	{
-	}
-public:
-};
-
-}
-
-template <typename T>
-class millimeters : public detail::length_base<T>
-{
-public:
-	explicit millimeters(T val = T{})
-	 : detail::length_base<T>(val)
-	{
-	}
-};
-
-template <typename T>
-class millimeters_per_minute : public detail::velocity_base<T>
-{
-public:
-	explicit millimeters_per_minute(T val = T{})
-	 : detail::velocity_base<T>(val)
-	{
-	}
-};
+typedef boost::units::quantity<boost::units::si::length> length;
+typedef boost::units::quantity<boost::units::si::torque> torque;
+typedef boost::units::quantity<boost::units::si::velocity> velocity;
 
 }
 }

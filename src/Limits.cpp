@@ -28,16 +28,14 @@
 namespace cxxcam
 {
 
-using units::millimeters;
-
 namespace limits
 {
 
-void Travel::SetLimit(Axis::Type axis, millimeters<double> limit)
+void Travel::SetLimit(Axis::Type axis, units::length limit)
 {
 	m_Limits[axis] = limit;
 }
-void Travel::Validate(Axis::Type axis, millimeters<double> travel) const
+void Travel::Validate(Axis::Type axis, units::length travel) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
@@ -46,52 +44,52 @@ void Travel::Validate(Axis::Type axis, millimeters<double> travel) const
 			throw error("Travel outside specified limit for axis");
 	}
 }
-millimeters<double> Travel::MaxTravel(Axis::Type axis) const
+units::length Travel::MaxTravel(Axis::Type axis) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
 		return it->second;
 	
-	return millimeters<double>(0.0);
+	return {};
 }
 
-void Torque::SetTorque(unsigned long rpm, double torque_Nm)
+void Torque::SetTorque(unsigned long rpm, units::torque torque)
 {
-	m_Samples.insert({rpm, torque_Nm});
+	m_Samples.insert({rpm, torque});
 }
-double Torque::Get(unsigned long rpm) const
+units::torque Torque::Get(unsigned long rpm) const
 {
 	if(m_Samples.empty())
-		return 0.0;
+		return {};
 	
 	if(m_Samples.size() < 2)
 		throw error("Need min & max torque samples at minimum");
 	
 	// TODO
-	return 0.0;
+	return {};
 }
 
-void FeedRate::SetGlobal(units::millimeters_per_minute<double> limit_mmpm)
+void FeedRate::SetGlobal(units::velocity limit)
 {
-	m_Global = limit_mmpm;
+	m_Global = limit;
 }
-void FeedRate::Set(Axis::Type axis, units::millimeters_per_minute<double> limit_mmpm)
+void FeedRate::Set(Axis::Type axis, units::velocity limit)
 {
-	m_Limits[axis] = limit_mmpm;
+	m_Limits[axis] = limit;
 }
-void FeedRate::Validate(Axis::Type axis, units::millimeters_per_minute<double> rate_mmpm) const
+void FeedRate::Validate(Axis::Type axis, units::velocity rate) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
 	{
-		if(rate_mmpm > it->second)
+		if(rate > it->second)
 			throw error("FeedRate outside specified limit for axis");
 	}
 	
-	if(rate_mmpm > m_Global)
+	if(rate > m_Global)
 		throw error("FeedRate outside specified global limit");
 }
-units::millimeters_per_minute<double> FeedRate::Max(Axis::Type axis) const
+units::velocity FeedRate::Max(Axis::Type axis) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
@@ -100,15 +98,15 @@ units::millimeters_per_minute<double> FeedRate::Max(Axis::Type axis) const
 	return m_Global;
 }
 
-void Rapids::SetGlobal(double limit)
+void Rapids::SetGlobal(units::velocity limit)
 {
 	m_Global = limit;
 }
-void Rapids::Set(Axis::Type axis, double limit)
+void Rapids::Set(Axis::Type axis, units::velocity limit)
 {
 	m_Limits[axis] = limit;
 }
-void Rapids::Validate(Axis::Type axis, double rate) const
+void Rapids::Validate(Axis::Type axis, units::velocity rate) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
@@ -120,7 +118,7 @@ void Rapids::Validate(Axis::Type axis, double rate) const
 	if(rate > m_Global)
 		throw error("Rapid rate outside specified global limit");
 }
-double Rapids::Max(Axis::Type axis) const
+units::velocity Rapids::Max(Axis::Type axis) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())

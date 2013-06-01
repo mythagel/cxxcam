@@ -79,11 +79,11 @@ public:
 	/*
 	 * Return the torque at a given attainable speed.
 	 */
-	double Torque(unsigned long speed) const;
+	units::torque Torque(unsigned long speed) const;
 
 	void AddRange(unsigned long range_start, unsigned long range_end);
 	void AddDiscrete(unsigned long discrete_value);
-	void SetTorque(unsigned long rpm, double torque_Nm);
+	void SetTorque(unsigned long rpm, units::torque torque);
 
 	std::string str() const;
 };
