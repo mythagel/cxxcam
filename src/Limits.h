@@ -88,18 +88,18 @@ public:
 class FeedRate
 {
 private:
-	std::map<Axis::Type, double> m_Limits;
-	double m_Global = 0.0;
+	std::map<Axis::Type, units::millimeters_per_minute<double>> m_Limits;
+	units::millimeters_per_minute<double> m_Global;
 public:
-	void SetGlobal(double limit_mmpm);
-	void Set(Axis::Type axis, double limit_mmpm);
+	void SetGlobal(units::millimeters_per_minute<double> limit_mmpm);
+	void Set(Axis::Type axis, units::millimeters_per_minute<double> limit_mmpm);
 	
 	// Throws cxxcam::error if out of limits
-	void Validate(Axis::Type axis, double rate_mmpm) const;
+	void Validate(Axis::Type axis, units::millimeters_per_minute<double> rate_mmpm) const;
 	
 	// returns global for unspecified limit
 	// likely to be changed
-	double Max(Axis::Type axis) const;
+	units::millimeters_per_minute<double> Max(Axis::Type axis) const;
 };
 
 /*

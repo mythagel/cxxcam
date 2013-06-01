@@ -30,19 +30,52 @@ namespace cxxcam
 namespace units
 {
 
-template <typename T>
-class millimeters
+namespace detail
 {
-private:
-	T value;
-public:
-	explicit millimeters(T value = T{})
-	 : value(value)
+template<typename T>
+class unit_base
+{
+protected:
+	T val;
+	
+	explicit unit_base(T val = T{})
+	 : val(val)
 	{
 	}
-	operator T() const
+public:
+	explicit operator T() const
 	{
-		return value;
+		return val;
+	}
+	
+	bool operator<(const unit_base& o) const
+	{
+		return val < o.val;
+	}
+	bool operator>(const unit_base& o) const
+	{
+		return val > o.val;
+	}
+};
+}
+
+template <typename T>
+class millimeters : public detail::unit_base<T>
+{
+public:
+	explicit millimeters(T val = T{})
+	 : detail::unit_base<T>(val)
+	{
+	}
+};
+
+template <typename T>
+class millimeters_per_minute : public detail::unit_base<T>
+{
+public:
+	explicit millimeters_per_minute(T val = T{})
+	 : detail::unit_base<T>(val)
+	{
 	}
 };
 

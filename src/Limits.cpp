@@ -71,15 +71,15 @@ double Torque::Get(unsigned long rpm) const
 	return 0.0;
 }
 
-void FeedRate::SetGlobal(double limit_mmpm)
+void FeedRate::SetGlobal(units::millimeters_per_minute<double> limit_mmpm)
 {
 	m_Global = limit_mmpm;
 }
-void FeedRate::Set(Axis::Type axis, double limit_mmpm)
+void FeedRate::Set(Axis::Type axis, units::millimeters_per_minute<double> limit_mmpm)
 {
 	m_Limits[axis] = limit_mmpm;
 }
-void FeedRate::Validate(Axis::Type axis, double rate_mmpm) const
+void FeedRate::Validate(Axis::Type axis, units::millimeters_per_minute<double> rate_mmpm) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
@@ -91,7 +91,7 @@ void FeedRate::Validate(Axis::Type axis, double rate_mmpm) const
 	if(rate_mmpm > m_Global)
 		throw error("FeedRate outside specified global limit");
 }
-double FeedRate::Max(Axis::Type axis) const
+units::millimeters_per_minute<double> FeedRate::Max(Axis::Type axis) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())
