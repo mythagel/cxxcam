@@ -34,9 +34,6 @@ namespace cxxcam
 namespace limits
 {
 
-/*
- * Records maximum travel per axis.
- */
 class Travel
 {
 private:
@@ -79,12 +76,6 @@ public:
 	units::torque Get(unsigned long rpm) const;
 };
 
-/*
- * Max FeedRate per axis.
- * Query if the given feedrate is valid or the max per axis
- * All units are mm / minute
- * TODO units class for mm/m and ipm
- */
 class FeedRate
 {
 private:
@@ -102,10 +93,6 @@ public:
 	units::velocity Max(Axis::Type axis) const;
 };
 
-/*
- * Max rapids per axis.
- * Query if the given rapid rate is valid or the max per axis
- */
 class Rapids
 {
 private:
