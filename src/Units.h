@@ -33,12 +33,12 @@ namespace units
 namespace detail
 {
 template<typename T>
-class unit_base
+class scalar_unit_base
 {
 protected:
 	T val;
 	
-	explicit unit_base(T val = T{})
+	explicit scalar_unit_base(T val = T{})
 	 : val(val)
 	{
 	}
@@ -48,33 +48,56 @@ public:
 		return val;
 	}
 	
-	bool operator<(const unit_base& o) const
+	bool operator<(const scalar_unit_base& o) const
 	{
 		return val < o.val;
 	}
-	bool operator>(const unit_base& o) const
+	bool operator>(const scalar_unit_base& o) const
 	{
 		return val > o.val;
 	}
 };
+
+template<typename T>
+class length_base : public scalar_unit_base<T>
+{
+protected:
+	explicit length_base(T val = T{})
+	 : scalar_unit_base<T>(val)
+	{
+	}
+public:
+};
+
+template<typename T>
+class velocity_base : public scalar_unit_base<T>
+{
+protected:
+	explicit velocity_base(T val = T{})
+	 : scalar_unit_base<T>(val)
+	{
+	}
+public:
+};
+
 }
 
 template <typename T>
-class millimeters : public detail::unit_base<T>
+class millimeters : public detail::length_base<T>
 {
 public:
 	explicit millimeters(T val = T{})
-	 : detail::unit_base<T>(val)
+	 : detail::length_base<T>(val)
 	{
 	}
 };
 
 template <typename T>
-class millimeters_per_minute : public detail::unit_base<T>
+class millimeters_per_minute : public detail::velocity_base<T>
 {
 public:
 	explicit millimeters_per_minute(T val = T{})
-	 : detail::unit_base<T>(val)
+	 : detail::velocity_base<T>(val)
 	{
 	}
 };
