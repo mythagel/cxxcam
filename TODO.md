@@ -9,6 +9,7 @@
 
 ## High Level ##
  * Review handling of rotations axes.
+    - Change velocity to angular_velocity for ABC axes.
  * Review handling of feed rate
     - Inverse time needs special attention and possible interface change.
  * Machine Limits
@@ -38,6 +39,7 @@
  * ~~Push and Pop state.~~
 
 ## Code ##
+ * Replace Unchecked Position with code from Position_Metric.
  * Ensure exceptions do not change state (to allow recovery)
 
 ## Design issues ##
