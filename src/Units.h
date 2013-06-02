@@ -34,6 +34,7 @@
 #include <boost/units/systems/si/length.hpp>
 #include <boost/units/systems/si/torque.hpp>
 #include <boost/units/systems/si/velocity.hpp>
+#include <boost/units/systems/si/time.hpp>
 
 #include <boost/units/base_units/imperial/inch.hpp>
 
@@ -45,6 +46,8 @@ namespace units
 typedef boost::units::quantity<boost::units::si::length> length;
 typedef boost::units::quantity<boost::units::si::torque> torque;
 typedef boost::units::quantity<boost::units::si::velocity> velocity;
+// TODO is a static assert that time is represented as seconds necessary?
+typedef boost::units::quantity<boost::units::si::time> time;
 
 static const auto millimeter = boost::units::si::milli * boost::units::si::meter;
 static const auto millimeters = boost::units::si::milli * boost::units::si::meter;

@@ -24,6 +24,8 @@
 
 #include "Limits.h"
 #include "Error.h"
+#include "Position.h"
+#include <boost/units/cmath.hpp>
 
 namespace cxxcam
 {
@@ -106,19 +108,29 @@ void Rapids::Set(Axis::Type axis, units::velocity limit)
 {
 	m_Limits[axis] = limit;
 }
-void Rapids::Validate(Axis::Type axis, units::velocity rate) const
+double Rapids::Duration(const Position_Metric& begin, const Position_Metric& end) const
 {
-	auto it = m_Limits.find(axis);
-	if(it != m_Limits.end())
+	auto axis_time = [this](units::length begin, units::length end, Axis::Type axis) -> units::time
 	{
-		if(rate > it->second)
-			throw error("Rapid rate outside specified limit for axis");
-	}
+		auto distance = abs(end - begin);
+		auto velocity = Velocity(axis);
+		return distance / velocity;
+	};
 	
-	if(rate > m_Global)
-		throw error("Rapid rate outside specified global limit");
+	units::time duration;
+	duration += axis_time(begin.X, end.X, Axis::Type::X);
+	duration += axis_time(begin.Y, end.Y, Axis::Type::Y);
+	duration += axis_time(begin.Z, end.Z, Axis::Type::Z);
+	duration += axis_time(begin.A, end.A, Axis::Type::A);
+	duration += axis_time(begin.B, end.B, Axis::Type::B);
+	duration += axis_time(begin.C, end.C, Axis::Type::C);
+	duration += axis_time(begin.U, end.U, Axis::Type::U);
+	duration += axis_time(begin.V, end.V, Axis::Type::V);
+	duration += axis_time(begin.W, end.W, Axis::Type::W);
+	
+	return duration.value();
 }
-units::velocity Rapids::Max(Axis::Type axis) const
+units::velocity Rapids::Velocity(Axis::Type axis) const
 {
 	auto it = m_Limits.find(axis);
 	if(it != m_Limits.end())

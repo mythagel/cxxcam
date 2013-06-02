@@ -31,6 +31,9 @@
 
 namespace cxxcam
 {
+
+struct Position_Metric;
+
 namespace limits
 {
 
@@ -102,12 +105,10 @@ public:
 	void SetGlobal(units::velocity limit);
 	void Set(Axis::Type axis, units::velocity limit);
 	
-	// Throws cxxcam::error if out of limits
-	void Validate(Axis::Type axis, units::velocity rate) const;
+	double Duration(const Position_Metric& begin, const Position_Metric& end) const;
 	
-	// returns global for unspecified limit
-	// likely to be changed
-	units::velocity Max(Axis::Type axis) const;
+	// returns global for unspecified rate
+	units::velocity Velocity(Axis::Type axis) const;
 };
 
 }

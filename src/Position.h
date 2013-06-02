@@ -25,6 +25,7 @@
 #ifndef POSITION_H_
 #define POSITION_H_
 #include <string>
+#include "Units.h"
 
 namespace cxxcam
 {
@@ -50,6 +51,29 @@ struct Position
 	bool operator==(const Position& pos) const;
 	bool operator!=(const Position& pos) const;
 };
+
+struct Position_Metric
+{
+	units::length X;
+	units::length Y;
+	units::length Z;
+
+	units::length A;
+	units::length B;
+	units::length C;
+
+	units::length U;
+	units::length V;
+	units::length W;
+
+	std::string str() const;
+
+	bool operator==(const Position_Metric& pos) const;
+	bool operator!=(const Position_Metric& pos) const;
+};
+
+Position_Metric to_millimeters(const Position& pos);
+Position_Metric to_inches(const Position& pos);
 
 }
 

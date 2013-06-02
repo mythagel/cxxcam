@@ -35,6 +35,10 @@ auto to_tuple(const Position& pos) -> decltype(std::tie(pos.X, pos.Y, pos.Z, pos
 {
 	return std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W);
 }
+auto to_tuple(const Position_Metric& pos) -> decltype(std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W))
+{
+	return std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W);
+}
 }
 
 Position::Position()
@@ -87,6 +91,75 @@ bool Position::operator==(const Position& pos) const
 bool Position::operator!=(const Position& pos) const
 {
 	return to_tuple(*this) != to_tuple(pos);
+}
+
+std::string Position_Metric::str() const
+{
+	std::stringstream s;
+	static const units::length zero;
+
+	if(X != zero || Y != zero || Z != zero)
+	{
+		s << "X: " << X << " ";
+		s << "Y: " << Y << " ";
+		s << "Z: " << Z << " \n";
+	}
+
+	if(A != zero || B != zero || C != zero)
+	{
+		s << "A: " << A << " ";
+		s << "B: " << B << " ";
+		s << "C: " << C << " \n";
+	}
+
+	if(U != zero || V != zero || W != zero)
+	{
+		s << "U: " << U << " ";
+		s << "V: " << V << " ";
+		s << "W: " << W << " \n";
+	}
+
+	return s.str();
+}
+
+bool Position_Metric::operator==(const Position_Metric& pos) const
+{
+	return to_tuple(*this) == to_tuple(pos);
+}
+bool Position_Metric::operator!=(const Position_Metric& pos) const
+{
+	return to_tuple(*this) != to_tuple(pos);
+}
+
+Position_Metric to_millimeters(const Position& pos)
+{
+	return
+	{
+		units::length{pos.X * units::millimeters},
+		units::length{pos.Y * units::millimeters},
+		units::length{pos.Z * units::millimeters},
+		units::length{pos.A * units::millimeters},
+		units::length{pos.B * units::millimeters},
+		units::length{pos.C * units::millimeters},
+		units::length{pos.U * units::millimeters},
+		units::length{pos.V * units::millimeters},
+		units::length{pos.W * units::millimeters},
+	};
+}
+Position_Metric to_inches(const Position& pos)
+{
+	return
+	{
+		units::length{pos.X * units::inches},
+		units::length{pos.Y * units::inches},
+		units::length{pos.Z * units::inches},
+		units::length{pos.A * units::inches},
+		units::length{pos.B * units::inches},
+		units::length{pos.C * units::inches},
+		units::length{pos.U * units::inches},
+		units::length{pos.V * units::inches},
+		units::length{pos.W * units::inches},
+	};
 }
 
 }

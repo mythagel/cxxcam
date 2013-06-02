@@ -67,7 +67,7 @@ struct Machine::Private
 	
 	limits::Travel m_TravelLimit;
 	limits::FeedRate m_FeedRateLimit;
-	limits::Rapids m_RapidsLimit;
+	limits::Rapids m_RapidsRate;
 
 	Private(Type type, const std::string& gcode_variant);
 };
