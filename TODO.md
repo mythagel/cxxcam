@@ -9,6 +9,8 @@
 
 ## High Level ##
  * Review handling of rotations axes.
+ * Review handling of feed rate
+    - Inverse time needs special attention and possible interface change.
  * Machine Limits
     - Torque at various rpm (Horsepower)
     - Max Feed rate per axis (z is probably slower)
