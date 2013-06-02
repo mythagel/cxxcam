@@ -400,6 +400,48 @@ void Machine::UpdatePosition(const Axis& axis)
 	}
 }
 
+void Machine::ValidatePosition() const
+{
+	auto& m_TravelLimit = m_Private->m_TravelLimit;
+	auto& m_State = m_Private->m_State;
+	auto& m_Current = m_State.m_Current;
+	
+	units::length x;
+	units::length y;
+	units::length z;
+	units::length a;
+	units::length b;
+	units::length c;
+	units::length u;
+	units::length v;
+	units::length w;
+	
+	// TODO abcuvw
+	switch(m_State.m_Units)
+	{
+		case Units::Metric:
+			x = units::length(m_Current.X * units::millimeters);
+			y = units::length(m_Current.Y * units::millimeters);
+			z = units::length(m_Current.Z * units::millimeters);
+			break;
+		case Units::Imperial:
+			x = units::length(m_Current.X * units::inches);
+			y = units::length(m_Current.Y * units::inches);
+			z = units::length(m_Current.Z * units::inches);
+			break;
+	}
+	
+	m_TravelLimit.Validate(Axis::Type::X, x);
+	m_TravelLimit.Validate(Axis::Type::Y, y);
+	m_TravelLimit.Validate(Axis::Type::Z, z);
+	m_TravelLimit.Validate(Axis::Type::A, a);
+	m_TravelLimit.Validate(Axis::Type::B, b);
+	m_TravelLimit.Validate(Axis::Type::C, c);
+	m_TravelLimit.Validate(Axis::Type::U, u);
+	m_TravelLimit.Validate(Axis::Type::V, v);
+	m_TravelLimit.Validate(Axis::Type::W, w);
+}
+
 Machine::Machine(Type type, const std::string& gcode_variant)
  : m_Private(make_unique<Private>(type, gcode_variant))
 {

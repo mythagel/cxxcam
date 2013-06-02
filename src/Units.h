@@ -28,11 +28,14 @@
 #include <boost/units/io.hpp>
 
 #include <boost/units/systems/si.hpp>
+#include <boost/units/systems/si/prefixes.hpp>
 #include <boost/units/systems/si/io.hpp>
 
 #include <boost/units/systems/si/length.hpp>
 #include <boost/units/systems/si/torque.hpp>
 #include <boost/units/systems/si/velocity.hpp>
+
+#include <boost/units/base_units/imperial/inch.hpp>
 
 namespace cxxcam
 {
@@ -42,6 +45,12 @@ namespace units
 typedef boost::units::quantity<boost::units::si::length> length;
 typedef boost::units::quantity<boost::units::si::torque> torque;
 typedef boost::units::quantity<boost::units::si::velocity> velocity;
+
+static const auto millimeter = boost::units::si::milli * boost::units::si::meter;
+static const auto millimeters = boost::units::si::milli * boost::units::si::meter;
+
+static const auto inch = boost::units::imperial::inch_base_unit::unit_type{};
+static const auto inches = boost::units::imperial::inch_base_unit::unit_type{};
 
 }
 }
