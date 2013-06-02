@@ -405,41 +405,29 @@ void Machine::ValidatePosition() const
 	auto& m_TravelLimit = m_Private->m_TravelLimit;
 	auto& m_State = m_Private->m_State;
 	auto& m_Current = m_State.m_Current;
+	auto& m_Units = m_State.m_Units;
 	
-	units::length x;
-	units::length y;
-	units::length z;
-	units::length a;
-	units::length b;
-	units::length c;
-	units::length u;
-	units::length v;
-	units::length w;
-	
-	// TODO abcuvw
-	switch(m_State.m_Units)
+	auto to_length = [&m_Units](double axis) -> units::length
 	{
-		case Units::Metric:
-			x = units::length(m_Current.X * units::millimeters);
-			y = units::length(m_Current.Y * units::millimeters);
-			z = units::length(m_Current.Z * units::millimeters);
-			break;
-		case Units::Imperial:
-			x = units::length(m_Current.X * units::inches);
-			y = units::length(m_Current.Y * units::inches);
-			z = units::length(m_Current.Z * units::inches);
-			break;
-	}
+		switch(m_Units)
+		{
+			case Units::Metric:
+				return units::length{axis * units::millimeters};
+			case Units::Imperial:
+				return units::length{axis * units::inches};
+		}
+		throw std::logic_error("Unknown units.");
+	};
 	
-	m_TravelLimit.Validate(Axis::Type::X, x);
-	m_TravelLimit.Validate(Axis::Type::Y, y);
-	m_TravelLimit.Validate(Axis::Type::Z, z);
-	m_TravelLimit.Validate(Axis::Type::A, a);
-	m_TravelLimit.Validate(Axis::Type::B, b);
-	m_TravelLimit.Validate(Axis::Type::C, c);
-	m_TravelLimit.Validate(Axis::Type::U, u);
-	m_TravelLimit.Validate(Axis::Type::V, v);
-	m_TravelLimit.Validate(Axis::Type::W, w);
+	m_TravelLimit.Validate(Axis::Type::X, to_length(m_Current.X));
+	m_TravelLimit.Validate(Axis::Type::Y, to_length(m_Current.Y));
+	m_TravelLimit.Validate(Axis::Type::Z, to_length(m_Current.Z));
+	m_TravelLimit.Validate(Axis::Type::A, to_length(m_Current.A));
+	m_TravelLimit.Validate(Axis::Type::B, to_length(m_Current.B));
+	m_TravelLimit.Validate(Axis::Type::C, to_length(m_Current.C));
+	m_TravelLimit.Validate(Axis::Type::U, to_length(m_Current.U));
+	m_TravelLimit.Validate(Axis::Type::V, to_length(m_Current.V));
+	m_TravelLimit.Validate(Axis::Type::W, to_length(m_Current.W));
 }
 
 Machine::Machine(Type type, const std::string& gcode_variant)
