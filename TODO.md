@@ -8,8 +8,7 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * Enforce units via type system.
-    - Already encountering possible issues with mismatched units.
+ * Review handling of rotations axes.
  * Machine Limits
     - Max travel per axis
     - Torque at various rpm (Horsepower)
@@ -32,6 +31,8 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Enforce units via type system.~~
+    - ~~Already encountering possible issues with mismatched units.~~
  * ~~Push and Pop state.~~
 
 ## Code ##
