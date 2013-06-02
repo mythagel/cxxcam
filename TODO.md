@@ -10,10 +10,10 @@
 ## High Level ##
  * Review handling of rotations axes.
  * Machine Limits
-    - Max travel per axis
     - Torque at various rpm (Horsepower)
     - Max Feed rate per axis (z is probably slower)
-    - Max rapid rate per axis
+    - Rapid rate per axis (For calculating movement time)
+    - ~~Max travel per axis~~
  * Auto feedrate / spindle speeds
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
