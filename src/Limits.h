@@ -100,6 +100,15 @@ public:
 	units::angular_velocity MaxAngular(Axis::Type axis) const;
 };
 
+/*
+ * Rapids generally move as the maximum traversal rate for each
+ * axis until the end point is reached. I.e. a move on three
+ * axes will move at the maximum rate for EACH axis independantly
+ * until they reach the destination point.
+ * This simple class takes no consideration of acceleration or
+ * deceleration, but provides an estimate for traversal times
+ * for rapid moves from a begin point to an end point.
+ */
 class Rapids
 {
 private:
@@ -111,7 +120,7 @@ public:
 	void Set(Axis::Type axis, units::velocity limit);
 	void Set(Axis::Type axis, units::angular_velocity limit);
 	
-	double Duration(const Position_Metric& begin, const Position_Metric& end) const;
+	units::time Duration(const Position_Metric& begin, const Position_Metric& end) const;
 	
 	// returns global for unspecified rate
 	units::velocity LinearVelocity(Axis::Type axis) const;
