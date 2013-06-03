@@ -19,6 +19,7 @@
     - Max Feed rate per axis (z is probably slower)
     - Rapid rate per axis (For calculating movement time)
     - Max travel per axis
+ * Implement available axes (i.e. XYZ / XYZA / XYZABC, etc.)
  * Auto feedrate / spindle speeds
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
