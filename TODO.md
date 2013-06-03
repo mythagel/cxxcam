@@ -12,6 +12,7 @@
     - Change velocity to angular_velocity for ABC axes.
  * Review handling of feed rate
     - Inverse time needs special attention and possible interface change.
+ * Implement Dwell
  * Machine Limits
     - Torque at various rpm (Horsepower)
     - Max Feed rate per axis (z is probably slower)
