@@ -46,6 +46,19 @@ Axis::operator double() const
 	return m_Value;
 }
 
+bool is_linear(Axis::Type axis)
+{
+	switch(axis)
+	{
+		case Axis::Type::A:
+		case Axis::Type::B:
+		case Axis::Type::C:
+			return false;
+		default:
+			return true;
+	}
+}
+
 X::X()
  : Axis(Type::X)
 {

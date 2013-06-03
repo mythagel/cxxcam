@@ -55,6 +55,8 @@ public:
 	operator double() const;
 };
 
+bool is_linear(Axis::Type axis);
+
 class X : public Axis
 {
 public:
