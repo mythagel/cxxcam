@@ -41,6 +41,8 @@
 
 #include <boost/units/base_units/imperial/inch.hpp>
 
+#include <boost/units/base_units/metric/minute.hpp>
+
 namespace cxxcam
 {
 namespace units
@@ -54,11 +56,14 @@ typedef boost::units::quantity<boost::units::si::time> time;
 typedef boost::units::quantity<boost::units::si::angular_velocity> angular_velocity;
 typedef boost::units::quantity<boost::units::si::plane_angle> plane_angle;
 
-static const auto millimeter = boost::units::si::milli * boost::units::si::meter;
 static const auto millimeters = boost::units::si::milli * boost::units::si::meter;
+static const auto millimeter = millimeters;
 
-static const auto inch = boost::units::imperial::inch_base_unit::unit_type{};
 static const auto inches = boost::units::imperial::inch_base_unit::unit_type{};
+static const auto inch = inches;
+
+static const auto minute = boost::units::metric::minute_base_unit::unit_type{};
+static const auto millimeters_per_minute = millimeters / minute;
 
 static const auto radians = boost::units::si::radians;
 static const auto degrees = boost::units::degree::degrees;
