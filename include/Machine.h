@@ -229,6 +229,7 @@ public:
 	// Stateful properties
 
 	// TODO possible functions to set coordinate system offsets (i.e. G10 L2)
+	// http://www.linuxcnc.org/docs/html/gcode/images/offsets.png
 	void SetCoordinateSystem(CoordinateSystem cs);
 	void SetMotion(Motion m);
 	void SetArcMotion(Motion m);
