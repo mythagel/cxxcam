@@ -22,6 +22,7 @@
  * Machine configuration struct
     - Many configuration parameters together will simplify machine setup.
  * Implement available axes (i.e. XYZ / XYZA / XYZABC, etc.)
+ * Different type for Linear vs Rotational axes guarantees safety in the type system rather than manual checking.
  * Auto feedrate / spindle speeds
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
