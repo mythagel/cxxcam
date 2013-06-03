@@ -97,6 +97,7 @@ std::string Position_Metric::str() const
 {
 	std::stringstream s;
 	static const units::length zero;
+	static const units::plane_angle angular_zero;
 
 	if(X != zero || Y != zero || Z != zero)
 	{
@@ -105,7 +106,7 @@ std::string Position_Metric::str() const
 		s << "Z: " << Z << " \n";
 	}
 
-	if(A != zero || B != zero || C != zero)
+	if(A != angular_zero || B != angular_zero || C != angular_zero)
 	{
 		s << "A: " << A << " ";
 		s << "B: " << B << " ";
@@ -138,9 +139,9 @@ Position_Metric to_millimeters(const Position& pos)
 		units::length{pos.X * units::millimeters},
 		units::length{pos.Y * units::millimeters},
 		units::length{pos.Z * units::millimeters},
-		units::length{pos.A * units::millimeters},
-		units::length{pos.B * units::millimeters},
-		units::length{pos.C * units::millimeters},
+		units::plane_angle{pos.A * units::degrees},
+		units::plane_angle{pos.B * units::degrees},
+		units::plane_angle{pos.C * units::degrees},
 		units::length{pos.U * units::millimeters},
 		units::length{pos.V * units::millimeters},
 		units::length{pos.W * units::millimeters},
@@ -153,9 +154,9 @@ Position_Metric to_inches(const Position& pos)
 		units::length{pos.X * units::inches},
 		units::length{pos.Y * units::inches},
 		units::length{pos.Z * units::inches},
-		units::length{pos.A * units::inches},
-		units::length{pos.B * units::inches},
-		units::length{pos.C * units::inches},
+		units::plane_angle{pos.A * units::degrees},
+		units::plane_angle{pos.B * units::degrees},
+		units::plane_angle{pos.C * units::degrees},
 		units::length{pos.U * units::inches},
 		units::length{pos.V * units::inches},
 		units::length{pos.W * units::inches},

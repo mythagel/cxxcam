@@ -58,9 +58,9 @@ struct Position_Metric
 	units::length Y;
 	units::length Z;
 
-	units::length A;
-	units::length B;
-	units::length C;
+	units::plane_angle A;
+	units::plane_angle B;
+	units::plane_angle C;
 
 	units::length U;
 	units::length V;

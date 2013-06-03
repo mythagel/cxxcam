@@ -82,33 +82,42 @@ public:
 class FeedRate
 {
 private:
-	std::map<Axis::Type, units::velocity> m_Limits;
+	std::map<Axis::Type, units::velocity> m_Linear;
+	std::map<Axis::Type, units::angular_velocity> m_Angular;
 	units::velocity m_Global;
 public:
 	void SetGlobal(units::velocity limit);
 	void Set(Axis::Type axis, units::velocity limit);
+	void Set(Axis::Type axis, units::angular_velocity limit);
 	
 	// Throws cxxcam::error if out of limits
 	void Validate(Axis::Type axis, units::velocity rate) const;
+	void Validate(Axis::Type axis, units::angular_velocity rate) const;
 	
 	// returns global for unspecified limit
-	// likely to be changed
-	units::velocity Max(Axis::Type axis) const;
+	units::velocity MaxLinear(Axis::Type axis) const;
+	// returns zero for unspecified limit
+	units::angular_velocity MaxAngular(Axis::Type axis) const;
 };
 
 class Rapids
 {
 private:
-	std::map<Axis::Type, units::velocity> m_Limits;
+	std::map<Axis::Type, units::velocity> m_Linear;
+	std::map<Axis::Type, units::angular_velocity> m_Angular;
 	units::velocity m_Global;
 public:
 	void SetGlobal(units::velocity limit);
 	void Set(Axis::Type axis, units::velocity limit);
+	void Set(Axis::Type axis, units::angular_velocity limit);
 	
 	double Duration(const Position_Metric& begin, const Position_Metric& end) const;
 	
 	// returns global for unspecified rate
-	units::velocity Velocity(Axis::Type axis) const;
+	units::velocity LinearVelocity(Axis::Type axis) const;
+	
+	// returns zero for unspecified rate
+	units::angular_velocity AngularVelocity(Axis::Type axis) const;
 };
 
 }

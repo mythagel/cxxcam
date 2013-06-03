@@ -29,7 +29,6 @@
 
 namespace cxxcam
 {
-
 namespace limits
 {
 
@@ -77,12 +76,23 @@ void FeedRate::SetGlobal(units::velocity limit)
 }
 void FeedRate::Set(Axis::Type axis, units::velocity limit)
 {
-	m_Limits[axis] = limit;
+	if(!is_linear(axis))
+		throw error("Cannot set linear velocity on angular axis.");
+	m_Linear[axis] = limit;
+}
+void FeedRate::Set(Axis::Type axis, units::angular_velocity limit)
+{
+	if(is_linear(axis))
+		throw error("Cannot set angular velocity on linear axis.");
+	m_Angular[axis] = limit;
 }
 void FeedRate::Validate(Axis::Type axis, units::velocity rate) const
 {
-	auto it = m_Limits.find(axis);
-	if(it != m_Limits.end())
+	if(!is_linear(axis))
+		throw error("Attempt to validate linear velocity on angular axis.");
+	
+	auto it = m_Linear.find(axis);
+	if(it != m_Linear.end())
 	{
 		if(rate > it->second)
 			throw error("FeedRate outside specified limit for axis");
@@ -91,13 +101,39 @@ void FeedRate::Validate(Axis::Type axis, units::velocity rate) const
 	if(rate > m_Global)
 		throw error("FeedRate outside specified global limit");
 }
-units::velocity FeedRate::Max(Axis::Type axis) const
+void FeedRate::Validate(Axis::Type axis, units::angular_velocity rate) const
 {
-	auto it = m_Limits.find(axis);
-	if(it != m_Limits.end())
+	if(is_linear(axis))
+		throw error("Attempt to validate angular velocity on linear axis.");
+	
+	auto it = m_Angular.find(axis);
+	if(it != m_Angular.end())
+	{
+		if(rate > it->second)
+			throw error("FeedRate outside specified limit for axis");
+	}
+}
+units::velocity FeedRate::MaxLinear(Axis::Type axis) const
+{
+	if(!is_linear(axis))
+		throw error("Attempt to get max linear velocity on angular axis.");
+		
+	auto it = m_Linear.find(axis);
+	if(it != m_Linear.end())
 		return it->second;
 	
 	return m_Global;
+}
+units::angular_velocity FeedRate::MaxAngular(Axis::Type axis) const
+{
+	if(is_linear(axis))
+		throw error("Attempt to get max angular velocity on linear axis.");
+		
+	auto it = m_Angular.find(axis);
+	if(it != m_Angular.end())
+		return it->second;
+	
+	return {};
 }
 
 void Rapids::SetGlobal(units::velocity limit)
@@ -106,37 +142,71 @@ void Rapids::SetGlobal(units::velocity limit)
 }
 void Rapids::Set(Axis::Type axis, units::velocity limit)
 {
-	m_Limits[axis] = limit;
+	if(!is_linear(axis))
+		throw error("Cannot set linear velocity on angular axis.");
+	m_Linear[axis] = limit;
+}
+void Rapids::Set(Axis::Type axis, units::angular_velocity limit)
+{
+	if(is_linear(axis))
+		throw error("Cannot set angular velocity on linear axis.");
+	m_Angular[axis] = limit;
 }
 double Rapids::Duration(const Position_Metric& begin, const Position_Metric& end) const
 {
-	auto axis_time = [this](units::length begin, units::length end, Axis::Type axis) -> units::time
+	auto linear_axis_time = [this](units::length begin, units::length end, Axis::Type axis) -> units::time
 	{
+		if(!is_linear(axis))
+			throw std::logic_error("Attempt to calculate linear time on angular axis.");
+		
 		auto distance = abs(end - begin);
-		auto velocity = Velocity(axis);
+		auto velocity = LinearVelocity(axis);
+		return distance / velocity;
+	};
+	auto angular_axis_time = [this](units::plane_angle begin, units::plane_angle end, Axis::Type axis) -> units::time
+	{
+		if(is_linear(axis))
+			throw std::logic_error("Attempt to calculate angular time on linear axis.");
+		
+		auto distance = abs(end - begin);
+		auto velocity = AngularVelocity(axis);
 		return distance / velocity;
 	};
 	
 	units::time duration;
-	duration += axis_time(begin.X, end.X, Axis::Type::X);
-	duration += axis_time(begin.Y, end.Y, Axis::Type::Y);
-	duration += axis_time(begin.Z, end.Z, Axis::Type::Z);
-	duration += axis_time(begin.A, end.A, Axis::Type::A);
-	duration += axis_time(begin.B, end.B, Axis::Type::B);
-	duration += axis_time(begin.C, end.C, Axis::Type::C);
-	duration += axis_time(begin.U, end.U, Axis::Type::U);
-	duration += axis_time(begin.V, end.V, Axis::Type::V);
-	duration += axis_time(begin.W, end.W, Axis::Type::W);
+	duration += linear_axis_time(begin.X, end.X, Axis::Type::X);
+	duration += linear_axis_time(begin.Y, end.Y, Axis::Type::Y);
+	duration += linear_axis_time(begin.Z, end.Z, Axis::Type::Z);
+	duration += angular_axis_time(begin.A, end.A, Axis::Type::A);
+	duration += angular_axis_time(begin.B, end.B, Axis::Type::B);
+	duration += angular_axis_time(begin.C, end.C, Axis::Type::C);
+	duration += linear_axis_time(begin.U, end.U, Axis::Type::U);
+	duration += linear_axis_time(begin.V, end.V, Axis::Type::V);
+	duration += linear_axis_time(begin.W, end.W, Axis::Type::W);
 	
 	return duration.value();
 }
-units::velocity Rapids::Velocity(Axis::Type axis) const
+units::velocity Rapids::LinearVelocity(Axis::Type axis) const
 {
-	auto it = m_Limits.find(axis);
-	if(it != m_Limits.end())
+	if(!is_linear(axis))
+		throw error("Attempt to get max linear velocity on angular axis.");
+	
+	auto it = m_Linear.find(axis);
+	if(it != m_Linear.end())
 		return it->second;
 	
 	return m_Global;
+}
+units::angular_velocity Rapids::AngularVelocity(Axis::Type axis) const
+{
+	if(is_linear(axis))
+		throw error("Attempt to get max angular velocity on linear axis.");
+	
+	auto it = m_Angular.find(axis);
+	if(it != m_Angular.end())
+		return it->second;
+	
+	return {};
 }
 
 }
