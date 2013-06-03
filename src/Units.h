@@ -34,8 +34,9 @@
 #include <boost/units/systems/si/length.hpp>
 #include <boost/units/systems/si/torque.hpp>
 #include <boost/units/systems/si/velocity.hpp>
-#include <boost/units/systems/si/angular_velocity.hpp>
 #include <boost/units/systems/si/time.hpp>
+#include <boost/units/systems/si/angular_velocity.hpp>
+#include <boost/units/systems/si/plane_angle.hpp>
 
 #include <boost/units/base_units/imperial/inch.hpp>
 
@@ -47,15 +48,18 @@ namespace units
 typedef boost::units::quantity<boost::units::si::length> length;
 typedef boost::units::quantity<boost::units::si::torque> torque;
 typedef boost::units::quantity<boost::units::si::velocity> velocity;
-typedef boost::units::quantity<boost::units::si::angular_velocity> angular_velocity;
 // TODO is a static assert that time is represented as seconds necessary?
 typedef boost::units::quantity<boost::units::si::time> time;
+typedef boost::units::quantity<boost::units::si::angular_velocity> angular_velocity;
+typedef boost::units::quantity<boost::units::si::plane_angle> plane_angle;
 
 static const auto millimeter = boost::units::si::milli * boost::units::si::meter;
 static const auto millimeters = boost::units::si::milli * boost::units::si::meter;
 
 static const auto inch = boost::units::imperial::inch_base_unit::unit_type{};
 static const auto inches = boost::units::imperial::inch_base_unit::unit_type{};
+
+static const auto radians = boost::units::si::radians;
 
 }
 }
