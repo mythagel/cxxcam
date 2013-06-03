@@ -37,6 +37,7 @@
 #include <boost/units/systems/si/time.hpp>
 #include <boost/units/systems/si/angular_velocity.hpp>
 #include <boost/units/systems/si/plane_angle.hpp>
+#include <boost/units/systems/angle/degrees.hpp>
 
 #include <boost/units/base_units/imperial/inch.hpp>
 
@@ -60,6 +61,7 @@ static const auto inch = boost::units::imperial::inch_base_unit::unit_type{};
 static const auto inches = boost::units::imperial::inch_base_unit::unit_type{};
 
 static const auto radians = boost::units::si::radians;
+static const auto degrees = boost::units::degree::degrees;
 
 }
 }
