@@ -62,11 +62,13 @@ static const auto millimeter = millimeters;
 static const auto inches = boost::units::imperial::inch_base_unit::unit_type{};
 static const auto inch = inches;
 
+static const auto second = boost::units::si::seconds;
 static const auto minute = boost::units::metric::minute_base_unit::unit_type{};
 static const auto millimeters_per_minute = millimeters / minute;
 
 static const auto radians = boost::units::si::radians;
 static const auto degrees = boost::units::degree::degrees;
+static const auto degrees_per_second = degrees / second;
 
 }
 }
