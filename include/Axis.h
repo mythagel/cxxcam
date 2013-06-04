@@ -45,13 +45,13 @@ public:
 	};
 protected:
 	Type m_Type;
+	double m_Value;
 
-	explicit Axis(Type type);
+	explicit Axis(Type type, double value = {});
 public:
 
 	operator Type() const;
-	
-	virtual ~Axis() = default;
+	operator double() const;
 };
 
 bool is_linear(Axis::Type axis);
@@ -59,23 +59,15 @@ bool is_linear(Axis::Type axis);
 class LinearAxis : public Axis
 {
 protected:
-	double m_Value;
-	
-	explicit LinearAxis(Type type);
+	LinearAxis(Type type);
 	LinearAxis(Type type, double value);
-public:
-	operator double() const;
 };
 
 class RotaryAxis : public Axis
 {
 protected:
-	double m_Value;
-	
-	explicit RotaryAxis(Type type);
+	RotaryAxis(Type type);
 	RotaryAxis(Type type, double value);
-public:
-	operator double() const;
 };
 
 class X : public LinearAxis

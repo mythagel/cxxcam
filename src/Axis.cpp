@@ -28,14 +28,18 @@
 namespace cxxcam
 {
 
-Axis::Axis(Type type)
- : m_Type(type)
+Axis::Axis(Type type, double value)
+ : m_Type(type), m_Value(value)
 {
 }
 
 Axis::operator Axis::Type() const
 {
 	return m_Type;
+}
+Axis::operator double() const
+{
+	return m_Value;
 }
 
 bool is_linear(Axis::Type axis)
@@ -52,37 +56,29 @@ bool is_linear(Axis::Type axis)
 }
 
 LinearAxis::LinearAxis(Type type)
- : Axis(type), m_Value()
+ : Axis(type)
 {
 	if(!is_linear(type))
 		throw std::logic_error("Attempt to create Linear axis object for Rotary axis");
 }
 LinearAxis::LinearAxis(Type type, double value)
- : Axis(type), m_Value(value)
+ : Axis(type, value)
 {
 	if(!is_linear(type))
 		throw std::logic_error("Attempt to create Linear axis object for Rotary axis");
 }
-LinearAxis::operator double() const
-{
-	return m_Value;
-}
 
 RotaryAxis::RotaryAxis(Type type)
- : Axis(type), m_Value()
+ : Axis(type)
 {
 	if(is_linear(type))
 		throw std::logic_error("Attempt to create Rotary axis object for Linear axis");
 }
 RotaryAxis::RotaryAxis(Type type, double value)
- : Axis(type), m_Value(value)
+ : Axis(type, value)
 {
 	if(is_linear(type))
 		throw std::logic_error("Attempt to create Rotary axis object for Linear axis");
-}
-RotaryAxis::operator double() const
-{
-	return m_Value;
 }
 
 X::X()
