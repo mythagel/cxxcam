@@ -193,18 +193,18 @@ units::time Rapids::Duration(const Position_Metric& begin, const Position_Metric
 		return distance / velocity;
 	};
 	
-	units::time duration;
-	duration += linear_axis_time(begin.X, end.X, Axis::Type::X);
-	duration += linear_axis_time(begin.Y, end.Y, Axis::Type::Y);
-	duration += linear_axis_time(begin.Z, end.Z, Axis::Type::Z);
-	duration += angular_axis_time(begin.A, end.A, Axis::Type::A);
-	duration += angular_axis_time(begin.B, end.B, Axis::Type::B);
-	duration += angular_axis_time(begin.C, end.C, Axis::Type::C);
-	duration += linear_axis_time(begin.U, end.U, Axis::Type::U);
-	duration += linear_axis_time(begin.V, end.V, Axis::Type::V);
-	duration += linear_axis_time(begin.W, end.W, Axis::Type::W);
-	
-	return duration;
+	return std::max(
+	{
+		linear_axis_time(begin.X, end.X, Axis::Type::X),
+		linear_axis_time(begin.Y, end.Y, Axis::Type::Y),
+		linear_axis_time(begin.Z, end.Z, Axis::Type::Z),
+		angular_axis_time(begin.A, end.A, Axis::Type::A),
+		angular_axis_time(begin.B, end.B, Axis::Type::B),
+		angular_axis_time(begin.C, end.C, Axis::Type::C),
+		linear_axis_time(begin.U, end.U, Axis::Type::U),
+		linear_axis_time(begin.V, end.V, Axis::Type::V),
+		linear_axis_time(begin.W, end.W, Axis::Type::W)
+	});
 }
 units::velocity Rapids::LinearVelocity(Axis::Type axis) const
 {
