@@ -22,6 +22,8 @@ int main()
 	Position_Metric end;
 	auto duration = r.Duration(begin, end);
 	std::cout << "Rapid time: " << duration << "\n";
-
+	
+	if(duration != units::time{60 * units::second})
+		return 1;
 	return 0;
 }
