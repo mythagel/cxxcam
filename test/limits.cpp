@@ -20,6 +20,9 @@ int main()
 	begin.A = units::plane_angle{50 * units::degrees};	// 1 second
 	
 	Position_Metric end;
+	
+	std::cout << "Begin: " << begin.str() << "\n";
+	std::cout << "End  : " << end.str() << "\n";
 	auto duration = r.Duration(begin, end);
 	std::cout << "Rapid time: " << duration << "\n";
 	
