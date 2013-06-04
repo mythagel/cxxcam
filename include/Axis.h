@@ -56,77 +56,63 @@ public:
 
 bool is_linear(Axis::Type axis);
 
-class LinearAxis : public Axis
-{
-protected:
-	LinearAxis(Type type);
-	LinearAxis(Type type, double value);
-};
-
-class RotaryAxis : public Axis
-{
-protected:
-	RotaryAxis(Type type);
-	RotaryAxis(Type type, double value);
-};
-
-class X : public LinearAxis
+class X : public Axis
 {
 public:
 	X();
 	explicit X(double value);
 };
 
-class Y : public LinearAxis
+class Y : public Axis
 {
 public:
 	Y();
 	explicit Y(double value);
 };
 
-class Z : public LinearAxis
+class Z : public Axis
 {
 public:
 	Z();
 	explicit Z(double value);
 };
 
-class A : public RotaryAxis
+class A : public Axis
 {
 public:
 	A();
 	explicit A(double value);
 };
 
-class B : public RotaryAxis
+class B : public Axis
 {
 public:
 	B();
 	explicit B(double value);
 };
 
-class C : public RotaryAxis
+class C : public Axis
 {
 public:
 	C();
 	explicit C(double value);
 };
 
-class U : public LinearAxis
+class U : public Axis
 {
 public:
 	U();
 	explicit U(double value);
 };
 
-class V : public LinearAxis
+class V : public Axis
 {
 public:
 	V();
 	explicit V(double value);
 };
 
-class W : public LinearAxis
+class W : public Axis
 {
 public:
 	W();

@@ -55,110 +55,84 @@ bool is_linear(Axis::Type axis)
 	}
 }
 
-LinearAxis::LinearAxis(Type type)
- : Axis(type)
-{
-	if(!is_linear(type))
-		throw std::logic_error("Attempt to create Linear axis object for Rotary axis");
-}
-LinearAxis::LinearAxis(Type type, double value)
- : Axis(type, value)
-{
-	if(!is_linear(type))
-		throw std::logic_error("Attempt to create Linear axis object for Rotary axis");
-}
-
-RotaryAxis::RotaryAxis(Type type)
- : Axis(type)
-{
-	if(is_linear(type))
-		throw std::logic_error("Attempt to create Rotary axis object for Linear axis");
-}
-RotaryAxis::RotaryAxis(Type type, double value)
- : Axis(type, value)
-{
-	if(is_linear(type))
-		throw std::logic_error("Attempt to create Rotary axis object for Linear axis");
-}
-
 X::X()
- : LinearAxis(Type::X)
+ : Axis(Type::X)
 {
 }
 X::X(double value)
- : LinearAxis(Type::X, value)
+ : Axis(Type::X, value)
 {
 }
 
 Y::Y()
- : LinearAxis(Type::Y)
+ : Axis(Type::Y)
 {
 }
 Y::Y(double value)
- : LinearAxis(Type::Y, value)
+ : Axis(Type::Y, value)
 {
 }
 
 Z::Z()
- : LinearAxis(Type::Z)
+ : Axis(Type::Z)
 {
 }
 Z::Z(double value)
- : LinearAxis(Type::Z, value)
+ : Axis(Type::Z, value)
 {
 }
 
 A::A()
- : RotaryAxis(Type::A)
+ : Axis(Type::A)
 {
 }
 A::A(double value)
- : RotaryAxis(Type::A, value)
+ : Axis(Type::A, value)
 {
 }
 
 B::B()
- : RotaryAxis(Type::B)
+ : Axis(Type::B)
 {
 }
 B::B(double value)
- : RotaryAxis(Type::B, value)
+ : Axis(Type::B, value)
 {
 }
 
 C::C()
- : RotaryAxis(Type::C)
+ : Axis(Type::C)
 {
 }
 C::C(double value)
- : RotaryAxis(Type::C, value)
+ : Axis(Type::C, value)
 {
 }
 
 U::U()
- : LinearAxis(Type::U)
+ : Axis(Type::U)
 {
 }
 U::U(double value)
- : LinearAxis(Type::U, value)
+ : Axis(Type::U, value)
 {
 }
 
 V::V()
- : LinearAxis(Type::V)
+ : Axis(Type::V)
 {
 }
 V::V(double value)
- : LinearAxis(Type::V, value)
+ : Axis(Type::V, value)
 {
 }
 
 W::W()
- : LinearAxis(Type::W)
+ : Axis(Type::W)
 {
 }
 W::W(double value)
- : LinearAxis(Type::W, value)
+ : Axis(Type::W, value)
 {
 }
 
