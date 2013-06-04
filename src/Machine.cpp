@@ -1301,11 +1301,11 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	// arc from start to end expand tool along path.
 }
 
-auto Machine::Generate() const -> std::vector<line_t>
+auto Machine::Generate() const -> std::vector<block_t>
 {
 	auto& m_GCode = m_Private->m_GCode;
 	
-	std::vector<line_t> lines;
+	std::vector<block_t> lines;
 	for(auto& block : m_GCode)
 	{
 		lines.push_back({{}, block.Name()});

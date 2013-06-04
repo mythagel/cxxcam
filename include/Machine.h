@@ -294,7 +294,7 @@ public:
 
 //	void Plunge(double z, double helix);
 
-	struct line_t
+	struct block_t
 	{
 		std::vector<gcode::Word> words;
 		std::string comment;
@@ -304,7 +304,7 @@ public:
 			return words.empty() && comment.empty();
 		}
 	};
-	std::vector<line_t> Generate() const;
+	std::vector<block_t> Generate() const;
 
 	~Machine();
 };
