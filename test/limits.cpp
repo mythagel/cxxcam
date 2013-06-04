@@ -1,13 +1,12 @@
 #include "Limits.h"
 #include "Position.h"
 #include <iostream>
-
-#include <boost/units/cmath.hpp>
+#include <stdexcept>
 
 using namespace cxxcam;
 using namespace cxxcam::limits;
 
-int main()
+void test_rapids()
 {
 	Rapids r;
 	
@@ -27,6 +26,25 @@ int main()
 	std::cout << "Rapid time: " << duration << "\n";
 	
 	if(duration != units::time{60 * units::second})
-		return 1;
+		throw std::runtime_error("Incorrect duration");
+}
+
+void test_feedrate()
+{
+	FeedRate r;
+	r.SetGlobal(units::velocity{100 * units::millimeters_per_minute});
+	r.Set(Axis::Type::Z, units::velocity{50 * units::millimeters_per_minute});
+	r.Set(Axis::Type::A, units::angular_velocity{5 * units::degrees_per_second});
+	
+	r.Validate(Axis::Type::X, units::velocity{100 * units::millimeters_per_minute});
+	
+	r.Validate(Axis::Type::Z, units::velocity{20 * units::millimeters_per_minute});
+	r.Validate(Axis::Type::A, units::angular_velocity{5 * units::degrees_per_second});
+}
+
+int main()
+{
+	test_rapids();
+	test_feedrate();
 	return 0;
 }
