@@ -15,6 +15,7 @@
  * *Review handling of feed rate*
     - Inverse time needs special attention and possible interface change.
  * Implement Dwell
+ * Tracking of Modal codes.
  * *Machine Limits*
     - *All of the limits need to be reviewed based on incorrect assumptions for rotational axes.*
     - Torque at various rpm (Horsepower)
