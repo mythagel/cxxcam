@@ -23,27 +23,19 @@
  */
 
 #include "Axis.h"
+#include <stdexcept>
 
 namespace cxxcam
 {
 
 Axis::Axis(Type type)
- : m_Type(type), m_Value()
-{
-}
-Axis::Axis(Type type, double value)
- : m_Type(type), m_Value(value)
+ : m_Type(type)
 {
 }
 
 Axis::operator Axis::Type() const
 {
 	return m_Type;
-}
-
-Axis::operator double() const
-{
-	return m_Value;
 }
 
 bool is_linear(Axis::Type axis)
@@ -59,57 +51,118 @@ bool is_linear(Axis::Type axis)
 	}
 }
 
+LinearAxis::LinearAxis(Type type)
+ : Axis(type), m_Value()
+{
+	if(!is_linear(type))
+		throw std::logic_error("Attempt to create Linear axis object for Rotary axis");
+}
+LinearAxis::LinearAxis(Type type, double value)
+ : Axis(type), m_Value(value)
+{
+	if(!is_linear(type))
+		throw std::logic_error("Attempt to create Linear axis object for Rotary axis");
+}
+LinearAxis::operator double() const
+{
+	return m_Value;
+}
+
+RotaryAxis::RotaryAxis(Type type)
+ : Axis(type), m_Value()
+{
+	if(is_linear(type))
+		throw std::logic_error("Attempt to create Rotary axis object for Linear axis");
+}
+RotaryAxis::RotaryAxis(Type type, double value)
+ : Axis(type), m_Value(value)
+{
+	if(is_linear(type))
+		throw std::logic_error("Attempt to create Rotary axis object for Linear axis");
+}
+RotaryAxis::operator double() const
+{
+	return m_Value;
+}
+
 X::X()
- : Axis(Type::X)
+ : LinearAxis(Type::X)
 {
 }
 X::X(double value)
- : Axis(Type::X, value)
+ : LinearAxis(Type::X, value)
 {
 }
 
 Y::Y()
- : Axis(Type::Y)
+ : LinearAxis(Type::Y)
 {
 }
 Y::Y(double value)
- : Axis(Type::Y, value)
+ : LinearAxis(Type::Y, value)
 {
 }
 
 Z::Z()
- : Axis(Type::Z)
+ : LinearAxis(Type::Z)
 {
 }
 Z::Z(double value)
- : Axis(Type::Z, value)
+ : LinearAxis(Type::Z, value)
 {
 }
 
 A::A()
- : Axis(Type::A)
+ : RotaryAxis(Type::A)
 {
 }
 A::A(double value)
- : Axis(Type::A, value)
+ : RotaryAxis(Type::A, value)
 {
 }
 
 B::B()
- : Axis(Type::B)
+ : RotaryAxis(Type::B)
 {
 }
 B::B(double value)
- : Axis(Type::B, value)
+ : RotaryAxis(Type::B, value)
 {
 }
 
 C::C()
- : Axis(Type::C)
+ : RotaryAxis(Type::C)
 {
 }
 C::C(double value)
- : Axis(Type::C, value)
+ : RotaryAxis(Type::C, value)
+{
+}
+
+U::U()
+ : LinearAxis(Type::U)
+{
+}
+U::U(double value)
+ : LinearAxis(Type::U, value)
+{
+}
+
+V::V()
+ : LinearAxis(Type::V)
+{
+}
+V::V(double value)
+ : LinearAxis(Type::V, value)
+{
+}
+
+W::W()
+ : LinearAxis(Type::W)
+{
+}
+W::W(double value)
+ : LinearAxis(Type::W, value)
 {
 }
 

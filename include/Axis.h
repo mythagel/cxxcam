@@ -45,58 +45,100 @@ public:
 	};
 protected:
 	Type m_Type;
-	double m_Value;
 
 	explicit Axis(Type type);
-	Axis(Type type, double value);
 public:
 
 	operator Type() const;
-	operator double() const;
+	
+	virtual ~Axis() = default;
 };
 
 bool is_linear(Axis::Type axis);
 
-class X : public Axis
+class LinearAxis : public Axis
+{
+protected:
+	double m_Value;
+	
+	explicit LinearAxis(Type type);
+	LinearAxis(Type type, double value);
+public:
+	operator double() const;
+};
+
+class RotaryAxis : public Axis
+{
+protected:
+	double m_Value;
+	
+	explicit RotaryAxis(Type type);
+	RotaryAxis(Type type, double value);
+public:
+	operator double() const;
+};
+
+class X : public LinearAxis
 {
 public:
 	X();
 	explicit X(double value);
 };
 
-class Y : public Axis
+class Y : public LinearAxis
 {
 public:
 	Y();
 	explicit Y(double value);
 };
 
-class Z : public Axis
+class Z : public LinearAxis
 {
 public:
 	Z();
 	explicit Z(double value);
 };
 
-class A : public Axis
+class A : public RotaryAxis
 {
 public:
 	A();
 	explicit A(double value);
 };
 
-class B : public Axis
+class B : public RotaryAxis
 {
 public:
 	B();
 	explicit B(double value);
 };
 
-class C : public Axis
+class C : public RotaryAxis
 {
 public:
 	C();
 	explicit C(double value);
+};
+
+class U : public LinearAxis
+{
+public:
+	U();
+	explicit U(double value);
+};
+
+class V : public LinearAxis
+{
+public:
+	V();
+	explicit V(double value);
+};
+
+class W : public LinearAxis
+{
+public:
+	W();
+	explicit W(double value);
 };
 
 }
