@@ -152,7 +152,7 @@ void Rapids::Set(Axis::Type axis, units::angular_velocity limit)
 		throw error("Cannot set angular velocity on linear axis.");
 	m_Angular[axis] = limit;
 }
-units::time Rapids::Duration(const Position_Metric& begin, const Position_Metric& end) const
+units::time Rapids::Duration(const Position& begin, const Position& end) const
 {
 	static const units::length zero;
 	static const units::velocity velocity_zero;

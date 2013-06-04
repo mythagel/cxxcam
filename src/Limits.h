@@ -32,7 +32,7 @@
 namespace cxxcam
 {
 
-struct Position_Metric;
+struct Position;
 
 namespace limits
 {
@@ -120,7 +120,7 @@ public:
 	void Set(Axis::Type axis, units::velocity limit);
 	void Set(Axis::Type axis, units::angular_velocity limit);
 	
-	units::time Duration(const Position_Metric& begin, const Position_Metric& end) const;
+	units::time Duration(const Position& begin, const Position& end) const;
 	
 	// returns global for unspecified rate
 	units::velocity LinearVelocity(Axis::Type axis) const;

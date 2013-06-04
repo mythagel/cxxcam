@@ -32,28 +32,6 @@ namespace cxxcam
 
 struct Position
 {
-	double X;
-	double Y;
-	double Z;
-
-	double A;
-	double B;
-	double C;
-
-	double U;
-	double V;
-	double W;
-
-	Position();
-
-	std::string str() const;
-
-	bool operator==(const Position& pos) const;
-	bool operator!=(const Position& pos) const;
-};
-
-struct Position_Metric
-{
 	units::length X;
 	units::length Y;
 	units::length Z;
@@ -68,12 +46,9 @@ struct Position_Metric
 
 	std::string str() const;
 
-	bool operator==(const Position_Metric& pos) const;
-	bool operator!=(const Position_Metric& pos) const;
+	bool operator==(const Position& pos) const;
+	bool operator!=(const Position& pos) const;
 };
-
-Position_Metric to_millimeters(const Position& pos);
-Position_Metric to_inches(const Position& pos);
 
 }
 

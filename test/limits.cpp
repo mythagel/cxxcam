@@ -14,11 +14,11 @@ void test_rapids()
 	r.Set(Axis::Type::Z, units::velocity{200 * units::millimeters_per_minute});
 	r.Set(Axis::Type::A, units::angular_velocity{50 * units::degrees_per_second});
 	
-	Position_Metric begin;
+	Position begin;
 	begin.X = units::length{500 * units::millimeters};	// 60 seconds
 	begin.A = units::plane_angle{50 * units::degrees};	// 1 second
 	
-	Position_Metric end;
+	Position end;
 	
 	std::cout << "Begin: " << begin.str() << "\n";
 	std::cout << "End  : " << end.str() << "\n";
