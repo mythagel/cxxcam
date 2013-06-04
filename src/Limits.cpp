@@ -152,8 +152,13 @@ void Rapids::Set(Axis::Type axis, units::angular_velocity limit)
 		throw error("Cannot set angular velocity on linear axis.");
 	m_Angular[axis] = limit;
 }
-double Rapids::Duration(const Position_Metric& begin, const Position_Metric& end) const
+units::time Rapids::Duration(const Position& begin, const Position& end) const
 {
+	static const units::length zero;
+	static const units::velocity velocity_zero;
+	static const units::plane_angle angular_zero;
+	static const units::angular_velocity angular_velocity_zero;
+
 	auto linear_axis_time = [this](units::length begin, units::length end, Axis::Type axis) -> units::time
 	{
 		if(!is_linear(axis))
@@ -161,6 +166,14 @@ double Rapids::Duration(const Position_Metric& begin, const Position_Metric& end
 		
 		auto distance = abs(end - begin);
 		auto velocity = LinearVelocity(axis);
+		
+		if(velocity == velocity_zero)
+		{
+			if(distance != zero)
+				throw error("Linear movement on axis with zero velocity will take infinite time.");
+			
+			return {};
+		}
 		return distance / velocity;
 	};
 	auto angular_axis_time = [this](units::plane_angle begin, units::plane_angle end, Axis::Type axis) -> units::time
@@ -170,21 +183,28 @@ double Rapids::Duration(const Position_Metric& begin, const Position_Metric& end
 		
 		auto distance = abs(end - begin);
 		auto velocity = AngularVelocity(axis);
+		if(velocity == angular_velocity_zero)
+		{
+			if(distance != angular_zero)
+				throw error("Angular movement on axis with zero velocity will take infinite time.");
+			
+			return {};
+		}
 		return distance / velocity;
 	};
 	
-	units::time duration;
-	duration += linear_axis_time(begin.X, end.X, Axis::Type::X);
-	duration += linear_axis_time(begin.Y, end.Y, Axis::Type::Y);
-	duration += linear_axis_time(begin.Z, end.Z, Axis::Type::Z);
-	duration += angular_axis_time(begin.A, end.A, Axis::Type::A);
-	duration += angular_axis_time(begin.B, end.B, Axis::Type::B);
-	duration += angular_axis_time(begin.C, end.C, Axis::Type::C);
-	duration += linear_axis_time(begin.U, end.U, Axis::Type::U);
-	duration += linear_axis_time(begin.V, end.V, Axis::Type::V);
-	duration += linear_axis_time(begin.W, end.W, Axis::Type::W);
-	
-	return duration.value();
+	return std::max(
+	{
+		linear_axis_time(begin.X, end.X, Axis::Type::X),
+		linear_axis_time(begin.Y, end.Y, Axis::Type::Y),
+		linear_axis_time(begin.Z, end.Z, Axis::Type::Z),
+		angular_axis_time(begin.A, end.A, Axis::Type::A),
+		angular_axis_time(begin.B, end.B, Axis::Type::B),
+		angular_axis_time(begin.C, end.C, Axis::Type::C),
+		linear_axis_time(begin.U, end.U, Axis::Type::U),
+		linear_axis_time(begin.V, end.V, Axis::Type::V),
+		linear_axis_time(begin.W, end.W, Axis::Type::W)
+	});
 }
 units::velocity Rapids::LinearVelocity(Axis::Type axis) const
 {

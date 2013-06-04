@@ -23,14 +23,11 @@
  */
 
 #include "Axis.h"
+#include <stdexcept>
 
 namespace cxxcam
 {
 
-Axis::Axis(Type type)
- : m_Type(type), m_Value()
-{
-}
 Axis::Axis(Type type, double value)
  : m_Type(type), m_Value(value)
 {
@@ -40,7 +37,6 @@ Axis::operator Axis::Type() const
 {
 	return m_Type;
 }
-
 Axis::operator double() const
 {
 	return m_Value;
@@ -110,6 +106,33 @@ C::C()
 }
 C::C(double value)
  : Axis(Type::C, value)
+{
+}
+
+U::U()
+ : Axis(Type::U)
+{
+}
+U::U(double value)
+ : Axis(Type::U, value)
+{
+}
+
+V::V()
+ : Axis(Type::V)
+{
+}
+V::V(double value)
+ : Axis(Type::V, value)
+{
+}
+
+W::W()
+ : Axis(Type::W)
+{
+}
+W::W(double value)
+ : Axis(Type::W, value)
 {
 }
 

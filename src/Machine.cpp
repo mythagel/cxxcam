@@ -351,52 +351,94 @@ void Machine::Preamble()
 void Machine::UpdatePosition(const Axis& axis)
 {
 	auto& m_State = m_Private->m_State;
+	auto& m_Units = m_State.m_Units;
 
-	double* val = nullptr;
+	units::length* linear = nullptr;
+	units::plane_angle* rotary = nullptr;
 	switch(axis)
 	{
 		case Axis::Type::X:
-			val = &m_State.m_Current.X;
+			linear = &m_State.m_Current.X;
 			break;
 		case Axis::Type::Y:
-			val = &m_State.m_Current.Y;
+			linear = &m_State.m_Current.Y;
 			break;
 		case Axis::Type::Z:
-			val = &m_State.m_Current.Z;
+			linear = &m_State.m_Current.Z;
 			break;
 
 		case Axis::Type::A:
-			val = &m_State.m_Current.A;
+			rotary = &m_State.m_Current.A;
 			break;
 		case Axis::Type::B:
-			val = &m_State.m_Current.B;
+			rotary = &m_State.m_Current.B;
 			break;
 		case Axis::Type::C:
-			val = &m_State.m_Current.C;
+			rotary = &m_State.m_Current.C;
 			break;
 
 		case Axis::Type::U:
-			val = &m_State.m_Current.U;
+			linear = &m_State.m_Current.U;
 			break;
 		case Axis::Type::V:
-			val = &m_State.m_Current.V;
+			linear = &m_State.m_Current.V;
 			break;
 		case Axis::Type::W:
-			val = &m_State.m_Current.W;
+			linear = &m_State.m_Current.W;
 			break;
 	}
 
-	if(!val)
+	if(!linear && !rotary)
 		throw std::logic_error("Unknown Axis");
 
 	switch(m_State.m_Motion)
 	{
 		case Motion::Absolute:
-			*val = axis;
+		{
+			switch(m_Units)
+			{
+				case Units::Metric:
+				{
+					if(linear)
+						*linear = units::length{axis * units::millimeters};
+					else
+						*rotary = units::plane_angle{axis * units::degrees};
+					break;
+				}
+				case Units::Imperial:
+				{
+					if(linear)
+						*linear = units::length{axis * units::inches};
+					else
+						*rotary = units::plane_angle{axis * units::degrees};
+					break;
+				}
+			}
 			break;
+		}
 		case Motion::Incremental:
-			*val += axis;
+		{
+			switch(m_Units)
+			{
+				case Units::Metric:
+				{
+					if(linear)
+						*linear += units::length{axis * units::millimeters};
+					else
+						*rotary += units::plane_angle{axis * units::degrees};
+					break;
+				}
+				case Units::Imperial:
+				{
+					if(linear)
+						*linear += units::length{axis * units::inches};
+					else
+						*rotary += units::plane_angle{axis * units::degrees};
+					break;
+				}
+			}
 			break;
+		}
 	}
 }
 
@@ -405,29 +447,19 @@ void Machine::ValidatePosition() const
 	auto& m_TravelLimit = m_Private->m_TravelLimit;
 	auto& m_State = m_Private->m_State;
 	auto& m_Current = m_State.m_Current;
-	auto& m_Units = m_State.m_Units;
 	
-	auto to_length = [&m_Units](double axis) -> units::length
-	{
-		switch(m_Units)
-		{
-			case Units::Metric:
-				return units::length{axis * units::millimeters};
-			case Units::Imperial:
-				return units::length{axis * units::inches};
-		}
-		throw std::logic_error("Unknown units.");
-	};
-	
-	m_TravelLimit.Validate(Axis::Type::X, to_length(m_Current.X));
-	m_TravelLimit.Validate(Axis::Type::Y, to_length(m_Current.Y));
-	m_TravelLimit.Validate(Axis::Type::Z, to_length(m_Current.Z));
-	m_TravelLimit.Validate(Axis::Type::A, to_length(m_Current.A));
-	m_TravelLimit.Validate(Axis::Type::B, to_length(m_Current.B));
-	m_TravelLimit.Validate(Axis::Type::C, to_length(m_Current.C));
-	m_TravelLimit.Validate(Axis::Type::U, to_length(m_Current.U));
-	m_TravelLimit.Validate(Axis::Type::V, to_length(m_Current.V));
-	m_TravelLimit.Validate(Axis::Type::W, to_length(m_Current.W));
+	// Travel limits are probably useless given that
+	// the current position is in the active coordinate system
+	// and not machine coordinates.
+	m_TravelLimit.Validate(Axis::Type::X, m_Current.X);
+	m_TravelLimit.Validate(Axis::Type::Y, m_Current.Y);
+	m_TravelLimit.Validate(Axis::Type::Z, m_Current.Z);
+//	m_TravelLimit.Validate(Axis::Type::A, m_Current.A);
+//	m_TravelLimit.Validate(Axis::Type::B, m_Current.B);
+//	m_TravelLimit.Validate(Axis::Type::C, m_Current.C);
+	m_TravelLimit.Validate(Axis::Type::U, m_Current.U);
+	m_TravelLimit.Validate(Axis::Type::V, m_Current.V);
+	m_TravelLimit.Validate(Axis::Type::W, m_Current.W);
 }
 
 Machine::Machine(Type type, const std::string& gcode_variant)

@@ -47,8 +47,7 @@ protected:
 	Type m_Type;
 	double m_Value;
 
-	explicit Axis(Type type);
-	Axis(Type type, double value);
+	explicit Axis(Type type, double value = {});
 public:
 
 	operator Type() const;
@@ -97,6 +96,27 @@ class C : public Axis
 public:
 	C();
 	explicit C(double value);
+};
+
+class U : public Axis
+{
+public:
+	U();
+	explicit U(double value);
+};
+
+class V : public Axis
+{
+public:
+	V();
+	explicit V(double value);
+};
+
+class W : public Axis
+{
+public:
+	W();
+	explicit W(double value);
 };
 
 }
