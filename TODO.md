@@ -50,6 +50,7 @@
 ## Code ##
  * Replace Unchecked Position with code from Position_Metric.
  * Ensure exceptions do not change state (to allow recovery)
+ * Rename Machine::line_t to Machine::block_t
 
 ## Design issues ##
  * At what level should the cxxcam interface exist?
