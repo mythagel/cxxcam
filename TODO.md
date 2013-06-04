@@ -10,6 +10,8 @@
 ## High Level ##
  * *Review handling of rotational axes.*
     - Change velocity to angular_velocity for ABC axes.
+ * Implement generic external axis interface and checked internal interface
+    - Possibly use templates to generate all possible axis functions.
  * *Review handling of feed rate*
     - Inverse time needs special attention and possible interface change.
  * Implement Dwell
