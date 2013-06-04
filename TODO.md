@@ -21,6 +21,7 @@
     - Max Feed rate per axis (z is probably slower)
     - Rapid rate per axis (For calculating movement time)
     - Max travel per axis
+       - Probably actually useless given that cxxcam has no way of knowing the machine position for the active coordinate system.
  * Machine configuration struct
     - Many configuration parameters together will simplify machine setup.
  * Implement available axes (i.e. XYZ / XYZA / XYZABC, etc.)
