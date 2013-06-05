@@ -25,26 +25,71 @@
 #ifndef CONFIGURATION_H_
 #define CONFIGURATION_H_
 #include <map>
+#include <vector>
+#include <memory>
 #include "Machine.h"
+#include "Tool.h"
+#include "Axis.h"
 
 namespace cxxcam
 {
 
-class Tool;
-
 struct Configuration
 {
-	Machine::Type type;
-	std::string gcode_variant;
+	struct spindle_speed
+	{
+		const enum
+		{
+			type_Range,
+			type_Discrete
+		} Type;
+
+		union
+		{
+			struct
+			{
+				const unsigned long RangeStart;
+				const unsigned long RangeEnd;
+			};
+			const unsigned long Discrete;
+		};
+		
+		union
+		{
+			struct
+			{
+				const double TorqueStart;
+				const double TorqueEnd;
+			};
+			const double DiscreteTorque;
+		};
+		
+		spindle_speed(unsigned long range_start, unsigned long range_end, double torque_start, double torque_end)
+		 : Type(type_Range), RangeStart(range_start), RangeEnd(range_end),
+		   TorqueStart(torque_start), TorqueEnd(torque_end)
+		{
+		}
+		spindle_speed(unsigned long discrete_value, double torque)
+		 : Type(type_Discrete), Discrete(discrete_value), DiscreteTorque(torque)
+		{
+		}
+	};
+
+	Machine::Type type = Machine::Type::Mill;
+	Machine::Units units = Machine::Units::Metric;
+	std::string gcode_variant = "Generic";
+	std::string axes = "XYZABCUVW";
 	
-	Machine::Units units;
 	std::map<int, Tool> tools;
-	// spindle speeds / torque.
-	// feed rate limits
-	// rapid rates
-	// available axes
+	std::vector<spindle_speed> spindle_speeds;
 	
-	Configuration();
+	double max_feed_rate = 0.0;
+	std::map<Axis::Type, double> axis_max_feed_rates;
+	
+	double rapid_rate = 0.0;
+	std::map<Axis::Type, double> axis_rapid_rates;
+	
+	std::unique_ptr<Machine> Construct() const;
 };
 
 }

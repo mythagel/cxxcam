@@ -23,13 +23,52 @@
  */
 
 #include "Configuration.h"
-#include "Tool.h"
+#include "make_unique.h"
 
 namespace cxxcam
 {
 
-Configuration::Configuration()
+std::unique_ptr<Machine> Configuration::Construct() const
 {
+	auto machine = make_unique<Machine>(type, units, gcode_variant);
+	machine->SetMachineAxes(axes);
+	
+	for(auto& tool : tools)
+		machine->AddTool(tool.first, tool.second);
+	
+	for(auto& speed : spindle_speeds)
+	{
+		switch(speed.Type)
+		{
+			case spindle_speed::type_Range:
+				machine->AddSpindleRange(speed.RangeStart, speed.RangeEnd);
+				
+				machine->SetSpindleTorque(speed.RangeStart, speed.TorqueStart);
+				machine->SetSpindleTorque(speed.RangeEnd, speed.TorqueEnd);
+				break;
+			case spindle_speed::type_Discrete:
+				machine->AddSpindleDiscrete(speed.Discrete);
+				
+				machine->SetSpindleTorque(speed.Discrete, speed.DiscreteTorque);
+				break;
+		}
+	}
+	
+	machine->SetGlobalMaxFeedrate(max_feed_rate);
+	for(auto& rate : axis_max_feed_rates)
+	{
+		auto axis = Axis::Construct(rate.first);
+		machine->SetMaxFeedrate(axis, rate.second);
+	}
+
+	machine->SetGlobalRapidRate(rapid_rate);
+	for(auto& rate : axis_rapid_rates)
+	{
+		auto axis = Axis::Construct(rate.first);
+		machine->SetRapidRate(axis, rate.second);
+	}
+
+	return machine;
 }
 
 }
