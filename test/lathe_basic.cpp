@@ -7,7 +7,7 @@ using namespace cxxcam;
 
 int main()
 {
-	Machine m(Machine::Type::Lathe, "LinuxCNC");
+	Machine m(Machine::Type::Lathe);
 
 	m.SetUnits(Machine::Units::Imperial);
 	m.SetFeedRate(100);

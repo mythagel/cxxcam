@@ -6,7 +6,7 @@ using namespace cxxcam;
 
 int main()
 {
-	Machine m(Machine::Type::Mill, "LinuxCNC");
+	Machine m(Machine::Type::Mill);
 	m.AddSpindleDiscrete(100);
 	m.AddSpindleDiscrete(250);
 
