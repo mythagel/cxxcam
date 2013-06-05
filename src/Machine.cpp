@@ -65,7 +65,6 @@ struct Machine::Private
 	ToolTable m_ToolTable;
 	Stock m_Stock;
 	
-	limits::Travel m_TravelLimit;
 	limits::FeedRate m_FeedRateLimit;
 	limits::Rapids m_RapidsRate;
 	limits::AvailableAxes m_Axes;
