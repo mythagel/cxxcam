@@ -19,6 +19,9 @@
  * Auto feedrate / spindle speeds
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
+ * Mesh on demand in nef object
+    - Invalidate on change.
+    - Remesh on request
  * Complete Stock class
     - Needs model loading & ~~generation~~
     - Needs intersection tests
