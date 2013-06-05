@@ -7,7 +7,7 @@ int main()
 {
 	{
 		AvailableAxes x;
-		x.validate(Axis::Type::X);
+		x.Validate(Axis::Type::X);
 	}
 	
 	{
