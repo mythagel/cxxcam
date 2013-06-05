@@ -583,6 +583,9 @@ void Machine::SetMaxFeedrate(const Axis& axis, double limit)
 {
 	auto& m_State = m_Private->m_State;
 	auto& m_FeedRateLimit = m_Private->m_FeedRateLimit;
+	auto& m_Axes = m_Private->m_Axes;
+
+	m_Axes.Validate(axis);
 
 	if(is_linear(axis))
 	{
@@ -621,6 +624,9 @@ void Machine::SetRapidRate(const Axis& axis, double rate)
 {
 	auto& m_State = m_Private->m_State;
 	auto& m_RapidsRate = m_Private->m_RapidsRate;
+	auto& m_Axes = m_Private->m_Axes;
+
+	m_Axes.Validate(axis);
 
 	if(is_linear(axis))
 	{
