@@ -68,6 +68,7 @@ struct Machine::Private
 	limits::Travel m_TravelLimit;
 	limits::FeedRate m_FeedRateLimit;
 	limits::Rapids m_RapidsRate;
+	limits::AvailableAxes m_Axes;
 
 	Private(Type type, const std::string& gcode_variant);
 };
@@ -1078,11 +1079,14 @@ void Machine::StopSpindle()
 void Machine::Rapid(const std::vector<Axis>& axes)
 {
 	//auto start = m_Private->m_State.m_Current;
+	
+	auto& m_Axes = m_Private->m_Axes;
 
 	Line line;
 	line += G00;
 	for(auto& axis : axes)
 	{
+		m_Axes.Validate(axis);
 		line += AxisToWord(axis);
 		UpdatePosition(axis);
 	}
@@ -1097,6 +1101,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	//auto start = m_Private->m_State.m_Current;
 
 	auto& m_State = m_Private->m_State;
+	auto& m_Axes = m_Private->m_Axes;
 
 	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw error("Spindle is stopped");
@@ -1108,6 +1113,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	line += G01;
 	for(auto& axis : axes)
 	{
+		m_Axes.Validate(axis);
 		line += AxisToWord(axis);
 		UpdatePosition(axis);
 	}
@@ -1130,6 +1136,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	//auto start = m_Private->m_State.m_Current;
 	
 	auto& m_State = m_Private->m_State;
+	auto& m_Axes = m_Private->m_Axes;
 
 	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw error("Spindle is stopped");
@@ -1157,6 +1164,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 		{
 			for(auto& axis : end_pos)
 			{
+				m_Axes.Validate(axis);
 				switch(axis)
 				{
 					case Axis::Type::X:
@@ -1197,6 +1205,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 		{
 			for(auto& axis : end_pos)
 			{
+				m_Axes.Validate(axis);
 				switch(axis)
 				{
 					case Axis::Type::X:
@@ -1237,6 +1246,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 		{
 			for(auto& axis : end_pos)
 			{
+				m_Axes.Validate(axis);
 				switch(axis)
 				{
 					case Axis::Type::Y:
