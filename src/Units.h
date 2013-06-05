@@ -72,6 +72,8 @@ static const auto radians = boost::units::si::radians;
 static const auto degrees = boost::units::degree::degrees;
 static const auto degrees_per_second = degrees / second;
 
+static const auto newton_meters = boost::units::si::newton_meters;
+
 }
 }
 
