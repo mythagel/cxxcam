@@ -8,15 +8,14 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
+ * Machine configuration struct
+    - Many configuration parameters together will simplify machine setup.
  * Different type for Linear vs Rotational axes guarantees safety in the type system rather than manual checking.
     - Implement generic external axis interface and checked internal interface
     - Possibly use templates to generate all possible axis functions.
  * *Review handling of feed rate*
     - Inverse time needs special attention and possible interface change.
  * Tracking of Modal codes.
- * Machine configuration struct
-    - Many configuration parameters together will simplify machine setup.
- * Implement available axes (i.e. XYZ / XYZA / XYZABC, etc.)
  * Auto feedrate / spindle speeds
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
@@ -34,6 +33,7 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Implement available axes (i.e. XYZ / XYZA / XYZABC, etc.)~~
  * ~~Review handling of rotational axes.~~
     - ~~Change velocity to angular_velocity for ABC axes.~~
  * ~~Machine Limits~~
