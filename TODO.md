@@ -15,7 +15,6 @@
     - Possibly use templates to generate all possible axis functions.
  * *Review handling of feed rate*
     - Inverse time needs special attention and possible interface change.
- * Implement Dwell
  * Tracking of Modal codes.
  * *Machine Limits*
     - *All of the limits need to be reviewed based on incorrect assumptions for rotational axes.*
@@ -44,6 +43,7 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Implement Dwell~~
  * ~~Enforce units via type system.~~
     - ~~Already encountering possible issues with mismatched units.~~
  * ~~Push and Pop state.~~
