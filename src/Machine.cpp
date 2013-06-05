@@ -442,26 +442,6 @@ void Machine::UpdatePosition(const Axis& axis)
 	}
 }
 
-void Machine::ValidatePosition() const
-{
-	auto& m_TravelLimit = m_Private->m_TravelLimit;
-	auto& m_State = m_Private->m_State;
-	auto& m_Current = m_State.m_Current;
-	
-	// Travel limits are probably useless given that
-	// the current position is in the active coordinate system
-	// and not machine coordinates.
-	m_TravelLimit.Validate(Axis::Type::X, m_Current.X);
-	m_TravelLimit.Validate(Axis::Type::Y, m_Current.Y);
-	m_TravelLimit.Validate(Axis::Type::Z, m_Current.Z);
-//	m_TravelLimit.Validate(Axis::Type::A, m_Current.A);
-//	m_TravelLimit.Validate(Axis::Type::B, m_Current.B);
-//	m_TravelLimit.Validate(Axis::Type::C, m_Current.C);
-	m_TravelLimit.Validate(Axis::Type::U, m_Current.U);
-	m_TravelLimit.Validate(Axis::Type::V, m_Current.V);
-	m_TravelLimit.Validate(Axis::Type::W, m_Current.W);
-}
-
 Machine::Machine(Type type, const std::string& gcode_variant)
  : m_Private(make_unique<Private>(type, gcode_variant))
 {

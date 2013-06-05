@@ -183,7 +183,6 @@ private:
 protected:
 	void Preamble();
 	void UpdatePosition(const Axis& axis);
-	void ValidatePosition() const;
 public:
 
 	explicit Machine(Type type, const std::string& gcode_variant = "Generic");

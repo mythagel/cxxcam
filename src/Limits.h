@@ -37,6 +37,12 @@ struct Position;
 namespace limits
 {
 
+/*
+ * Though useless for absolute machine travel limits
+ * this class will be maintained for work envelope tracking
+ * i.e. simple way to check that any cutting / rapid move
+ * does not exit the given envelope.
+ */
 class Travel
 {
 private:
