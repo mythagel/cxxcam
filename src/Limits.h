@@ -135,6 +135,16 @@ public:
 	units::angular_velocity AngularVelocity(Axis::Type axis) const;
 };
 
+class AvailableAxes
+{
+private:
+	std::set<Axis::Type> axes;
+public:
+	AvailableAxes();
+	explicit AvailableAxes(std::set<Axis::Type> axes);
+	void validate(Axis::Type axis) const;
+};
+
 }
 }
 

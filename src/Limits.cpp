@@ -229,6 +229,32 @@ units::angular_velocity Rapids::AngularVelocity(Axis::Type axis) const
 	return {};
 }
 
+AvailableAxes::AvailableAxes()
+ : axes({
+   Axis::Type::X,
+   Axis::Type::Y,
+   Axis::Type::Z,
+   
+   Axis::Type::A,
+   Axis::Type::B,
+   Axis::Type::C,
+   
+   Axis::Type::U,
+   Axis::Type::V,
+   Axis::Type::W
+   })
+{
+}
+AvailableAxes::AvailableAxes(std::set<Axis::Type> axes)
+ : axes(axes)
+{
+}
+void AvailableAxes::validate(Axis::Type axis) const
+{
+	if(axes.find(axis) == end(axes))
+		throw error("Invalid Axis.");
+}
+
 }
 }
 
