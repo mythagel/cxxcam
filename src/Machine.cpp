@@ -528,6 +528,10 @@ void Machine::AddSpindleDiscrete(unsigned long discrete_value)
 {
 	m_Private->m_Spindle.AddDiscrete(discrete_value);
 }
+void Machine::SetSpindleTorque(unsigned long rpm, double torque_nm)
+{
+	m_Private->m_Spindle.SetTorque(rpm, units::torque{torque_nm * units::newton_meters});
+}
 void Machine::SetStock(const Stock& stock)
 {
 	m_Private->m_Stock = stock;

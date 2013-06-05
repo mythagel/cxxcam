@@ -209,6 +209,7 @@ public:
 
 	void AddSpindleRange(unsigned long range_start, unsigned long range_end);
 	void AddSpindleDiscrete(unsigned long discrete_value);
+	void SetSpindleTorque(unsigned long rpm, double torque_nm);
 
 	void SetStock(const Stock& stock);
 	Stock GetStock() const;
