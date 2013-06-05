@@ -545,6 +545,44 @@ Stock Machine::GetStock() const
 	return m_Private->m_Stock;
 }
 
+void Machine::SetGlobalFeedrate(double limit)
+{
+	auto& m_State = m_Private->m_State;
+	auto& m_FeedRateLimit = m_Private->m_FeedRateLimit;
+	
+	switch(m_State.m_Units)
+	{
+		case Units::Metric:
+			m_FeedRateLimit.SetGlobal(units::velocity{limit * units::millimeters_per_minute});
+			break;
+		case Units::Imperial:
+			m_FeedRateLimit.SetGlobal(units::velocity{limit * units::inches_per_minute});
+			break;
+	}
+}
+void Machine::SetFeedrate(const Axis& axis, double limit)
+{
+	auto& m_State = m_Private->m_State;
+	auto& m_FeedRateLimit = m_Private->m_FeedRateLimit;
+
+	if(is_linear(axis))
+	{
+		switch(m_State.m_Units)
+		{
+			case Units::Metric:
+				m_FeedRateLimit.Set(axis, units::velocity{limit * units::millimeters_per_minute});
+				break;
+			case Units::Imperial:
+				m_FeedRateLimit.Set(axis, units::velocity{limit * units::inches_per_minute});
+				break;
+		}
+	}
+	else
+	{
+		m_FeedRateLimit.Set(axis, units::angular_velocity{limit * units::degrees_per_second});
+	}
+}
+
 void Machine::SetTool(int id)
 {
 	auto& m_GCode = m_Private->m_GCode;

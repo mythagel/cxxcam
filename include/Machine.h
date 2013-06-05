@@ -213,6 +213,17 @@ public:
 	void SetStock(const Stock& stock);
 	Stock GetStock() const;
 
+	/*
+	 * Set Global and per-axis feed rate limits.
+	 * Units are based on current machine units.
+	 * i.e.
+	 * linear axes: mm/m or ipm
+	 * rotary axes: degrees/second
+	 * Note that Global limits apply only to linear axes.
+	 */
+	void SetGlobalFeedrate(double limit);
+	void SetFeedrate(const Axis& axis, double limit);
+
 	// CNC Setup
 
 	// Follow the path given exactly - even if that means coming to a stop
