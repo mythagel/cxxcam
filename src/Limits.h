@@ -114,6 +114,10 @@ class AvailableAxes
 private:
 	std::set<Axis::Type> axes;
 public:
+	
+	/*
+	 * Default: XYZABCUVW
+	 */
 	AvailableAxes();
 	explicit AvailableAxes(std::set<Axis::Type> axes);
 	void Validate(Axis::Type axis) const;
