@@ -249,7 +249,7 @@ AvailableAxes::AvailableAxes(std::set<Axis::Type> axes)
  : axes(axes)
 {
 }
-void AvailableAxes::validate(Axis::Type axis) const
+void AvailableAxes::Validate(Axis::Type axis) const
 {
 	if(axes.find(axis) == end(axes))
 		throw error("Invalid Axis.");

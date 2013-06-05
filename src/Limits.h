@@ -142,7 +142,7 @@ private:
 public:
 	AvailableAxes();
 	explicit AvailableAxes(std::set<Axis::Type> axes);
-	void validate(Axis::Type axis) const;
+	void Validate(Axis::Type axis) const;
 };
 
 }

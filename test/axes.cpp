@@ -12,7 +12,7 @@ int main()
 	
 	{
 		AvailableAxes x({Axis::Type::X, Axis::Type::Y});
-		x.validate(Axis::Type::X);
+		x.Validate(Axis::Type::X);
 	}
 	return 0;
 }
