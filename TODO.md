@@ -8,8 +8,6 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * *Review handling of rotational axes.*
-    - ~~Change velocity to angular_velocity for ABC axes.~~
  * Different type for Linear vs Rotational axes guarantees safety in the type system rather than manual checking.
     - Implement generic external axis interface and checked internal interface
     - Possibly use templates to generate all possible axis functions.
@@ -36,6 +34,8 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Review handling of rotational axes.~~
+    - ~~Change velocity to angular_velocity for ABC axes.~~
  * ~~Machine Limits~~
     - ~~Torque at various rpm (Horsepower)~~
     - ~~Max Feed rate per axis (z is probably slower)~~
