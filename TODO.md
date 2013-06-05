@@ -9,8 +9,9 @@
 
 ## High Level ##
  * *Review handling of rotational axes.*
-    - Change velocity to angular_velocity for ABC axes.
- * Implement generic external axis interface and checked internal interface
+    - ~~Change velocity to angular_velocity for ABC axes.~~
+ * Different type for Linear vs Rotational axes guarantees safety in the type system rather than manual checking.
+    - Implement generic external axis interface and checked internal interface
     - Possibly use templates to generate all possible axis functions.
  * *Review handling of feed rate*
     - Inverse time needs special attention and possible interface change.
@@ -21,12 +22,11 @@
     - Torque at various rpm (Horsepower)
     - Max Feed rate per axis (z is probably slower)
     - Rapid rate per axis (For calculating movement time)
-    - Max travel per axis
-       - Probably actually useless given that cxxcam has no way of knowing the machine position for the active coordinate system.
+    - ~~Max travel per axis~~
+       - ~~Probably actually useless given that cxxcam has no way of knowing the machine position for the active coordinate system.~~
  * Machine configuration struct
     - Many configuration parameters together will simplify machine setup.
  * Implement available axes (i.e. XYZ / XYZA / XYZABC, etc.)
- * Different type for Linear vs Rotational axes guarantees safety in the type system rather than manual checking.
  * Auto feedrate / spindle speeds
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
@@ -49,8 +49,8 @@
  * ~~Push and Pop state.~~
 
 ## Code ##
- * Replace Unchecked Position with code from Position_Metric.
  * Ensure exceptions do not change state (to allow recovery)
+ * ~~Replace Unchecked Position with code from Position_Metric.~~
  * ~~Rename Machine::line_t to Machine::block_t~~
 
 ## Design issues ##
