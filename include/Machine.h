@@ -269,7 +269,7 @@ public:
 	void NewBlock(const std::string& name);
 	void EndBlock(int restore = block_PreserveState);
 
-	void OptionalPause(const std::string& comment = std::string());
+	void OptionalPause(const std::string& comment = {});
 	void Comment(const std::string& comment);
 	void Dwell(double seconds, const std::string& comment = {});
 
