@@ -22,5 +22,6 @@ ToolTable.cpp
 Offset.cpp 
 Limits.cpp 
 GCodeModal.cpp 
+Configuration.cpp 
 )
 TARGET_LINK_LIBRARIES(cxxcam nef)
