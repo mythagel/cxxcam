@@ -583,6 +583,44 @@ void Machine::SetMaxFeedrate(const Axis& axis, double limit)
 	}
 }
 
+void Machine::SetGlobalRapidRate(double rate)
+{
+	auto& m_State = m_Private->m_State;
+	auto& m_RapidsRate = m_Private->m_RapidsRate;
+	
+	switch(m_State.m_Units)
+	{
+		case Units::Metric:
+			m_RapidsRate.SetGlobal(units::velocity{rate * units::millimeters_per_minute});
+			break;
+		case Units::Imperial:
+			m_RapidsRate.SetGlobal(units::velocity{rate * units::inches_per_minute});
+			break;
+	}
+}
+void Machine::SetRapidRate(const Axis& axis, double rate)
+{
+	auto& m_State = m_Private->m_State;
+	auto& m_RapidsRate = m_Private->m_RapidsRate;
+
+	if(is_linear(axis))
+	{
+		switch(m_State.m_Units)
+		{
+			case Units::Metric:
+				m_RapidsRate.Set(axis, units::velocity{rate * units::millimeters_per_minute});
+				break;
+			case Units::Imperial:
+				m_RapidsRate.Set(axis, units::velocity{rate * units::inches_per_minute});
+				break;
+		}
+	}
+	else
+	{
+		m_RapidsRate.Set(axis, units::angular_velocity{rate * units::degrees_per_second});
+	}
+}
+
 void Machine::SetTool(int id)
 {
 	auto& m_GCode = m_Private->m_GCode;

@@ -224,6 +224,17 @@ public:
 	void SetGlobalMaxFeedrate(double limit);
 	void SetMaxFeedrate(const Axis& axis, double limit);
 
+	/*
+	 * Set Global and per-axis rapid traverse rates
+	 * Units are based on current machine units.
+	 * i.e.
+	 * linear axes: mm/m or ipm
+	 * rotary axes: degrees/second
+	 * Note that Global rate applies only to linear axes.
+	 */
+	void SetGlobalRapidRate(double rate);
+	void SetRapidRate(const Axis& axis, double rate);
+
 	// CNC Setup
 
 	// Follow the path given exactly - even if that means coming to a stop
