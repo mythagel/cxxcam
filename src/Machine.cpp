@@ -435,8 +435,8 @@ void Machine::UpdatePosition(const Axis& axis)
 	}
 }
 
-Machine::Machine(Type type, const std::string& gcode_variant)
- : m_Private(make_unique<Private>(type, gcode_variant))
+Machine::Machine(Type type)
+ : m_Private(make_unique<Private>(type, "Generic"))
 {
 	const auto& m_Type = m_Private->m_Type;
 	auto& m_State = m_Private->m_State;
@@ -452,7 +452,30 @@ Machine::Machine(Type type, const std::string& gcode_variant)
 			m_State.m_FeedRateMode = FeedRateMode::UnitsPerRevolution;
 			break;
 	}
+	
+	Preamble();
+}
 
+Machine::Machine(Type type, Units units, const std::string& gcode_variant)
+ : m_Private(make_unique<Private>(type, gcode_variant))
+{
+	const auto& m_Type = m_Private->m_Type;
+	auto& m_State = m_Private->m_State;
+
+	m_State.m_Units = units;
+
+	switch(m_Type)
+	{
+		case Type::Mill:
+			m_State.m_Plane = Plane::XY;
+			m_State.m_FeedRateMode = FeedRateMode::UnitsPerMinute;
+			break;
+		case Type::Lathe:
+			m_State.m_Plane = Plane::ZX;
+			m_State.m_FeedRateMode = FeedRateMode::UnitsPerRevolution;
+			break;
+	}
+	
 	Preamble();
 }
 Machine::Machine(const Machine& m)

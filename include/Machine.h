@@ -186,7 +186,8 @@ protected:
 	void UpdatePosition(const Axis& axis);
 public:
 
-	explicit Machine(Type type, const std::string& gcode_variant = "Generic");
+	explicit Machine(Type type);
+	explicit Machine(Type type, Units units, const std::string& gcode_variant);
 
 	Machine(const Machine& m);
 	Machine& operator=(const Machine& m);
