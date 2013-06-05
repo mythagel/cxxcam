@@ -9,7 +9,7 @@ MACRO(CXXCAM_TEST testname)
 	ADD_DEPENDENCIES(check ${testname})
 ENDMACRO()
 
-FOREACH(test mill_basic lathe_basic spindle nef_basic nef_tools nef_cube nef_cube2 nef_sphere nef_cube_io nef_sphere_io nef_cylinder model pushpop_state limits)
+FOREACH(test mill_basic lathe_basic spindle nef_basic nef_tools nef_cube nef_cube2 nef_sphere nef_cube_io nef_sphere_io nef_cylinder model pushpop_state limits axes)
 	CXXCAM_TEST(${test})
 ENDFOREACH()
 
