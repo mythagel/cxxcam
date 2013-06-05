@@ -51,6 +51,7 @@
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Move Torque from Limits to Spindle.
+ * Add Interface stability test.
  * ~~Replace Unchecked Position with code from Position_Metric.~~
  * ~~Rename Machine::line_t to Machine::block_t~~
 
