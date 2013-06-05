@@ -16,13 +16,6 @@
  * *Review handling of feed rate*
     - Inverse time needs special attention and possible interface change.
  * Tracking of Modal codes.
- * *Machine Limits*
-    - *All of the limits need to be reviewed based on incorrect assumptions for rotational axes.*
-    - Torque at various rpm (Horsepower)
-    - Max Feed rate per axis (z is probably slower)
-    - Rapid rate per axis (For calculating movement time)
-    - ~~Max travel per axis~~
-       - ~~Probably actually useless given that cxxcam has no way of knowing the machine position for the active coordinate system.~~
  * Machine configuration struct
     - Many configuration parameters together will simplify machine setup.
  * Implement available axes (i.e. XYZ / XYZA / XYZABC, etc.)
@@ -43,6 +36,13 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Machine Limits~~
+    - ~~Torque at various rpm (Horsepower)~~
+    - ~~Max Feed rate per axis (z is probably slower)~~
+    - ~~Rapid rate per axis (For calculating movement time)~~
+    - ~~All of the limits need to be reviewed based on incorrect assumptions for rotational axes.~~
+    - ~~Max travel per axis~~
+       - ~~Probably actually useless given that cxxcam has no way of knowing the machine position for the active coordinate system.~~
  * ~~Implement Dwell~~
  * ~~Enforce units via type system.~~
     - ~~Already encountering possible issues with mismatched units.~~
