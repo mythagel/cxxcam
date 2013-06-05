@@ -33,28 +33,10 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
- * ~~Implement available axes (i.e. XYZ / XYZA / XYZABC, etc.)~~
- * ~~Review handling of rotational axes.~~
-    - ~~Change velocity to angular_velocity for ABC axes.~~
- * ~~Machine Limits~~
-    - ~~Torque at various rpm (Horsepower)~~
-    - ~~Max Feed rate per axis (z is probably slower)~~
-    - ~~Rapid rate per axis (For calculating movement time)~~
-    - ~~All of the limits need to be reviewed based on incorrect assumptions for rotational axes.~~
-    - ~~Max travel per axis~~
-       - ~~Probably actually useless given that cxxcam has no way of knowing the machine position for the active coordinate system.~~
- * ~~Implement Dwell~~
- * ~~Enforce units via type system.~~
-    - ~~Already encountering possible issues with mismatched units.~~
- * ~~Push and Pop state.~~
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
- * ~~Public interface for limits checking functions.~~
- * ~~Move Torque from Limits to Spindle.~~
- * ~~Replace Unchecked Position with code from Position_Metric.~~
- * ~~Rename Machine::line_t to Machine::block_t~~
 
 ## Design issues ##
  * At what level should the cxxcam interface exist?
