@@ -221,8 +221,8 @@ public:
 	 * rotary axes: degrees/second
 	 * Note that Global limits apply only to linear axes.
 	 */
-	void SetGlobalFeedrate(double limit);
-	void SetFeedrate(const Axis& axis, double limit);
+	void SetGlobalMaxFeedrate(double limit);
+	void SetMaxFeedrate(const Axis& axis, double limit);
 
 	// CNC Setup
 

@@ -545,7 +545,7 @@ Stock Machine::GetStock() const
 	return m_Private->m_Stock;
 }
 
-void Machine::SetGlobalFeedrate(double limit)
+void Machine::SetGlobalMaxFeedrate(double limit)
 {
 	auto& m_State = m_Private->m_State;
 	auto& m_FeedRateLimit = m_Private->m_FeedRateLimit;
@@ -560,7 +560,7 @@ void Machine::SetGlobalFeedrate(double limit)
 			break;
 	}
 }
-void Machine::SetFeedrate(const Axis& axis, double limit)
+void Machine::SetMaxFeedrate(const Axis& axis, double limit)
 {
 	auto& m_State = m_Private->m_State;
 	auto& m_FeedRateLimit = m_Private->m_FeedRateLimit;
