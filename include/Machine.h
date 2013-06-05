@@ -235,6 +235,13 @@ public:
 	void SetGlobalRapidRate(double rate);
 	void SetRapidRate(const Axis& axis, double rate);
 
+	/*
+	 * Set available machine axes:
+	 * e.g. "XYZ"
+	 * or "XYZA"
+	 */
+	void SetMachineAxes(const std::string& axes);
+
 	// CNC Setup
 
 	// Follow the path given exactly - even if that means coming to a stop
