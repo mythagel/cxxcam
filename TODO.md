@@ -8,8 +8,6 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * Machine configuration struct
-    - Many configuration parameters together will simplify machine setup.
  * Different type for Linear vs Rotational axes guarantees safety in the type system rather than manual checking.
     - Implement generic external axis interface and checked internal interface
     - Possibly use templates to generate all possible axis functions.
@@ -35,6 +33,8 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Machine configuration struct~~
+    - ~~Many configuration parameters together will simplify machine setup.~~
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
