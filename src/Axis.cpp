@@ -33,6 +33,11 @@ Axis::Axis(Type type, double value)
 {
 }
 
+Axis Axis::Construct(Axis::Type axis)
+{
+	return Axis{axis};
+}
+
 Axis::operator Axis::Type() const
 {
 	return m_Type;

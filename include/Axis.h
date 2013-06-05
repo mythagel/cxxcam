@@ -50,6 +50,8 @@ protected:
 	explicit Axis(Type type, double value = {});
 public:
 
+	static Axis Construct(Axis::Type axis);
+
 	operator Type() const;
 	operator double() const;
 };
