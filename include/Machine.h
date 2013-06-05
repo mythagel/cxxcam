@@ -56,6 +56,7 @@ private:
 	static const gcode::Word G01;
 	static const gcode::Word G02;
 	static const gcode::Word G03;
+	static const gcode::Word G04;
 	static const gcode::Word G17;
 	static const gcode::Word G18;
 	static const gcode::Word G19;
@@ -270,6 +271,7 @@ public:
 
 	void OptionalPause(const std::string& comment = std::string());
 	void Comment(const std::string& comment);
+	void Dwell(double seconds, const std::string& comment = {});
 
 	// CNC Motion
 

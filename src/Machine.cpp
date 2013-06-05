@@ -81,6 +81,7 @@ const Word Machine::G00(Word::G, 0);
 const Word Machine::G01(Word::G, 1);
 const Word Machine::G02(Word::G, 2);
 const Word Machine::G03(Word::G, 3);
+const Word Machine::G04(Word::G, 4);
 const Word Machine::G17(Word::G, 17);
 const Word Machine::G18(Word::G, 18);
 const Word Machine::G19(Word::G, 19);
@@ -729,6 +730,13 @@ void Machine::OptionalPause(const std::string& comment)
 void Machine::Comment(const std::string& comment)
 {
 	m_Private->m_GCode.AddLine(Line(comment));
+}
+
+void Machine::Dwell(double seconds, const std::string& comment)
+{
+	Line line(G04, comment);
+	line += Word(Word::P, seconds);
+	m_Private->m_GCode.AddLine(line);
 }
 
 void Machine::SetCoordinateSystem(CoordinateSystem cs)
