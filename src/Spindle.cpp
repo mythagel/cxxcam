@@ -31,16 +31,16 @@
 namespace cxxcam
 {
 
-Spindle::Entry::Entry(unsigned long range_start, unsigned long range_end)
+Spindle::Speed::Speed(unsigned long range_start, unsigned long range_end)
  : m_Type(type_Range), m_RangeStart(range_start), m_RangeEnd(range_end)
 {
 }
-Spindle::Entry::Entry(unsigned long discrete_value)
+Spindle::Speed::Speed(unsigned long discrete_value)
  : m_Type(type_Discrete), m_Discrete(discrete_value)
 {
 }
 
-bool Spindle::Entry::Contains(unsigned long speed) const
+bool Spindle::Speed::Contains(unsigned long speed) const
 {
 	switch(m_Type)
 	{
@@ -53,7 +53,7 @@ bool Spindle::Entry::Contains(unsigned long speed) const
 	return false;
 }
 
-long Spindle::Entry::Distance(unsigned long speed) const
+long Spindle::Speed::Distance(unsigned long speed) const
 {
 	switch(m_Type)
 	{
@@ -74,7 +74,7 @@ long Spindle::Entry::Distance(unsigned long speed) const
 	return 0;
 }
 
-bool Spindle::Entry::operator<(const Entry& other) const
+bool Spindle::Speed::operator<(const Speed& other) const
 {
 	switch(m_Type)
 	{
@@ -108,16 +108,16 @@ Spindle::Spindle(unsigned long tolerance)
 
 unsigned long Spindle::Normalise(unsigned long requested_speed) const
 {
-	for(auto& entry : m_Entries)
-		if(entry.Contains(requested_speed))
+	for(auto& speed : m_Speed)
+		if(speed.Contains(requested_speed))
 			return requested_speed;
 
 	auto real_speed = requested_speed;
 
 	auto min_distance = std::numeric_limits<long>::max();
-	for(auto& entry : m_Entries)
+	for(auto& speed : m_Speed)
 	{
-		auto distance = entry.Distance(requested_speed);
+		auto distance = speed.Distance(requested_speed);
 		if(std::abs(distance) < std::abs(min_distance))
 		{
 			min_distance = distance;
@@ -135,42 +135,49 @@ unsigned long Spindle::Normalise(unsigned long requested_speed) const
 	return real_speed;
 }
 
-units::torque Spindle::Torque(unsigned long speed) const
+units::torque Spindle::GetTorque(unsigned long speed) const
 {
-	return m_Torque.Get(speed);
+	if(m_Torque.empty())
+		return {};
+	
+	if(m_Torque.size() < 2)
+		throw error("Need min & max torque samples at minimum");
+	
+	// TODO
+	return {};
 }
 
 void Spindle::AddRange(unsigned long range_start, unsigned long range_end)
 {
-	m_Entries.insert({range_start, range_end});
+	m_Speed.insert({range_start, range_end});
 }
 void Spindle::AddDiscrete(unsigned long discrete_value)
 {
-	m_Entries.insert(Entry(discrete_value));
+	m_Speed.insert(Speed(discrete_value));
 }
 void Spindle::SetTorque(unsigned long rpm, units::torque torque)
 {
-	m_Torque.SetTorque(rpm, torque);
+	m_Torque.insert({rpm, torque});
 }
 
 std::string Spindle::str() const
 {
 	std::stringstream s;
 
-	for(auto it = begin(m_Entries); it != end(m_Entries); )
+	for(auto it = begin(m_Speed); it != end(m_Speed); )
 	{
 		switch(it->m_Type)
 		{
-			case Entry::type_Range:
+			case Speed::type_Range:
 				s << it->m_RangeStart << "-" << it->m_RangeEnd;
 				break;
-			case Entry::type_Discrete:
+			case Speed::type_Discrete:
 				s << it->m_Discrete;
 				break;
 		}
 
 		++it;
-		if(it != m_Entries.end())
+		if(it != end(m_Speed))
 			s << ", ";
 	}
 

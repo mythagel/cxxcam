@@ -59,32 +59,6 @@ public:
 	units::length MaxTravel(Axis::Type axis) const;
 };
 
-/*
- * Torque at various RPMs.
- * Can be queried for the power at a given rpm
- * which if not explicitly in the samples will be 
- * generated via simple linear interpolation.
- */
-class Torque
-{
-private:
-	struct sample
-	{
-		unsigned long rpm;
-		units::torque torque;
-		bool operator<(const sample& o) const
-		{
-			return rpm < o.rpm;
-		}
-	};
-	std::set<sample> m_Samples;
-public:
-	void SetTorque(unsigned long rpm, units::torque torque);
-	
-	// TODO
-	units::torque Get(unsigned long rpm) const;
-};
-
 class FeedRate
 {
 private:

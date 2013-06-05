@@ -54,22 +54,6 @@ units::length Travel::MaxTravel(Axis::Type axis) const
 	return {};
 }
 
-void Torque::SetTorque(unsigned long rpm, units::torque torque)
-{
-	m_Samples.insert({rpm, torque});
-}
-units::torque Torque::Get(unsigned long rpm) const
-{
-	if(m_Samples.empty())
-		return {};
-	
-	if(m_Samples.size() < 2)
-		throw error("Need min & max torque samples at minimum");
-	
-	// TODO
-	return {};
-}
-
 void FeedRate::SetGlobal(units::velocity limit)
 {
 	m_Global = limit;

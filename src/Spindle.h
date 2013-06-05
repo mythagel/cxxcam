@@ -26,7 +26,7 @@
 #define SPINDLE_H_
 #include <string>
 #include <set>
-#include "Limits.h"
+#include "Units.h"
 
 namespace cxxcam
 {
@@ -37,7 +37,17 @@ namespace cxxcam
 class Spindle
 {
 private:
-	struct Entry
+	struct Torque
+	{
+		unsigned long rpm;
+		units::torque torque;
+		bool operator<(const Torque& o) const
+		{
+			return rpm < o.rpm;
+		}
+	};
+
+	struct Speed
 	{
 		const enum
 		{
@@ -54,20 +64,20 @@ private:
 			};
 			const unsigned long m_Discrete;
 		};
-		Entry(unsigned long range_start, unsigned long range_end);
-		explicit Entry(unsigned long discrete_value);
+		Speed(unsigned long range_start, unsigned long range_end);
+		explicit Speed(unsigned long discrete_value);
 
 		bool Contains(unsigned long speed) const;
 		long Distance(unsigned long speed) const;
 
-		bool operator<(const Entry& other) const;
+		bool operator<(const Speed& other) const;
 	};
 
-	std::set<Entry> m_Entries;
+	std::set<Torque> m_Torque;
+	std::set<Speed> m_Speed;
 	unsigned long m_Tolerance;
-	limits::Torque m_Torque;
 public:
-	Spindle(unsigned long tolerance = 100);
+	explicit Spindle(unsigned long tolerance = 100);
 
 	/*
 	 * Given a requested speed, find the closest real machine speed possible.
@@ -77,9 +87,11 @@ public:
 	unsigned long Normalise(unsigned long requested_speed) const;
 
 	/*
-	 * Return the torque at a given attainable speed.
+	 * Return the torque at a given attainable speed,
+	 * which if not explicitly in the samples will be 
+	 * generated via simple linear interpolation.
 	 */
-	units::torque Torque(unsigned long speed) const;
+	units::torque GetTorque(unsigned long speed) const;
 
 	void AddRange(unsigned long range_start, unsigned long range_end);
 	void AddDiscrete(unsigned long discrete_value);
