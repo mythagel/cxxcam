@@ -64,7 +64,9 @@ static const auto inch = inches;
 
 static const auto second = boost::units::si::seconds;
 static const auto minute = boost::units::metric::minute_base_unit::unit_type{};
+
 static const auto millimeters_per_minute = millimeters / minute;
+static const auto inches_per_minute = inches / minute;
 
 static const auto radians = boost::units::si::radians;
 static const auto degrees = boost::units::degree::degrees;
