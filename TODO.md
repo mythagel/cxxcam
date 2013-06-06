@@ -8,9 +8,6 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * Different type for Linear vs Rotational axes guarantees safety in the type system rather than manual checking.
-    - Implement generic external axis interface and checked internal interface
-    - Possibly use templates to generate all possible axis functions.
  * *Review handling of feed rate*
     - Inverse time needs special attention and possible interface change.
  * Tracking of Modal codes.
@@ -36,6 +33,9 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Different type for Linear vs Rotational axes guarantees safety in the type system rather than manual checking.~~
+    - ~~Implement generic external axis interface and checked internal interface~~
+    - ~~Possibly use templates to generate all possible axis functions.~~
  * ~~Machine configuration struct~~
     - ~~Many configuration parameters together will simplify machine setup.~~
 
