@@ -187,7 +187,7 @@ protected:
 public:
 
 	explicit Machine(Type type);
-	explicit Machine(Type type, Units units, const std::string& gcode_variant);
+	Machine(Type type, Units units, const std::string& gcode_variant);
 
 	Machine(const Machine& m);
 	Machine& operator=(const Machine& m);
