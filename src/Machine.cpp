@@ -1182,7 +1182,6 @@ void Machine::SetFeedRate(double f)
 			switch(m_State.m_FeedRateMode)
 			{
 				case FeedRateMode::InverseTime:
-					c << "Feed Time: " << 1/f << " minutes";
 					break;
 				case FeedRateMode::UnitsPerMinute:
 					switch(m_State.m_Units)
@@ -1209,10 +1208,12 @@ void Machine::SetFeedRate(double f)
 			}
 		}
 
-		Line line(c.str());
 		if(m_State.m_FeedRateMode != FeedRateMode::InverseTime)
+		{
+			Line line(c.str());
 			line += Word(Word::F, f);
-		m_GCode.AddLine(line);
+			m_GCode.AddLine(line);
+		}
 	}
 }
 void Machine::StartSpindle(unsigned long s, Rotation r)
