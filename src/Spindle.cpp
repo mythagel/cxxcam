@@ -108,6 +108,9 @@ Spindle::Spindle(unsigned long tolerance)
 
 unsigned long Spindle::Normalise(unsigned long requested_speed) const
 {
+	if(m_Speed.empty())
+		return requested_speed;
+	
 	for(auto& speed : m_Speed)
 		if(speed.Contains(requested_speed))
 			return requested_speed;

@@ -8,6 +8,11 @@ int main()
 {
 	{
 		Spindle s;
+		std::cerr << "Machine Range: " << s.str() << "\n";
+		std::cerr << "500 RPM: " << s.Normalise(500) << ", 3100 RPM: " << s.Normalise(3100) << "\n";
+	}
+	{
+		Spindle s;
 		s.AddRange(0, 3000);
 		std::cerr << "Machine Range: " << s.str() << "\n";
 		std::cerr << "500 RPM: " << s.Normalise(500) << ", 3100 RPM: " << s.Normalise(3100) << "\n";
