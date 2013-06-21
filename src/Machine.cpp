@@ -1469,5 +1469,100 @@ std::ostream& operator<<(std::ostream& os, const Machine& machine)
 	return os;
 }
 
+std::string to_string(Machine::Units units)
+{
+	switch(units)
+	{
+		case Machine::Units::Metric:
+			return "Metric";
+		case Machine::Units::Imperial:
+			return "Imperial";
+	}
+	throw std::logic_error("Unknown units");
+}
+std::string to_string(Machine::Plane plane)
+{
+	switch(plane)
+	{
+		case Machine::Plane::XY:
+			return "XY";
+		case Machine::Plane::ZX:
+			return "ZX";
+		case Machine::Plane::YZ:
+			return "YZ";
+		case Machine::Plane::UV:
+			return "UV";
+		case Machine::Plane::WU:
+			return "WU";
+		case Machine::Plane::VW:
+			return "VW";
+	}
+	throw std::logic_error("Unknown plane");
+}
+std::string to_string(Machine::CoordinateSystem cs)
+{
+	switch(cs)
+	{
+		case Machine::CoordinateSystem::Active:
+			return "Active";
+		case Machine::CoordinateSystem::P1:
+			return "CS 1";
+		case Machine::CoordinateSystem::P2:
+			return "CS 2";
+		case Machine::CoordinateSystem::P3:
+			return "CS 3";
+		case Machine::CoordinateSystem::P4:
+			return "CS 4";
+		case Machine::CoordinateSystem::P5:
+			return "CS 5";
+		case Machine::CoordinateSystem::P6:
+			return "CS 6";
+		case Machine::CoordinateSystem::P7:
+			return "CS 7";
+		case Machine::CoordinateSystem::P8:
+			return "CS 8";
+		case Machine::CoordinateSystem::P9:
+			return "CS 9";
+	}
+	throw std::logic_error("Unknown coordinate system");
+}
+std::string to_string(Machine::Motion motion)
+{
+	switch(motion)
+	{
+		case Machine::Motion::Absolute:
+			return "Absolute";
+		case Machine::Motion::Incremental:
+			return "Incremental";
+	}
+	throw std::logic_error("Unknown motion");
+}
+std::string to_string(Machine::FeedRateMode feed_rate_mode)
+{
+	switch(feed_rate_mode)
+	{
+		case Machine::FeedRateMode::InverseTime:
+			return "Inverse Time";
+		case Machine::FeedRateMode::UnitsPerMinute:
+			return "Units Per Minute";
+		case Machine::FeedRateMode::UnitsPerRevolution:
+			return "Units Per Revolution";
+	}
+	throw std::logic_error("Unknown feed rate mode");
+}
+std::string to_string(Machine::Rotation rotation)
+{
+	switch(rotation)
+	{
+		case Machine::Rotation::Stop:
+			return "Stop";
+		case Machine::Rotation::Clockwise:
+			return "Clockwise";
+		case Machine::Rotation::CounterClockwise:
+			return "CounterClockwise";
+	}
+	throw std::logic_error("Unknown rotation");
+}
+
 }
 

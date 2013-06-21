@@ -130,12 +130,12 @@ public:
 
 	enum class Plane
 	{
-	    XY,
-	    ZX,
-	    YZ,
-	    UV,
-	    WU,
-	    VW
+		XY,
+		ZX,
+		YZ,
+		UV,
+		WU,
+		VW
 	};
 
 	enum class CoordinateSystem
@@ -342,6 +342,13 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const Machine& machine);
+
+std::string to_string(Machine::Units units);
+std::string to_string(Machine::Plane plane);
+std::string to_string(Machine::CoordinateSystem cs);
+std::string to_string(Machine::Motion motion);
+std::string to_string(Machine::FeedRateMode feed_rate_mode);
+std::string to_string(Machine::Rotation rotation);
 
 }
 
