@@ -512,9 +512,66 @@ void Machine::dump() const
 {
 	auto& m_State = m_Private->m_State;
 
-	if(m_State.m_SpindleRotation != Rotation::Stop)
-		std::cerr << m_State.m_SpindleSpeed << " RPM " << (m_State.m_SpindleRotation == Rotation::Clockwise ? "Clockwise" : "Counter-Clockwise") << "\n";
-	std::cerr << m_State.m_Current.str() << "\n";
+	std::cerr << "Units:            " << to_string(m_State.m_Units) << '\n';
+	std::cerr << "Plane:            " << to_string(m_State.m_Plane) << '\n';
+	std::cerr << "CoordinateSystem: " << to_string(m_State.m_CoordinateSystem) << '\n';
+	std::cerr << "Motion:           " << to_string(m_State.m_Motion) << '\n';
+	std::cerr << "ArcMotion:        " << to_string(m_State.m_ArcMotion) << '\n';
+	std::cerr << "Spindle:          ";
+	if(m_State.m_SpindleRotation != Machine::Rotation::Stop)
+		std::cerr << m_State.m_SpindleSpeed << " RPM ";
+	std::cerr << to_string(m_State.m_SpindleRotation) << '\n';
+	
+	if(m_State.m_FeedRate > 0.0)
+	{
+		std::cerr << "FeedRate:         ";
+		switch(m_State.m_FeedRateMode)
+		{
+			case FeedRateMode::InverseTime:
+				std::cerr << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
+				break;
+			case FeedRateMode::UnitsPerMinute:
+				switch(m_State.m_Units)
+				{
+					case Units::Metric:
+						std::cerr << m_State.m_FeedRate << "mm per minute";
+						break;
+					case Units::Imperial:
+						std::cerr << m_State.m_FeedRate << "\" per minute";
+						break;
+				}
+				break;
+			case FeedRateMode::UnitsPerRevolution:
+				switch(m_State.m_Units)
+				{
+					case Units::Metric:
+						std::cerr << m_State.m_FeedRate << "mm per revolution";
+						break;
+					case Units::Imperial:
+						std::cerr << m_State.m_FeedRate << "\" per revolution";
+						break;
+				}
+				break;
+		}
+		std::cerr << '\n';
+	}
+	else
+	{
+		std::cerr << "FeedRate:         Zero\n";
+	}
+
+	if(m_State.m_CurrentTool)
+	{
+		Tool tool;
+		m_Private->m_ToolTable.Get(m_State.m_CurrentTool, &tool);
+		std::cerr << "Tool:             " << tool.Name() << '\n';
+	}
+	else
+	{
+		std::cerr << "Tool:             None\n";
+	}
+
+	std::cerr << "Position:         \n" << m_State.m_Current.str() << '\n';
 }
 
 bool Machine::AddTool(int id, const Tool& tool)
@@ -1559,7 +1616,7 @@ std::string to_string(Machine::Rotation rotation)
 		case Machine::Rotation::Clockwise:
 			return "Clockwise";
 		case Machine::Rotation::CounterClockwise:
-			return "CounterClockwise";
+			return "Counter-Clockwise";
 	}
 	throw std::logic_error("Unknown rotation");
 }
