@@ -26,6 +26,7 @@ pushpop_state
 limits 
 axes 
 configuration 
+inverse_time 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()
