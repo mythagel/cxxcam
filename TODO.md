@@ -17,7 +17,7 @@
  * Tracking of Modal codes.
     - May not be that necessary as cxxcam tracks these internally.
     - May be useful in js for jscam.
- * Auto feedrate / spindle speeds
+ * ~~Auto feedrate / spindle speeds~~
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
  * Mesh on demand in nef object
