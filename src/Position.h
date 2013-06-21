@@ -32,6 +32,8 @@ namespace cxxcam
 
 struct Position
 {
+	static const Position zero;	
+	
 	units::length X;
 	units::length Y;
 	units::length Z;

@@ -29,6 +29,8 @@
 namespace cxxcam
 {
 
+const Position Position::zero;
+
 namespace
 {
 auto to_tuple(const Position& pos) -> decltype(std::tie(pos.X, pos.Y, pos.Z, pos.A, pos.B, pos.C, pos.U, pos.V, pos.W))
@@ -39,6 +41,9 @@ auto to_tuple(const Position& pos) -> decltype(std::tie(pos.X, pos.Y, pos.Z, pos
 
 std::string Position::str() const
 {
+	if(*this == zero)
+		return "Zero";	
+	
 	std::stringstream s;
 	static const units::length zero;
 	static const units::plane_angle angular_zero;
