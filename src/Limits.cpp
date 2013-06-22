@@ -26,6 +26,7 @@
 #include "Error.h"
 #include "Position.h"
 #include <boost/units/cmath.hpp>
+#include <algorithm>
 
 namespace cxxcam
 {
@@ -213,6 +214,15 @@ units::angular_velocity Rapids::AngularVelocity(Axis::Type axis) const
 	return {};
 }
 
+auto AvailableAxes::begin() const -> const_iterator
+{
+	return axes.begin();
+}
+auto AvailableAxes::end() const -> const_iterator
+{
+	return axes.end();
+}
+
 AvailableAxes::AvailableAxes()
  : axes({
    Axis::Type::X,
@@ -229,13 +239,13 @@ AvailableAxes::AvailableAxes()
    })
 {
 }
-AvailableAxes::AvailableAxes(std::set<Axis::Type> axes)
+AvailableAxes::AvailableAxes(std::vector<Axis::Type> axes)
  : axes(axes)
 {
 }
 void AvailableAxes::Validate(Axis::Type axis) const
 {
-	if(axes.find(axis) == end(axes))
+	if(std::find(begin(), end(), axis) == end())
 		throw error("Invalid Axis.");
 }
 

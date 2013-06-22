@@ -27,7 +27,7 @@
 #include "Axis.h"
 #include "Units.h"
 #include <map>
-#include <set>
+#include <vector>
 
 namespace cxxcam
 {
@@ -112,14 +112,19 @@ public:
 class AvailableAxes
 {
 private:
-	std::set<Axis::Type> axes;
+	std::vector<Axis::Type> axes;
 public:
+	
+	typedef std::vector<Axis::Type>::const_iterator const_iterator;
+	
+	const_iterator begin() const;
+	const_iterator end() const;
 	
 	/*
 	 * Default: XYZABCUVW
 	 */
 	AvailableAxes();
-	explicit AvailableAxes(std::set<Axis::Type> axes);
+	explicit AvailableAxes(std::vector<Axis::Type> axes);
 	void Validate(Axis::Type axis) const;
 };
 

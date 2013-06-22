@@ -745,9 +745,9 @@ void Machine::SetMachineAxes(const std::string& axes)
 		throw error("Unrecognised Axis");
 	};
 
-	std::set<Axis::Type> available;
+	std::vector<Axis::Type> available;
 	for(auto axis : axes)
-		available.insert(to_axis(axis));
+		available.push_back(to_axis(axis));
 	
 	m_Axes = limits::AvailableAxes(available);
 }
