@@ -14,7 +14,7 @@
  * Tracking of Modal codes.
     - May not be that necessary as cxxcam tracks these internally.
     - May be useful in js for jscam.
- * Allowed axes has to also specify ORDER.
+ * ~~Allowed axes has to also specify ORDER.~~
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
     - APT CUTTER style mill tool definition
