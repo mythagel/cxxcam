@@ -21,8 +21,12 @@
     - May not be that necessary as cxxcam tracks these internally.
     - May be useful in js for jscam.
  * ~~Auto feedrate / spindle speeds~~
+ * Allowed axes has to also specify ORDER.
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
+    - APT CUTTER style mill tool definition
+    - http://www.dtpm.unipa.it/emc/it/apt_doc/manual/prog_toolpath.html#figure69
+    - Generate model from this definition.
  * Mesh on demand in nef object
     - Invalidate on change.
     - Remesh on request
@@ -31,6 +35,7 @@
     - Needs intersection tests
     - Needs material properties
     - Top of stock check at Z0
+    - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
  * Represent workholding, clamps, etc. (for intersection tests)
  * Toolpath expansion & intersection tests for rapids
  * Material removal volume for each operation
