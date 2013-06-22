@@ -529,9 +529,16 @@ void Machine::dump() const
 		switch(m_State.m_FeedRateMode)
 		{
 			case FeedRateMode::InverseTime:
-				std::cerr << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
+			{
+				auto minutes = 1/m_State.m_FeedRate;
+				if(minutes > 1)
+					std::cerr << "Feed Time: " << minutes << " minutes";
+				else
+					std::cerr << "Feed Time: " << minutes * 60 << " seconds";
 				break;
+			}
 			case FeedRateMode::UnitsPerMinute:
+			{
 				switch(m_State.m_Units)
 				{
 					case Units::Metric:
@@ -542,7 +549,9 @@ void Machine::dump() const
 						break;
 				}
 				break;
+			}
 			case FeedRateMode::UnitsPerRevolution:
+			{
 				switch(m_State.m_Units)
 				{
 					case Units::Metric:
@@ -553,6 +562,7 @@ void Machine::dump() const
 						break;
 				}
 				break;
+			}
 		}
 		std::cerr << '\n';
 	}
@@ -1048,9 +1058,16 @@ void Machine::SetUnits(Units u)
 			switch(m_State.m_FeedRateMode)
 			{
 				case FeedRateMode::InverseTime:
-					c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
+				{
+					auto minutes = 1/m_State.m_FeedRate;
+					if(minutes > 1)
+						c << "Feed Time: " << minutes << " minutes";
+					else
+						c << "Feed Time: " << minutes * 60 << " seconds";
 					break;
+				}
 				case FeedRateMode::UnitsPerMinute:
+				{
 					switch(m_State.m_Units)
 					{
 						case Units::Metric:
@@ -1061,7 +1078,9 @@ void Machine::SetUnits(Units u)
 							break;
 					}
 					break;
+				}
 				case FeedRateMode::UnitsPerRevolution:
+				{
 					switch(m_State.m_Units)
 					{
 						case Units::Metric:
@@ -1072,6 +1091,7 @@ void Machine::SetUnits(Units u)
 							break;
 					}
 					break;
+				}
 			}
 			m_GCode.AddLine(Line(c.str()));
 		}
@@ -1139,9 +1159,16 @@ void Machine::SetFeedRateMode(FeedRateMode f)
 			switch(m_State.m_FeedRateMode)
 			{
 				case FeedRateMode::InverseTime:
-					c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
+				{
+					auto minutes = 1/m_State.m_FeedRate;
+					if(minutes > 1)
+						c << "Feed Time: " << minutes << " minutes";
+					else
+						c << "Feed Time: " << minutes * 60 << " seconds";
 					break;
+				}
 				case FeedRateMode::UnitsPerMinute:
+				{
 					switch(m_State.m_Units)
 					{
 						case Units::Metric:
@@ -1152,7 +1179,9 @@ void Machine::SetFeedRateMode(FeedRateMode f)
 							break;
 					}
 					break;
+				}
 				case FeedRateMode::UnitsPerRevolution:
+				{
 					switch(m_State.m_Units)
 					{
 						case Units::Metric:
@@ -1163,6 +1192,7 @@ void Machine::SetFeedRateMode(FeedRateMode f)
 							break;
 					}
 					break;
+				}
 			}
 			m_GCode.AddLine(Line(c.str()));
 		}
@@ -1319,7 +1349,11 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	if(m_State.m_FeedRateMode == FeedRateMode::InverseTime)
 	{
 		std::stringstream c;
-		c << "Feed Time: " << 1/m_State.m_FeedRate << " minutes";
+		auto minutes = 1/m_State.m_FeedRate;
+		if(minutes > 1)
+			c << "Feed Time: " << minutes << " minutes";
+		else
+			c << "Feed Time: " << minutes * 60 << " seconds";
 		line += Word(Word::F, m_State.m_FeedRate, c.str());
 	}
 
@@ -1491,6 +1525,17 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	
 	if(turns > 1)
 		line += Word(Word::P, turns);
+
+	if(m_State.m_FeedRateMode == FeedRateMode::InverseTime)
+	{
+		std::stringstream c;
+		auto minutes = 1/m_State.m_FeedRate;
+		if(minutes > 1)
+			c << "Feed Time: " << minutes << " minutes";
+		else
+			c << "Feed Time: " << minutes * 60 << " seconds";
+		line += Word(Word::F, m_State.m_FeedRate, c.str());
+	}
 
 	m_Private->m_GCode.AddLine(line);
 	
