@@ -8,9 +8,9 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * Check for stock intersection for Rapids movements
-    - *How to calculate polyline path for rotatry axes?*
- * Check for stock intersection for Linear movements
+ * Check for stock intersection for Linear & Rapid movements
+    - *How to calculate path for rotatry axes?*
+    - Complete path functions to expand toolpath
  * Tracking of Modal codes.
     - May not be that necessary as cxxcam tracks these internally.
     - May be useful in js for jscam.
