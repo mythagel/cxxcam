@@ -23,5 +23,6 @@ Offset.cpp
 Limits.cpp 
 GCodeModal.cpp 
 Configuration.cpp 
+Path.cpp 
 )
 TARGET_LINK_LIBRARIES(cxxcam nef)
