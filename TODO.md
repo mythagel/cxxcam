@@ -11,12 +11,6 @@
  * Check for stock intersection for Rapids movements
     - *How to calculate polyline path for rotatry axes?*
  * Check for stock intersection for Linear movements
- * Review handling of feed rate
-    - Change 1/f minutes to seconds / minutes.
-    - ~~Inverse time needs special attention and possible interface change.~~
-       - ~~Feed rate value needs to be specified for every move.~~
-       - ~~Stored value is not appropriate.~~
-       - ~~Feed rate must be set for each linear / angular cut to have meaning.~~
  * Tracking of Modal codes.
     - May not be that necessary as cxxcam tracks these internally.
     - May be useful in js for jscam.
@@ -45,6 +39,12 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Review handling of feed rate~~
+    - ~~Change 1/f minutes to seconds / minutes.~~
+    - ~~Inverse time needs special attention and possible interface change.~~
+       - ~~Feed rate value needs to be specified for every move.~~
+       - ~~Stored value is not appropriate.~~
+       - ~~Feed rate must be set for each linear / angular cut to have meaning.~~
  * ~~Different type for Linear vs Rotational axes guarantees safety in the type system rather than manual checking.~~
     - ~~Implement generic external axis interface and checked internal interface~~
     - ~~Possibly use templates to generate all possible axis functions.~~
