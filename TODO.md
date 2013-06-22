@@ -34,6 +34,7 @@
     - Needs intersection tests
     - Needs material properties
     - Top of stock check at Z0
+    - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
  * Represent workholding, clamps, etc. (for intersection tests)
  * Toolpath expansion & intersection tests for rapids
  * Material removal volume for each operation
