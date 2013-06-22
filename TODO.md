@@ -25,6 +25,7 @@
     - Needs nef model loading / ~~generation~~
     - APT CUTTER style mill tool definition
     - http://www.dtpm.unipa.it/emc/it/apt_doc/manual/prog_toolpath.html#figure69
+    - Generate model from this definition.
  * Mesh on demand in nef object
     - Invalidate on change.
     - Remesh on request
