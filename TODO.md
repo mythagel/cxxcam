@@ -1,8 +1,8 @@
 # TODO List #
 
 ##Action Plan##
- 1. Write ~~some~~ more machining code using jscam
-    * Get ~~some~~ more usage experience
+ 1. Write machining code using jscam
+    * Get usage experience
     * Manual everything(feed rate etc.)
     * Reproduce existing gcode programs
  2. Complete model generation (i.e. remove material from stock object)
@@ -38,7 +38,6 @@
     - May not be that necessary as cxxcam tracks these internally.
     - May be useful in js for jscam.
  * Automatic/heuristic tool selection
- * ~~Allowed axes has to also specify ORDER.~~
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
