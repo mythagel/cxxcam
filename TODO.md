@@ -14,7 +14,6 @@
  * Tracking of Modal codes.
     - May not be that necessary as cxxcam tracks these internally.
     - May be useful in js for jscam.
- * ~~Allowed axes has to also specify ORDER.~~
  * Complete Tool class
     - Needs nef model loading / ~~generation~~
     - APT CUTTER style mill tool definition
@@ -38,6 +37,7 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * ~~Allowed axes has to also specify ORDER.~~
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
