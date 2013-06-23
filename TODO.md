@@ -8,7 +8,6 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * Toolpath expansion & intersection tests for rapids
  * Check for stock intersection for Linear & Rapid movements
     - *How to calculate path for rotatry axes?*
     - Complete path functions to expand toolpath
