@@ -21,7 +21,6 @@ Stock.cpp
 ToolTable.cpp 
 Offset.cpp 
 Limits.cpp 
-GCodeModal.cpp 
 Configuration.cpp 
 Path.cpp 
 )
