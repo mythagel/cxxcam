@@ -31,23 +31,25 @@ namespace path
 
 std::vector<point> expand_linear(const Position&, const Position&)
 {
+	std::vector<point> path;
 	/*
 	 * TODO
 	 * find the path between the start and end positions given.
 	 * Includes movement in rotary axes
 	 */
-	return {};
+	return path;
 }
 
 std::vector<point> expand_arc(const Position&, const Position&)
 {
+	std::vector<point> path;
 	/*
 	 * TODO
 	 * find the path between the start and end positions given.
 	 * Includes movement in rotary axes.
 	 * Interface for arc paths WILL change.
 	 */
-	return {};
+	return path;
 }
 
 }
