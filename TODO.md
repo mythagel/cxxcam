@@ -33,12 +33,8 @@
     - Calculate volume of material that tool can remove and ensure that volume is appropriate.
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
- * Tracking of Modal codes.
-    - May not be that necessary as cxxcam tracks these internally.
-    - May be useful in js for jscam.
  * Automatic/heuristic tool selection
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
-
