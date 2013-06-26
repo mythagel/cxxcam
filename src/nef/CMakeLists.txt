@@ -9,5 +9,5 @@ IF(UNIX)
 ENDIF()
 
 INCLUDE_DIRECTORIES(${CXXCAM_INCLUDE_DIR}/nef ${Boost_INCLUDE_DIRS})
-ADD_LIBRARY(nef STATIC polyhedron.cpp primitives.cpp ops.cpp CSGPrimitives3D.cpp Point.cpp io.cpp)
+ADD_LIBRARY(nef STATIC polyhedron.cpp primitives.cpp ops.cpp CSGPrimitives3D.cpp Point.cpp io.cpp explode.cpp)
 TARGET_LINK_LIBRARIES(nef ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES})

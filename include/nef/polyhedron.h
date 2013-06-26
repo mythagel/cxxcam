@@ -27,6 +27,8 @@
 #include <iosfwd>
 #include <memory>
 
+#include <vector>
+
 namespace nef
 {
 
@@ -46,6 +48,8 @@ friend polyhedron_t make_cone(double x1, double y1, double z1, double x2, double
 
 friend polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path);
 friend double volume(const polyhedron_t& polyhedron);
+
+friend std::vector<polyhedron_t> explode(const polyhedron_t& poly);
 
 friend std::ostream& operator<<(std::ostream&, const polyhedron_t&);
 friend std::istream& operator>>(std::istream&, polyhedron_t&);
