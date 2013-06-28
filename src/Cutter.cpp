@@ -27,14 +27,6 @@
 namespace cxxcam
 {
 
-	double d;
-	double r;
-	double e;
-	double f;
-	double alpha;
-	double beta;
-	double h;
-
 Cutter::Cutter(double d)
  : d(d), r(0), e(d/2-r), f(r), alpha(0), beta(0), h(r < 5 ? 5 : r)
 {
