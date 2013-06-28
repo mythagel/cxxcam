@@ -11,7 +11,7 @@
  * Check for stock intersection for Linear & Rapid movements
     - *How to calculate path for rotatry axes?*
     - Complete path functions to expand toolpath
- * Complete Tool class
+ * Complete Tool class - apt_cutter branch
     - Needs nef model loading / ~~generation~~
     - APT CUTTER style mill tool definition
     - http://www.dtpm.unipa.it/emc/it/apt_doc/manual/prog_toolpath.html#figure69
@@ -34,6 +34,7 @@
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Automatic/heuristic tool selection
+ * Ability to explode stock into individual objects when cut - explode branch
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
