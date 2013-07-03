@@ -9,7 +9,7 @@
 
 ## High Level ##
  * Expand start and end tool positions to path
-    - Must return sequence of unit vectors representing tool location and orientation.
+    - Must return sequence of {pos: point, rot: vector3} representing tool location and orientation.
     - How to calculate path for rotatry axes?
        - Simple rotation around controlled point.
        - jscam will include post processors to adjust canonical rotations to machine specific configurations i.e. rotary offsets.
