@@ -8,12 +8,13 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * Check for stock intersection for Linear & Rapid movements
+ * Expand start and end tool positions to path
+    - Must return sequence of unit vectors representing tool location and orientation.
     - How to calculate path for rotatry axes?
        - Simple rotation around controlled point.
        - jscam will include post processors to adjust canonical rotations to machine specific configurations i.e. rotary offsets.
-    - Complete path functions to expand toolpath
-       - Must return sequence of unit vectors representing tool orientation.
+ * Check for stock intersection for Linear & Rapid movements
+    - Take path, expand tool along path with rotation, subtract from stock.
  * Complete Tool class - apt_cutter branch
     - Needs nef model loading / ~~generation~~
     - APT CUTTER style mill tool definition
