@@ -1,5 +1,4 @@
-# Boost is not a direct dependency
-# Required for CGAL to play nice with C++11
+# 1.52 Required for CGAL to play nice with C++11
 FIND_PACKAGE(Boost 1.52.0 REQUIRED)
 FIND_PACKAGE(CGAL REQUIRED)
 INCLUDE(${CGAL_USE_FILE})
