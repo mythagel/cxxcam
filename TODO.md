@@ -11,6 +11,7 @@
  * Check for stock intersection for Linear & Rapid movements
     - How to calculate path for rotatry axes?
        - Simple rotation around controlled point.
+       - jscam will include post processors to adjust canonical rotations to machine specific configurations i.e. rotary offsets.
     - Complete path functions to expand toolpath
        - Must return sequence of unit vectors representing tool orientation.
  * Complete Tool class - apt_cutter branch
