@@ -9,8 +9,10 @@
 
 ## High Level ##
  * Check for stock intersection for Linear & Rapid movements
-    - *How to calculate path for rotatry axes?*
+    - How to calculate path for rotatry axes?
+       - Simple rotation around controlled point.
     - Complete path functions to expand toolpath
+       - Must return sequence of unit vectors representing tool orientation.
  * Complete Tool class - apt_cutter branch
     - Needs nef model loading / ~~generation~~
     - APT CUTTER style mill tool definition
