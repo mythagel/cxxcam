@@ -39,6 +39,7 @@
     * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Automatic/heuristic tool selection
  * Ability to explode stock into individual objects when cut - explode branch
+    - nef::explode exists - needs testing and use in Stock
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
