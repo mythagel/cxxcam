@@ -43,3 +43,4 @@
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
+ * Better way of exposing access to nef::polyhedron_t::private_t.
