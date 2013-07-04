@@ -44,29 +44,32 @@ std::string Position::str() const
 	if(*this == zero)
 		return "Zero";	
 	
+	using units::length_mm;
+	using units::plane_angle_deg;
+	
 	std::stringstream s;
 	static const units::length zero;
 	static const units::plane_angle angular_zero;
 
 	if(X != zero || Y != zero || Z != zero)
 	{
-		s << "X: " << X << " ";
-		s << "Y: " << Y << " ";
-		s << "Z: " << Z << " \n";
+		s << "X: " << length_mm(X) << " ";
+		s << "Y: " << length_mm(Y) << " ";
+		s << "Z: " << length_mm(Z) << " \n";
 	}
 
 	if(A != angular_zero || B != angular_zero || C != angular_zero)
 	{
-		s << "A: " << A << " ";
-		s << "B: " << B << " ";
-		s << "C: " << C << " \n";
+		s << "A: " << plane_angle_deg(A) << " ";
+		s << "B: " << plane_angle_deg(B) << " ";
+		s << "C: " << plane_angle_deg(C) << " \n";
 	}
 
 	if(U != zero || V != zero || W != zero)
 	{
-		s << "U: " << U << " ";
-		s << "V: " << V << " ";
-		s << "W: " << W << " \n";
+		s << "U: " << length_mm(U) << " ";
+		s << "V: " << length_mm(V) << " ";
+		s << "W: " << length_mm(W) << " \n";
 	}
 
 	return s.str();
