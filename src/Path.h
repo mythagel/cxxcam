@@ -27,6 +27,7 @@
 #include "Position.h"
 #include <boost/geometry/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
+#include <boost/geometry/core/cs.hpp>
 #include <boost/math/quaternion.hpp>
 #include <vector>
 
@@ -35,7 +36,7 @@ namespace cxxcam
 namespace path
 {
 
-struct pose
+struct step
 {
 	typedef boost::geometry::model::point<double, 3, boost::geometry::cs::cartesian> point_3d;
 	typedef boost::math::quaternion<double> quaternion_t;
@@ -44,8 +45,8 @@ struct pose
 	quaternion_t orientation;
 };
 
-std::vector<pose> expand_linear(const Position& start, const Position& end);
-std::vector<pose> expand_arc(const Position& start, const Position& end);
+std::vector<step> expand_linear(const Position& start, const Position& end, size_t steps_per_mm);
+std::vector<step> expand_arc(const Position& start, const Position& end, size_t steps_per_mm);
 
 }
 }

@@ -29,9 +29,9 @@ namespace cxxcam
 namespace path
 {
 
-std::vector<pose> expand_linear(const Position&, const Position&)
+std::vector<step> expand_linear(const Position& start, const Position& end, size_t steps_per_mm)
 {
-	std::vector<pose> path;
+	std::vector<step> path;
 	/*
 	 * TODO
 	 * find the path between the start and end positions given.
@@ -40,9 +40,9 @@ std::vector<pose> expand_linear(const Position&, const Position&)
 	return path;
 }
 
-std::vector<pose> expand_arc(const Position&, const Position&)
+std::vector<step> expand_arc(const Position& start, const Position& end, size_t steps_per_mm)
 {
-	std::vector<pose> path;
+	std::vector<step> path;
 	/*
 	 * TODO
 	 * find the path between the start and end positions given.
