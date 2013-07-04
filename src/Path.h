@@ -25,6 +25,7 @@
 #ifndef PATH_H_
 #define PATH_H_
 #include "Position.h"
+#include "Limits.h"
 #include <boost/geometry/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/core/cs.hpp>
@@ -45,8 +46,8 @@ struct step
 	quaternion_t orientation;
 };
 
-std::vector<step> expand_linear(const Position& start, const Position& end, size_t steps_per_mm = 10);
-std::vector<step> expand_arc(const Position& start, const Position& end, size_t steps_per_mm = 10);
+std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
+std::vector<step> expand_arc(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
 
 }
 }

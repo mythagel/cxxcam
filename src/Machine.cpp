@@ -1321,7 +1321,7 @@ void Machine::Rapid(const std::vector<Axis>& axes)
 	
 	auto end = m_Private->m_State.m_Current;
 	// calculate possible motion path (not a line but a polyhedron.)
-	auto path = path::expand_linear(start, end);
+	auto path = path::expand_linear(start, end, m_Axes);
 }
 
 void Machine::Linear(const std::vector<Axis>& axes)
@@ -1361,7 +1361,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	
 	auto end = m_Private->m_State.m_Current;
 	// line from start to end expand tool along path and subtract tool path from stock.
-	auto path = path::expand_linear(start, end);
+	auto path = path::expand_linear(start, end, m_Axes);
 }
 
 void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& center, unsigned int turns)
@@ -1541,7 +1541,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	
 	auto end = m_Private->m_State.m_Current;
 	// arc from start to end expand tool along path.
-	auto path = path::expand_arc(start, end);
+	auto path = path::expand_arc(start, end, m_Axes);
 }
 
 auto Machine::Generate() const -> std::vector<block_t>
