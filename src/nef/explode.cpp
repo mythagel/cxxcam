@@ -45,10 +45,10 @@ std::vector<polyhedron_t> explode(const polyhedron_t& poly)
 	Explode.run(P, std::back_inserter(polyhedra));
 	
 	std::vector<polyhedron_t> exploded;
-	for(const auto& poly : polyhedra)
+	for(auto& poly : polyhedra)
 	{
 		auto priv = std::make_shared<polyhedron_t::private_t>( poly );
-		exploded.emplace_back(priv);
+		exploded.push_back( {priv} );
 	}
 	return exploded;
 }
