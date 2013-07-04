@@ -45,8 +45,8 @@ struct step
 	quaternion_t orientation;
 };
 
-std::vector<step> expand_linear(const Position& start, const Position& end, size_t steps_per_mm);
-std::vector<step> expand_arc(const Position& start, const Position& end, size_t steps_per_mm);
+std::vector<step> expand_linear(const Position& start, const Position& end, size_t steps_per_mm = 10);
+std::vector<step> expand_arc(const Position& start, const Position& end, size_t steps_per_mm = 10);
 
 }
 }
