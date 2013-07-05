@@ -35,17 +35,18 @@ namespace cxxcam
 namespace path
 {
 
+struct point_3
+{
+	units::length x;
+	units::length y;
+	units::length z;
+};
+
 struct step
 {
-	struct point_3d
-	{
-		units::length x;
-		units::length y;
-		units::length z;
-	};
 	typedef boost::math::quaternion<double> quaternion_t;
 	
-	point_3d position;
+	point_3 position;
 	quaternion_t orientation;
 };
 

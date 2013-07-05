@@ -30,6 +30,11 @@ namespace cxxcam
 namespace path
 {
 
+units::length distance(const point_3& p0, const point_3& p1)
+{
+	return units::length{sqrt((p0.x-p1.x)*(p0.x-p1.x) + (p0.y-p1.y)*(p0.y-p1.y) + (p0.z-p1.z)*(p0.z-p1.z))};
+}
+
 step::quaternion_t::value_type dot(const step::quaternion_t& q1, const step::quaternion_t& q2)
 {
 	return
@@ -95,7 +100,7 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	
 	auto s0 = pos2step(start);
 	auto sn = pos2step(end);
-//	auto length = units::length_mm(boost::geometry::distance(s0, sn));
+	auto length = units::length_mm(distance(s0.position, sn.position));
 	
 	std::vector<step> path;
 	path.push_back(s0);
