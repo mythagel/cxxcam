@@ -66,13 +66,13 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 			switch(axis)
 			{
 				case Axis::Type::X:
-					s.position.set<0>(pos.X);
+					s.position.x = pos.X;
 					break;
 				case Axis::Type::Y:
-					s.position.set<1>(pos.Y);
+					s.position.y = pos.Y;
 					break;
 				case Axis::Type::Z:
-					s.position.set<2>(pos.Z);
+					s.position.z = pos.Z;
 					break;
 				case Axis::Type::A:
 					s.orientation *= rot_A(pos.A);
@@ -95,6 +95,7 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	
 	auto s0 = pos2step(start);
 	auto sn = pos2step(end);
+//	auto length = units::length_mm(boost::geometry::distance(s0, sn));
 	
 	std::vector<step> path;
 	path.push_back(s0);

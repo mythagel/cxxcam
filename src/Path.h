@@ -27,9 +27,6 @@
 #include "Position.h"
 #include "Units.h"
 #include "Limits.h"
-#include <boost/geometry/geometry.hpp>
-#include <boost/geometry/geometries/point.hpp>
-#include <boost/geometry/core/cs.hpp>
 #include <boost/math/quaternion.hpp>
 #include <vector>
 
@@ -40,7 +37,12 @@ namespace path
 
 struct step
 {
-	typedef boost::geometry::model::point<units::length, 3, boost::geometry::cs::cartesian> point_3d;
+	struct point_3d
+	{
+		units::length x;
+		units::length y;
+		units::length z;
+	};
 	typedef boost::math::quaternion<double> quaternion_t;
 	
 	point_3d position;
