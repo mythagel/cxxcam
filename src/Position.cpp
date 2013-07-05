@@ -84,5 +84,11 @@ bool Position::operator!=(const Position& pos) const
 	return to_tuple(*this) != to_tuple(pos);
 }
 
+std::ostream& operator<<(std::ostream& os, const Position& pos)
+{
+	os << pos.str();
+	return os;
+}
+
 }
 

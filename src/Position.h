@@ -26,6 +26,7 @@
 #define POSITION_H_
 #include <string>
 #include "Units.h"
+#include <iosfwd>
 
 namespace cxxcam
 {
@@ -51,6 +52,8 @@ struct Position
 	bool operator==(const Position& pos) const;
 	bool operator!=(const Position& pos) const;
 };
+
+std::ostream& operator<<(std::ostream& os, const Position&);
 
 }
 
