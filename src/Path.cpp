@@ -30,6 +30,12 @@ namespace cxxcam
 namespace path
 {
 
+std::ostream& operator<<(std::ostream& os, const step& step)
+{
+	os << "position: (" << units::length_mm(step.position.x) << ", " << units::length_mm(step.position.y) << ", " << units::length_mm(step.position.z) << ") orientation: " << step.orientation;
+	return os;
+}
+
 units::length distance(const point_3& p0, const point_3& p1)
 {
 	return units::length{sqrt((p0.x-p1.x)*(p0.x-p1.x) + (p0.y-p1.y)*(p0.y-p1.y) + (p0.z-p1.z)*(p0.z-p1.z))};
@@ -63,8 +69,13 @@ step::quaternion_t rot_C(const units::plane_angle& theta)
 
 std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm)
 {
+	/*
+	 * TODO
+	 * Rotations are not correct.
+	 */
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
+		static const step::quaternion_t zero;
 		step s;
 		for(auto axis : geometry)
 		{
@@ -80,13 +91,22 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 					s.position.z = pos.Z;
 					break;
 				case Axis::Type::A:
-					s.orientation *= rot_A(pos.A);
+					if(s.orientation == zero)
+						s.orientation = rot_A(pos.A);
+					else
+						s.orientation *= rot_A(pos.A);
 					break;
 				case Axis::Type::B:
-					s.orientation *= rot_B(pos.B);
+					if(s.orientation == zero)
+						s.orientation = rot_B(pos.B);
+					else
+						s.orientation *= rot_B(pos.B);
 					break;
 				case Axis::Type::C:
-					s.orientation *= rot_C(pos.C);
+					if(s.orientation == zero)
+						s.orientation = rot_C(pos.C);
+					else
+						s.orientation *= rot_C(pos.C);
 					break;
 				case Axis::Type::U:
 				case Axis::Type::V:
@@ -100,21 +120,44 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	
 	auto s0 = pos2step(start);
 	auto sn = pos2step(end);
-	auto length = units::length_mm(distance(s0.position, sn.position));
+	auto length = units::length_mm(distance(s0.position, sn.position)).value();
+	
+	Position axis_movement;
+	axis_movement.X = end.X - start.X;
+	axis_movement.Y = end.Y - start.Y;
+	axis_movement.Z = end.Z - start.Z;
+
+	axis_movement.A = end.A - start.A;
+	axis_movement.B = end.B - start.B;
+	axis_movement.C = end.C - start.C;
+
+	axis_movement.U = end.U - start.U;
+	axis_movement.V = end.V - start.V;
+	axis_movement.W = end.W - start.W;
 	
 	std::vector<step> path;
-	path.push_back(s0);
-	// TODO interpolate between start and end!
-	// each axis has completed the same fraction of its required motion as the other axes
-	path.push_back(sn);
+	auto total_steps = length * steps_per_mm;
+	for(size_t s = 0; s < total_steps; ++s)
+	{
+		auto scale = s / static_cast<double>(total_steps);
+	
+		Position p;
+		
+		p.X = axis_movement.X * scale;
+		p.Y = axis_movement.Y * scale;
+		p.Z = axis_movement.Z * scale;
 
-	/*
-	 * TODO
-	 * find the path between the start and end positions given.
-	 * Includes movement in rotary axes
-	 * Rotations in rotary axes must be applied in order specified in geometry.
-	 * have to interpolate at steps_per_mm for generated step output.
-	 */
+		p.A = axis_movement.A * scale;
+		p.B = axis_movement.B * scale;
+		p.C = axis_movement.C * scale;
+
+		p.U = axis_movement.U * scale;
+		p.V = axis_movement.V * scale;
+		p.W = axis_movement.W * scale;
+		
+		path.push_back(pos2step(p));
+	}
+	path.push_back(sn);
 	return path;
 }
 
