@@ -56,7 +56,9 @@ typedef boost::units::quantity<boost::units::si::time> time;
 typedef boost::units::quantity<boost::units::si::angular_velocity> angular_velocity;
 typedef boost::units::quantity<boost::units::si::plane_angle> plane_angle;
 
-static const auto millimeters = boost::units::si::milli * boost::units::si::meter;
+static const auto meter = boost::units::si::meter;
+static const auto meters = meter;
+static const auto millimeters = boost::units::si::milli * meter;
 static const auto millimeter = millimeters;
 
 static const auto inches = boost::units::imperial::inch_base_unit::unit_type{};
