@@ -30,6 +30,14 @@ namespace cxxcam
 namespace path
 {
 
+static const step::quaternion_t identity{1,0,0,0};
+static const units::plane_angle angular_zero;
+
+step::step()
+ : position(), orientation(identity)
+{
+}
+
 std::ostream& operator<<(std::ostream& os, const step& step)
 {
 	os << "position: (" << units::length_mm(step.position.x) << ", " << units::length_mm(step.position.y) << ", " << units::length_mm(step.position.z) << ") orientation: " << step.orientation;
@@ -75,7 +83,6 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	 */
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
-		static const step::quaternion_t zero;
 		step s;
 		for(auto axis : geometry)
 		{
@@ -91,21 +98,15 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 					s.position.z = pos.Z;
 					break;
 				case Axis::Type::A:
-					if(s.orientation == zero)
-						s.orientation = rot_A(pos.A);
-					else
+					if(pos.A != angular_zero)
 						s.orientation *= rot_A(pos.A);
 					break;
 				case Axis::Type::B:
-					if(s.orientation == zero)
-						s.orientation = rot_B(pos.B);
-					else
+					if(pos.B != angular_zero)
 						s.orientation *= rot_B(pos.B);
 					break;
 				case Axis::Type::C:
-					if(s.orientation == zero)
-						s.orientation = rot_C(pos.C);
-					else
+					if(pos.C != angular_zero)
 						s.orientation *= rot_C(pos.C);
 					break;
 				case Axis::Type::U:

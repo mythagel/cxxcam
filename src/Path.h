@@ -49,6 +49,8 @@ struct step
 	
 	point_3 position;
 	quaternion_t orientation;
+	
+	step();
 };
 
 std::ostream& operator<<(std::ostream& os, const step& step);

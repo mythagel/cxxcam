@@ -23,7 +23,7 @@ euler_rot aa(const cxxcam::path::step::quaternion_t& q)
 
 std::ostream& operator<<(std::ostream& os, const euler_rot& r)
 {
-	os << "(" << r.x << "," << r.y << "," << r.z << "," << r.a << ")";
+	os << "(" << r.x << "," << r.y << "," << r.z << "," << r.a * 57.2957795 << ")";
 	return os;
 }
 
