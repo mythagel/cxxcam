@@ -52,7 +52,7 @@ step::quaternion_t rot_B(const units::plane_angle& theta)
 	return normalise( step::quaternion_t{0, sin(theta/2.0), 0, cos(theta/2.0)} );
 }
 step::quaternion_t rot_C(const units::plane_angle& theta)
-{/home/nicholas/dev/cxxcam/src/Path.cpp:59:19: warning: unused parameter ‘steps_per_mm’ [-Wunused-parameter]
+{
 
 	return normalise( step::quaternion_t{0, 0, sin(theta/2.0), cos(theta/2.0)} );
 }
@@ -69,22 +69,22 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 			switch(axis)
 			{
 				case Axis::Type::X:
-					s.position.set<0>(units::length_mm(start.X).value());
+					s.position.set<0>(units::length_mm(pos.X).value());
 					break;
 				case Axis::Type::Y:
-					s.position.set<1>(units::length_mm(start.Y).value());
+					s.position.set<1>(units::length_mm(pos.Y).value());
 					break;
 				case Axis::Type::Z:
-					s.position.set<2>(units::length_mm(start.Z).value());
+					s.position.set<2>(units::length_mm(pos.Z).value());
 					break;
 				case Axis::Type::A:
-					s.orientation *= rot_A(start.A);
+					s.orientation *= rot_A(pos.A);
 					break;
 				case Axis::Type::B:
-					s.orientation *= rot_B(start.B);
+					s.orientation *= rot_B(pos.B);
 					break;
 				case Axis::Type::C:
-					s.orientation *= rot_C(start.C);
+					s.orientation *= rot_C(pos.C);
 					break;
 				case Axis::Type::U:
 				case Axis::Type::V:
@@ -93,6 +93,7 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 					break;
 			}
 		}
+		return s;
 	};
 	
 	path.push_back(pos2step(start));
