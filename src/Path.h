@@ -25,6 +25,7 @@
 #ifndef PATH_H_
 #define PATH_H_
 #include "Position.h"
+#include "Units.h"
 #include "Limits.h"
 #include <boost/geometry/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
@@ -39,7 +40,7 @@ namespace path
 
 struct step
 {
-	typedef boost::geometry::model::point<double, 3, boost::geometry::cs::cartesian> point_3d;
+	typedef boost::geometry::model::point<units::length, 3, boost::geometry::cs::cartesian> point_3d;
 	typedef boost::math::quaternion<double> quaternion_t;
 	
 	point_3d position;

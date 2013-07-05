@@ -53,14 +53,11 @@ step::quaternion_t rot_B(const units::plane_angle& theta)
 }
 step::quaternion_t rot_C(const units::plane_angle& theta)
 {
-
 	return normalise( step::quaternion_t{0, 0, sin(theta/2.0), cos(theta/2.0)} );
 }
 
 std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm)
 {
-	std::vector<step> path;
-	
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
 		step s;
@@ -69,13 +66,13 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 			switch(axis)
 			{
 				case Axis::Type::X:
-					s.position.set<0>(units::length_mm(pos.X).value());
+					s.position.set<0>(pos.X);
 					break;
 				case Axis::Type::Y:
-					s.position.set<1>(units::length_mm(pos.Y).value());
+					s.position.set<1>(pos.Y);
 					break;
 				case Axis::Type::Z:
-					s.position.set<2>(units::length_mm(pos.Z).value());
+					s.position.set<2>(pos.Z);
 					break;
 				case Axis::Type::A:
 					s.orientation *= rot_A(pos.A);
@@ -96,9 +93,14 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 		return s;
 	};
 	
-	path.push_back(pos2step(start));
+	auto s0 = pos2step(start);
+	auto sn = pos2step(end);
+	
+	std::vector<step> path;
+	path.push_back(s0);
 	// TODO interpolate between start and end!
-	path.push_back(pos2step(end));
+	// each axis has completed the same fraction of its required motion as the other axes
+	path.push_back(sn);
 
 	/*
 	 * TODO
