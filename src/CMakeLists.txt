@@ -25,5 +25,6 @@ Offset.cpp
 Limits.cpp 
 Configuration.cpp 
 Path.cpp 
+Math.cpp 
 )
 TARGET_LINK_LIBRARIES(cxxcam nef)

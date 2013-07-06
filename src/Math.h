@@ -16,39 +16,47 @@
  */
 
 /*
- * Path.h
+ * Math.h
  *
- *  Created on: 2013-06-22
+ *  Created on: 2013-07-06
  *      Author: nicholas
  */
 
-#ifndef PATH_H_
-#define PATH_H_
-#include "Position.h"
-#include "Math.h"
-#include "Limits.h"
-#include <vector>
-#include <iosfwd>
+#ifndef CXXCAMMATH_H_
+#define CXXCAMMATH_H_
+#include "Units.h"
+#include <boost/math/quaternion.hpp>
 
 namespace cxxcam
 {
-namespace path
+namespace math
 {
 
-struct step
+struct point_3
 {
-	math::point_3 position;
-	math::quaternion_t orientation;
-	
-	step();
+	units::length x;
+	units::length y;
+	units::length z;
 };
 
-std::ostream& operator<<(std::ostream& os, const step& step);
+typedef boost::math::quaternion<double> quaternion_t;
 
-std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
-std::vector<step> expand_arc(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
+struct vector_3
+{
+	double x;
+	double y;
+	double z;
+	double a;
+	
+	explicit vector_3(const quaternion_t& q);
+};
+
+units::length distance(const point_3& p0, const point_3& p1);
+quaternion_t::value_type dot(const quaternion_t& q1, const quaternion_t& q2);
+quaternion_t normalise(const quaternion_t& q);
+quaternion_t axis2quat(double x, double y, double z, units::plane_angle theta);
 
 }
 }
 
-#endif /* PATH_H_ */
+#endif /* CXXCAMMATH_H_ */

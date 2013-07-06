@@ -28,6 +28,7 @@ axes
 configuration 
 inverse_time 
 path 
+math 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()
