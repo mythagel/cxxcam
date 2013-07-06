@@ -48,12 +48,14 @@ struct vector_3
 	double z;
 	double a;
 	
+	vector_3(double x, double y, double z, double a);
 	explicit vector_3(const quaternion_t& q);
 };
 
 units::length distance(const point_3& p0, const point_3& p1);
 quaternion_t::value_type dot(const quaternion_t& q1, const quaternion_t& q2);
 quaternion_t normalise(const quaternion_t& q);
+quaternion_t axis2quat(const vector_3 v);
 quaternion_t axis2quat(double x, double y, double z, units::plane_angle theta);
 
 }

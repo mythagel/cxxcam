@@ -28,14 +28,26 @@ int main()
 	using namespace cxxcam::math;
 	using namespace cxxcam::units;
 
-	const quaternion_t x180{0,1,0,0};
-	const quaternion_t y180{0,0,1,0};
-	const quaternion_t z180{0,0,0,1};
+	const quaternion_t x180q{0,1,0,0};
+	const quaternion_t y180q{0,0,1,0};
+	const quaternion_t z180q{0,0,0,1};
 
+	auto x180v = vector_3(x180q);
+	auto y180v = vector_3(y180q);
+	auto z180v = vector_3(z180q);
+	
 	std::cout << "identity: vector"<< vector_3(quaternion_t{1,0,0,0}) << '\n';
-	std::cout << "180deg around X: vector"<< vector_3(x180) << '\n';
-	std::cout << "180deg around Y: vector"<< vector_3(y180) << '\n';
-	std::cout << "180deg around Z: vector"<< vector_3(z180) << '\n';
+	std::cout << "180deg around X: vector"<< x180v << '\n';
+	std::cout << "180deg around Y: vector"<< y180v << '\n';
+	std::cout << "180deg around Z: vector"<< z180v << '\n';
+
+	auto x180vq = axis2quat(x180v);
+	auto y180vq = axis2quat(y180v);
+	auto z180vq = axis2quat(z180v);
+	
+	std::cout << "180deg around X: quaternion"<< x180vq << '\n';
+	std::cout << "180deg around Y: quaternion"<< y180vq << '\n';
+	std::cout << "180deg around Z: quaternion"<< z180vq << '\n';
 
 	auto q = axis2quat(1, 0, 0, plane_angle{180 * degrees});
 //	assert(q == quaternion_t{0,1,0,0});

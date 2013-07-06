@@ -30,6 +30,10 @@ namespace cxxcam
 namespace math
 {
 
+vector_3::vector_3(double x, double y, double z, double a)
+ : x(x), y(y), z(z), a(a)
+{
+}
 vector_3::vector_3(const quaternion_t& q)
 {
 	auto scale = sqrt(q.R_component_1() * q.R_component_1() + q.R_component_2() * q.R_component_2() + q.R_component_3() * q.R_component_3());
@@ -66,6 +70,10 @@ quaternion_t normalise(const quaternion_t& q)
 	return q / dot(q, q);
 }
 
+quaternion_t axis2quat(const vector_3 v)
+{
+	return axis2quat(v.x, v.y, v.z, units::plane_angle{v.a * units::degrees});
+}
 quaternion_t axis2quat(double x, double y, double z, units::plane_angle theta)
 {
 	theta /= 2;
