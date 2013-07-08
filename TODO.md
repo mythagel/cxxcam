@@ -10,7 +10,7 @@
 ## High Level ##
  * Check for stock intersection for Linear & Rapid movements
     - Take path, expand tool along path with rotation, subtract from stock.
- * ~~Expand start and end tool positions to path~~
+ * Expand start and end tool positions to path (Not merged yet.)
     - ~~Must return sequence of {pos: point, rot: vector3 (quaternions?)} representing tool location and orientation.~~
     - ~~How to calculate path for rotatry axes?~~
        - ~~Simple rotation around controlled point.~~
