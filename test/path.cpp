@@ -27,8 +27,7 @@ int main()
 	for(const auto& step : steps)
 	{
 		std::cout << step << '\n';
-		
-		std::cout << vector_3(step.orientation) << '\n';
+		std::cout << normalise(vector_3(step.orientation)) << '\n';
 	}
 	
 	return 0;

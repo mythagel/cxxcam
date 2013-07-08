@@ -84,6 +84,7 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 					break;
 			}
 		}
+		s.orientation = math::normalise(s.orientation);
 		return s;
 	};
 	
