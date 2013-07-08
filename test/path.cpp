@@ -22,6 +22,8 @@ int main()
 	
 	limits::AvailableAxes geometry;
 	
+	std::cout << start << " -> " << end << '\n';
+	
 	auto steps = expand_linear(start, end, geometry, 1);
 	
 	for(const auto& step : steps)
