@@ -52,6 +52,15 @@ vector_3::vector_3(const quaternion_t& q)
 	a = (acos(q.R_component_1()) * 2.0) * 57.2957795;
 }
 
+vector_3 normalise(const vector_3& v)
+{
+	auto scale = sqrt((v.x*v.x)+(v.y*v.y)+(v.z*v.z));
+	if(scale == 0.0)
+		return {0, 0, 0, v.a};
+	
+	return {v.x*(1.0/scale), v.y*(1.0/scale), v.z*(1.0/scale), v.a};
+}
+
 units::length distance(const point_3& p0, const point_3& p1)
 {
 	return units::length{sqrt((p0.x-p1.x)*(p0.x-p1.x) + (p0.y-p1.y)*(p0.y-p1.y) + (p0.z-p1.z)*(p0.z-p1.z))};
@@ -78,7 +87,7 @@ quaternion_t axis2quat(double x, double y, double z, units::plane_angle theta)
 {
 	theta /= 2;
     auto sint = sin(theta);
-	return quaternion_t{sint*x, sint*y, sint*z, cos(theta)};
+	return quaternion_t{cos(theta), sint*x, sint*y, sint*z};
 }
 
 }

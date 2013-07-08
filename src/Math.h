@@ -52,6 +52,7 @@ struct vector_3
 	explicit vector_3(const quaternion_t& q);
 };
 
+vector_3 normalise(const vector_3& v);
 units::length distance(const point_3& p0, const point_3& p1);
 quaternion_t::value_type dot(const quaternion_t& q1, const quaternion_t& q2);
 quaternion_t normalise(const quaternion_t& q);
