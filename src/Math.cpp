@@ -78,7 +78,7 @@ quaternion_t axis2quat(double x, double y, double z, units::plane_angle theta)
 {
 	theta /= 2;
     auto sint = sin(theta);
-	return quaternion_t{sint*x, sint*y, sint*z, cos(theta)};
+	return quaternion_t{cos(theta), sint*x, sint*y, sint*z};
 }
 
 }
