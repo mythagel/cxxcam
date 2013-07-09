@@ -10,6 +10,13 @@
 ## High Level ##
  * Check for stock intersection for Linear & Rapid movements
     - Take path, expand tool along path with rotation, subtract from stock.
+    - Path is discretised, perform analysis at each step.
+    - Volume of material removal
+    - Cutting speed
+    - Interface for feedback?
+       - I.e. use stack push and pop of state to test different configurations to find optimal.
+       - Return vector of stats for each step
+          - volume, forces, engagement, etc.
  * Complete Tool class - apt_cutter branch
     - Needs nef model loading / ~~generation~~
     - APT CUTTER style mill tool definition
