@@ -10,11 +10,6 @@
 ## High Level ##
  * Check for stock intersection for Linear & Rapid movements
     - Take path, expand tool along path with rotation, subtract from stock.
- * Expand start and end tool positions to path (branch quaternion not merged yet.)
-    - ~~Must return sequence of {pos: point, rot: vector3 (quaternions?)} representing tool location and orientation.~~
-    - ~~How to calculate path for rotatry axes?~~
-       - ~~Simple rotation around controlled point.~~
-       - ~~NOTE: jscam will include post processors to adjust canonical rotations to machine specific configurations i.e. rotary offsets.~~
  * Complete Tool class - apt_cutter branch
     - Needs nef model loading / ~~generation~~
     - APT CUTTER style mill tool definition
@@ -40,6 +35,11 @@
  * Automatic/heuristic tool selection
  * Ability to explode stock into individual objects when cut - explode branch
     - nef::explode exists - needs testing and use in Stock
+ * ~~Expand start and end tool positions to path~~
+    - ~~Must return sequence of {pos: point, rot: vector3 (quaternions?)} representing tool location and orientation.~~
+    - ~~How to calculate path for rotatry axes?~~
+       - ~~Simple rotation around controlled point.~~
+       - ~~NOTE: jscam will include post processors to adjust canonical rotations to machine specific configurations i.e. rotary offsets.~~
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
