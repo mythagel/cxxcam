@@ -25,6 +25,11 @@
        - Does the boundary between motions need to be preserved?
     - Volume of material removal
     - Cutting speed
+    - Performance
+       - Path for each flute is trochoidal. 
+       - Calculate the path that flute tip passes through material.
+       - Gives simulated chip load per tooth.
+       - Compare with data (tables? calculated from Material hardness?) for MRR.
     - Interface for feedback?
        - Multiple moves must be able to be coalasced into one for analysis.
        - I.e. use stack push and pop of state to test different configurations to find optimal.
