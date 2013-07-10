@@ -11,6 +11,8 @@
  * Check for stock intersection for Linear & Rapid movements
     - Take path, expand tool along path with rotation, subtract from stock.
     - Path is discretised, perform analysis at each step.
+    - Analysis must be possible on multiple linear / angular segments
+       - Non-plane aligned arcs / higher order curves will be represented as a collection of line segments.
     - Volume of material removal
     - Cutting speed
     - Interface for feedback?
