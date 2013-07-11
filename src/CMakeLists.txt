@@ -26,5 +26,6 @@ Limits.cpp
 Configuration.cpp 
 Path.cpp 
 Math.cpp 
+Simulation.cpp 
 )
 TARGET_LINK_LIBRARIES(cxxcam nef)
