@@ -14,9 +14,12 @@
           - Discretised path
           - Mutable Stock
           - Mutable Tools
+          - Feed Rate (per step or per segment)
        - Output
           - Annotated path
-             - 
+             - Chip load per tooth
+             - Volume of material
+             - Cutter engagement
     - Simulation
        - Tasks
           - Performs analysis on a specified path.
