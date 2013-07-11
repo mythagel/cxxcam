@@ -9,15 +9,12 @@
 
 ## High Level ##
  * Check for stock intersection for Linear & Rapid movements
-    - What to name this module?
+    - Simulation
        - Tasks
           - Performs analysis on a specified path.
           - Updates stock model.
           - Possibly updates tool object (wear etc.)
           - Provides information on cutting performance.
-       - Ideas
-          - Simulation
-          - Analysis
     - Take path, expand tool along path with rotation, subtract from stock.
     - Path is discretised, perform analysis at each step.
     - Analysis must be possible on multiple linear / angular segments
