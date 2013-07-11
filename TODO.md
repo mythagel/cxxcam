@@ -9,6 +9,14 @@
 
 ## High Level ##
  * Check for stock intersection for Linear & Rapid movements
+    - Define Inputs and Outputs
+       - Input
+          - Discretised path
+          - Mutable Stock
+          - Mutable Tools
+       - Output
+          - Annotated path
+             - 
     - Simulation
        - Tasks
           - Performs analysis on a specified path.
