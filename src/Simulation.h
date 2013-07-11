@@ -24,12 +24,22 @@
 
 #ifndef SIMULATION_H_
 #define SIMULATION_H_
+#include <vector>
 #include "Path.h"
+#include "Tool.h"
+#include "Stock.h"
 
 namespace cxxcam
 {
 namespace simulation
 {
+
+struct simulated_step
+{
+	path::step step;
+};
+
+std::vector<simulated_step> simulate_cut(const std::vector<path::step>& path, Stock& stock, Tool& tool);
 
 /*
  * Check for stock intersection for Linear & Rapid movements
@@ -39,14 +49,6 @@ namespace simulation
           - Updates stock model.
           - Possibly updates tool object (wear etc.)
           - Provides information on cutting performance.
-       - Ideas
-          - Simulation
-          - Analysis
-    - Take path, expand tool along path with rotation, subtract from stock.
-    - Path is discretised, perform analysis at each step.
-    - Analysis must be possible on multiple linear / angular segments
-       - Non-plane aligned arcs / higher order curves will be represented as a collection of line segments.
-       - Does the boundary between motions need to be preserved?
     - Volume of material removal
     - Cutting speed
     - Performance
@@ -54,12 +56,6 @@ namespace simulation
        - Calculate the path that flute tip passes through material.
        - Gives simulated chip load per tooth.
        - Compare with data (tables? calculated from Material hardness?) for MRR.
-    - Interface for feedback?
-       - Multiple moves must be able to be coalasced into one for analysis.
-       - I.e. use stack push and pop of state to test different configurations to find optimal.
-       - Return vector of stats for each step
-          - volume, forces, engagement, etc.
-          - New functions that augments existing path provided.
 
 */
 

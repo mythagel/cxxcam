@@ -29,6 +29,11 @@ namespace cxxcam
 namespace simulation
 {
 
+std::vector<simulated_step> simulate_cut(const std::vector<path::step>& path, Stock& stock, Tool& tool)
+{
+	return {};
+}
+
 }
 }
 
