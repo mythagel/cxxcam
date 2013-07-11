@@ -24,11 +24,44 @@
 
 #ifndef SIMULATION_H_
 #define SIMULATION_H_
+#include "Path.h"
 
 namespace cxxcam
 {
 namespace simulation
 {
+
+/*
+ * Check for stock intersection for Linear & Rapid movements
+    - What to name this module?
+       - Tasks
+          - Performs analysis on a specified path.
+          - Updates stock model.
+          - Possibly updates tool object (wear etc.)
+          - Provides information on cutting performance.
+       - Ideas
+          - Simulation
+          - Analysis
+    - Take path, expand tool along path with rotation, subtract from stock.
+    - Path is discretised, perform analysis at each step.
+    - Analysis must be possible on multiple linear / angular segments
+       - Non-plane aligned arcs / higher order curves will be represented as a collection of line segments.
+       - Does the boundary between motions need to be preserved?
+    - Volume of material removal
+    - Cutting speed
+    - Performance
+       - Path for each flute is trochoidal. 
+       - Calculate the path that flute tip passes through material.
+       - Gives simulated chip load per tooth.
+       - Compare with data (tables? calculated from Material hardness?) for MRR.
+    - Interface for feedback?
+       - Multiple moves must be able to be coalasced into one for analysis.
+       - I.e. use stack push and pop of state to test different configurations to find optimal.
+       - Return vector of stats for each step
+          - volume, forces, engagement, etc.
+          - New functions that augments existing path provided.
+
+*/
 
 }
 }
