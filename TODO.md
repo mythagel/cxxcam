@@ -9,12 +9,14 @@
 
 ## High Level ##
  * Check for stock intersection for Linear & Rapid movements
+    - *How to measure cutting performance?*
     - Define Inputs and Outputs
        - Input
           - Discretised path
           - Mutable Stock
           - Mutable Tools
           - Feed Rate (per step or per segment)
+          - Spindle speed
        - Output
           - Annotated path
              - Chip load per tooth
