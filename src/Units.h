@@ -34,6 +34,7 @@
 #include <boost/units/systems/si/length.hpp>
 #include <boost/units/systems/si/torque.hpp>
 #include <boost/units/systems/si/velocity.hpp>
+#include <boost/units/systems/si/volume.hpp>
 #include <boost/units/systems/si/time.hpp>
 #include <boost/units/systems/si/angular_velocity.hpp>
 #include <boost/units/systems/si/plane_angle.hpp>
@@ -51,6 +52,7 @@ namespace units
 typedef boost::units::quantity<boost::units::si::length> length;
 typedef boost::units::quantity<boost::units::si::torque> torque;
 typedef boost::units::quantity<boost::units::si::velocity> velocity;
+typedef boost::units::quantity<boost::units::si::volume> volume;
 // TODO is a static assert that time is represented as seconds necessary?
 typedef boost::units::quantity<boost::units::si::time> time;
 typedef boost::units::quantity<boost::units::si::angular_velocity> angular_velocity;

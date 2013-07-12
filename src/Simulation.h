@@ -28,36 +28,45 @@
 #include "Path.h"
 #include "Tool.h"
 #include "Stock.h"
+#include "Units.h"
 
 namespace cxxcam
 {
 namespace simulation
 {
 
-struct simulated_step
+/*
+ * Need a better solution for storing simulation results.
+ * cxxcam will run simulation for each input step.
+ * jscam will provide ability to analyse cutting performance (and use this as feedback for generation)
+ * Tool changes change meaning of simulation results. But because of volume of data it is unwise to store
+ * tool objects for each step.
+ * Tool id is not stable enough.
+ * Seems acceptable to push this responsibility onto caller.
+ * simulation results are stored - tool etc are not.
+ */
+struct step
 {
-	path::step step;
+	path::step s0;
+	path::step s1;
+	
+	units::volume swarf;
 };
 
-std::vector<simulated_step> simulate_cut(const std::vector<path::step>& path, Stock& stock, Tool& tool);
+struct state
+{
+	Stock stock;
+	Tool tool;
+	double FeedRate;	// TODO normalised.
+	unsigned long SpindleSpeed;	// RPM
+};
 
 /*
- * Check for stock intersection for Linear & Rapid movements
-    - What to name this module?
-       - Tasks
-          - Performs analysis on a specified path.
-          - Updates stock model.
-          - Possibly updates tool object (wear etc.)
-          - Provides information on cutting performance.
-    - Volume of material removal
-    - Cutting speed
-    - Performance
-       - Path for each flute is trochoidal. 
-       - Calculate the path that flute tip passes through material.
-       - Gives simulated chip load per tooth.
-       - Compare with data (tables? calculated from Material hardness?) for MRR.
-
-*/
+ * Simulate a single time step
+ * Simulation of a path will involve multiple calls to this function to analyse each step.
+ * standard algorithms + lambda used to fold path sequence.
+ */
+step simulate_cut(const path::step& s0, const path::step& s1, state& s);
 
 }
 }
