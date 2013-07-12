@@ -29,6 +29,7 @@
 #include "Tool.h"
 #include "Stock.h"
 #include "Units.h"
+#include "Limits.h"
 
 namespace cxxcam
 {
@@ -59,6 +60,7 @@ struct state
 	Tool tool;
 	double FeedRate;	// TODO normalised.
 	unsigned long SpindleSpeed;	// RPM
+	const limits::FeedRate FeedRateLimit;
 };
 
 /*
