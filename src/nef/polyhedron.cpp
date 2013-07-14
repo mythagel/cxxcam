@@ -27,6 +27,10 @@
 #include <istream>
 #include <ostream>
 #include "cgal.h"
+#include <CGAL/Aff_transformation_3.h>
+#include <algorithm>
+
+typedef CGAL::Aff_transformation_3<Exact_Kernel> Aff_transformation_3;
 
 namespace nef
 {
@@ -133,6 +137,23 @@ bool polyhedron_t::operator<=(const polyhedron_t& poly) const
 bool polyhedron_t::operator>=(const polyhedron_t& poly) const
 {
 	return priv->nef >= poly.priv->nef;
+}
+
+polyhedron_t polyhedron_t::rotate(const polyhedron_t& polyhedron, double qw, double qx, double qy, double qz)
+{
+	Aff_transformation_3 rotation(
+		1.0 - 2.0*qy*qy - 2.0*qz*qz, 2.0*qx*qy - 2.0*qz*qw, 2.0*qx*qz + 2.0*qy*qw, 0.0,
+		2.0*qx*qy + 2.0*qz*qw, 1.0 - 2.0*qx*qx - 2.0*qz*qz, 2.0*qy*qz - 2.0*qx*qw, 0.0,
+		2.0*qx*qz - 2.0*qy*qw, 2.0*qy*qz + 2.0*qx*qw, 1.0 - 2.0*qx*qx - 2.0*qy*qy, 0.0,
+		0.0, 0.0, 0.0, 1.0);
+
+	std::transform(P.points_begin(), P.points_end(), P.points_begin(), rotation);
+
+	return {};
+}
+polyhedron_t polyhedron_t::translate(const polyhedron_t& polyhedron, double x, double y, double z)
+{
+	return {};
 }
 
 polyhedron_t::~polyhedron_t()

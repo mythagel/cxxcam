@@ -75,6 +75,9 @@ public:
 	bool operator<=(const polyhedron_t& poly) const;
 	bool operator>=(const polyhedron_t& poly) const;
 	
+	static polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double qy, double qz);
+	static polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, double z);
+	
 	~polyhedron_t();
 };
 
