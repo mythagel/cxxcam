@@ -8,6 +8,7 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
+ * Implement rotation and translation for nef::polyhedron_t
  * Check for stock intersection for Linear & Rapid movements
     - *How to measure cutting performance?*
     - Define Inputs and Outputs
