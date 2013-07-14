@@ -29,8 +29,15 @@ namespace cxxcam
 namespace simulation
 {
 
+/*
+ * 
+ */
 step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 {
+	auto tool = s.tool;
+	const auto orientation = s1.orientation;
+	
+	
 	return {};
 }
 
