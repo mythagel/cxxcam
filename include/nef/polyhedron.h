@@ -47,6 +47,9 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const polyhedron_t&);
 	friend std::istream& operator>>(std::istream&, polyhedron_t&);
 
+friend polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double qy, double qz);
+friend polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, double z);
+
 private:
 	std::shared_ptr<private_t> priv;
 	polyhedron_t(const std::shared_ptr<private_t>& priv);
@@ -74,9 +77,6 @@ public:
 	bool operator>(const polyhedron_t& poly) const;
 	bool operator<=(const polyhedron_t& poly) const;
 	bool operator>=(const polyhedron_t& poly) const;
-	
-	static polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double qy, double qz);
-	static polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, double z);
 	
 	~polyhedron_t();
 };
