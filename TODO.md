@@ -77,3 +77,6 @@
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
  * Better way of exposing access to nef::polyhedron_t::private_t.
+    - Change friends to method to access private_t reference data and create new polyhedron from private_t
+    - Only those methods with access to the def of private_t can use them.
+    - Add definitions for those functions to where private_t is defined.
