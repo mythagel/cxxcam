@@ -29,7 +29,14 @@
 namespace nef
 {
 
+/*
+ * Create a new polyhedron rotated by the given quaternion.
+ */
 polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double qy, double qz);
+
+/*
+ * Create a new polyhedron translated by the given vector.
+ */
 polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, double z);
 
 }

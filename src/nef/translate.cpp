@@ -27,22 +27,70 @@
 #include <CGAL/Aff_transformation_3.h>
 #include <algorithm>
 
-typedef CGAL::Aff_transformation_3<Exact_Kernel> Aff_transformation_3;
+typedef typename Nef_polyhedron_3::Aff_transformation_3 Aff_transformation_3;
 
 namespace nef
 {
 
 polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double qy, double qz)
 {
-	Aff_transformation_3 rotation();
+	auto nef = get_priv(polyhedron)->nef;
 
-	//std::transform(P.points_begin(), P.points_end(), P.points_begin(), rotation);
+	// From http://www.cs.princeton.edu/~gewang/projects/darth/stuff/quat_faq.html#Q54
+	auto xx = qx*qx;
+	auto xy = qx*qy;
+	auto xz = qx*qz;
+	auto xw = qx*qw;
 
-	return {};
+	auto yy = qy*qy;
+	auto yz = qy*qz;
+	auto yw = qy*qw;
+
+	auto zz = qz*qz;
+	auto zw = qz*qw;
+
+	double mat[16];
+	
+	mat[0]  = 1 - 2 * ( yy + zz );
+	mat[1]  =     2 * ( xy - zw );
+	mat[2]  =     2 * ( xz + yw );
+
+	mat[4]  =     2 * ( xy + zw );
+	mat[5]  = 1 - 2 * ( xx + zz );
+	mat[6]  =     2 * ( yz - xw );
+
+	mat[8]  =     2 * ( xz - yw );
+	mat[9]  =     2 * ( yz + xw );
+	mat[10] = 1 - 2 * ( xx + yy );
+
+	mat[3]  = mat[7] = mat[11] = mat[12] = mat[13] = mat[14] = 0;
+	mat[15] = 1;
+
+	Aff_transformation_3 rotate
+			(
+				mat[0], mat[4], mat[8],
+				mat[1], mat[5], mat[9],
+				mat[2], mat[6], mat[10],
+				mat[15]
+			);
+
+	nef.transform(rotate);
+	
+	auto priv = std::make_shared<polyhedron_t::private_t>(nef);
+	return make_polyhedron( std::move(priv) );
 }
+
 polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, double z)
 {
-	return {};
+	auto nef = get_priv(polyhedron)->nef;
+	
+	typedef typename Nef_polyhedron_3::Vector_3 Vector_3;
+	Aff_transformation_3 translate(CGAL::TRANSLATION, Vector_3(x, y, z));
+	
+	nef.transform(translate);
+	
+	auto priv = std::make_shared<polyhedron_t::private_t>(nef);
+	return make_polyhedron( std::move(priv) );
 }
 
 }
