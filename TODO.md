@@ -65,8 +65,6 @@
     - Top of stock check at Z0
     - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
  * Represent workholding, clamps, etc. (for intersection tests)
- * Material removal volume for each operation
-    - Calculate volume of material that tool can remove and ensure that volume is appropriate.
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Automatic/heuristic tool selection
@@ -76,7 +74,3 @@
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
- * ~~Better way of exposing access to nef::polyhedron_t::private_t.~~
-    - ~~Change friends to method to access private_t reference data and create new polyhedron from private_t~~
-    - ~~Only those methods with access to the def of private_t can use them.~~
-    - ~~Add definitions for those functions to where private_t is defined.~~
