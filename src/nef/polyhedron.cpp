@@ -135,5 +135,18 @@ std::istream& operator>>(std::istream& is, polyhedron_t& poly)
 	return is >> poly.priv->nef;
 }
 
+polyhedron_t make_polyhedron(std::shared_ptr<polyhedron_t::private_t> priv)
+{
+	return { priv };
+}
+std::weak_ptr<polyhedron_t::private_t> get_priv(polyhedron_t& polyhedron)
+{
+	return polyhedron.priv;
+}
+std::weak_ptr<const polyhedron_t::private_t> get_priv(const polyhedron_t& polyhedron)
+{
+	return polyhedron.priv;
+}
+
 }
 

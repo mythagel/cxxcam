@@ -49,6 +49,10 @@ struct polyhedron_t::private_t
 	Nef_polyhedron_3 nef;
 };
 
+polyhedron_t make_polyhedron(std::shared_ptr<polyhedron_t::private_t> priv);
+std::weak_ptr<polyhedron_t::private_t> get_priv(polyhedron_t& polyhedron);
+std::weak_ptr<const polyhedron_t::private_t> get_priv(const polyhedron_t& polyhedron);
+
 }
 
 #endif /* NEF_POLYHEDRON_PRIVATE_H_ */
