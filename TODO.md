@@ -70,13 +70,13 @@
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Automatic/heuristic tool selection
- * Ability to explode stock into individual objects when cut - explode branch
+ * Ability to explode stock into individual objects when cut
     - nef::explode exists - needs testing and use in Stock
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
- * Better way of exposing access to nef::polyhedron_t::private_t.
-    - Change friends to method to access private_t reference data and create new polyhedron from private_t
-    - Only those methods with access to the def of private_t can use them.
-    - Add definitions for those functions to where private_t is defined.
+ * ~~Better way of exposing access to nef::polyhedron_t::private_t.~~
+    - ~~Change friends to method to access private_t reference data and create new polyhedron from private_t~~
+    - ~~Only those methods with access to the def of private_t can use them.~~
+    - ~~Add definitions for those functions to where private_t is defined.~~
