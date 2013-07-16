@@ -41,6 +41,12 @@ struct polyline_t;
  */
 class polyhedron_t
 {
+public:
+	struct private_t;
+	friend polyhedron_t make_polyhedron(std::shared_ptr<private_t> priv);
+	friend std::weak_ptr<private_t> get_priv(polyhedron_t& polyhedron);
+	friend std::weak_ptr<const private_t> get_priv(const polyhedron_t& polyhedron);
+	
 friend polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t slices);
 friend polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2);
 friend polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices);
@@ -57,7 +63,6 @@ friend object_t to_object(const polyhedron_t& poly);
 friend void write_off(std::ostream&, const polyhedron_t& poly);
 
 private:
-	struct private_t;
 	std::shared_ptr<private_t> priv;
 	polyhedron_t(const std::shared_ptr<private_t>& priv);
 	void ensure_unique();
@@ -86,10 +91,6 @@ public:
 	bool operator>=(const polyhedron_t& poly) const;
 	
 	~polyhedron_t();
-private:
-	friend polyhedron_t make_polyhedron(std::shared_ptr<private_t> priv);
-	friend std::weak_ptr<private_t> get_priv(polyhedron_t& polyhedron);
-	friend std::weak_ptr<const private_t> get_priv(const polyhedron_t& polyhedron);
 };
 
 std::ostream& operator<<(std::ostream&, const polyhedron_t&);
