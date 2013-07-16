@@ -32,9 +32,6 @@
 namespace nef
 {
 
-struct object_t;
-struct polyline_t;
-
 /*
  * Wrapper class for CGAL::Nef_polyhedron_3 to avoid long build times.
  * Intention is to add higher level interfaces (i.e. volume calculation)
@@ -44,23 +41,11 @@ class polyhedron_t
 public:
 	struct private_t;
 	friend polyhedron_t make_polyhedron(std::shared_ptr<private_t> priv);
-	friend std::weak_ptr<private_t> get_priv(polyhedron_t& polyhedron);
-	friend std::weak_ptr<const private_t> get_priv(const polyhedron_t& polyhedron);
+	friend std::shared_ptr<private_t> get_priv(polyhedron_t& polyhedron);
+	friend std::shared_ptr<const private_t> get_priv(const polyhedron_t& polyhedron);
 	
-friend polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t slices);
-friend polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2);
-friend polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices);
-
-friend polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path);
-friend double volume(const polyhedron_t& polyhedron);
-
-friend std::vector<polyhedron_t> explode(const polyhedron_t& poly);
-
-friend std::ostream& operator<<(std::ostream&, const polyhedron_t&);
-friend std::istream& operator>>(std::istream&, polyhedron_t&);
-
-friend object_t to_object(const polyhedron_t& poly);
-friend void write_off(std::ostream&, const polyhedron_t& poly);
+	friend std::ostream& operator<<(std::ostream&, const polyhedron_t&);
+	friend std::istream& operator>>(std::istream&, polyhedron_t&);
 
 private:
 	std::shared_ptr<private_t> priv;

@@ -50,8 +50,8 @@ struct polyhedron_t::private_t
 };
 
 polyhedron_t make_polyhedron(std::shared_ptr<polyhedron_t::private_t> priv);
-std::weak_ptr<polyhedron_t::private_t> get_priv(polyhedron_t& polyhedron);
-std::weak_ptr<const polyhedron_t::private_t> get_priv(const polyhedron_t& polyhedron);
+std::shared_ptr<polyhedron_t::private_t> get_priv(polyhedron_t& polyhedron);
+std::shared_ptr<const polyhedron_t::private_t> get_priv(const polyhedron_t& polyhedron);
 
 }
 

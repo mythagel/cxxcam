@@ -31,12 +31,12 @@ namespace nef
 
 std::vector<polyhedron_t> explode(const polyhedron_t& poly)
 {
-	if(!poly.priv->nef.is_simple())
+	auto priv = get_priv(poly);
+	if(!priv->nef.is_simple())
 		throw std::runtime_error("polyhedron is not 2-manifold.");
 
-
 	Polyhedron_3 P;
-	poly.priv->nef.convert_to_polyhedron(P);
+	priv->nef.convert_to_polyhedron(P);
 
 	std::vector<Polyhedron_3> polyhedra;
 
@@ -48,7 +48,7 @@ std::vector<polyhedron_t> explode(const polyhedron_t& poly)
 	for(auto& poly : polyhedra)
 	{
 		auto priv = std::make_shared<polyhedron_t::private_t>( poly );
-		exploded.push_back( {priv} );
+		exploded.push_back( make_polyhedron( std::move(priv) ) );
 	}
 	return exploded;
 }

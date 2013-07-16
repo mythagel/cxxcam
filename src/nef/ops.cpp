@@ -70,11 +70,11 @@ polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path)
 	Nef_polyhedron_3 N1(poly.begin(), poly.end(), Nef_polyhedron_3::Polylines_tag());
 
 	// Need to make a copy because minkowski_sum_3 can modify its arguments
-	auto nef = polyhedron.priv->nef;
+	auto nef = get_priv(polyhedron)->nef;
 	auto priv = std::make_shared<polyhedron_t::private_t>(CGAL::minkowski_sum_3(nef, N1));
 
 	if (priv->nef.is_simple())
-		return { priv };
+		return make_polyhedron( std::move(priv) );
 
 	throw std::runtime_error("glide result is not 2-manifold");
 }
@@ -86,7 +86,7 @@ double volume(const polyhedron_t& polyhedron)
 		typedef CGAL::Mesh_polyhedron_3<Exact_Kernel>::type Exact_Mesh_Polyhedron_3;
 	
 		Exact_Mesh_Polyhedron_3 EP;
-		polyhedron.priv->nef.convert_to_polyhedron(EP);
+		get_priv(polyhedron)->nef.convert_to_polyhedron(EP);
 		copy_to(EP, PK);
 	}
 	assert(PK.is_valid());

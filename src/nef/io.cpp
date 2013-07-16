@@ -36,10 +36,11 @@ object_t to_object(const polyhedron_t& poly)
 	typedef Polyhedron_3::Halfedge_around_facet_circulator Halfedge_around_facet_circulator;
 	typedef typename Polyhedron_3::Vertex_const_iterator Vertex_const_iterator;
 	
-	if(poly.priv->nef.is_simple())
+	auto priv = get_priv(poly);
+	if(priv->nef.is_simple())
 	{
 		Polyhedron_3 P;
-		poly.priv->nef.convert_to_polyhedron(P);
+		priv->nef.convert_to_polyhedron(P);
 		
 		object_t o;
 		
@@ -78,10 +79,11 @@ object_t to_object(const polyhedron_t& poly)
 
 void write_off(std::ostream& os, const polyhedron_t& poly)
 {
-	if(poly.priv->nef.is_simple())
+	auto priv = get_priv(poly);
+	if(priv->nef.is_simple())
 	{
 		Polyhedron_3 P;
-		poly.priv->nef.convert_to_polyhedron(P);
+		priv->nef.convert_to_polyhedron(P);
 		os << P;
 	}
 	else

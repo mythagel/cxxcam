@@ -41,7 +41,7 @@ polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t sli
 	assert(P.is_closed());
 
 	auto priv = std::make_shared<polyhedron_t::private_t>( P );
-	return { priv };
+	return make_polyhedron( std::move(priv) );
 }
 
 polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2)
@@ -54,7 +54,7 @@ polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, dou
 	assert(P.is_closed());
 
 	auto priv = std::make_shared<polyhedron_t::private_t>( P );
-	return { priv };
+	return make_polyhedron( std::move(priv) );
 }
 
 polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices)
@@ -67,7 +67,7 @@ polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, do
 	assert(P.is_closed());
 
 	auto priv = std::make_shared<polyhedron_t::private_t>( P );
-	return { priv };
+	return make_polyhedron( std::move(priv) );
 }
 
 }
