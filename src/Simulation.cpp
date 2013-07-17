@@ -46,14 +46,24 @@ step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 	const auto& o1 = s1.orientation;
 	const auto& p1 = s1.position;
 	
-	auto t0 = nef::translate(nef::rotate(tool, o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4()), length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value());
+	auto t0 = nef::translate(
+				nef::rotate(tool, o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4()), 
+				length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value());
 //	auto t1 = nef::translate(nef::rotate(tool, o1.R_component_1(), o1.R_component_2(), o1.R_component_3(), o1.R_component_4()), p1.x, p1.y, p1.z);
 
-	nef::polyline_t path{ { {length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value()}, {length_mm(p1.x).value(), length_mm(p1.y).value(), length_mm(p1.z).value()} } };
+	nef::polyline_t path{ { {length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value()}, 
+							{length_mm(p1.x).value(), length_mm(p1.y).value(), length_mm(p1.z).value()} } };
+	
 	auto tool_path = nef::glide(t0, path);
 	
+	auto x = s.stock.Model + tool_path;
+	nef::write_off(std::cout, x);
+	
+	auto material_removed = s.stock.Model * tool_path;
+	s.stock.Model -= tool_path;
+	
 	// TESTING CRAP
-	nef::write_off(std::cout, tool_path);
+	//nef::write_off(std::cout, tool_path);
 	
 	return {};
 }

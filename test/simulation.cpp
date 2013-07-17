@@ -1,6 +1,7 @@
 #include "Simulation.h"
 #include "Units.h"
 #include "nef/primitives.h"
+#include "nef/io.h"
 #include <iostream>
 
 int main()
@@ -10,11 +11,14 @@ int main()
 	using namespace cxxcam::units;
 	
 	path::step s0;
+	s0.position.z = length{90 * millimeters};
+	
 	path::step s1;
 	s1.position.x = length{50 * millimeters};
+	s1.position.z = length{90 * millimeters};
 	
 	state s;
-	s.stock.Model = nef::make_box(0, 0, 0, 100, 100, 100);
+	s.stock.Model = nef::make_box(0, 0, 0, 50, 50, 100);
 	
 	{
 		auto end_mill = Tool::Mill{};
@@ -32,6 +36,7 @@ int main()
 	
 	auto step = simulate_cut(s0, s1, s);
 	
+	nef::write_off(std::cout, s.stock.Model);
 	return 0;
 }
 
