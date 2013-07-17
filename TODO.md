@@ -59,9 +59,10 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
- * Mesh on demand in nef object
-    - Invalidate on change.
-    - Remesh on request
+ * ~~Mesh on demand in nef object~~
+    - ~~Invalidate on change.~~
+    - ~~Remesh on request~~
+    - ~~Too expensive~~
  * Complete Stock class
     - Needs model loading & ~~generation~~
     - Needs intersection tests
@@ -69,6 +70,8 @@
     - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
     - ~~Top of stock check at Z0~~
        - ~~Unnecessary.~~
+ * Complete Spindle class
+    - Torque is not calculated yet.
  * Represent workholding, clamps, etc. (for intersection tests)
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
