@@ -9,6 +9,7 @@
 
 ## High Level ##
  * Implement rotation and translation for nef::polyhedron_t (on branch simulation)
+    - Done, needs test verification.
  * Check for stock intersection for Linear & Rapid movements
     - *How to measure cutting performance?*
     - Define Inputs and Outputs
@@ -30,10 +31,13 @@
           - Possibly updates tool object (wear etc.)
           - Provides information on cutting performance.
     - Take path, expand tool along path with rotation, subtract from stock.
+       - Expanding tool along path complete, rotation needs to be checked. (branch simulation)
+       - Subtraction from stock pending.
     - Path is discretised, perform analysis at each step.
     - Analysis must be possible on multiple linear / angular segments
        - Non-plane aligned arcs / higher order curves will be represented as a collection of line segments.
        - Does the boundary between motions need to be preserved?
+          - No. Paths with similar cutting parameters will be folded.
     - Volume of material removal
     - Cutting speed
     - Performance
@@ -62,8 +66,9 @@
     - Needs model loading & ~~generation~~
     - Needs intersection tests
     - Needs material properties
-    - Top of stock check at Z0
     - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
+    - ~~Top of stock check at Z0~~
+       - ~~Unnecessary.~~
  * Represent workholding, clamps, etc. (for intersection tests)
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
