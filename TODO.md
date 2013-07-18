@@ -8,8 +8,8 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * Implement rotation and translation for nef::polyhedron_t (on branch simulation)
-    - Done, needs test verification.
+ * ~~Implement rotation and translation for nef::polyhedron_t (merged)~~
+    - ~~Done, needs test verification.~~
  * Check for stock intersection for Linear & Rapid movements
     - *How to measure cutting performance?*
     - Define Inputs and Outputs
