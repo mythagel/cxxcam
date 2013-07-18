@@ -76,7 +76,7 @@ int main()
 	broken_binary_fold(begin(steps), end(steps), std::back_inserter(sim_res), 
 	[&s](const path::step& s0, const path::step& s1) -> simulation::step
 	{
-		std::cout << s0 << " -> " << s1 << '\n';
+		std::cerr << s0 << " -> " << s1 << '\n';
 		return simulate_cut(s0, s1, s);
 	});
 

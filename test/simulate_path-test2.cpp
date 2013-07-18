@@ -59,17 +59,18 @@ int main()
 	fold_adjacent(begin(steps), end(steps), std::back_inserter(sim_res), 
 	[&s](const path::step& s0, const path::step& s1) -> simulation::step
 	{
-		std::cout << s0 << " -> " << s1 << '\n';
+		std::cerr << s0 << " -> " << s1 << '\n';
 		return simulate_cut(s0, s1, s);
 	});
 
-	units::volume total;
-	for(auto step : sim_res)
-	{
-		std::cout << step.swarf << "\n";
-		total += step.swarf;
-	}
-	std::cout << "Total: " << total << "\n";
+//	Material removal volume disabled.
+//	units::volume total;
+//	for(auto step : sim_res)
+//	{
+//		std::cout << step.swarf << "\n";
+//		total += step.swarf;
+//	}
+//	std::cout << "Total: " << total << "\n";
 
 	std::ofstream os("simulate_path-test2.off");
 	nef::write_off(os, s.stock.Model);
