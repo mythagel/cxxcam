@@ -24,11 +24,26 @@
 
 #include "Math.h"
 #include <boost/units/cmath.hpp>
+#include <tuple>
 
 namespace cxxcam
 {
 namespace math
 {
+
+auto to_tuple(const point_3& p) -> decltype(std::tie(p.x, p.y, p.z))
+{
+	return std::tie(p.x, p.y, p.z);
+}
+
+bool point_3::operator==(const point_3& p) const
+{
+	return to_tuple(*this) == to_tuple(p);
+}
+bool point_3::operator!=(const point_3& p) const
+{
+	return to_tuple(*this) != to_tuple(p);
+}
 
 vector_3::vector_3(double x, double y, double z, double a)
  : x(x), y(y), z(z), a(a)
