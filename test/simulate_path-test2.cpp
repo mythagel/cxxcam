@@ -28,6 +28,7 @@ int main()
 		Position end;
 		end.X = length{50 * millimeters};
 		end.Z = length{90 * millimeters};
+		end.A = plane_angle{91 * degrees};
 	
 		// Expand path
 		limits::AvailableAxes geometry;
@@ -70,7 +71,7 @@ int main()
 	}
 	std::cout << "Total: " << total << "\n";
 
-	std::ofstream os("simulate_path.off");
+	std::ofstream os("simulate_path-test2.off");
 	nef::write_off(os, s.stock.Model);
 	return 0;
 }

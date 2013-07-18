@@ -33,6 +33,8 @@ path
 math 
 simulation 
 simulate_path 
+simulate_path-test2 
+simulate_path-nintynonmanifold 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()

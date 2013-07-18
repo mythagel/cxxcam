@@ -4,12 +4,29 @@
 #include "Units.h"
 #include "nef/primitives.h"
 #include "nef/io.h"
+#include "nef/explode.h"
 #include <iostream>
 
+#include <algorithm>
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include "fold_adjacent.h"
+
+template<class InputIt, class OutputIt, class BinaryOperation>
+OutputIt broken_binary_fold(InputIt first, InputIt last, OutputIt d_first, BinaryOperation op)
+{
+    if (first == last)
+    	return d_first;
+ 
+    auto acc = *first++;
+    while (++first != last)
+    {
+        auto val = *first;
+        *++d_first = op(val, acc);	// should be acc, val
+        acc = std::move(val);
+    }
+    return ++d_first;
+}
 
 int main()
 {
@@ -28,14 +45,15 @@ int main()
 		Position end;
 		end.X = length{50 * millimeters};
 		end.Z = length{90 * millimeters};
+		end.A = plane_angle{90 * degrees};
 	
 		// Expand path
 		limits::AvailableAxes geometry;
 		steps = expand_linear(start, end, geometry, 1);
 	}
 	
-	for(auto step : steps)
-		std::cout << step << '\n';
+//	for(auto step : steps)
+//		std::cout << step << '\n';
 	
 	// Configure simulation
 	state s;
@@ -55,7 +73,7 @@ int main()
 	}
 	
 	std::vector<simulation::step> sim_res;
-	fold_adjacent(begin(steps), end(steps), std::back_inserter(sim_res), 
+	broken_binary_fold(begin(steps), end(steps), std::back_inserter(sim_res), 
 	[&s](const path::step& s0, const path::step& s1) -> simulation::step
 	{
 		std::cout << s0 << " -> " << s1 << '\n';
@@ -70,8 +88,14 @@ int main()
 	}
 	std::cout << "Total: " << total << "\n";
 
-	std::ofstream os("simulate_path.off");
-	nef::write_off(os, s.stock.Model);
+	auto parts = nef::explode(s.stock.Model);
+	for(size_t i = 0; i < parts.size(); ++i)
+	{
+		std::ostringstream name;
+		name << "simulate_path-nintynonmanifold" << i << ".off";
+		std::ofstream os(name.str());
+		nef::write_off(os, parts[i]);
+	}
 	return 0;
 }
 
