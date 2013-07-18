@@ -27,9 +27,26 @@
 #include <istream>
 #include <ostream>
 #include "cgal.h"
+#include <stdexcept>
 
 namespace nef
 {
+
+polyhedron_t::private_t::private_t()
+{
+}
+polyhedron_t::private_t::private_t(const Nef_polyhedron_3& nef)
+ : nef(nef)
+{
+	regularise();
+}
+
+void polyhedron_t::private_t::regularise()
+{
+	nef = nef.regularization();
+	if(!nef.is_simple())
+		throw std::runtime_error("polyhedron_t: polyhedron is not 2-manifold.");
+}
 
 polyhedron_t make_polyhedron(std::shared_ptr<polyhedron_t::private_t> priv)
 {
