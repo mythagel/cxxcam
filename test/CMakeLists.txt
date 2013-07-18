@@ -23,6 +23,7 @@ nef_sphere_io
 nef_cylinder 
 nef_translate 
 nef_explode 
+nef_nonmanifold 
 model 
 pushpop_state 
 limits 
