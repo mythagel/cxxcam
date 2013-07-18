@@ -98,7 +98,9 @@ double volume(const polyhedron_t& polyhedron)
 	using CGAL::parameters::facet_size;
 	using CGAL::parameters::facet_distance;
 	using CGAL::parameters::cell_radius_edge_ratio;
-	Mesh_criteria criteria(facet_angle = 25, facet_size = 0.15, facet_distance = 0.008, cell_radius_edge_ratio = 3);
+	// facet_size = 0.15, facet_distance = 0.008
+	// TODO these parameters need to be tweaked.
+	Mesh_criteria criteria(facet_angle = 25, facet_size = 1, facet_distance = 0.8, cell_radius_edge_ratio = 3);
 
 	using CGAL::parameters::no_perturb;
 	using CGAL::parameters::no_exude;

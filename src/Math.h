@@ -37,6 +37,9 @@ struct point_3
 	units::length x;
 	units::length y;
 	units::length z;
+	
+	bool operator==(const point_3& p) const;
+	bool operator!=(const point_3& p) const;
 };
 
 typedef boost::math::quaternion<double> quaternion_t;

@@ -63,6 +63,8 @@ static const auto meters = meter;
 static const auto millimeters = boost::units::si::milli * meter;
 static const auto millimeter = millimeters;
 
+static const auto cubic_millimeters = millimeter * millimeter * millimeter;
+
 static const auto inches = boost::units::imperial::inch_base_unit::unit_type{};
 static const auto inch = inches;
 

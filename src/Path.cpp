@@ -23,11 +23,17 @@
  */
 
 #include "Path.h"
+#include <tuple>
 
 namespace cxxcam
 {
 namespace path
 {
+
+auto to_tuple(const step& s) -> decltype(std::tie(s.position, s.orientation))
+{
+	return std::tie(s.position, s.orientation);
+}
 
 static const math::quaternion_t identity{1,0,0,0};
 static const units::plane_angle angular_zero;
@@ -35,6 +41,15 @@ static const units::plane_angle angular_zero;
 step::step()
  : position(), orientation(identity)
 {
+}
+
+bool step::operator==(const step& o) const
+{
+	return to_tuple(*this) == to_tuple(o);
+}
+bool step::operator!=(const step& o) const
+{
+	return to_tuple(*this) != to_tuple(o);
 }
 
 std::ostream& operator<<(std::ostream& os, const step& step)
@@ -47,7 +62,7 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 {
 	/*
 	 * TODO
-	 * Rotations are not correct.
+	 * Rotations need to be validated.
 	 */
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
@@ -110,20 +125,21 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	for(size_t s = 0; s < total_steps; ++s)
 	{
 		auto scale = s / static_cast<double>(total_steps);
-	
-		Position p;
 		
-		p.X = axis_movement.X * scale;
-		p.Y = axis_movement.Y * scale;
-		p.Z = axis_movement.Z * scale;
+		// starting at `start` move a scaled amount towards `end`
+		Position p = start;
+		
+		p.X += axis_movement.X * scale;
+		p.Y += axis_movement.Y * scale;
+		p.Z += axis_movement.Z * scale;
 
-		p.A = axis_movement.A * scale;
-		p.B = axis_movement.B * scale;
-		p.C = axis_movement.C * scale;
+		p.A += axis_movement.A * scale;
+		p.B += axis_movement.B * scale;
+		p.C += axis_movement.C * scale;
 
-		p.U = axis_movement.U * scale;
-		p.V = axis_movement.V * scale;
-		p.W = axis_movement.W * scale;
+		p.U += axis_movement.U * scale;
+		p.V += axis_movement.V * scale;
+		p.W += axis_movement.W * scale;
 		
 		path.push_back(pos2step(p));
 	}

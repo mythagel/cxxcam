@@ -98,5 +98,10 @@ auto Tool::GetLathe() const -> Lathe
 	return m_Lathe;
 }
 
+nef::polyhedron_t Tool::Model() const
+{
+	return m_Model;
+}
+
 }
 

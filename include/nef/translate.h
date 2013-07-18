@@ -16,42 +16,29 @@
  */
 
 /*
- * Path.h
+ * translate.h
  *
- *  Created on: 2013-06-22
+ *  Created on: 2013-07-15
  *      Author: nicholas
  */
 
-#ifndef PATH_H_
-#define PATH_H_
-#include "Position.h"
-#include "Math.h"
-#include "Limits.h"
-#include <vector>
-#include <iosfwd>
+#ifndef NEF_TRANSLATE_H_
+#define NEF_TRANSLATE_H_
+#include "polyhedron.h"
 
-namespace cxxcam
-{
-namespace path
+namespace nef
 {
 
-struct step
-{
-	math::point_3 position;
-	math::quaternion_t orientation;
-	
-	step();
-	
-	bool operator==(const step& o) const;
-	bool operator!=(const step& o) const;
-};
+/*
+ * Create a new polyhedron rotated by the given quaternion.
+ */
+polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double qy, double qz);
 
-std::ostream& operator<<(std::ostream& os, const step& step);
-
-std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
-std::vector<step> expand_arc(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
+/*
+ * Create a new polyhedron translated by the given vector.
+ */
+polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, double z);
 
 }
-}
 
-#endif /* PATH_H_ */
+#endif /* NEF_TRANSLATE_H_ */

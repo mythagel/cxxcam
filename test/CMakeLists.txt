@@ -21,6 +21,7 @@ nef_sphere
 nef_cube_io 
 nef_sphere_io 
 nef_cylinder 
+nef_translate 
 model 
 pushpop_state 
 limits 
@@ -30,6 +31,7 @@ inverse_time
 path 
 math 
 simulation 
+simulate_path 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()

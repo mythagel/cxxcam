@@ -90,6 +90,8 @@ public:
 	Type ToolType() const;
 	Mill GetMill() const;
 	Lathe GetLathe() const;
+	
+	nef::polyhedron_t Model() const;
 };
 
 }
