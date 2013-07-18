@@ -46,7 +46,7 @@ step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 							{length_mm(p1.x).value(), length_mm(p1.y).value(), length_mm(p1.z).value()} } };
 	
 	auto tool_path = nef::glide(tool, path);
-	auto material_removed = s.stock.Model * tool_path;
+	//auto material_removed = s.stock.Model * tool_path;
 	
 	/*
 	 * Takes far too long.
