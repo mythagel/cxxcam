@@ -22,6 +22,7 @@ nef_cube_io
 nef_sphere_io 
 nef_cylinder 
 nef_translate 
+nef_explode 
 model 
 pushpop_state 
 limits 
