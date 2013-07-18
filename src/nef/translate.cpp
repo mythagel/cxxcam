@@ -34,8 +34,6 @@ namespace nef
 
 polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double qy, double qz)
 {
-	auto nef = get_priv(polyhedron)->nef;
-
 	// From http://www.cs.princeton.edu/~gewang/projects/darth/stuff/quat_faq.html#Q54
 	auto xx = qx*qx;
 	auto xy = qx*qy;
@@ -67,13 +65,14 @@ polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double
 	mat[15] = 1;
 
 	Aff_transformation_3 rotate
-			(
-				mat[0], mat[4], mat[8],
-				mat[1], mat[5], mat[9],
-				mat[2], mat[6], mat[10],
-				mat[15]
-			);
+		(
+			mat[0], mat[4], mat[8],
+			mat[1], mat[5], mat[9],
+			mat[2], mat[6], mat[10],
+			mat[15]
+		);
 
+	auto nef = get_priv(polyhedron)->nef;
 	nef.transform(rotate);
 	
 	auto priv = std::make_shared<polyhedron_t::private_t>(nef);
@@ -82,11 +81,10 @@ polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double
 
 polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, double z)
 {
-	auto nef = get_priv(polyhedron)->nef;
-	
 	typedef typename Nef_polyhedron_3::Vector_3 Vector_3;
 	Aff_transformation_3 translate(CGAL::TRANSLATION, Vector_3(x, y, z));
-	
+
+	auto nef = get_priv(polyhedron)->nef;
 	nef.transform(translate);
 	
 	auto priv = std::make_shared<polyhedron_t::private_t>(nef);
