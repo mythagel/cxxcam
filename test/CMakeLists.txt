@@ -31,6 +31,7 @@ inverse_time
 path 
 math 
 simulation 
+simulate_path 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()

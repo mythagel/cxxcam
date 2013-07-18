@@ -7,8 +7,9 @@ std::ostream& operator<<(std::ostream& os, const cxxcam::math::vector_3& r)
 	return os;
 }
 
-int main()
+void simple()
 {
+	std::cout << "simple\n";
 	using namespace cxxcam;
 	using namespace cxxcam::path;
 	using namespace cxxcam::units;
@@ -31,6 +32,51 @@ int main()
 		std::cout << step << '\n';
 		std::cout << normalise(vector_3(step.orientation)) << '\n';
 	}
+}
+
+void check_start_end()
+{
+	std::cout << "check_start_end\n";
+	using namespace cxxcam;
+	using namespace cxxcam::path;
+	using namespace cxxcam::units;
+	using namespace cxxcam::math;
+	
+	Position start;
+	start.Z = length{90 * millimeters};
+
+	Position end;
+	end.X = length{50 * millimeters};
+	end.Z = length{90 * millimeters};
+	
+	limits::AvailableAxes geometry;
+	
+	std::cout << start << " -> " << end << '\n';
+	
+	auto steps = expand_linear(start, end, geometry, 1);
+	
+	step s0;
+	s0.position.z = length{90 * millimeters};
+	
+	step s1;
+	s1.position.x = length{50 * millimeters};
+	s1.position.z = length{90 * millimeters};
+	
+	std::cout << "Expected: " << s0 << " Actual: " << steps.front() << '\n';
+	std::cout << "Expected: " << s1 << " Actual: " << steps.back() << '\n';
+	
+	step as0 = steps.front();
+	step as1 = steps.back();
+	if(as0 != s0)
+		throw std::logic_error("Start position is incorrect");
+	if(as1 != s1)
+		throw std::logic_error("End position is incorrect");
+}
+
+int main()
+{
+	simple();
+	check_start_end();
 	
 	return 0;
 }

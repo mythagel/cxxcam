@@ -26,10 +26,6 @@
 #include "nef/translate.h"
 #include "nef/ops.h"
 
-// TESTING CRAP
-#include "nef/io.h"
-#include <iostream>
-
 namespace cxxcam
 {
 namespace simulation
@@ -38,34 +34,30 @@ namespace simulation
 step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 {
 	using units::length_mm;
+	step sim_res;
 	
-	auto tool = s.tool.Model();
 	const auto& o0 = s0.orientation;
 	const auto& p0 = s0.position;
-	
-	const auto& o1 = s1.orientation;
 	const auto& p1 = s1.position;
 	
-	auto t0 = nef::translate(
-				nef::rotate(tool, o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4()), 
-				length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value());
-//	auto t1 = nef::translate(nef::rotate(tool, o1.R_component_1(), o1.R_component_2(), o1.R_component_3(), o1.R_component_4()), p1.x, p1.y, p1.z);
+	auto tool = nef::rotate(s.tool.Model(), o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4());
 
 	nef::polyline_t path{ { {length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value()}, 
 							{length_mm(p1.x).value(), length_mm(p1.y).value(), length_mm(p1.z).value()} } };
 	
-	auto tool_path = nef::glide(t0, path);
-	
-	auto x = s.stock.Model + tool_path;
-	nef::write_off(std::cout, x);
-	
+	auto tool_path = nef::glide(tool, path);
 	auto material_removed = s.stock.Model * tool_path;
+	
+	/*
+	 * Takes far too long.
+	 * Instead of calculating volume on each step (which is inaccurate and slow)
+	 * accumulate the removed material and calculate it in one go at the end.
+	 */
+	//sim_res.swarf = units::volume( nef::volume(material_removed) * units::cubic_millimeters );
+	
 	s.stock.Model -= tool_path;
 	
-	// TESTING CRAP
-	//nef::write_off(std::cout, tool_path);
-	
-	return {};
+	return sim_res;
 }
 
 }

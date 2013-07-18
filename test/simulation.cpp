@@ -36,6 +36,8 @@ int main()
 	
 	auto step = simulate_cut(s0, s1, s);
 	
+	std::cout << step.swarf << "\n";
+	
 	nef::write_off(std::cout, s.stock.Model);
 	return 0;
 }

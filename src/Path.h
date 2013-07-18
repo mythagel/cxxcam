@@ -41,6 +41,9 @@ struct step
 	math::quaternion_t orientation;
 	
 	step();
+	
+	bool operator==(const step& o) const;
+	bool operator!=(const step& o) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const step& step);
