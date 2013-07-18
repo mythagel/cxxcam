@@ -33,7 +33,7 @@ std::vector<polyhedron_t> explode(const polyhedron_t& poly)
 {
 	auto priv = get_priv(poly);
 	if(!priv->nef.is_simple())
-		throw std::runtime_error("polyhedron is not 2-manifold.");
+		throw std::runtime_error("nef::explode: polyhedron is not 2-manifold.");
 
 	Polyhedron_3 P;
 	priv->nef.convert_to_polyhedron(P);
