@@ -62,3 +62,4 @@
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
+ * Split tests (one per source file)
