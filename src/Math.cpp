@@ -35,7 +35,12 @@ auto to_tuple(const point_3& p) -> decltype(std::tie(p.x, p.y, p.z))
 {
 	return std::tie(p.x, p.y, p.z);
 }
+auto to_tuple(const vector_3& v) -> decltype(std::tie(v.x, v.y, v.z, v.a))
+{
+	return std::tie(v.x, v.y, v.z, v.a);
+}
 
+// TODO these are meaningless without tolerance.
 bool point_3::operator==(const point_3& p) const
 {
 	return to_tuple(*this) == to_tuple(p);
@@ -65,6 +70,16 @@ vector_3::vector_3(const quaternion_t& q)
 		z = q.R_component_4() / scale;
 	}
 	a = (acos(q.R_component_1()) * 2.0) * 57.2957795;
+}
+
+// TODO these are meaningless without tolerance.
+bool vector_3::operator==(const vector_3& v) const
+{
+	return to_tuple(*this) == to_tuple(v);
+}
+bool vector_3::operator!=(const vector_3& v) const
+{
+	return to_tuple(*this) != to_tuple(v);
 }
 
 vector_3 normalise(const vector_3& v)

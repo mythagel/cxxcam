@@ -2,6 +2,7 @@
 #include "Position.h"
 #include <iostream>
 #include <stdexcept>
+#include "die_if.h"
 
 using namespace cxxcam;
 using namespace cxxcam::limits;
@@ -25,8 +26,7 @@ void test_rapids()
 	auto duration = r.Duration(begin, end);
 	std::cout << "Rapid time: " << duration << "\n";
 	
-	if(duration != units::time{60 * units::second})
-		throw std::runtime_error("Incorrect duration");
+	die_if(duration != units::time{60 * units::second}, "Incorrect duration");
 }
 
 void test_feedrate()

@@ -1,6 +1,6 @@
 #include "Math.h"
 #include <iostream>
-#include <cassert>
+#include "die_if.h"
 #include <boost/units/cmath.hpp>
 
 std::ostream& operator<<(std::ostream& os, const cxxcam::math::vector_3& r)
@@ -33,13 +33,9 @@ int main()
 	const quaternion_t y180q{0,0,1,0};
 	const quaternion_t z180q{0,0,0,1};
 
-	auto x180v = vector_3(x180q);
-	auto y180v = vector_3(y180q);
-	auto z180v = vector_3(z180q);
-	assert(x180v == vector_3(1, 0, 0, 180));
-	assert(y180v == vector_3(0, 1, 0, 180));
-	assert(z180v == vector_3(0, 0, 1, 180));
-	assert(vector_3(quaternion_t{1,0,0,0}) == vector_3(0, 0, 0, 0));
+	const auto x180v = vector_3(x180q);
+	const auto y180v = vector_3(y180q);
+	const auto z180v = vector_3(z180q);
 
 	std::cout << "identity: quaternion"<< quaternion_t{1,0,0,0} << '\n';
 	std::cout << "180deg around X: quaternion" << x180q << '\n';
@@ -48,10 +44,16 @@ int main()
 	std::cout << '\n';
 	
 	std::cout << "identity: vector"<< vector_3(quaternion_t{1,0,0,0}) << '\n';
-	std::cout << "180deg around X: vector" << x180v << '\n';
+	std::cout << "180deg around X: vector" << x180v << vector_3(1, 0, 0, 180) << '\n';
 	std::cout << "180deg around Y: vector" << y180v << '\n';
 	std::cout << "180deg around Z: vector" << z180v << '\n';
 	std::cout << '\n';
+
+	// TODO these are meaningless without tolerance.
+//	die_if(x180v != vector_3(1, 0, 0, 180), "x180v");
+//	die_if(y180v != vector_3(0, 1, 0, 180), "y180v");
+//	die_if(z180v != vector_3(0, 0, 1, 180), "z180v");
+//	die_if(vector_3(quaternion_t{1,0,0,0}) != vector_3(0, 0, 0, 0), "identity");
 
 	auto x = plane_angle{(180 * degrees) / 2};
 	std::cout << "cos 180/2: " << cos(x.value()) << '\n';
@@ -68,7 +70,7 @@ int main()
 	std::cout << '\n';
 
 	auto q = axis2quat(1, 0, 0, plane_angle{180 * degrees});
-//	assert(q == quaternion_t{0,1,0,0});
+//	die_if(q != quaternion_t{0,1,0,0});
 	
 	auto v = vector_3(q);
 	std::cout << "x180deg quat: " << q << " vec: " << v << '\n';

@@ -1,5 +1,6 @@
 #include "Path.h"
 #include <iostream>
+#include "die_if.h"
 
 std::ostream& operator<<(std::ostream& os, const cxxcam::math::vector_3& r)
 {
@@ -67,10 +68,8 @@ void check_start_end()
 	
 	step as0 = steps.front();
 	step as1 = steps.back();
-	if(as0 != s0)
-		throw std::logic_error("Start position is incorrect");
-	if(as1 != s1)
-		throw std::logic_error("End position is incorrect");
+	die_if(as0 != s0, "Start position is incorrect");
+	die_if(as1 != s1, "End position is incorrect");
 }
 
 int main()
