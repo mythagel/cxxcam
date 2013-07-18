@@ -72,6 +72,35 @@ void check_start_end()
 	die_if(as1 != s1, "End position is incorrect");
 }
 
+void nintydegrees()
+{
+	std::cout << "nintydegrees\n";
+	using namespace cxxcam;
+	using namespace cxxcam::path;
+	using namespace cxxcam::units;
+	using namespace cxxcam::math;
+	
+	Position start;
+	start.Z = length{90 * millimeters};
+
+	Position end;
+	end.X = length{50 * millimeters};
+	end.Z = length{90 * millimeters};
+	end.A = plane_angle{90 * degrees};
+	
+	limits::AvailableAxes geometry;
+	
+	std::cout << start << " -> " << end << '\n';
+	
+	auto steps = expand_linear(start, end, geometry, 1);
+	
+	for(const auto& step : steps)
+	{
+		std::cout << step << '\n';
+		std::cout << normalise(vector_3(step.orientation)) << '\n';
+	}
+}
+
 void nintyonedegrees()
 {
 	std::cout << "nintyonedegrees\n";
@@ -105,6 +134,7 @@ int main()
 {
 	simple();
 	check_start_end();
+	nintydegrees();
 	nintyonedegrees();
 	
 	return 0;
