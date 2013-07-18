@@ -46,9 +46,8 @@ void polyhedron_t::private_t::regularise()
 	nef = nef.regularization();
 	if(!nef.is_simple())
 		throw std::runtime_error("polyhedron_t: polyhedron is not 2-manifold.");
-	if(!nef.is_valid())
+	if(!nef.is_valid(false, 3))
 		throw std::runtime_error("polyhedron_t: polyhedron is not valid.");
-
 }
 
 polyhedron_t make_polyhedron(std::shared_ptr<polyhedron_t::private_t> priv)
