@@ -22,7 +22,7 @@ OutputIt binary_fold(InputIt first, InputIt last, OutputIt d_first, BinaryOperat
     while (++first != last)
     {
         auto val = *first;
-        *++d_first = op(val, acc);
+        *++d_first = op(acc, val);
         acc = std::move(val);
     }
     return ++d_first;
@@ -52,8 +52,8 @@ void test1()
 		steps = expand_linear(start, end, geometry, 1);
 	}
 	
-	for(auto step : steps)
-		std::cout << step << '\n';
+//	for(auto step : steps)
+//		std::cout << step << '\n';
 	
 	// Configure simulation
 	state s;
@@ -76,6 +76,7 @@ void test1()
 	binary_fold(begin(steps), end(steps), std::back_inserter(sim_res), 
 	[&s](const path::step& s0, const path::step& s1) -> simulation::step
 	{
+		std::cout << s0 << " -> " << s1 << '\n';
 		return simulate_cut(s0, s1, s);
 	});
 
@@ -116,8 +117,8 @@ void test2()
 		steps = expand_linear(start, end, geometry, 1);
 	}
 	
-	for(auto step : steps)
-		std::cout << step << '\n';
+//	for(auto step : steps)
+//		std::cout << step << '\n';
 	
 	// Configure simulation
 	state s;
@@ -140,6 +141,7 @@ void test2()
 	binary_fold(begin(steps), end(steps), std::back_inserter(sim_res), 
 	[&s](const path::step& s0, const path::step& s1) -> simulation::step
 	{
+		std::cout << s0 << " -> " << s1 << '\n';
 		return simulate_cut(s0, s1, s);
 	});
 
@@ -180,8 +182,8 @@ void nintynonmanifold()
 		steps = expand_linear(start, end, geometry, 1);
 	}
 	
-	for(auto step : steps)
-		std::cout << step << '\n';
+//	for(auto step : steps)
+//		std::cout << step << '\n';
 	
 	// Configure simulation
 	state s;
@@ -204,6 +206,7 @@ void nintynonmanifold()
 	binary_fold(begin(steps), end(steps), std::back_inserter(sim_res), 
 	[&s](const path::step& s0, const path::step& s1) -> simulation::step
 	{
+		std::cout << s0 << " -> " << s1 << '\n';
 		return simulate_cut(s0, s1, s);
 	});
 
@@ -230,7 +233,7 @@ int main()
 	test1();
 	test2();
 	// TODO
-	//nintynonmanifold();
+	nintynonmanifold();
 
 	return 0;
 }
