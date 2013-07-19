@@ -36,6 +36,7 @@ simulation
 simulate_path 
 simulate_path-test2 
 simulate_path-nintynonmanifold 
+fold_adjacent 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()
