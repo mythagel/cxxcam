@@ -35,13 +35,25 @@ int main()
 		write_off(os, s1);
 	}
 	
+	/*
+	 * Unable to reproduce non-manifold error caused by broken fold
+	 * operation. Will need to expand this test if it occurs again.
+	 */
 	{
+		auto s2 = stock;
+		{
+			auto t0 = rotate(tool, 0.718126, 0.695913, 0, 0);
+			polyline_t path{ { {49, 0, 90}, {48, 0, 90} } };
+			auto tool_path = glide(t0, path);
+			
+			s2 -= tool_path;
+		}
+	
 		auto t0 = rotate(tool, 0.707107, 0.707107, 0, 0);
-
 		polyline_t path{ { {50, 0, 90}, {49, 0, 90} } };
 		auto tool_path = glide(t0, path);
 		
-		auto s2 = stock - tool_path;
+		s2 -= tool_path;
 		
 		std::ofstream os("nef_nonmanifold-s2.off");
 		write_off(os, s2);

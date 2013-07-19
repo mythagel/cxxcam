@@ -11,22 +11,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-
-template<class InputIt, class OutputIt, class BinaryOperation>
-OutputIt broken_binary_fold(InputIt first, InputIt last, OutputIt d_first, BinaryOperation op)
-{
-    if (first == last)
-    	return d_first;
- 
-    auto acc = *first++;
-    while (++first != last)
-    {
-        auto val = *first;
-        *++d_first = op(val, acc);	// should be acc, val
-        acc = std::move(val);
-    }
-    return ++d_first;
-}
+#include "fold_adjacent.h"
 
 int main()
 {
@@ -73,7 +58,7 @@ int main()
 	}
 	
 	std::vector<simulation::step> sim_res;
-	broken_binary_fold(begin(steps), end(steps), std::back_inserter(sim_res), 
+	fold_adjacent(begin(steps), end(steps), std::back_inserter(sim_res), 
 	[&s](const path::step& s0, const path::step& s1) -> simulation::step
 	{
 		std::cerr << s0 << " -> " << s1 << '\n';
