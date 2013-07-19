@@ -33,8 +33,13 @@ namespace simulation
 
 step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 {
+	if(s.stock.Model.empty())
+		return {s0, s1, {}};
+	
 	using units::length_mm;
 	step sim_res;
+	sim_res.s0 = s0;
+	sim_res.s1 = s1;
 	
 	const auto& o0 = s0.orientation;
 	const auto& p0 = s0.position;
