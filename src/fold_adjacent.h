@@ -32,7 +32,7 @@ OutputIt fold_adjacent(InputIt first, InputIt last, OutputIt d_first, BinaryOper
 	if (first == last)
 		return d_first;
 
-	auto acc = *first++;
+	auto acc = *first;
 	while (++first != last)
 	{
 		auto val = *first;
