@@ -49,8 +49,6 @@
     - Needs intersection tests
     - Needs material properties
     - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
- * Complete Spindle class
-    - Torque is not calculated yet.
  * Represent workholding, clamps, etc. (for intersection tests)
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
@@ -58,8 +56,31 @@
  * Ability to explode stock into individual objects when cut
     - nef::explode
     - How should user specify which part remains?
+ * Path expansion
+    - Validate rotations
+       - Correct axes
+       - Correct direction
+    - UVW mapped into cartesian space?
+    - Arc expansion
+       - *Implement*
+ * Spindle class
+    - Torque interpolation
+ * nef
+    - Meshing 
+       - Current meshing parameters are too computationally expensive.
+    - Geometry
+       - Validate primitive geometry
+       - Correcting narrowing warnings.
+ * Global Machine accuracy
+    - Use when generating tool and stock models.
+ * Math
+    - Correct faulty equality ops for math::point_3 and math::vector_3.
+ * Simulation
+    - Ensure feed rate passed to simulation is normalised.
+
 
 ## Code ##
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
  * Split tests (one per source file)
+ * Improve Arc code (remove duplication)
