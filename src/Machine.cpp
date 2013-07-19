@@ -40,6 +40,9 @@
 #include "Error.h"
 #include "make_unique.h"
 
+#include "Simulation.h"
+#include "fold_adjacent.h"
+
 namespace cxxcam
 {
 
@@ -1326,15 +1329,19 @@ void Machine::Rapid(const std::vector<Axis>& axes)
 
 void Machine::Linear(const std::vector<Axis>& axes)
 {
-	auto start = m_Private->m_State.m_Current;
+	auto linear_start = m_Private->m_State.m_Current;
 
 	auto& m_State = m_Private->m_State;
 	auto& m_Axes = m_Private->m_Axes;
+	auto& m_Stock = m_Private->m_Stock;
+	auto& m_FeedRateLimit = m_Private->m_FeedRateLimit;
 
 	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
 		throw error("Feedrate is 0.0");
+	if(m_State.m_CurrentTool == 0)
+		throw error("No tool loaded.");
 
 	Line line;
 
@@ -1359,14 +1366,28 @@ void Machine::Linear(const std::vector<Axis>& axes)
 
 	m_Private->m_GCode.AddLine(line);
 	
-	auto end = m_Private->m_State.m_Current;
+	auto linear_end = m_Private->m_State.m_Current;
 	// line from start to end expand tool along path and subtract tool path from stock.
-	auto path = path::expand_linear(start, end, m_Axes);
+	auto path = path::expand_linear(linear_start, linear_end, m_Axes);
+	
+	simulation::state state;
+	state.stock = m_Stock;
+	state.tool = GetTool();
+	state.FeedRate;	// TODO normalised.
+	state.SpindleSpeed = m_State.m_SpindleSpeed;
+	state.FeedRateLimit = m_FeedRateLimit;
+	
+	std::vector<simulation::step> sim_res;
+	fold_adjacent(begin(path), end(path), std::back_inserter(sim_res), 
+		[&state](const path::step& s0, const path::step& s1) -> simulation::step
+		{
+			return simulation::simulate_cut(s0, s1, state);
+		});
 }
 
 void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& center, unsigned int turns)
 {
-	auto start = m_Private->m_State.m_Current;
+	auto angular_start = m_Private->m_State.m_Current;
 	
 	auto& m_State = m_Private->m_State;
 	auto& m_Axes = m_Private->m_Axes;
@@ -1375,6 +1396,8 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 		throw error("Spindle is stopped");
 	if(m_State.m_FeedRate == 0.0)
 		throw error("Feedrate is 0.0");
+	if(m_State.m_CurrentTool == 0)
+		throw error("No tool loaded.");
 	
 	Line line;
 	switch(dir)
@@ -1539,9 +1562,9 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 
 	m_Private->m_GCode.AddLine(line);
 	
-	auto end = m_Private->m_State.m_Current;
+	auto angular_end = m_Private->m_State.m_Current;
 	// arc from start to end expand tool along path.
-	auto path = path::expand_arc(start, end, m_Axes);
+	auto path = path::expand_arc(angular_start, angular_end, m_Axes);
 }
 
 auto Machine::Generate() const -> std::vector<block_t>
