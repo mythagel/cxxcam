@@ -29,18 +29,28 @@
 namespace nef
 {
 
+namespace primitives
+{
+struct point_3
+{
+	double x;
+	double y;
+	double z;
+};
+}
+
 /*
  * x, y, z - Center
  * r - Radius
  * slices - number of segments
  */
-polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t slices);
+polyhedron_t make_sphere(const primitives::point_3& center, double r, std::size_t slices);
 
 /*
  * x1, y1, z1 - First corner
  * x2, y2, z2 - Opposite corner
  */
-polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2);
+polyhedron_t make_box(const primitives::point_3& p1, const primitives::point_3& p2);
 
 /*
  * x1, y1, z1 - Top center
@@ -49,7 +59,7 @@ polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, dou
  * bottom_radius - Radius at bottom
  * slices - number of segments
  */
-polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices);
+polyhedron_t make_cone(const primitives::point_3& top_center, const primitives::point_3& bottom_center, double top_radius, double bottom_radius, std::size_t slices);
 
 }
 

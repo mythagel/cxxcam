@@ -10,8 +10,8 @@ using namespace nef;
 
 void simple()
 {
-	auto x1 = make_box(0, 0, 0, 1, 1, 1);
-	auto x2 = make_box(1.5, 1.5, 1.5, 2, 2, 2);
+	auto x1 = make_box({0, 0, 0}, {1, 1, 1});
+	auto x2 = make_box({1.5, 1.5, 1.5}, {2, 2, 2});
 	auto x = x1 + x2;
 	
 	auto parts = explode(x);
@@ -26,8 +26,8 @@ void simple()
 
 void nonmanifold()
 {
-	auto x1 = make_box(0, 0, 0, 1, 1, 1);
-	auto x2 = make_box(1, 1, 1, 2, 2, 2);
+	auto x1 = make_box({0, 0, 0}, {1, 1, 1});
+	auto x2 = make_box({1, 1, 1}, {2, 2, 2});
 	auto x = x1 + x2;
 	
 	auto parts = explode(x);

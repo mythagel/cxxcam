@@ -18,7 +18,7 @@ int main()
 	s1.position.z = length{90 * millimeters};
 	
 	state s;
-	s.stock.Model = nef::make_box(0, 0, 0, 50, 50, 100);
+	s.stock.Model = nef::make_box( {0, 0, 0}, {50, 50, 100});
 	
 	{
 		auto end_mill = Tool::Mill{};

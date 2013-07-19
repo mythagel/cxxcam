@@ -37,13 +37,13 @@ nef::polyhedron_t make_mill_tool(const Tool::Mill& em)
 	using namespace nef;
 
 	// TODO determine slices based on height under arc + accuracy.
-	auto shank = make_cone(0, 0, em.length, 0, 0, em.cutting_length, em.shank_diameter, em.shank_diameter, 64);
+	auto shank = make_cone( {0, 0, em.length}, {0, 0, em.cutting_length}, em.shank_diameter, em.shank_diameter, 64);
 	
 	switch(em.type)
 	{
 		case Tool::Mill::Type::End:
 		{
-			auto flutes = make_cone(0, 0, em.cutting_length, 0, 0, 0, em.mill_diameter, em.mill_diameter, 64);
+			auto flutes = make_cone( {0, 0, em.cutting_length}, {0, 0, 0}, em.mill_diameter, em.mill_diameter, 64);
 			return shank + flutes;
 		}
 		default:

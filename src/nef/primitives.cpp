@@ -31,12 +31,12 @@
 namespace nef
 {
 
-polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t slices)
+polyhedron_t make_sphere(const primitives::point_3& center, double r, std::size_t slices)
 {
 	using namespace dolfin;
 	
 	Polyhedron_3 P;
-	make_sphere(Sphere(Point(x, y, z), r, slices), P);
+	make_sphere(Sphere(Point(center.x, center.y, center.z), r, slices), P);
 	assert(P.is_valid());
 	assert(P.is_closed());
 
@@ -44,12 +44,12 @@ polyhedron_t make_sphere(double x, double y, double z, double r, std::size_t sli
 	return make_polyhedron( std::move(priv) );
 }
 
-polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, double z2)
+polyhedron_t make_box(const primitives::point_3& p1, const primitives::point_3& p2)
 {
 	using namespace dolfin;
 	
 	Polyhedron_3 P;
-	make_box(Box(x1, y1, z1, x2, y2, z2), P);
+	make_box(Box(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z), P);
 	assert(P.is_valid());
 	assert(P.is_closed());
 
@@ -57,12 +57,12 @@ polyhedron_t make_box(double x1, double y1, double z1, double x2, double y2, dou
 	return make_polyhedron( std::move(priv) );
 }
 
-polyhedron_t make_cone(double x1, double y1, double z1, double x2, double y2, double z2, double top_radius, double bottom_radius, std::size_t slices)
+polyhedron_t make_cone(const primitives::point_3& top_center, const primitives::point_3& bottom_center, double top_radius, double bottom_radius, std::size_t slices)
 {
 	using namespace dolfin;
 	
 	Polyhedron_3 P;
-	make_cone(Cone(Point(x1, y1, z1), Point(x2, y2, z2), top_radius, bottom_radius, slices), P);
+	make_cone(Cone(Point(top_center.x, top_center.y, top_center.z), Point(bottom_center.x, bottom_center.y, bottom_center.z), top_radius, bottom_radius, slices), P);
 	assert(P.is_valid());
 	assert(P.is_closed());
 
