@@ -154,6 +154,11 @@ bool polyhedron_t::operator>=(const polyhedron_t& poly) const
 	return priv->nef >= poly.priv->nef;
 }
 
+bool polyhedron_t::empty() const
+{
+	return priv->nef.is_empty();
+}
+
 polyhedron_t::~polyhedron_t()
 {
 }

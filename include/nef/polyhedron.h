@@ -75,6 +75,8 @@ public:
 	bool operator<=(const polyhedron_t& poly) const;
 	bool operator>=(const polyhedron_t& poly) const;
 	
+	bool empty() const;
+	
 	~polyhedron_t();
 };
 
