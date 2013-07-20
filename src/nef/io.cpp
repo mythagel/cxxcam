@@ -88,7 +88,7 @@ void write_off(std::ostream& os, const polyhedron_t& poly)
 	}
 	else
 	{
-		throw std::runtime_error("polyhedron is not 2-manifold.");
+		throw std::runtime_error("write_off: polyhedron is not 2-manifold.");
 	}
 }
 
