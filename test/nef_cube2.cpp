@@ -12,6 +12,11 @@ int main()
 	{
 		auto x1 = make_box({0, 0, 0}, {1, 1, 1});
 		auto x2 = make_box({1, 1, 1}, {2, 2, 2});
+		
+		/*
+		 * Although the shared point is an expected non-manifold situation,
+		 * some solution to resolve this situation needs to be developed.
+		 */
 		auto x = x1 + x2;
 		write_off(std::cout, x);
 	}
