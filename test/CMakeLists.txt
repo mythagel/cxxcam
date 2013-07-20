@@ -24,6 +24,7 @@ nef_cylinder
 nef_translate 
 nef_explode 
 nef_nonmanifold 
+nef_validate_rotations 
 model 
 pushpop_state 
 limits 
