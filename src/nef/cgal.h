@@ -28,8 +28,19 @@
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/Polyhedron_3.h>
 
+#define CXXCAM_FAST 1
+//#define CXXCAM_ACCURATE 1
+
+#if CXXCAM_FAST
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/Lazy_exact_nt.h>
+#include <CGAL/Gmpq.h>
+typedef CGAL::Simple_cartesian<CGAL::Lazy_exact_nt<CGAL::Gmpq> > Nef_Kernel;
+
+#elif CXXCAM_ACCURATE
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 typedef CGAL::Exact_predicates_exact_constructions_kernel Nef_Kernel;
+#endif
 
 typedef CGAL::Nef_polyhedron_3<Nef_Kernel> Nef_polyhedron_3;
 typedef CGAL::Polyhedron_3<Nef_Kernel> Polyhedron_3;
