@@ -41,7 +41,7 @@ std::vector<polyhedron_t> explode(const polyhedron_t& poly)
 	std::vector<Polyhedron_3> polyhedra;
 
 	typedef std::back_insert_iterator<std::vector<Polyhedron_3> > OutputIterator;
-	Explode_polyhedron<Polyhedron_3, Exact_Kernel, OutputIterator> Explode;
+	Explode_polyhedron<Polyhedron_3, typename Polyhedron_3::Traits, OutputIterator> Explode;
 	Explode.run(P, std::back_inserter(polyhedra));
 	
 	std::vector<polyhedron_t> exploded;

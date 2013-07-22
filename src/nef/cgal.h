@@ -27,12 +27,12 @@
 
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/Polyhedron_3.h>
-#include <CGAL/IO/Nef_polyhedron_iostream_3.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-typedef CGAL::Exact_predicates_exact_constructions_kernel Exact_Kernel;
-typedef CGAL::Nef_polyhedron_3<Exact_Kernel> Nef_polyhedron_3;
-typedef CGAL::Polyhedron_3<Exact_Kernel> Polyhedron_3;
-typedef Exact_Kernel::Point_3 Point_3;
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+typedef CGAL::Exact_predicates_exact_constructions_kernel Nef_Kernel;
+
+typedef CGAL::Nef_polyhedron_3<Nef_Kernel> Nef_polyhedron_3;
+typedef CGAL::Polyhedron_3<Nef_Kernel> Polyhedron_3;
+typedef Nef_Kernel::Point_3 Point_3;
 
 #endif /* NEF_CGAL_H_ */

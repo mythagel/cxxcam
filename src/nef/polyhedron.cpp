@@ -27,6 +27,7 @@
 #include <istream>
 #include <ostream>
 #include "cgal.h"
+#include <CGAL/IO/Nef_polyhedron_iostream_3.h>
 #include <stdexcept>
 
 namespace nef

@@ -83,9 +83,9 @@ double volume(const polyhedron_t& polyhedron)
 {
 	Mesh_polyhedron_3 PK;
 	{
-		typedef CGAL::Mesh_polyhedron_3<Exact_Kernel>::type Exact_Mesh_Polyhedron_3;
+		typedef CGAL::Mesh_polyhedron_3<Nef_Kernel>::type Nef_Mesh_Polyhedron_3;
 	
-		Exact_Mesh_Polyhedron_3 EP;
+		Nef_Mesh_Polyhedron_3 EP;
 		get_priv(polyhedron)->nef.convert_to_polyhedron(EP);
 		copy_to(EP, PK);
 	}
