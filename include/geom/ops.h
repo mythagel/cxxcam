@@ -16,22 +16,34 @@
  */
 
 /*
- * explode.h
+ * ops.h
  *
- *  Created on: 2013-06-25
+ *  Created on: 06/05/2013
  *      Author: nicholas
  */
 
-#ifndef NEF_EXPLODE_H_
-#define NEF_EXPLODE_H_
+#ifndef GEOM_OPS_H_
+#define GEOM_OPS_H_
 #include "polyhedron.h"
 #include <vector>
 
-namespace nef
+namespace geom
 {
 
-std::vector<polyhedron_t> explode(const polyhedron_t& poly);
+struct polyline_t
+{
+	struct point
+	{
+		double x;
+		double y;
+		double z;
+	};
+	std::vector<point> line;
+};
+
+polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path);
+double volume(const polyhedron_t& polyhedron);
 
 }
 
-#endif /* NEF_EXPLODE_H_ */
+#endif /* GEOM_OPS_H_ */

@@ -2,8 +2,8 @@
 #include "Simulation.h"
 
 #include "Units.h"
-#include "nef/primitives.h"
-#include "nef/io.h"
+#include "geom/primitives.h"
+#include "geom/io.h"
 #include <iostream>
 
 #include <vector>
@@ -39,7 +39,7 @@ int main()
 	
 	// Configure simulation
 	state s;
-	s.stock.Model = nef::make_box({0, 0, 0}, {50, 50, 100});
+	s.stock.Model = geom::make_box({0, 0, 0}, {50, 50, 100});
 	{
 		auto end_mill = Tool::Mill{};
 		end_mill.type = Tool::Mill::Type::End;
@@ -71,7 +71,7 @@ int main()
 	std::cout << "Total: " << total << "\n";
 
 	std::ofstream os("simulate_path.off");
-	nef::write_off(os, s.stock.Model);
+	geom::write_off(os, s.stock.Model);
 	return 0;
 }
 

@@ -22,14 +22,14 @@
  *      Author: nicholas
  */
 
-#ifndef NEF_POLYHEDRON_H_
-#define NEF_POLYHEDRON_H_
+#ifndef GEOM_POLYHEDRON_H_
+#define GEOM_POLYHEDRON_H_
 #include <iosfwd>
 #include <memory>
 
 #include <vector>
 
-namespace nef
+namespace geom
 {
 
 /*
@@ -85,4 +85,4 @@ std::istream& operator>>(std::istream&, polyhedron_t&);
 
 }
 
-#endif /* NEF_POLYHEDRON_H_ */
+#endif /* GEOM_POLYHEDRON_H_ */

@@ -25,7 +25,7 @@
 #ifndef TOOL_H_
 #define TOOL_H_
 #include <string>
-#include "nef/polyhedron.h"
+#include "geom/polyhedron.h"
 
 namespace cxxcam
 {
@@ -79,7 +79,7 @@ private:
 		Mill m_Mill;
 		Lathe m_Lathe;
 	};
-	nef::polyhedron_t m_Model;
+	geom::polyhedron_t m_Model;
 public:
 	Tool();
 	
@@ -91,7 +91,7 @@ public:
 	Mill GetMill() const;
 	Lathe GetLathe() const;
 	
-	nef::polyhedron_t Model() const;
+	geom::polyhedron_t Model() const;
 };
 
 }

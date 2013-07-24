@@ -28,7 +28,7 @@
 #include <ostream>
 #include <cassert>
 
-namespace nef
+namespace geom
 {
 
 object_t to_object(const polyhedron_t& poly)

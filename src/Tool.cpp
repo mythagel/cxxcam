@@ -23,7 +23,7 @@
  */
 
 #include "Tool.h"
-#include "nef/primitives.h"
+#include "geom/primitives.h"
 #include "Error.h"
 
 namespace cxxcam
@@ -32,9 +32,9 @@ namespace cxxcam
 namespace
 {
 
-nef::polyhedron_t make_mill_tool(const Tool::Mill& em)
+geom::polyhedron_t make_mill_tool(const Tool::Mill& em)
 {
-	using namespace nef;
+	using namespace geom;
 
 	// TODO determine slices based on height under arc + accuracy.
 	auto shank = make_cone( {0, 0, em.length}, {0, 0, em.cutting_length}, em.shank_diameter, em.shank_diameter, 64);
@@ -98,7 +98,7 @@ auto Tool::GetLathe() const -> Lathe
 	return m_Lathe;
 }
 
-nef::polyhedron_t Tool::Model() const
+geom::polyhedron_t Tool::Model() const
 {
 	return m_Model;
 }

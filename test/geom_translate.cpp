@@ -1,10 +1,10 @@
-#include "nef/polyhedron.h"
-#include "nef/io.h"
-#include "nef/primitives.h"
-#include "nef/translate.h"
+#include "geom/polyhedron.h"
+#include "geom/io.h"
+#include "geom/primitives.h"
+#include "geom/translate.h"
 #include <iostream>
 
-using namespace nef;
+using namespace geom;
 
 /*
  * TODO validate transformation are correct.

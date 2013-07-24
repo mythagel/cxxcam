@@ -22,13 +22,13 @@
  *      Author: nicholas
  */
 
-#ifndef NEF_IO_H_
-#define NEF_IO_H_
+#ifndef GEOM_IO_H_
+#define GEOM_IO_H_
 #include "polyhedron.h"
 #include <iosfwd>
 #include <vector>
 
-namespace nef
+namespace geom
 {
 
 // TODO better name
@@ -52,4 +52,4 @@ void write_off(std::ostream&, const polyhedron_t& poly);
 
 }
 
-#endif /* NEF_IO_H_ */
+#endif /* GEOM_IO_H_ */

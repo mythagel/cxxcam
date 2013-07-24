@@ -1,9 +1,9 @@
-#include "nef/polyhedron.h"
-#include "nef/io.h"
-#include "nef/primitives.h"
+#include "geom/polyhedron.h"
+#include "geom/io.h"
+#include "geom/primitives.h"
 #include <iostream>
 
-using namespace nef;
+using namespace geom;
 
 int main()
 {

@@ -29,7 +29,7 @@
 
 typedef typename Nef_polyhedron_3::Aff_transformation_3 Aff_transformation_3;
 
-namespace nef
+namespace geom
 {
 
 polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double qy, double qz)

@@ -1,13 +1,13 @@
-#include "nef/polyhedron.h"
-#include "nef/io.h"
-#include "nef/primitives.h"
-#include "nef/translate.h"
+#include "geom/polyhedron.h"
+#include "geom/io.h"
+#include "geom/primitives.h"
+#include "geom/translate.h"
 #include <iostream>
 #include <fstream>
 #include <limits>
 #include <cmath>
 
-using namespace nef;
+using namespace geom;
 
 /*
 w	x	y	z	Description
@@ -29,33 +29,33 @@ int main()
 	auto cone = make_cone({0, 0, 2*gr}, {0, 0, 0}, 1.61803398875, 2*std::numeric_limits<double>::epsilon(), 16);
 
 	{
-		std::ofstream os("nef_validate_rotations.off");
+		std::ofstream os("geom_validate_rotations.off");
 		write_off(os, cone);
 	}
 
 	{
 		auto x = rotate(cone, 0, 1, 0, 0);
 		x += cone;
-		std::ofstream os("nef_validate_rotations-180x.off");
+		std::ofstream os("geom_validate_rotations-180x.off");
 		write_off(os, x);
 	}
 	{
 		auto x = rotate(cone, 0, 0, 1, 0);
 		x += cone;
-		std::ofstream os("nef_validate_rotations-180y.off");
+		std::ofstream os("geom_validate_rotations-180y.off");
 		write_off(os, x);
 	}
 	{
 		auto x = rotate(cone, 0, 0, 0, 1);
 		x += cone;
-		std::ofstream os("nef_validate_rotations-180z.off");
+		std::ofstream os("geom_validate_rotations-180z.off");
 		write_off(os, x);
 	}
 	
 	{
 		auto x = rotate(cone, sqrt(0.5), sqrt(0.5), 0, 0);
 		x += cone;
-		std::ofstream os("nef_validate_rotations-90x.off");
+		std::ofstream os("geom_validate_rotations-90x.off");
 		write_off(os, x);
 	}
 	

@@ -1,7 +1,7 @@
 #include "Simulation.h"
 #include "Units.h"
-#include "nef/primitives.h"
-#include "nef/io.h"
+#include "geom/primitives.h"
+#include "geom/io.h"
 #include <iostream>
 
 int main()
@@ -18,7 +18,7 @@ int main()
 	s1.position.z = length{90 * millimeters};
 	
 	state s;
-	s.stock.Model = nef::make_box( {0, 0, 0}, {50, 50, 100});
+	s.stock.Model = geom::make_box( {0, 0, 0}, {50, 50, 100});
 	
 	{
 		auto end_mill = Tool::Mill{};
@@ -38,7 +38,7 @@ int main()
 	
 	std::cout << step.swarf << "\n";
 	
-	nef::write_off(std::cout, s.stock.Model);
+	geom::write_off(std::cout, s.stock.Model);
 	return 0;
 }
 

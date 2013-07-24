@@ -30,7 +30,7 @@
 #include <CGAL/IO/Nef_polyhedron_iostream_3.h>
 #include <stdexcept>
 
-namespace nef
+namespace geom
 {
 
 polyhedron_t::private_t::private_t()

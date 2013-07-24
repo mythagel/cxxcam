@@ -1,6 +1,6 @@
 #include "Machine.h"
 #include "Stock.h"
-#include "nef/io.h"
+#include "geom/io.h"
 
 using namespace cxxcam;
 

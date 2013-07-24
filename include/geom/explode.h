@@ -16,34 +16,22 @@
  */
 
 /*
- * nef_polyhedron_private.h
+ * explode.h
  *
- *  Created on: 06/05/2013
+ *  Created on: 2013-06-25
  *      Author: nicholas
  */
 
-#ifndef NEF_POLYHEDRON_PRIVATE_H_
-#define NEF_POLYHEDRON_PRIVATE_H_
+#ifndef GEOM_EXPLODE_H_
+#define GEOM_EXPLODE_H_
 #include "polyhedron.h"
-#include "cgal.h"
+#include <vector>
 
-namespace nef
+namespace geom
 {
 
-struct polyhedron_t::private_t
-{
-	private_t();
-	private_t(const Nef_polyhedron_3& nef);
-	
-	void regularise();
-	
-	Nef_polyhedron_3 nef;
-};
-
-polyhedron_t make_polyhedron(std::shared_ptr<polyhedron_t::private_t> priv);
-std::shared_ptr<polyhedron_t::private_t> get_priv(polyhedron_t& polyhedron);
-std::shared_ptr<const polyhedron_t::private_t> get_priv(const polyhedron_t& polyhedron);
+std::vector<polyhedron_t> explode(const polyhedron_t& poly);
 
 }
 
-#endif /* NEF_POLYHEDRON_PRIVATE_H_ */
+#endif /* GEOM_EXPLODE_H_ */

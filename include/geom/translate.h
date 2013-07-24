@@ -22,11 +22,11 @@
  *      Author: nicholas
  */
 
-#ifndef NEF_TRANSLATE_H_
-#define NEF_TRANSLATE_H_
+#ifndef GEOM_TRANSLATE_H_
+#define GEOM_TRANSLATE_H_
 #include "polyhedron.h"
 
-namespace nef
+namespace geom
 {
 
 /*
@@ -41,4 +41,4 @@ polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, doubl
 
 }
 
-#endif /* NEF_TRANSLATE_H_ */
+#endif /* GEOM_TRANSLATE_H_ */

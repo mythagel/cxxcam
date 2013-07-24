@@ -23,8 +23,8 @@
  */
 
 #include "Simulation.h"
-#include "nef/translate.h"
-#include "nef/ops.h"
+#include "geom/translate.h"
+#include "geom/ops.h"
 
 namespace cxxcam
 {
@@ -45,12 +45,12 @@ step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 	const auto& p0 = s0.position;
 	const auto& p1 = s1.position;
 	
-	auto tool = nef::rotate(s.tool.Model(), o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4());
+	auto tool = geom::rotate(s.tool.Model(), o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4());
 
-	nef::polyline_t path{ { {length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value()}, 
+	geom::polyline_t path{ { {length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value()}, 
 							{length_mm(p1.x).value(), length_mm(p1.y).value(), length_mm(p1.z).value()} } };
 	
-	auto tool_path = nef::glide(tool, path);
+	auto tool_path = geom::glide(tool, path);
 	//auto material_removed = s.stock.Model * tool_path;
 	
 	/*
@@ -58,7 +58,7 @@ step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 	 * Instead of calculating volume on each step (which is inaccurate and slow)
 	 * accumulate the removed material and calculate it in one go at the end.
 	 */
-	//sim_res.swarf = units::volume( nef::volume(material_removed) * units::cubic_millimeters );
+	//sim_res.swarf = units::volume( geom::volume(material_removed) * units::cubic_millimeters );
 	
 	s.stock.Model -= tool_path;
 	

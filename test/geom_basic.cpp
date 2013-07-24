@@ -1,8 +1,8 @@
-#include "nef/polyhedron.h"
-#include "nef/io.h"
+#include "geom/polyhedron.h"
+#include "geom/io.h"
 #include <iostream>
 
-using namespace nef;
+using namespace geom;
 
 int main()
 {

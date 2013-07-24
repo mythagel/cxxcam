@@ -1,4 +1,4 @@
-ADD_SUBDIRECTORY(nef)
+ADD_SUBDIRECTORY(geom)
 
 FIND_PACKAGE(Boost 1.52.0 REQUIRED)
 
@@ -28,4 +28,4 @@ Path.cpp
 Math.cpp 
 Simulation.cpp 
 )
-TARGET_LINK_LIBRARIES(cxxcam nef)
+TARGET_LINK_LIBRARIES(cxxcam geom)

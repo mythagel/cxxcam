@@ -28,7 +28,7 @@
 #include "Geometry.h"
 #include <cassert>
 
-namespace nef
+namespace geom
 {
 
 polyhedron_t make_sphere(const primitives::point_3& center, double r, std::size_t slices)

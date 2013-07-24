@@ -16,34 +16,25 @@
  */
 
 /*
- * ops.h
+ * cgal.h
  *
  *  Created on: 06/05/2013
  *      Author: nicholas
  */
 
-#ifndef NEF_OPS_H_
-#define NEF_OPS_H_
-#include "polyhedron.h"
-#include <vector>
+#ifndef GEOM_CGAL_H_
+#define GEOM_CGAL_H_
 
-namespace nef
-{
+#include <CGAL/Nef_polyhedron_3.h>
+#include <CGAL/Polyhedron_3.h>
 
-struct polyline_t
-{
-	struct point
-	{
-		double x;
-		double y;
-		double z;
-	};
-	std::vector<point> line;
-};
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/Lazy_exact_nt.h>
+#include <CGAL/Gmpq.h>
+typedef CGAL::Simple_cartesian<CGAL::Lazy_exact_nt<CGAL::Gmpq> > Nef_Kernel;
 
-polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path);
-double volume(const polyhedron_t& polyhedron);
+typedef CGAL::Nef_polyhedron_3<Nef_Kernel> Nef_polyhedron_3;
+typedef CGAL::Polyhedron_3<Nef_Kernel> Polyhedron_3;
+typedef Nef_Kernel::Point_3 Point_3;
 
-}
-
-#endif /* NEF_OPS_H_ */
+#endif /* GEOM_CGAL_H_ */

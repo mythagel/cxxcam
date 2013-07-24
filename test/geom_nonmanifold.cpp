@@ -1,13 +1,13 @@
-#include "nef/primitives.h"
-#include "nef/io.h"
-#include "nef/translate.h"
-#include "nef/ops.h"
+#include "geom/primitives.h"
+#include "geom/io.h"
+#include "geom/translate.h"
+#include "geom/ops.h"
 #include <iostream>
 #include <fstream>
 
 int main()
 {
-	using namespace nef;
+	using namespace geom;
 	
 	auto shank = make_cone( {0, 0, 60}, {0, 0, 28}, 10, 10, 64);
 	auto flutes = make_cone( {0, 0, 28}, {0, 0, 0}, 10, 10, 64);
@@ -21,7 +21,7 @@ int main()
 
 		auto s0 = stock - t00;
 		
-		std::ofstream os("nef_nonmanifold-s0.off");
+		std::ofstream os("geom_nonmanifold-s0.off");
 		write_off(os, s0);
 	}
 	
@@ -31,7 +31,7 @@ int main()
 		
 		auto s1 = stock - t01;
 
-		std::ofstream os("nef_nonmanifold-s1.off");
+		std::ofstream os("geom_nonmanifold-s1.off");
 		write_off(os, s1);
 	}
 	
@@ -55,7 +55,7 @@ int main()
 		
 		s2 -= tool_path;
 		
-		std::ofstream os("nef_nonmanifold-s2.off");
+		std::ofstream os("geom_nonmanifold-s2.off");
 		write_off(os, s2);
 	}
 }

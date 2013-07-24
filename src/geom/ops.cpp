@@ -53,7 +53,7 @@ typedef CGAL::Mesh_triangulation_3<Mesh_domain>::type Tr;
 typedef CGAL::Mesh_complex_3_in_triangulation_3<Tr> C3t3;
 typedef CGAL::Mesh_criteria_3<Tr> Mesh_criteria;
 
-namespace nef
+namespace geom
 {
 
 polyhedron_t glide(const polyhedron_t& polyhedron, const polyline_t& path)

@@ -26,7 +26,7 @@
 #define STOCK_H_
 #include <memory>
 #include "Material.h"
-#include "nef/polyhedron.h"
+#include "geom/polyhedron.h"
 #include <iosfwd>
 
 namespace cxxcam
@@ -39,10 +39,10 @@ namespace cxxcam
 struct Stock
 {
 	std::shared_ptr<Material_t> Material;
-	nef::polyhedron_t Model;
+	geom::polyhedron_t Model;
 
 	Stock() = default;
-	Stock(const nef::polyhedron_t& nef);
+	Stock(const geom::polyhedron_t& model);
 };
 
 }

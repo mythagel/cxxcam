@@ -22,8 +22,8 @@
  *      Author: nicholas
  */
 
-#ifndef NEF_COPY_TO_H_
-#define NEF_COPY_TO_H_
+#ifndef GEOM_COPY_TO_H_
+#define GEOM_COPY_TO_H_
 #include "cgal.h"
 
 // Copy between kernels
@@ -94,4 +94,4 @@ void copy_to(const Poly_A& poly_a, Poly_B& poly_b)
 	CGAL_assertion(poly_b.is_valid());
 }
 
-#endif /* NEF_COPY_TO_H_ */
+#endif /* GEOM_COPY_TO_H_ */

@@ -2,9 +2,9 @@
 #include "Simulation.h"
 
 #include "Units.h"
-#include "nef/primitives.h"
-#include "nef/io.h"
-#include "nef/explode.h"
+#include "geom/primitives.h"
+#include "geom/io.h"
+#include "geom/explode.h"
 #include <iostream>
 
 #include <algorithm>
@@ -42,7 +42,7 @@ int main()
 	
 	// Configure simulation
 	state s;
-	s.stock.Model = nef::make_box({0, 0, 0}, {50, 50, 100});
+	s.stock.Model = geom::make_box({0, 0, 0}, {50, 50, 100});
 	{
 		auto end_mill = Tool::Mill{};
 		end_mill.type = Tool::Mill::Type::End;
@@ -73,13 +73,13 @@ int main()
 	}
 	std::cout << "Total: " << total << "\n";
 
-	auto parts = nef::explode(s.stock.Model);
+	auto parts = geom::explode(s.stock.Model);
 	for(size_t i = 0; i < parts.size(); ++i)
 	{
 		std::ostringstream name;
 		name << "simulate_path-nintynonmanifold" << i << ".off";
 		std::ofstream os(name.str());
-		nef::write_off(os, parts[i]);
+		geom::write_off(os, parts[i]);
 	}
 	return 0;
 }

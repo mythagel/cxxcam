@@ -25,14 +25,14 @@
 #include "Stock.h"
 #include <cassert>
 #include <fstream>
-#include "nef/io.h"
+#include "geom/io.h"
 #include <ostream>
 
 namespace cxxcam
 {
 
-Stock::Stock(const nef::polyhedron_t& nef)
- : Model(nef)
+Stock::Stock(const geom::polyhedron_t& model)
+ : Model(model)
 {
 }
 
