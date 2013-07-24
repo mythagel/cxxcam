@@ -22,6 +22,7 @@
  *      Author: nicholas
  */
 #include "io.h"
+#include "polyhedron.h"
 #include "private.h"
 #include <CGAL/IO/Polyhedron_iostream.h>
 #include <CGAL/iterator.h>

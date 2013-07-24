@@ -1,3 +1,4 @@
+#include "geom/polyhedron.h"
 #include "geom/primitives.h"
 #include "geom/io.h"
 #include "geom/translate.h"

@@ -24,11 +24,12 @@
 
 #ifndef GEOM_OPS_H_
 #define GEOM_OPS_H_
-#include "polyhedron.h"
 #include <vector>
 
 namespace geom
 {
+
+class polyhedron_t;
 
 struct polyline_t
 {

@@ -23,6 +23,7 @@
  */
 
 #include "explode.h"
+#include "polyhedron.h"
 #include "cgal_explode.h"
 #include "private.h"
 

@@ -24,10 +24,12 @@
 
 #ifndef GEOM_PRIMITIVES_H_
 #define GEOM_PRIMITIVES_H_
-#include "polyhedron.h"
+#include <cstddef>
 
 namespace geom
 {
+
+class polyhedron_t;
 
 namespace primitives
 {

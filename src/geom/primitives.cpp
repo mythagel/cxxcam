@@ -23,6 +23,7 @@
  */
 
 #include "primitives.h"
+#include "polyhedron.h"
 #include "private.h"
 #include "cgal.h"
 #include "Geometry.h"

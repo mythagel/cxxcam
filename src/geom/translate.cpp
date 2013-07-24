@@ -23,6 +23,7 @@
  */
 
 #include "translate.h"
+#include "polyhedron.h"
 #include "private.h"
 #include <CGAL/Aff_transformation_3.h>
 #include <algorithm>

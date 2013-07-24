@@ -22,6 +22,7 @@
  *      Author: nicholas
  */
 #include "ops.h"
+#include "polyhedron.h"
 #include "private.h"
 #include "copy_to.h"
 #include <utility>

@@ -24,11 +24,12 @@
 
 #ifndef GEOM_EXPLODE_H_
 #define GEOM_EXPLODE_H_
-#include "polyhedron.h"
 #include <vector>
 
 namespace geom
 {
+
+class polyhedron_t;
 
 std::vector<polyhedron_t> explode(const polyhedron_t& poly);
 

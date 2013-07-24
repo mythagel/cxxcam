@@ -24,10 +24,11 @@
 
 #ifndef GEOM_TRANSLATE_H_
 #define GEOM_TRANSLATE_H_
-#include "polyhedron.h"
 
 namespace geom
 {
+
+class polyhedron_t;
 
 /*
  * Create a new polyhedron rotated by the given quaternion.

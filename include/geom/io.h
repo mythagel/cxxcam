@@ -24,12 +24,13 @@
 
 #ifndef GEOM_IO_H_
 #define GEOM_IO_H_
-#include "polyhedron.h"
 #include <iosfwd>
 #include <vector>
 
 namespace geom
 {
+
+class polyhedron_t;
 
 // TODO better name
 struct object_t
