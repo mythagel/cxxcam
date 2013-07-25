@@ -29,6 +29,7 @@
 #include <memory>
 #include "Machine.h"
 #include "Tool.h"
+#include "Stock.h"
 #include "Axis.h"
 
 namespace cxxcam
@@ -88,6 +89,8 @@ struct Configuration
 	
 	double rapid_rate = 0.0;
 	std::map<Axis::Type, double> axis_rapid_rates;
+	
+	Stock stock;
 	
 	std::unique_ptr<Machine> Construct() const;
 };

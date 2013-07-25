@@ -68,6 +68,8 @@ std::unique_ptr<Machine> Configuration::Construct() const
 		machine->SetRapidRate(axis, rate.second);
 	}
 
+	machine->SetStock(stock);
+
 	return machine;
 }
 
