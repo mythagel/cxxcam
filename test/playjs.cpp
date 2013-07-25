@@ -44,8 +44,9 @@ int main()
 
 	for(int i = 0; i < 11; ++i)
 	{
-		std::cout << "{x:" << 5*i << ", y:" << 5*i << ", z:" << (10-i) << "}\n";
+		std::cerr << "{z:" << (10-i) << "}\n";
 		m.Linear({Z(10-i)});
+		std::cerr << "{x:" << 5*i << ", y:" << 5*i << "}\n";
 		m.Linear({X(5*i), Y(5*i)});
 		//m.linear({x:5*i, y:5*i, z:10-i});
 	}
