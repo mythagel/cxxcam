@@ -143,7 +143,10 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 		
 		path.push_back(pos2step(p));
 	}
-	path.push_back(sn);
+	
+	if(path.empty() || path.back() != sn)
+		path.push_back(sn);
+	
 	return path;
 }
 
