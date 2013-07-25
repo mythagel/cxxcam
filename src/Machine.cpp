@@ -1368,7 +1368,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	
 	auto linear_end = m_Private->m_State.m_Current;
 	// line from start to end expand tool along path and subtract tool path from stock.
-	auto path = path::expand_linear(linear_start, linear_end, m_Axes);
+	auto path = path::expand_linear(linear_start, linear_end, m_Axes, 1);
 	
 	simulation::state state;
 	state.stock = m_Stock;
