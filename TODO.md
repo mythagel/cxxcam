@@ -8,6 +8,8 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
+ * Current design means that runtime is _unusably_ long.
+    - Need to think of alternative designs that improve performance.
  * Check for stock intersection for Linear & Rapid movements
     - *How to measure cutting performance?*
     - Define Inputs and Outputs
