@@ -1383,6 +1383,9 @@ void Machine::Linear(const std::vector<Axis>& axes)
 		{
 			return simulation::simulate_cut(s0, s1, state);
 		});
+	
+	// Update local state
+	m_Stock = state.stock;
 }
 
 void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::vector<Offset>& center, unsigned int turns)
