@@ -25,6 +25,7 @@ geom_translate
 geom_explode 
 geom_nonmanifold 
 geom_validate_rotations 
+geom_validate_boolean 
 model 
 pushpop_state 
 limits 
