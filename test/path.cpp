@@ -130,12 +130,46 @@ void nintyonedegrees()
 	}
 }
 
+void z8()
+{
+	std::cout << "z8\n";
+	using namespace cxxcam;
+	using namespace cxxcam::path;
+	using namespace cxxcam::units;
+	using namespace cxxcam::math;
+	
+	Position start;
+	start.X = length{10 * millimeters};
+	start.Y = length{10 * millimeters};
+	start.Z = length{9 * millimeters};
+
+	Position end;
+	end.X = length{10 * millimeters};
+	end.Y = length{10 * millimeters};
+	end.Z = length{8 * millimeters};
+	
+	limits::AvailableAxes geometry;
+	
+	std::cout << start << " -> " << end << '\n';
+	
+	auto steps = expand_linear(start, end, geometry, 1);
+	
+	die_if(steps[steps.size()-1] == steps[steps.size()-2], "Duplicate step");
+	
+	for(const auto& step : steps)
+	{
+		std::cout << step << '\n';
+		std::cout << normalise(vector_3(step.orientation)) << '\n';
+	}
+}
+
 int main()
 {
 	simple();
 	check_start_end();
 	nintydegrees();
 	nintyonedegrees();
+	z8();
 	
 	return 0;
 }
