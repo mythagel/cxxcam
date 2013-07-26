@@ -30,12 +30,24 @@ namespace geom
 
 class polyhedron_t;
 
+namespace query
+{
+struct point_3
+{
+	double x;
+	double y;
+	double z;
+};
+}
+
 /*
  * TODO implement query operations for polyhedron types.
  * 
  */
 
 bool intersects(const polyhedron_t& p0, const polyhedron_t& p1);
+
+double distance(const polyhedron_t& poly, const query::point_3& p);
 
 }
 

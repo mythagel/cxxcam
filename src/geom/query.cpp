@@ -30,6 +30,7 @@
 #include <CGAL/AABB_tree.h>
 #include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_polyhedron_triangle_primitive.h>
+#include <cmath>
 
 typedef CGAL::AABB_polyhedron_triangle_primitive<Nef_Kernel, Polyhedron_3> AABB_polyhedron_triangle_primitive;
 typedef CGAL::AABB_traits<Nef_Kernel, AABB_polyhedron_triangle_primitive> AABB_traits;
@@ -46,7 +47,6 @@ CGAL::Bbox_3 bbox(const Polyhedron_3& poly)
 {
 	return CGAL::bounding_box(poly.points_begin(), poly.points_end()).bbox();
 }
-
 }
 
 bool intersects(const polyhedron_t& p0, const polyhedron_t& p1)
@@ -58,20 +58,21 @@ bool intersects(const polyhedron_t& p0, const polyhedron_t& p1)
 		return false;
 	
 	return !((p0 * p1).empty());
+}
+
+double distance(const polyhedron_t& poly, const query::point_3& p)
+{
+	auto P = to_Polyhedron_3(poly);
 	
-	// Construct AABB tree from polyhedron.
-	AABB_tree aabb_p0{ poly0.facets_begin(), poly0.facets_end() };
-	
-	// Not actually used for this function but I want to clarify the complete interface.
+	// TODO constructing the AABB tree is expensive.
+	// design an interface where this can be cached between calls.
+	AABB_tree aabb_p0 { P.facets_begin(), P.facets_end() };
 	aabb_p0.accelerate_distance_queries();
 	
-	// Distance to point
-	Point_3 query(0, 0, 0);
+	Point_3 query(p.x, p.y, p.z);
     auto dist2 = aabb_p0.squared_distance(query);
 	
-	// closest point on model to query
-	auto closest_point = aabb_p0.closest_point(query);
-	
+	return sqrt(to_double(dist2));
 }
 
 }
