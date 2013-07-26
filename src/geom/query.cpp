@@ -26,6 +26,9 @@
 #include "polyhedron.h"
 #include "private.h"
 #include <CGAL/bounding_box.h>
+#include <CGAL/Bbox_3.h>
+
+#include <stdexcept>
 
 namespace geom
 {
@@ -36,28 +39,19 @@ CGAL::Bbox_3 bbox(const Polyhedron_3& poly)
 {
 	return CGAL::bounding_box(poly.points_begin(), poly.points_end()).bbox();
 }
-
-Polyhedron_3 to_poly(const polyheron_t poly)
-{
-	auto priv = get_priv(poly);
-	if(priv->nef.is_simple())
-	{
-		Polyhedron_3 P;
-		priv->nef.convert_to_polyhedron(P);
-		return P;
-	}
-	else
-	{
-		throw std::runtime_error("polyhedron is not 2-manifold.");
-	}
-}
-
 }
 
 bool intersects(const polyhedron_t& p0, const polyhedron_t& p1)
 {
+	// bbox filter first.
+	auto b0 = bbox(to_Polyhedron_3(p0));
+	auto b1 = bbox(to_Polyhedron_3(p1));
 	
-	auto b0 = bbox()
+	if(!do_overlap(b0, b1))
+		return false;
+	
+	// TODO
+	throw std::runtime_error("NI!");
 }
 
 }
