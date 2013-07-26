@@ -16,8 +16,6 @@
     - simple intersection
     - find safe plane?
     - distance from point?
- * geom explode
-    - explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
@@ -38,8 +36,6 @@
        - Tasks
           - Performs analysis on a specified path.
           - Provides information on cutting performance.
-    - ~~Volume of material removal~~
-       - ~~Not a useful measure.~~
     - Cutting speed
     - Performance
        - Path for each flute is trochoidal. 
@@ -60,6 +56,8 @@
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
     - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * geom explode
+    - explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
  * Complete Stock class
     - Needs model loading & ~~generation~~
     - Needs intersection tests
