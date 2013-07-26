@@ -10,7 +10,6 @@
 ## High Level ##
  * Current design means that runtime is _unusably_ long.
     - Need to think of alternative designs that improve performance.
- * ~~geom lib implement scale in translate functions~~
  * geom intersection tests
  * geom investigate explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
  * On model import if in imperial mode scale model to millimeters.
