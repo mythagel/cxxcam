@@ -43,6 +43,8 @@
 #include "Simulation.h"
 #include "fold_adjacent.h"
 
+#include "geom/translate.h"
+
 namespace cxxcam
 {
 
@@ -628,10 +630,36 @@ void Machine::SetSpindleTorque(unsigned long rpm, double torque_nm)
 }
 void Machine::SetStock(const Stock& stock)
 {
-	m_Private->m_Stock = stock;
+	static const auto inches_to_mm = 25.4;
+	auto& m_State = m_Private->m_State;
+	
+	switch(m_State.m_Units)
+	{
+		case Units::Metric:
+			m_Private->m_Stock = stock;
+			break;
+		case Units::Imperial:
+			m_Private->m_Stock = stock;
+			m_Private->m_Stock.Model = scale(stock.Model, inches_to_mm);
+			break;
+	}
 }
 Stock Machine::GetStock() const
 {
+	static const auto mm_to_inches = 0.0393700787;
+	auto& m_State = m_Private->m_State;
+	
+	switch(m_State.m_Units)
+	{
+		case Units::Metric:
+			return m_Private->m_Stock;
+		case Units::Imperial:
+		{
+			Stock stock = m_Private->m_Stock;
+			stock.Model = scale(stock.Model, mm_to_inches);
+			return stock;
+		}
+	}
 	return m_Private->m_Stock;
 }
 
