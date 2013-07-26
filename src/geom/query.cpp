@@ -27,6 +27,13 @@
 #include "private.h"
 #include <CGAL/bounding_box.h>
 #include <CGAL/Bbox_3.h>
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_traits.h>
+#include <CGAL/AABB_polyhedron_triangle_primitive.h>
+
+typedef CGAL::AABB_polyhedron_triangle_primitive<Nef_Kernel, Polyhedron_3> AABB_polyhedron_triangle_primitive;
+typedef CGAL::AABB_traits<Nef_Kernel, AABB_polyhedron_triangle_primitive> AABB_traits;
+typedef CGAL::AABB_tree<AABB_traits> AABB_tree;
 
 #include <stdexcept>
 
@@ -39,19 +46,32 @@ CGAL::Bbox_3 bbox(const Polyhedron_3& poly)
 {
 	return CGAL::bounding_box(poly.points_begin(), poly.points_end()).bbox();
 }
+
 }
 
 bool intersects(const polyhedron_t& p0, const polyhedron_t& p1)
 {
-	// bbox filter first.
-	auto b0 = bbox(to_Polyhedron_3(p0));
-	auto b1 = bbox(to_Polyhedron_3(p1));
+	auto poly0 = to_Polyhedron_3(p0);
+	auto poly1 = to_Polyhedron_3(p1);
 	
-	if(!do_overlap(b0, b1))
+	if(!do_overlap(bbox(poly0), bbox(poly1)))
 		return false;
 	
-	// TODO
-	throw std::runtime_error("NI!");
+	return !((p0 * p1).empty());
+	
+	// Construct AABB tree from polyhedron.
+	AABB_tree aabb_p0{ poly0.facets_begin(), poly0.facets_end() };
+	
+	// Not actually used for this function but I want to clarify the complete interface.
+	aabb_p0.accelerate_distance_queries();
+	
+	// Distance to point
+	Point_3 query(0, 0, 0);
+    auto dist2 = aabb_p0.squared_distance(query);
+	
+	// closest point on model to query
+	auto closest_point = aabb_p0.closest_point(query);
+	
 }
 
 }
