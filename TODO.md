@@ -16,7 +16,8 @@
     - simple intersection
     - find safe plane?
     - distance from point?
- * geom investigate explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
+ * geom explode
+    - explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
  * On model import if in imperial mode scale model to millimeters.
     - Scale back to inches on access if in imperial mode.
  * Check for stock intersection for Linear & Rapid movements
