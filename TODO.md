@@ -34,13 +34,13 @@
           - Output
              - Annotated path
                 - Chip load per tooth
-                - Volume of material
                 - Cutter engagement
     - Simulation
        - Tasks
           - Performs analysis on a specified path.
           - Provides information on cutting performance.
-    - Volume of material removal
+    - ~~Volume of material removal~~
+       - ~~Not a useful measure.~~
     - Cutting speed
     - Performance
        - Path for each flute is trochoidal. 
