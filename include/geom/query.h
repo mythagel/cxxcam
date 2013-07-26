@@ -35,6 +35,8 @@ class polyhedron_t;
  * 
  */
 
+bool intersects(const polyhedron_t& p0, const polyhedron_t& p1);
+
 }
 
 #endif /* QUERY_H_ */
