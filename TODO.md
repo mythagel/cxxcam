@@ -12,6 +12,8 @@
     - Need to think of alternative designs that improve performance.
  * ~~geom lib implement scale in translate functions~~
  * geom intersection tests
+ * On model import if in imperial mode scale model to millimeters.
+    - Scale back to inches on access if in imperial mode.
  * Check for stock intersection for Linear & Rapid movements
     - *How to measure cutting performance?*
     - Define Inputs and Outputs
