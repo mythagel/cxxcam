@@ -65,6 +65,17 @@ std::shared_ptr<const polyhedron_t::private_t> get_priv(const polyhedron_t& poly
 	return polyhedron.priv;
 }
 
+Polyhedron_3 to_Polyhedron_3(const polyhedron_t& polyhedron)
+{
+	auto priv = get_priv(polyhedron);
+	if(!priv->nef.is_simple())
+		throw std::runtime_error("to_poly: polyhedron is not 2-manifold.");
+	
+	Polyhedron_3 P;
+	priv->nef.convert_to_polyhedron(P);
+	return P;
+}
+
 polyhedron_t::polyhedron_t(const std::shared_ptr<private_t>& priv)
  : priv(priv)
 {

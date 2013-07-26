@@ -32,12 +32,7 @@ namespace geom
 
 std::vector<polyhedron_t> explode(const polyhedron_t& poly)
 {
-	auto priv = get_priv(poly);
-	if(!priv->nef.is_simple())
-		throw std::runtime_error("geom::explode: polyhedron is not 2-manifold.");
-
-	Polyhedron_3 P;
-	priv->nef.convert_to_polyhedron(P);
+	auto P = to_Polyhedron_3(poly);
 
 	std::vector<Polyhedron_3> polyhedra;
 
