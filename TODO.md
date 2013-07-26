@@ -18,8 +18,6 @@
     - distance from point?
  * geom explode
     - explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
- * ~~On model import if in imperial mode scale model to millimeters.~~
-    - ~~Scale back to inches on access if in imperial mode.~~
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
