@@ -10,7 +10,7 @@
 ## High Level ##
  * Current design means that runtime is _unusably_ long.
     - Need to think of alternative designs that improve performance.
- * geom intersection tests
+ * geom intersection tests (on branch geom_query)
     - CGAL bbox overlap test.
     - CGAL AABB tree
     - simple intersection
