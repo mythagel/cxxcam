@@ -8,14 +8,6 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
- * Current design means that runtime is _unusably_ long.
-    - Need to think of alternative designs that improve performance.
- * geom intersection tests (on branch geom_query)
-    - CGAL bbox overlap test.
-    - CGAL AABB tree
-    - simple intersection
-    - find safe plane?
-    - distance from point?
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
@@ -63,6 +55,8 @@
     - Needs intersection tests
     - Needs material properties
     - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
+ * Current design means that runtime is _unusably_ long.
+    - Need to think of alternative designs that improve performance.
  * Represent workholding, clamps, etc. (for intersection tests)
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
