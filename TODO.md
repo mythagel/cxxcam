@@ -10,7 +10,7 @@
 ## High Level ##
  * Current design means that runtime is _unusably_ long.
     - Need to think of alternative designs that improve performance.
- * geom lib implement scale in translate functions
+ * ~~geom lib implement scale in translate functions~~
  * geom intersection tests
  * Check for stock intersection for Linear & Rapid movements
     - *How to measure cutting performance?*
