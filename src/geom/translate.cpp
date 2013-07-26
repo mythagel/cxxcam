@@ -92,5 +92,16 @@ polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, doubl
 	return make_polyhedron( std::move(priv) );
 }
 
+polyhedron_t scale(const polyhedron_t& polyhedron, double s)
+{
+	Aff_transformation_3 scale(CGAL::SCALING, s);
+
+	auto nef = get_priv(polyhedron)->nef;
+	nef.transform(scale);
+	
+	auto priv = std::make_shared<polyhedron_t::private_t>(nef);
+	return make_polyhedron( std::move(priv) );
+}
+
 }
 

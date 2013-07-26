@@ -40,6 +40,11 @@ polyhedron_t rotate(const polyhedron_t& polyhedron, double qw, double qx, double
  */
 polyhedron_t translate(const polyhedron_t& polyhedron, double x, double y, double z);
 
+/*
+ * Create a new polyhedron scaled by the given factor.
+ */
+polyhedron_t scale(const polyhedron_t& polyhedron, double s);
+
 }
 
 #endif /* GEOM_TRANSLATE_H_ */
