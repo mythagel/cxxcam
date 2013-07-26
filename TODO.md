@@ -20,6 +20,10 @@
  * On model import if in imperial mode scale model to millimeters.
     - Scale back to inches on access if in imperial mode.
  * Check for stock intersection for Linear & Rapid movements
+    - Rotate tool along all angular axes
+    - improve geom::polyhedron to be able to create from polygons (list of points) (make_polygon)
+    - glide (minowski sum) rotated tool with polygon
+    - hmmm... polygon or polyhedron....
     - *How to measure cutting performance?*
     - Define Inputs and Outputs
        - Input
