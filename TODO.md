@@ -11,6 +11,11 @@
  * Current design means that runtime is _unusably_ long.
     - Need to think of alternative designs that improve performance.
  * geom intersection tests
+    - CGAL bbox overlap test.
+    - CGAL AABB tree
+    - simple intersection
+    - find safe plane?
+    - distance from point?
  * geom investigate explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
  * On model import if in imperial mode scale model to millimeters.
     - Scale back to inches on access if in imperial mode.
