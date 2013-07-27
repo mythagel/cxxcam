@@ -14,7 +14,7 @@
        - improve geom::polyhedron to be able to create from polygons (list of points) (make_polygon)
        - glide (minowski sum) rotated tool with polygon
        - hmmm... polygon or polyhedron....
-    - Linear
+    - Linear / Arcs
        - *How to measure cutting performance?*
        - Define Inputs and Outputs
           - Input
@@ -28,6 +28,7 @@
        - Tasks
           - Performs analysis on a specified path.
           - Provides information on cutting performance.
+          - Cutting time.
     - Cutting speed
     - Performance
        - Path for each flute is trochoidal. 
