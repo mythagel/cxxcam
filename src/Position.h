@@ -31,14 +31,17 @@
 namespace cxxcam
 {
 
-struct Position
+struct Position_Cartesian
 {
-	static const Position zero;	
-	
 	units::length X;
 	units::length Y;
 	units::length Z;
+};
 
+struct Position : Position_Cartesian
+{
+	static const Position zero;	
+	
 	units::plane_angle A;
 	units::plane_angle B;
 	units::plane_angle C;
