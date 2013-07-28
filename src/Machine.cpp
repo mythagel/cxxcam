@@ -1422,6 +1422,8 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	
 	auto& m_State = m_Private->m_State;
 	auto& m_Axes = m_Private->m_Axes;
+	auto& m_Stock = m_Private->m_Stock;
+	auto& m_FeedRateLimit = m_Private->m_FeedRateLimit;
 
 	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw error("Spindle is stopped");
@@ -1595,7 +1597,50 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	
 	auto angular_end = m_Private->m_State.m_Current;
 	// arc from start to end expand tool along path.
-	auto path = path::expand_arc(angular_start, angular_end, m_Axes);
+	Position_Cartesian arc_center;
+	path::ArcDirection arc_dir;
+	math::vector_3 arc_plane;
+	switch(dir)
+	{
+		case Direction::Clockwise:
+			arc_dir = path::ArcDirection::Clockwise;
+			break;
+		case Direction::CounterClockwise:
+			arc_dir = path::ArcDirection::CounterClockwise;
+			break;
+	}
+	switch(m_State.m_Plane)
+	{
+		case Plane::XY:
+			arc_plane = math::vector_3{0, 0, 1};
+			break;
+		case Plane::ZX:
+			arc_plane = math::vector_3{0, 1, 0};
+			break;
+		case Plane::YZ:
+			arc_plane = math::vector_3{1, 0, 0};
+			break;
+		default:
+			throw std::logic_error("Unsupported Arc Plane");
+	}
+	auto path = path::expand_arc(angular_start, angular_end, arc_center, arc_dir, arc_plane, turns, m_Axes);
+	
+	simulation::state state;
+	state.stock = m_Stock;
+	state.tool = GetTool();
+	state.FeedRate;	// TODO normalised.
+	state.SpindleSpeed = m_State.m_SpindleSpeed;
+	state.FeedRateLimit = m_FeedRateLimit;
+	
+	std::vector<simulation::step> sim_res;
+	fold_adjacent(begin(path), end(path), std::back_inserter(sim_res), 
+		[&state](const path::step& s0, const path::step& s1) -> simulation::step
+		{
+			return simulation::simulate_cut(s0, s1, state);
+		});
+	
+	// Update local state
+	m_Stock = state.stock;
 }
 
 auto Machine::Generate() const -> std::vector<block_t>

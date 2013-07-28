@@ -49,7 +49,14 @@ struct step
 std::ostream& operator<<(std::ostream& os, const step& step);
 
 std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
-std::vector<step> expand_arc(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
+
+enum class ArcDirection
+{
+	Clockwise,
+	CounterClockwise
+};
+
+std::vector<step> expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, unsigned int turns, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
 
 }
 }
