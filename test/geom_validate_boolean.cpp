@@ -12,7 +12,7 @@ Invalid memory accesses under valgrind exposed with this test.
 
 int main()
 {
-	auto tool = make_cone({0, 0, 20}, {0, 0, 0}, 3, 3, 64);
+	auto tool = make_cone({0, 0, 20}, {0, 0, 0}, 3, 3, 8);
 	auto stock = make_box({x:0, y:0, z:0}, {x:50, y:50, z:10});
 	
 	{

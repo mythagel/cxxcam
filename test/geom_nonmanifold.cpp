@@ -10,8 +10,8 @@ int main()
 {
 	using namespace geom;
 	
-	auto shank = make_cone( {0, 0, 60}, {0, 0, 28}, 10, 10, 64);
-	auto flutes = make_cone( {0, 0, 28}, {0, 0, 0}, 10, 10, 64);
+	auto shank = make_cone( {0, 0, 60}, {0, 0, 28}, 10, 10, 8);
+	auto flutes = make_cone( {0, 0, 28}, {0, 0, 0}, 10, 10, 8);
 	const auto tool = shank + flutes;
 	
 	const auto stock = make_box( {0, 0, 0}, {50, 50, 100} );
