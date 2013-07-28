@@ -51,7 +51,8 @@ struct vector_3
 	double z;
 	double a;
 	
-	vector_3(double x, double y, double z, double a);
+	vector_3();
+	vector_3(double x, double y, double z, double a=0);
 	explicit vector_3(const quaternion_t& q);
 	bool operator==(const vector_3& v) const;
 	bool operator!=(const vector_3& v) const;

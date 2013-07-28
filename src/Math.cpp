@@ -50,6 +50,10 @@ bool point_3::operator!=(const point_3& p) const
 	return to_tuple(*this) != to_tuple(p);
 }
 
+vector_3::vector_3()
+ : x(), y(), z(), a()
+{
+}
 vector_3::vector_3(double x, double y, double z, double a)
  : x(x), y(y), z(z), a(a)
 {
