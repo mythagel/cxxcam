@@ -42,6 +42,7 @@
        - Return vector of stats for each step
           - volume, forces, engagement, etc.
           - New functions that augments existing path provided.
+ * Higher order curves
  * Complete Tool class - apt_cutter branch
     - Needs nef model loading / ~~generation~~
     - APT CUTTER style mill tool definition
