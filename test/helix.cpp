@@ -71,7 +71,7 @@ struct gcode_arc
 	unsigned int turns;
 };
 
-std::pair<point_3, point_3> planar_points(const gcode_arc& arc)
+bool validate_radius(const gcode_arc& arc)
 {
 	point_3 start = {0, 0, 0};
 	point_3 end = {0, 0, 0};
@@ -90,14 +90,6 @@ std::pair<point_3, point_3> planar_points(const gcode_arc& arc)
 			end = point_3{0, arc.end.y, arc.end.z};
 			break;
 	}
-	return std::make_pair(start, end);
-}
-
-bool validate_radius(const gcode_arc& arc)
-{
-	auto x = planar_points(arc);
-	auto start = x.first;
-	auto end = x.second;
 	
 	double ds = distance(start, arc.center);
 	double de = distance(end, arc.center);
@@ -108,6 +100,9 @@ bool validate_radius(const gcode_arc& arc)
 	return true;
 }
 
+/*
+get angle from start to end.
+*/
 double arc_angle(const gcode_arc& arc)
 {
 	switch(arc.plane)
@@ -149,6 +144,31 @@ std::vector<point_3> helix_points(double r, double h, double p, double theta, do
 	return P;
 }
 
+/*
+normalise arc to centered around 0, 0, 0
+*/
+void arc_center(const gcode_arc& arc)
+{
+	point_3 start = {0, 0, 0};
+	point_3 end = {0, 0, 0};
+	switch(arc.plane)
+	{
+		case XY:
+			start = point_3{arc.start.x - arc.center.x, arc.start.y - arc.center.y, 0};
+			end = point_3{arc.end.x - arc.center.x, arc.end.y - arc.center.y, 0};
+			break;
+		case ZX:
+			start = point_3{arc.start.x - arc.center.x, 0, arc.start.z - arc.center.z};
+			end = point_3{arc.end.x - arc.center.x, 0, arc.end.z - arc.center.z};
+			break;
+		case YZ:
+			start = point_3{0, arc.start.y - arc.center.y, arc.start.z - arc.center.z};
+			end = point_3{0, arc.end.y - arc.center.y, arc.end.z - arc.center.z};
+			break;
+	}
+	std::cout << "start: " << start << " end: " << end << '\n';
+}
+
 int main()
 {
 	gcode_arc simple_xy_arc = {Clockwise, XY, {0, 0, 0}, {1, 1, 0}, {1, 0, 0}, 1};
@@ -161,6 +181,10 @@ int main()
 	std::cout << std::boolalpha << "validate_radius(simple_yz_arc): " << validate_radius(simple_yz_arc) << " arc_angle: " << round6(arc_angle(simple_yz_arc)) << "\n";
 	
 	std::cout << std::boolalpha << "validate_radius(simple_xyz_helix): " << validate_radius(simple_xyz_helix) << " arc_angle: " << round6(arc_angle(simple_xyz_helix)) << "\n";
+	
+	gcode_arc simple_xy_arc_zero = {Clockwise, XY, {-1, 0, 0}, {0, 1, 0}, {0, 0, 0}, 1};
+	arc_center(simple_xy_arc_zero);
+	arc_center(simple_xy_arc);
 	
 	// unit circle represented as helix
 	{
