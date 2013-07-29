@@ -151,22 +151,27 @@ void arc_center(const gcode_arc& arc)
 {
 	point_3 start = {0, 0, 0};
 	point_3 end = {0, 0, 0};
+	double theta = 0.0;
 	switch(arc.plane)
 	{
 		case XY:
 			start = point_3{arc.start.x - arc.center.x, arc.start.y - arc.center.y, 0};
+			theta = atan2(start.y, -start.x);
 			end = point_3{arc.end.x - arc.center.x, arc.end.y - arc.center.y, 0};
 			break;
 		case ZX:
 			start = point_3{arc.start.x - arc.center.x, 0, arc.start.z - arc.center.z};
+			theta = atan2(start.z, -start.x);
 			end = point_3{arc.end.x - arc.center.x, 0, arc.end.z - arc.center.z};
 			break;
 		case YZ:
 			start = point_3{0, arc.start.y - arc.center.y, arc.start.z - arc.center.z};
+			theta = atan2(start.z, -start.y);
 			end = point_3{0, arc.end.y - arc.center.y, arc.end.z - arc.center.z};
 			break;
 	}
 	std::cout << "start: " << start << " end: " << end << '\n';
+	std::cout << "rads2start: " << theta << "\n";
 }
 
 int main()
