@@ -181,11 +181,11 @@ int main()
 	
 	gcode_arc simple_xyz_helix = {Clockwise, XY, {0, 0, 0}, {1, 1, 1}, {1, 0, 0}, 1};
 	
-	std::cout << std::boolalpha << "validate_radius(simple_xy_arc): " << validate_radius(simple_xy_arc) << " arc_angle: " << round6(arc_angle(simple_xy_arc)) << "\n";
+	std::cout << std::boolalpha << "validate_radius(simple_xy_arc): " << validate_radius(simple_xy_arc) << ", arc_angle: " << round6(arc_angle(simple_xy_arc)) << "\n";
 	die_if(round6(arc_angle(simple_xy_arc)) != round6(0.785398));	// 45 degrees
-	std::cout << std::boolalpha << "validate_radius(simple_yz_arc): " << validate_radius(simple_yz_arc) << " arc_angle: " << round6(arc_angle(simple_yz_arc)) << "\n";
+	std::cout << std::boolalpha << "validate_radius(simple_yz_arc): " << validate_radius(simple_yz_arc) << ", arc_angle: " << round6(arc_angle(simple_yz_arc)) << "\n";
 	
-	std::cout << std::boolalpha << "validate_radius(simple_xyz_helix): " << validate_radius(simple_xyz_helix) << " arc_angle: " << round6(arc_angle(simple_xyz_helix)) << "\n";
+	std::cout << std::boolalpha << "validate_radius(simple_xyz_helix): " << validate_radius(simple_xyz_helix) << ", arc_angle: " << round6(arc_angle(simple_xyz_helix)) << "\n";
 	
 	gcode_arc simple_xy_arc_zero = {Clockwise, XY, {-1, 0, 0}, {0, 1, 0}, {0, 0, 0}, 1};
 	arc_center(simple_xy_arc_zero);
@@ -215,6 +215,10 @@ int main()
 		std::cout << "helix{" << r << ", " << h << ", " << p << ", " << theta << "} (L: " << round6(length(r, h, p)) << "): \n";
 		auto points = helix_points(r, h, p, theta, 4);
 		std::copy(begin(points), end(points), std::ostream_iterator<point_3>(std::cout, "\n"));
+	}
+	
+	{
+		//X1.0 Y1.6 I1.0 J1.1 Z0.9
 	}
 	
 	return 0;
