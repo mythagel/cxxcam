@@ -71,7 +71,7 @@ struct gcode_arc
 	unsigned int turns;
 };
 
-bool validate_radius(const gcode_arc& arc)
+std::pair<point_3, point_3> planar_points(const gcode_arc& arc)
 {
 	point_3 start = {0, 0, 0};
 	point_3 end = {0, 0, 0};
@@ -90,6 +90,14 @@ bool validate_radius(const gcode_arc& arc)
 			end = point_3{0, arc.end.y, arc.end.z};
 			break;
 	}
+	return std::make_pair(start, end);
+}
+
+bool validate_radius(const gcode_arc& arc)
+{
+	auto x = planar_points(arc);
+	auto start = x.first;
+	auto end = x.second;
 	
 	double ds = distance(start, arc.center);
 	double de = distance(end, arc.center);
@@ -100,12 +108,26 @@ bool validate_radius(const gcode_arc& arc)
 	return true;
 }
 
+double arc_angle(const gcode_arc& arc)
+{
+	switch(arc.plane)
+	{
+		case XY:
+			return atan2(arc.end.y - arc.start.y, arc.end.x - arc.start.x);
+		case ZX:
+			return atan2(arc.end.z - arc.start.z, arc.end.x - arc.start.x);
+		case YZ:
+			return atan2(arc.end.z - arc.start.z, arc.end.y - arc.start.y);
+	}
+}
+
 double length(double r, double h, double p)
 {
 	double c = h / (2*PI);
 	
 	return (2*PI*p) * sqrt((r*r) + (c*c));
 }
+
 /*
 r = radius
 h = height per turn
@@ -134,10 +156,11 @@ int main()
 	
 	gcode_arc simple_xyz_helix = {Clockwise, XY, {0, 0, 0}, {1, 1, 1}, {1, 0, 0}, 1};
 	
-	std::cout << std::boolalpha << "validate_radius(simple_xy_arc): " << validate_radius(simple_xy_arc) << "\n";
-	std::cout << std::boolalpha << "validate_radius(simple_yz_arc): " << validate_radius(simple_yz_arc) << "\n";
+	std::cout << std::boolalpha << "validate_radius(simple_xy_arc): " << validate_radius(simple_xy_arc) << " arc_angle: " << round6(arc_angle(simple_xy_arc)) << "\n";
+	die_if(round6(arc_angle(simple_xy_arc)) != round6(0.785398));	// 45 degrees
+	std::cout << std::boolalpha << "validate_radius(simple_yz_arc): " << validate_radius(simple_yz_arc) << " arc_angle: " << round6(arc_angle(simple_yz_arc)) << "\n";
 	
-	std::cout << std::boolalpha << "validate_radius(simple_xyz_helix): " << validate_radius(simple_xyz_helix) << "\n";
+	std::cout << std::boolalpha << "validate_radius(simple_xyz_helix): " << validate_radius(simple_xyz_helix) << " arc_angle: " << round6(arc_angle(simple_xyz_helix)) << "\n";
 	
 	// unit circle represented as helix
 	{
@@ -159,7 +182,7 @@ int main()
 	
 	// unit helix
 	{
-		double r = 1, h = 1, p = 2, theta = 0;
+		double r = 1, h = 1, p = 1, theta = 0;
 		std::cout << "helix{" << r << ", " << h << ", " << p << ", " << theta << "} (L: " << round6(length(r, h, p)) << "): \n";
 		auto points = helix_points(r, h, p, theta, 4);
 		std::copy(begin(points), end(points), std::ostream_iterator<point_3>(std::cout, "\n"));
