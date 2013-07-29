@@ -29,6 +29,7 @@
           - Performs analysis on a specified path.
           - Provides information on cutting performance.
           - Cutting time.
+          - Bounding box
     - Cutting speed
     - Performance
        - Path for each flute is trochoidal. 
