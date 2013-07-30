@@ -6,6 +6,7 @@
 #include <tuple>
 #include <vector>
 #include <iterator>
+#include <fstream>
 #include "die_if.h"
 
 static const double PI = 3.14159265358979323846;
@@ -15,6 +16,15 @@ struct point_3
 	double x;
 	double y;
 	double z;
+	
+	point_3()
+	 : x(), y(), z()
+	{
+	}
+	point_3(double x, double y, double z)
+	 : x(x), y(y), z(z)
+	{
+	}
 	
 	bool operator==(const point_3& o) const
 	{
@@ -69,6 +79,21 @@ struct gcode_arc
 	point_3 center;
 	
 	unsigned int turns;
+};
+
+struct generic_arc
+{
+	double radius;
+	double height_per_rev;
+	double rotations;
+	double start_angle_rad;
+	
+	struct
+	{
+		double x;
+		double y;
+		double z;
+	} plane;
 };
 
 bool validate_radius(const gcode_arc& arc)
@@ -130,24 +155,24 @@ p = turns
 theta = start angle(radians)
 steps_per_rev = effectively resolution of returned points.
 */
-std::vector<point_3> helix_points(double r, double h, double p, double theta, double steps_per_rev)
+std::vector<point_3> helix_points(double r, double h, double p, double theta, const point_3& c, double steps_per_rev)
 {
 	std::vector<point_3> P;
-	double c = h / (2*PI);
+	double ch = h / (2*PI);
 	
 	auto begin = theta;
 	auto end = begin+(2*PI*p);
 	auto step = (2*PI)/steps_per_rev;
 	
 	for(double t = begin; t <= end; t += step)
-		P.push_back({cos(t)*r, sin(t)*r, t*c});
+		P.push_back({ (cos(t)*r)+c.x, (sin(t)*r)+c.y, (t*ch) + c.z});
 	return P;
 }
 
 /*
 normalise arc to centered around 0, 0, 0
 */
-void arc_center(const gcode_arc& arc)
+double arc_center(const gcode_arc& arc)
 {
 	point_3 start = {0, 0, 0};
 	point_3 end = {0, 0, 0};
@@ -172,6 +197,7 @@ void arc_center(const gcode_arc& arc)
 	}
 	std::cout << "start: " << start << " end: " << end << '\n';
 	std::cout << "rads2start: " << theta << "\n";
+	return theta;
 }
 
 int main()
@@ -187,6 +213,8 @@ int main()
 	
 	std::cout << std::boolalpha << "validate_radius(simple_xyz_helix): " << validate_radius(simple_xyz_helix) << ", arc_angle: " << round6(arc_angle(simple_xyz_helix)) << "\n";
 	
+	std::cout << "\n";
+	
 	gcode_arc simple_xy_arc_zero = {Clockwise, XY, {-1, 0, 0}, {0, 1, 0}, {0, 0, 0}, 1};
 	arc_center(simple_xy_arc_zero);
 	arc_center(simple_xy_arc);
@@ -196,29 +224,88 @@ int main()
 		double r = 1, h = 0, p = 1, theta = 0;
 		std::cout << "helix{" << r << ", " << h << ", " << p << "} (L: " << round6(length(r, h, p)) << "): \n";
 		die_if(round6(length(r, h, p)) != round6(2*PI));
-		auto points = helix_points(r, h, p, theta, 4);
+		auto points = helix_points(r, h, p, theta, {}, 4);
 		std::copy(begin(points), end(points), std::ostream_iterator<point_3>(std::cout, "\n"));
+		std::cout << "start: " << points.front() << " end: " << points.back() << "\n";
 	}
+
+	std::cout << "\n";
 
 	// unit line represented as helix
 	{
 		double r = 0, h = 1, p = 1, theta = 0;
 		std::cout << "helix{" << r << ", " << h << ", " << p << ", " << theta << "} (L: " << round6(length(r, h, p)) << "): \n";
 		die_if(round6(length(r, h, p)) != round6(1));
-		auto points = helix_points(r, h, p, theta, 4);
+		auto points = helix_points(r, h, p, theta, {}, 4);
 		std::copy(begin(points), end(points), std::ostream_iterator<point_3>(std::cout, "\n"));
+		std::cout << "start: " << points.front() << " end: " << points.back() << "\n";
 	}
+	
+	std::cout << "\n";
 	
 	// unit helix
 	{
 		double r = 1, h = 1, p = 1, theta = 0;
 		std::cout << "helix{" << r << ", " << h << ", " << p << ", " << theta << "} (L: " << round6(length(r, h, p)) << "): \n";
-		auto points = helix_points(r, h, p, theta, 4);
+		auto points = helix_points(r, h, p, theta, {}, 4);
 		std::copy(begin(points), end(points), std::ostream_iterator<point_3>(std::cout, "\n"));
+		std::cout << "start: " << points.front() << " end: " << points.back() << "\n";
 	}
 	
+	std::cout << "\n";
+	
 	{
-		//X1.0 Y1.6 I1.0 J1.1 Z0.9
+		
+	
+		double r = 100, h = 1, p = 0.35, theta = PI/4;
+		std::cout << "helix{" << r << ", " << h << ", " << p << ", " << theta << "} (L: " << round6(length(r, h, p)) << "): \n";
+		auto points = helix_points(r, h, p, theta, {50, 50, 50}, 60);
+		std::ofstream os("points");
+		std::copy(begin(points), end(points), std::ostream_iterator<point_3>(os, "\n"));
+		std::cout << "start: " << points.front() << " end: " << points.back() << "\n";
+		/* TODO
+		convert gcode_arc to generic_arc
+		gcode_arc is on XY, ZX, or YZ planes.
+		generic_arc can be rotated to any plane.
+		
+		
+		
+		Find length of helix
+		Find theta to start point
+		Find height
+		How to finish on end point?
+		Translate helix points to correct location
+		Rotate helix points to correct orientation (plane)
+		
+		*/
+	}
+	
+	std::cout << "\n";
+	
+	{
+		// Scaling & translation
+		
+		auto expected_points = helix_points(125, 1, 1, 0, {10, 10, 15}, 10);
+		
+		auto points = helix_points(1, 1, 1, 0, {}, 10);
+		std::vector<point_3> actual;
+		for(const auto& p : points)
+		{
+			double r = 125;
+			point_3 c = {10, 10, 15};
+			
+			// helix axis (z) is not scaled by radius
+			actual.emplace_back((p.x*r)+c.x, (p.y*r)+c.y, p.z+c.z);
+		}
+		
+		std::cout << "Expected: \n";
+		std::copy(begin(expected_points), end(expected_points), std::ostream_iterator<point_3>(std::cout, "\n"));
+		std::cout << "\n";
+		std::cout << "Actual: \n";
+		std::copy(begin(actual), end(actual), std::ostream_iterator<point_3>(std::cout, "\n"));
+		
+		std::cout << "Expected start: " << expected_points.front() << " end: " << expected_points.back() << "\n";
+		std::cout << "Actual   start: " << actual.front() << " end: " << actual.back() << "\n";
 	}
 	
 	return 0;
