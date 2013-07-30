@@ -47,10 +47,17 @@ step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 	
 	auto tool = geom::rotate(s.tool.Model(), o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4());
 
-	geom::polyline_t path{ { {length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value()}, 
-							{length_mm(p1.x).value(), length_mm(p1.y).value(), length_mm(p1.z).value()} } };
-	
-	auto tool_path = geom::glide(tool, path);
+	geom::polyhedron_t tool_path;
+	if(distance(p0, p1) > units::length{0.000001 * units::millimeters})
+	{
+		geom::polyline_t path{ { {length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value()}, 
+								{length_mm(p1.x).value(), length_mm(p1.y).value(), length_mm(p1.z).value()} } };
+		tool_path = geom::glide(tool, path);
+	}
+	else
+	{
+		tool_path = translate(tool, length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value());
+	}
 	//auto material_removed = s.stock.Model * tool_path;
 	
 	/*
