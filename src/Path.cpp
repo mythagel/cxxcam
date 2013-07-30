@@ -122,6 +122,13 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	
 	std::vector<step> path;
 	auto total_steps = length * steps_per_mm;
+	
+	// TODO ugly, wrong hack for pure rotary motion.
+	// Need to interpolate based on the rotary motion
+	// not some pseudo guestimated constant (8PI)
+	if(total_steps < 1)
+		total_steps = 8*3.14159 * steps_per_mm;
+	
 	for(size_t s = 0; s < total_steps; ++s)
 	{
 		auto scale = s / static_cast<double>(total_steps);
