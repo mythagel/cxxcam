@@ -38,6 +38,7 @@ simulation
 simulate_path 
 simulate_path-test2 
 simulate_path-nintynonmanifold 
+simulate_rotary 
 fold_adjacent 
 playjs 
 helix
