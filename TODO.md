@@ -72,6 +72,7 @@
     - UVW mapped into cartesian space?
     - Arc expansion
        - *Implement*
+    - Validate linear and rotational speeds for cuts and rapids per axis
  * Spindle class
     - Torque interpolation
  * nef
