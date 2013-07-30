@@ -58,8 +58,9 @@
     - Needs intersection tests
     - Needs material properties
     - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
- * Current design means that runtime is _unusably_ long.
-    - Need to think of alternative designs that improve performance.
+ * ~~Current design means that runtime is _unusably_ long.~~
+    - ~~Need to think of alternative designs that improve performance.~~
+    - ~~Improved simply by reducing resolution of tool model.~~
  * Represent workholding, clamps, etc. (for intersection tests)
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
