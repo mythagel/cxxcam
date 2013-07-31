@@ -26,6 +26,7 @@
 #define CXXCAMMATH_H_
 #include "Units.h"
 #include <boost/math/quaternion.hpp>
+#include <iosfwd>
 
 namespace cxxcam
 {
@@ -41,6 +42,7 @@ struct point_3
 	bool operator==(const point_3& p) const;
 	bool operator!=(const point_3& p) const;
 };
+std::ostream& operator<<(std::ostream& os, const point_3&);
 
 typedef boost::math::quaternion<double> quaternion_t;
 

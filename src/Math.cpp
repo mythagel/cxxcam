@@ -25,6 +25,7 @@
 #include "Math.h"
 #include <boost/units/cmath.hpp>
 #include <tuple>
+#include <ostream>
 
 namespace cxxcam
 {
@@ -48,6 +49,12 @@ bool point_3::operator==(const point_3& p) const
 bool point_3::operator!=(const point_3& p) const
 {
 	return to_tuple(*this) != to_tuple(p);
+}
+
+std::ostream& operator<<(std::ostream& os, const point_3& p)
+{
+	os << p.x << ", " << p.y << ", " << p.z;
+	return os;
 }
 
 vector_3::vector_3()
