@@ -270,11 +270,13 @@ void arc_test(const gcode_arc& arc)
 			break;
 		}
 	}
+	std::cout << "\n" << std::string(50, '=') << "\n\n";
 }
 
 int main()
 {
 	gcode_arc simple_xy_arc = {Clockwise, XY, {0, 0, 0}, {1, 1, 0}, {1, 0, 0}, 1};
+	gcode_arc simple_xy_arc_ccw = {CounterClockwise, XY, {0, 0, 0}, {1, 1, 0}, {1, 0, 0}, 1};
 	gcode_arc simple_zx_arc = {Clockwise, ZX, {0, 0, 0}, {1, 0, 1}, {1, 0, 0}, 1};
 	gcode_arc simple_yz_arc = {Clockwise, YZ, {0, 0, 0}, {0, 1, 1}, {0, 0, 1}, 1};
 	
@@ -284,22 +286,12 @@ int main()
 	gcode_arc xyz_helix = {Clockwise, XY, {1, 0, 0}, {1, 0, 10}, {0, 0, 0}, 2};
 	
 	arc_test(simple_xy_arc);
-	std::cout << "\n";
-	
+	arc_test(simple_xy_arc_ccw);
 	arc_test(simple_zx_arc);
-	std::cout << "\n";
-	
 	arc_test(simple_yz_arc);
-	std::cout << "\n";
-	
 	arc_test(simple_xyz_helix);
-	std::cout << "\n";
-	
 	arc_test(xy_circle);
-	std::cout << "\n";
-	
 	arc_test(xyz_helix);
-	std::cout << "\n";
 	
 	std::cout << "\n";
 	// unit circle represented as helix
