@@ -10,6 +10,6 @@ int main()
 	auto x1 = make_sphere({0, 0, 0}, 2, 16);
 	auto x2 = make_sphere({1, 1, 1}, 1, 16);
 	auto x = x1 + x2;
-	write_off(std::cout, x);
+	std::cout << format::off << x;
 	return 0;
 }

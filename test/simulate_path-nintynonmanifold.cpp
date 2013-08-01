@@ -80,7 +80,7 @@ int main()
 		std::ostringstream name;
 		name << "simulate_path-nintynonmanifold" << i << ".off";
 		std::ofstream os(name.str());
-		geom::write_off(os, parts[i]);
+		os << geom::format::off << parts[i];
 	}
 	return 0;
 }

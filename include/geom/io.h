@@ -24,7 +24,6 @@
 
 #ifndef GEOM_IO_H_
 #define GEOM_IO_H_
-#include <iosfwd>
 #include <vector>
 
 namespace geom
@@ -48,9 +47,6 @@ struct object_t
 };
 
 object_t to_object(const polyhedron_t& poly);
-
-void write_off(std::ostream&, const polyhedron_t& poly);
-polyhedron_t read_off(std::istream&);
 
 }
 

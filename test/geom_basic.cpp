@@ -10,7 +10,7 @@ int main()
 	polyhedron_t p2;
 	
 	auto p3 = p1 + p2;
-	write_off(std::cout, p3);
+	std::cout << format::off << p3;
 	
 	return 0;
 }

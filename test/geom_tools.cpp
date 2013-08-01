@@ -14,6 +14,6 @@ int main()
 	auto shank = make_cone({0, 0, 100}, {0, 0, 40}, 10, 10, 8);
 	auto flutes = make_cone({0, 0, 40}, {0, 0, 0}, 10, 10, 8);
 	auto x = shank + flutes;
-	write_off(std::cout, x);
+	std::cout << format::off << x;
 	return 0;
 }

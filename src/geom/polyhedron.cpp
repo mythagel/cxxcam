@@ -27,8 +27,10 @@
 #include <istream>
 #include <ostream>
 #include "cgal.h"
-#include <CGAL/IO/Nef_polyhedron_iostream_3.h>
 #include <stdexcept>
+#include <CGAL/IO/Nef_polyhedron_iostream_3.h>
+#include <CGAL/OFF_to_nef_3.h>
+#include <CGAL/IO/Polyhedron_iostream.h>
 
 namespace geom
 {
@@ -175,14 +177,64 @@ polyhedron_t::~polyhedron_t()
 {
 }
 
+namespace format
+{
+
+enum Type
+{
+	OFF,
+	NEF
+};
+
+int itag()
+{
+    static const int t = std::ios_base::xalloc();
+    return t;
+}
+
+std::ios_base& off(std::ios_base& ios)
+{
+	ios.iword(itag()) = OFF;
+	return ios;
+}
+std::ios_base& nef(std::ios_base& ios)
+{
+	ios.iword(itag()) = NEF;
+	return ios;
+}
+
+}
+
 std::ostream& operator<<(std::ostream& os, const polyhedron_t& poly)
 {
-	return os << poly.priv->nef;
+	switch(os.iword(format::itag()))
+	{
+		case format::OFF:
+			os << to_Polyhedron_3(poly);
+			break;
+		case format::NEF:
+			os << poly.priv->nef;
+			break;
+		default:
+			throw std::logic_error("polyhedron_t: Unknown data format.");
+	}
+	return os;
 }
 std::istream& operator>>(std::istream& is, polyhedron_t& poly)
 {
 	poly.ensure_unique();
-	return is >> poly.priv->nef;
+	switch(is.iword(format::itag()))
+	{
+		case format::OFF:
+			CGAL::OFF_to_nef_3(is, poly.priv->nef);
+			break;
+		case format::NEF:
+			is >> poly.priv->nef;
+			break;
+		default:
+			throw std::logic_error("polyhedron_t: Unknown data format.");
+	}
+	return is;
 }
 
 }

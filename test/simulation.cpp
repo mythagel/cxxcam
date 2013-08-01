@@ -39,7 +39,7 @@ int main()
 	std::cout << step.swarf << "\n";
 	std::cout << "Bbox: " << s.bounding_box << '\n';
 	
-	geom::write_off(std::cout, s.stock.Model);
+	std::cout << geom::format::off << s.stock.Model;
 	return 0;
 }
 

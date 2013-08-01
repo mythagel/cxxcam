@@ -74,7 +74,7 @@ int main()
 	std::cout << "Bbox: " << s.bounding_box << '\n';
 
 	std::ofstream os("simulate_path-test2.off");
-	geom::write_off(os, s.stock.Model);
+	os << geom::format::off << s.stock.Model;
 	return 0;
 }
 

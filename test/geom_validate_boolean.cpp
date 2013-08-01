@@ -31,6 +31,6 @@ int main()
 		stock -= tool_path;
 	}
 	
-	write_off(std::cout, stock);
+	std::cout << format::off << stock;
 	return 0;
 }

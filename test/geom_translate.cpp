@@ -13,14 +13,14 @@ using namespace geom;
 int main()
 {
 	auto cyl = make_cone({0, 0, 0}, {0, 0, 40}, 10, 10, 16);
-	write_off(std::cout, cyl);
+	std::cout << format::off << cyl;
 	auto cyl10 = translate(cyl, 10, 10, 10);
 	std::cerr << "\n";
-	write_off(std::cout, cyl10);
+	std::cout << format::off << cyl10;
 
 	auto cyl180x = rotate(cyl, 0, 1, 0, 0);
 	std::cerr << "\n";
-	write_off(std::cout, cyl180x);
+	std::cout << format::off << cyl180x;
 	
 	auto box = make_box({0, 0, 0}, {1, 1, 1});
 	auto box10 = make_box({0, 0, 0}, {10, 10, 10});

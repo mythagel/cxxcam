@@ -12,6 +12,6 @@ Invalid memory accesses under valgrind exposed with this test.
 int main()
 {
 	auto cyl = make_cone( {0, 0, 0}, {0, 0, 40}, 10, 10, 16);
-	write_off(std::cout, cyl);
+	std::cout << format::off << cyl;
 	return 0;
 }

@@ -30,33 +30,33 @@ int main()
 
 	{
 		std::ofstream os("geom_validate_rotations.off");
-		write_off(os, cone);
+		os << format::off << cone;
 	}
 
 	{
 		auto x = rotate(cone, 0, 1, 0, 0);
 		x += cone;
 		std::ofstream os("geom_validate_rotations-180x.off");
-		write_off(os, x);
+		os << format::off << x;
 	}
 	{
 		auto x = rotate(cone, 0, 0, 1, 0);
 		x += cone;
 		std::ofstream os("geom_validate_rotations-180y.off");
-		write_off(os, x);
+		os << format::off << x;
 	}
 	{
 		auto x = rotate(cone, 0, 0, 0, 1);
 		x += cone;
 		std::ofstream os("geom_validate_rotations-180z.off");
-		write_off(os, x);
+		os << format::off << x;
 	}
 	
 	{
 		auto x = rotate(cone, sqrt(0.5), sqrt(0.5), 0, 0);
 		x += cone;
 		std::ofstream os("geom_validate_rotations-90x.off");
-		write_off(os, x);
+		os << format::off << x;
 	}
 	
 	return 0;

@@ -18,7 +18,7 @@ int main()
 		 * some solution to resolve this situation needs to be developed.
 		 */
 		auto x = x1 + x2;
-		write_off(std::cout, x);
+		std::cout << format::off << x;
 	}
 	catch(const std::exception& ex)
 	{

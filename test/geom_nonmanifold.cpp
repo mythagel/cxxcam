@@ -23,7 +23,7 @@ int main()
 		auto s0 = stock - t00;
 		
 		std::ofstream os("geom_nonmanifold-s0.off");
-		write_off(os, s0);
+		os << format::off << s0;
 	}
 	
 	{
@@ -33,7 +33,7 @@ int main()
 		auto s1 = stock - t01;
 
 		std::ofstream os("geom_nonmanifold-s1.off");
-		write_off(os, s1);
+		os << format::off << s1;
 	}
 	
 	/*
@@ -57,7 +57,7 @@ int main()
 		s2 -= tool_path;
 		
 		std::ofstream os("geom_nonmanifold-s2.off");
-		write_off(os, s2);
+		os << format::off << s2;
 	}
 }
 

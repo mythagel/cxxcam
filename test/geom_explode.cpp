@@ -20,7 +20,7 @@ void simple()
 		std::ostringstream name;
 		name << "geom_explode-simple-" << i << ".off";
 		std::ofstream os(name.str());
-		write_off(os, parts[i]);
+		os << format::off << parts[i];
 	}
 }
 
@@ -36,7 +36,7 @@ void nonmanifold()
 		std::ostringstream name;
 		name << "geom_explode-nonmanifold-" << i << ".off";
 		std::ofstream os(name.str());
-		write_off(os, parts[i]);
+		os << format::off << parts[i];
 	}
 }
 
