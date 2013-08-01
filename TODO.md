@@ -8,6 +8,13 @@
  2. Complete model generation (i.e. remove material from stock object)
 
 ## High Level ##
+ * Path expansion
+    - Validate rotations
+       - Correct axes
+       - Correct direction
+    - UVW mapped into cartesian space?
+    - Arc expansion
+       - *Implement*
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
@@ -31,7 +38,7 @@
           - Cutting time.
     - Cutting speed
     - Performance
-       - Path for each flute is trochoidal. 
+       - Path for each flute is trochoidal.
        - Calculate the path that flute tip passes through material.
        - Gives simulated chip load per tooth.
        - Compare with data (tables? calculated from Material hardness?) for MRR.
@@ -48,25 +55,14 @@
     - Generate model from this definition.
  * Complete Stock class
     - Needs material properties
-    - ~~Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.~~
-       - Not needed, just add tolerance to stock object.
+ * Spindle class
+    - Torque interpolation
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
- * Path expansion
-    - Validate rotations
-       - Correct axes
-       - Correct direction
-    - UVW mapped into cartesian space?
-    - Arc expansion
-       - *Implement*
-    - ~~Validate linear and rotational speeds for cuts and rapids per axis~~
-       - Not part of path expansion module.
  * Ability to explode stock into individual objects when cut
     - geom::explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
     - How should user specify which part remains?
- * Spindle class
-    - Torque interpolation
- * nef
+ * geom
     - Meshing 
        - Current meshing parameters are too computationally expensive.
     - Geometry
