@@ -1608,6 +1608,8 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 		case Direction::CounterClockwise:
 			arc_dir = path::ArcDirection::CounterClockwise;
 			break;
+		default:
+			throw std::logic_error("Unknown Arc Direction");
 	}
 	switch(m_State.m_Plane)
 	{
