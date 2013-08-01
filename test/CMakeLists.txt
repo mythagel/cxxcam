@@ -41,7 +41,8 @@ simulate_path-nintynonmanifold
 simulate_rotary 
 fold_adjacent 
 playjs 
-helix
+helix 
+bbox 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()
