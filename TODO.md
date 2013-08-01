@@ -9,6 +9,9 @@
 
 ## High Level ##
  * Path expansion
+    - Correct faults with angular movements
+       - With zero linear movement (pure rotary motion)
+       - Large angular with small linear
     - Validate rotations
        - Correct axes
        - Correct direction
