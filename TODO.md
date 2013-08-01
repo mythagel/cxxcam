@@ -29,7 +29,6 @@
           - Performs analysis on a specified path.
           - Provides information on cutting performance.
           - Cutting time.
-          - ~~Bounding box~~
     - Cutting speed
     - Performance
        - Path for each flute is trochoidal. 
@@ -44,12 +43,12 @@
           - New functions that augments existing path provided.
  * Higher order curves
  * Complete Tool class - apt_cutter branch
-    - Needs nef model loading / ~~generation~~
+    - Needs nef model loading
     - APT CUTTER style mill tool definition
     - http://www.dtpm.unipa.it/emc/it/apt_doc/manual/prog_toolpath.html#figure69
     - Generate model from this definition.
  * Complete Stock class
-    - Needs model loading & ~~generation~~
+    - Needs model loading
     - Needs intersection tests
     - Needs material properties
     - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
