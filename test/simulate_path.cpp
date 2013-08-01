@@ -69,6 +69,7 @@ int main()
 		total += step.swarf;
 	}
 	std::cout << "Total: " << total << "\n";
+	std::cout << "Bbox: " << s.bounding_box << '\n';
 
 	std::ofstream os("simulate_path.off");
 	geom::write_off(os, s.stock.Model);

@@ -37,6 +37,7 @@ int main()
 	auto step = simulate_cut(s0, s1, s);
 	
 	std::cout << step.swarf << "\n";
+	std::cout << "Bbox: " << s.bounding_box << '\n';
 	
 	geom::write_off(std::cout, s.stock.Model);
 	return 0;

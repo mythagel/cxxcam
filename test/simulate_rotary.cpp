@@ -86,6 +86,7 @@ int main()
 		total += step.swarf;
 	}
 	std::cout << "Total: " << total << "\n";
+	std::cout << "Bbox: " << s.bounding_box << '\n';
 
 	std::ofstream os("simulate_rotary.off");
 	geom::write_off(os, s.stock.Model);

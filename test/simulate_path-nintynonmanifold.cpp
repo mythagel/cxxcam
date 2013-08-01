@@ -72,6 +72,7 @@ int main()
 		total += step.swarf;
 	}
 	std::cout << "Total: " << total << "\n";
+	std::cout << "Bbox: " << s.bounding_box << '\n';
 
 	auto parts = geom::explode(s.stock.Model);
 	for(size_t i = 0; i < parts.size(); ++i)
