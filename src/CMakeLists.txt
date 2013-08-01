@@ -27,5 +27,6 @@ Configuration.cpp
 Path.cpp 
 Math.cpp 
 Simulation.cpp 
+Bbox.cpp
 )
 TARGET_LINK_LIBRARIES(cxxcam geom)
