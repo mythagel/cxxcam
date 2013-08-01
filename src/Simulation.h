@@ -30,6 +30,7 @@
 #include "Stock.h"
 #include "Units.h"
 #include "Limits.h"
+#include "Bbox.h"
 
 namespace cxxcam
 {
@@ -61,6 +62,8 @@ struct state
 	double FeedRate;	// TODO normalised.
 	unsigned long SpindleSpeed;	// RPM
 	limits::FeedRate FeedRateLimit;
+	
+	Bbox bounding_box;
 };
 
 /*
