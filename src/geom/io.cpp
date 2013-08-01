@@ -25,7 +25,9 @@
 #include "polyhedron.h"
 #include "private.h"
 #include <CGAL/IO/Polyhedron_iostream.h>
+#include <CGAL/OFF_to_nef_3.h>
 #include <CGAL/iterator.h>
+#include <istream>
 #include <ostream>
 #include <cassert>
 
@@ -71,6 +73,14 @@ object_t to_object(const polyhedron_t& poly)
 void write_off(std::ostream& os, const polyhedron_t& poly)
 {
 	os << to_Polyhedron_3(poly);
+}
+
+polyhedron_t read_off(std::istream& is)
+{
+	Nef_polyhedron_3 nef;
+	CGAL::OFF_to_nef_3(is, nef);
+	auto priv = std::make_shared<polyhedron_t::private_t>( nef );
+	return make_polyhedron( std::move(priv) );
 }
 
 }
