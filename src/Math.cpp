@@ -53,7 +53,8 @@ bool point_3::operator!=(const point_3& p) const
 
 std::ostream& operator<<(std::ostream& os, const point_3& p)
 {
-	os << p.x << ", " << p.y << ", " << p.z;
+	using units::length_mm;
+	os << length_mm(p.x) << ", " << length_mm(p.y) << ", " << length_mm(p.z);
 	return os;
 }
 
