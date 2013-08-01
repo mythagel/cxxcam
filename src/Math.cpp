@@ -94,6 +94,12 @@ bool vector_3::operator!=(const vector_3& v) const
 	return to_tuple(*this) != to_tuple(v);
 }
 
+std::ostream& operator<<(std::ostream& os, const vector_3& v)
+{
+	os << "(" << v.x << "," << v.y << "," << v.z << "," << v.a << ")";
+	return os;
+}
+
 vector_3 normalise(const vector_3& v)
 {
 	auto scale = sqrt((v.x*v.x)+(v.y*v.y)+(v.z*v.z));

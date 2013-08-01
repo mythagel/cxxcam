@@ -60,6 +60,8 @@ struct vector_3
 	bool operator!=(const vector_3& v) const;
 };
 
+std::ostream& operator<<(std::ostream& os, const vector_3&);
+
 vector_3 normalise(const vector_3& v);
 units::length distance(const point_3& p0, const point_3& p1);
 quaternion_t::value_type dot(const quaternion_t& q1, const quaternion_t& q2);

@@ -3,12 +3,6 @@
 #include "die_if.h"
 #include <boost/units/cmath.hpp>
 
-std::ostream& operator<<(std::ostream& os, const cxxcam::math::vector_3& r)
-{
-	os << "(" << r.x << "," << r.y << "," << r.z << "," << r.a << ")";
-	return os;
-}
-
 /*
 w	x	y	z					Description
 1	0	0	0					Identity quaternion, no rotation

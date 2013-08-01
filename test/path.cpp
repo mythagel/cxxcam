@@ -2,12 +2,6 @@
 #include <iostream>
 #include "die_if.h"
 
-std::ostream& operator<<(std::ostream& os, const cxxcam::math::vector_3& r)
-{
-	os << "(" << r.x << "," << r.y << "," << r.z << "," << r.a << ")";
-	return os;
-}
-
 void simple()
 {
 	std::cout << "simple\n";
