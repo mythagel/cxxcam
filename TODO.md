@@ -48,22 +48,15 @@
     - APT CUTTER style mill tool definition
     - http://www.dtpm.unipa.it/emc/it/apt_doc/manual/prog_toolpath.html#figure69
     - Generate model from this definition.
- * Restore position
-    - Ensure move is safe (no intersection with tool or clamps)
-    - First version rapid to clearance plane, move, then rapid back to previous z height.
- * geom explode
-    - explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
  * Complete Stock class
     - Needs model loading & ~~generation~~
     - Needs intersection tests
     - Needs material properties
     - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
- * Represent workholding, clamps, etc. (for intersection tests)
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
- * Automatic/heuristic tool selection
  * Ability to explode stock into individual objects when cut
-    - nef::explode
+    - geom::explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
     - How should user specify which part remains?
  * Path expansion
     - Validate rotations
@@ -81,6 +74,11 @@
     - Geometry
        - Validate primitive geometry
        - Correcting narrowing warnings.
+ * Represent workholding, clamps, etc. (for intersection tests)
+ * Restore position
+    - Ensure move is safe (no intersection with tool or clamps)
+    - First version rapid to clearance plane, move, then rapid back to previous z height.
+ * Automatic/heuristic tool selection
  * Global Machine accuracy
     - Use when generating tool and stock models.
  * Math
