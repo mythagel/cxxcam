@@ -43,20 +43,15 @@
           - New functions that augments existing path provided.
  * Higher order curves
  * Complete Tool class - apt_cutter branch
-    - Needs nef model loading
     - APT CUTTER style mill tool definition
     - http://www.dtpm.unipa.it/emc/it/apt_doc/manual/prog_toolpath.html#figure69
     - Generate model from this definition.
  * Complete Stock class
-    - Needs model loading
-    - Needs intersection tests
     - Needs material properties
-    - Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.
+    - ~~Stock location tolerance - expect stock locations to be +- this tolerance to avoid rapids into stock when moving close to it.~~
+       - Not needed, just add tolerance to stock object.
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
- * Ability to explode stock into individual objects when cut
-    - geom::explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
-    - How should user specify which part remains?
  * Path expansion
     - Validate rotations
        - Correct axes
@@ -64,7 +59,11 @@
     - UVW mapped into cartesian space?
     - Arc expansion
        - *Implement*
-    - Validate linear and rotational speeds for cuts and rapids per axis
+    - ~~Validate linear and rotational speeds for cuts and rapids per axis~~
+       - Not part of path expansion module.
+ * Ability to explode stock into individual objects when cut
+    - geom::explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
+    - How should user specify which part remains?
  * Spindle class
     - Torque interpolation
  * nef
