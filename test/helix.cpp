@@ -143,6 +143,7 @@ double helix_length(double r, double h, double p)
 
 void arc_test(const gcode_arc& arc)
 {
+	size_t steps_per_mm = 1;
 	std::cout << arc << "\n";
 	// Steps:
 	// 0. Determine center point & radius
@@ -170,13 +171,75 @@ void arc_test(const gcode_arc& arc)
 			auto start = point_3{arc.start.x, arc.start.y, 0};
 			auto end = point_3{arc.end.x, arc.end.y, 0};
 			auto helix = arc.end.z - arc.start.z;
+			auto center = point_3{arc.center.x, arc.center.y, 0};
 			
-			if(!equidistant(start, end, arc.center))
+			if(!equidistant(start, end, center))
 				throw std::runtime_error("XY arc center not equidistant from start and end points.");
 			
-			double r = distance(start, arc.center);
-			double start_theta = atan2(start.y - arc.center.y, start.x - arc.center.x);
-			double end_theta = atan2(end.y - arc.center.y, end.x - arc.center.x);
+			double r = distance(start, center);
+			double start_theta = atan2(start.y - center.y, start.x - center.x);
+			double end_theta = atan2(end.y - center.y, end.x - center.x);
+			double turn_theta = 2*PI*(arc.turns-1);
+			auto delta_theta = (end_theta - start_theta);
+			switch(arc.dir)
+			{
+				case Clockwise:
+				{
+					if(delta_theta > 0)
+						delta_theta -= 2*PI;
+					break;
+				}
+				case CounterClockwise:
+				{
+					if(delta_theta < 0)
+						delta_theta += 2*PI;
+					break;
+				}
+			}
+			if(delta_theta == 0.0)
+				delta_theta = 2*PI;
+			
+			turn_theta += fabs(delta_theta);
+			
+			double l = helix_length(r, helix / turn_theta, turn_theta);
+			double rads_per_step = turn_theta / static_cast<double>(l * steps_per_mm);
+			
+			std::cout << "Plane: XY\n";
+			std::cout << "r    : " << r << "\n";
+			std::cout << "hx   : " << helix << "\n";
+			std::cout << "td   : " << delta_theta << "\n";
+			std::cout << "t0   : " << start_theta << "\n";
+			std::cout << "t1   : " << end_theta << "\n";
+			std::cout << "tn   : " << turn_theta << "\n";
+			std::cout << "l    : " << l << "\n";
+
+			double ch = helix / turn_theta;
+			std::vector<point_3> P;
+			{
+				double step = delta_theta < 0 ? -rads_per_step : rads_per_step;
+				size_t n_steps = (l * steps_per_mm);
+				
+				double t = start_theta;
+				for(size_t i = 0; i < n_steps; ++i, t += step)
+					P.push_back({ (cos(t)*r)+arc.center.x, (sin(t)*r)+arc.center.y, ((t - start_theta)*ch) + arc.start.z });
+			}
+			P.push_back(arc.end);
+			std::copy(P.begin(), P.end(), std::ostream_iterator<point_3>(std::cout, "\n"));
+			break;
+		}
+		case ZX:
+		{
+			auto start = point_3{arc.start.x, arc.start.z, 0};
+			auto end = point_3{arc.end.x, arc.end.z, 0};
+			auto helix = arc.end.y - arc.start.y;
+			auto center = point_3{arc.center.x, arc.center.z, 0};
+			
+			if(!equidistant(start, end, center))
+				throw std::runtime_error("ZX arc center not equidistant from start and end points.");
+			
+			double r = distance(start, center);
+			double start_theta = atan2(start.y - center.y, start.x - center.x);
+			double end_theta = atan2(end.y - center.y, end.x - center.x);
 			double turn_theta = 2*PI*(arc.turns-1);
 			auto delta_theta = (end_theta - start_theta);
 			switch(arc.dir)
@@ -197,8 +260,9 @@ void arc_test(const gcode_arc& arc)
 			turn_theta += fabs(delta_theta);
 			
 			double l = helix_length(r, helix / turn_theta, turn_theta);
+			double rads_per_step = turn_theta / static_cast<double>(l * steps_per_mm);
 			
-			std::cout << "Plane: XY\n";
+			std::cout << "Plane: ZX\n";
 			std::cout << "r    : " << r << "\n";
 			std::cout << "hx   : " << helix << "\n";
 			std::cout << "td   : " << delta_theta << "\n";
@@ -210,99 +274,73 @@ void arc_test(const gcode_arc& arc)
 			double ch = helix / turn_theta;
 			std::vector<point_3> P;
 			{
-				double step = delta_theta < 0 ? -0.1 : 0.1;
+				double step = delta_theta < 0 ? -rads_per_step : rads_per_step;
+				size_t n_steps = (l * steps_per_mm);
+				
 				double t = start_theta;
-				double i = 0.0;
-				while(i < turn_theta)
-				{
-					P.push_back({ (cos(t)*r)+arc.center.x, (sin(t)*r)+arc.center.y, ((t - start_theta)*ch) + arc.start.z });
-					t += step;
-					i += 0.1;
-				}
+				for(size_t i = 0; i < n_steps; ++i, t += step)
+					P.push_back({ (cos(t)*r)+arc.center.x, ((t - start_theta)*ch) + arc.start.y, (sin(t)*r)+arc.center.z});
 			}
-//			if(delta_theta < 0)
-//			{
-//				double steps = 0;
-//				for(double t = start_theta; t > (turn_theta + end_theta); t -= 0.1)
-//					P.push_back({ (cos(t)*r)+arc.center.x, -(sin(t)*r)+arc.center.y, ((t - start_theta)*ch) + arc.start.z });
-//			}
-//			else
-//			{
-//				for(double t = start_theta; t < (turn_theta + start_theta); t += 0.1)
-//					P.push_back({ (cos(t)*r)+arc.center.x, -(sin(t)*r)+arc.center.y, ((t - start_theta)*ch) + arc.start.z });
-//			}
 			P.push_back(arc.end);
 			std::copy(P.begin(), P.end(), std::ostream_iterator<point_3>(std::cout, "\n"));
 			break;
 		}
-		case ZX:
-		{
-			auto start = point_3{arc.start.x, 0, arc.start.z};
-			auto end = point_3{arc.end.x, 0, arc.end.z};
-			auto helix = arc.end.y - arc.start.y;
-			if(equidistant(start, end, arc.center))
-			{
-				double r = distance(start, arc.center);
-				double start_theta = atan2(start.z - arc.center.z, start.x - arc.center.x);
-				double end_theta = atan2(end.z - arc.center.z, end.x - arc.center.x);
-				double turn_theta = 2*PI*arc.turns;
-				turn_theta -= end_theta;
-				double l = helix_length(r, helix / (turn_theta - start_theta), turn_theta);
-				
-				std::cout << "Plane: ZX\n";
-				std::cout << "r    : " << r << "\n";
-				std::cout << "hx   : " << helix << "\n";
-				std::cout << "t0   : " << start_theta << "\n";
-				std::cout << "t1   : " << end_theta << "\n";
-				std::cout << "tn   : " << turn_theta << "\n";
-				std::cout << "l    : " << l << "\n";
-				
-				double ch = helix / (turn_theta - start_theta);
-				std::vector<point_3> P;
-				for(double t = start_theta; t < turn_theta; t += 0.1)
-					P.push_back({ (cos(t)*r)+arc.center.x, ((t - start_theta)*ch) + arc.start.y, -(sin(t)*r)+arc.center.z});
-				P.push_back(arc.end);
-				std::copy(P.begin(), P.end(), std::ostream_iterator<point_3>(std::cout, "\n"));
-			}
-			else
-			{
-				throw std::runtime_error("ZX arc center not equidistant from start and end points.");
-			}
-			break;
-		}
 		case YZ:
 		{
-			auto start = point_3{0, arc.start.y, arc.start.z};
-			auto end = point_3{0, arc.end.y, arc.end.z};
+			auto start = point_3{arc.start.z, arc.start.y, 0};
+			auto end = point_3{arc.end.z, arc.end.y, 0};
 			auto helix = arc.end.x - arc.start.x;
-			if(equidistant(start, end, arc.center))
-			{
-				double r = distance(start, arc.center);
-				double start_theta = atan2(start.y - arc.center.y, start.z - arc.center.z);
-				double end_theta = atan2(end.y - arc.center.y, end.z - arc.center.z);
-				double turn_theta = 2*PI*arc.turns;
-				turn_theta -= end_theta;
-				double l = helix_length(r, helix / (turn_theta - start_theta), turn_theta);
-				
-				std::cout << "Plane: YZ\n";
-				std::cout << "r    : " << r << "\n";
-				std::cout << "hx   : " << helix << "\n";
-				std::cout << "t0   : " << start_theta << "\n";
-				std::cout << "t1   : " << end_theta << "\n";
-				std::cout << "tn   : " << turn_theta << "\n";
-				std::cout << "l    : " << l << "\n";
-				
-				double ch = helix / (turn_theta - start_theta);
-				std::vector<point_3> P;
-				for(double t = start_theta; t < turn_theta; t += 0.1)
-					P.push_back({ ((t - start_theta)*ch) + arc.start.x, -(sin(t)*r)+arc.center.y, (cos(t)*r)+arc.center.z});
-				P.push_back(arc.end);
-				std::copy(P.begin(), P.end(), std::ostream_iterator<point_3>(std::cout, "\n"));
-			}
-			else
-			{
+			auto center = point_3{arc.center.z, arc.center.y, 0};
+			
+			if(!equidistant(start, end, center))
 				throw std::runtime_error("YZ arc center not equidistant from start and end points.");
+			
+			double r = distance(start, center);
+			double start_theta = atan2(start.y - center.y, start.x - center.x);
+			double end_theta = atan2(end.y - center.y, end.x - center.x);
+			double turn_theta = 2*PI*(arc.turns-1);
+			auto delta_theta = (end_theta - start_theta);
+			switch(arc.dir)
+			{
+				case Clockwise:
+				{
+					if(delta_theta > 0)
+						delta_theta -= 2*PI;
+					break;
+				}
+				case CounterClockwise:
+				{
+					if(delta_theta < 0)
+						delta_theta += 2*PI;
+					break;
+				}
 			}
+			turn_theta += fabs(delta_theta);
+			
+			double l = helix_length(r, helix / turn_theta, turn_theta);
+			double rads_per_step = turn_theta / static_cast<double>(l * steps_per_mm);
+			
+			std::cout << "Plane: YZ\n";
+			std::cout << "r    : " << r << "\n";
+			std::cout << "hx   : " << helix << "\n";
+			std::cout << "td   : " << delta_theta << "\n";
+			std::cout << "t0   : " << start_theta << "\n";
+			std::cout << "t1   : " << end_theta << "\n";
+			std::cout << "tn   : " << turn_theta << "\n";
+			std::cout << "l    : " << l << "\n";
+
+			double ch = helix / turn_theta;
+			std::vector<point_3> P;
+			{
+				double step = delta_theta < 0 ? -rads_per_step : rads_per_step;
+				size_t n_steps = (l * steps_per_mm);
+				
+				double t = start_theta;
+				for(size_t i = 0; i < n_steps; ++i, t += step)
+					P.push_back({ ((t - start_theta)*ch) + arc.start.x, (sin(t)*r)+arc.center.y, (cos(t)*r)+arc.center.z});
+			}
+			P.push_back(arc.end);
+			std::copy(P.begin(), P.end(), std::ostream_iterator<point_3>(std::cout, "\n"));
 			break;
 		}
 	}
@@ -315,23 +353,37 @@ int main()
 	gcode_arc simple_xy_arc_ccw = {CounterClockwise, XY, {0, 0, 1}, {1, 1, 1}, {1, 0, 1}, 1};
 	gcode_arc simple_xy_arc_opp = {Clockwise, XY, {1, 1, 2}, {0, 0, 2}, {1, 0, 2}, 1};
 	gcode_arc simple_xy_arc_ccw_opp = {CounterClockwise, XY, {1, 1, 3}, {0, 0, 3}, {1, 0, 3}, 1};
-	
-	arc_test(simple_xy_arc);
-	arc_test(simple_xy_arc_ccw);
-	arc_test(simple_xy_arc_opp);
-	arc_test(simple_xy_arc_ccw_opp);
-	return 0;
-	
 	gcode_arc simple_zx_arc = {Clockwise, ZX, {0, 0, 0}, {1, 0, 1}, {1, 0, 0}, 1};
 	gcode_arc simple_yz_arc = {Clockwise, YZ, {0, 0, 0}, {0, 1, 1}, {0, 0, 1}, 1};
 	gcode_arc simple_xyz_helix = {Clockwise, XY, {0, 0, 0}, {1, 1, 1}, {1, 0, 0}, 1};
 	gcode_arc xy_circle = {Clockwise, XY, {1, 0, 0}, {1, 0, 0}, {0, 0, 0}, 1};
 	gcode_arc xyz_helix = {Clockwise, XY, {1, 0, 0}, {1, 0, 10}, {0, 0, 0}, 2};
 
+	std::cout << "simple_xy_arc\n";
+	arc_test(simple_xy_arc);
+	
+	std::cout << "simple_xy_arc_ccw\n";
+	arc_test(simple_xy_arc_ccw);
+	
+	std::cout << "simple_xy_arc_opp\n";
+	arc_test(simple_xy_arc_opp);
+	
+	std::cout << "simple_xy_arc_ccw_opp\n";
+	arc_test(simple_xy_arc_ccw_opp);
+	
+	std::cout << "simple_zx_arc\n";
 	arc_test(simple_zx_arc);
+	
+	std::cout << "simple_yz_arc\n";
 	arc_test(simple_yz_arc);
+	
+	std::cout << "simple_xyz_helix\n";
 	arc_test(simple_xyz_helix);
+	
+	std::cout << "xy_circle\n";
 	arc_test(xy_circle);
+	
+	std::cout << "xyz_helix\n";
 	arc_test(xyz_helix);
 	
 	std::cout << "\n";
