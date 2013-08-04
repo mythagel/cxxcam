@@ -220,8 +220,9 @@ void arc_test(const gcode_arc& arc)
 				size_t n_steps = (l * steps_per_mm);
 				
 				double t = start_theta;
+				double hdt = helix / n_steps;
 				for(size_t i = 0; i < n_steps; ++i, t += step)
-					P.push_back({ (cos(t)*r)+arc.center.x, (sin(t)*r)+arc.center.y, ((t - start_theta)*ch) + arc.start.z });
+					P.push_back({ (cos(t)*r)+arc.center.x, (sin(t)*r)+arc.center.y, (hdt*i) + arc.start.z });
 			}
 			P.push_back(arc.end);
 			std::copy(P.begin(), P.end(), std::ostream_iterator<point_3>(std::cout, "\n"));
@@ -278,8 +279,9 @@ void arc_test(const gcode_arc& arc)
 				size_t n_steps = (l * steps_per_mm);
 				
 				double t = start_theta;
+				double hdt = helix / n_steps;
 				for(size_t i = 0; i < n_steps; ++i, t += step)
-					P.push_back({ (cos(t)*r)+arc.center.x, ((t - start_theta)*ch) + arc.start.y, (sin(t)*r)+arc.center.z});
+					P.push_back({ (cos(t)*r)+arc.center.x, (hdt*i) + arc.start.y, (sin(t)*r)+arc.center.z});
 			}
 			P.push_back(arc.end);
 			std::copy(P.begin(), P.end(), std::ostream_iterator<point_3>(std::cout, "\n"));
@@ -336,8 +338,9 @@ void arc_test(const gcode_arc& arc)
 				size_t n_steps = (l * steps_per_mm);
 				
 				double t = start_theta;
+				double hdt = helix / n_steps;
 				for(size_t i = 0; i < n_steps; ++i, t += step)
-					P.push_back({ ((t - start_theta)*ch) + arc.start.x, (sin(t)*r)+arc.center.y, (cos(t)*r)+arc.center.z});
+					P.push_back({ (hdt*i) + arc.start.x, (sin(t)*r)+arc.center.y, (cos(t)*r)+arc.center.z});
 			}
 			P.push_back(arc.end);
 			std::copy(P.begin(), P.end(), std::ostream_iterator<point_3>(std::cout, "\n"));
@@ -353,27 +356,32 @@ int main()
 	gcode_arc simple_xy_arc_ccw = {CounterClockwise, XY, {0, 0, 1}, {1, 1, 1}, {1, 0, 1}, 1};
 	gcode_arc simple_xy_arc_opp = {Clockwise, XY, {1, 1, 2}, {0, 0, 2}, {1, 0, 2}, 1};
 	gcode_arc simple_xy_arc_ccw_opp = {CounterClockwise, XY, {1, 1, 3}, {0, 0, 3}, {1, 0, 3}, 1};
+
 	gcode_arc simple_zx_arc = {Clockwise, ZX, {0, 0, 0}, {1, 0, 1}, {1, 0, 0}, 1};
+	gcode_arc simple_zx_arc_ccw = {CounterClockwise, ZX, {0, 0, 0}, {1, 0, 1}, {1, 0, 0}, 1};
+	gcode_arc simple_zx_helix = {Clockwise, ZX, {0, 0, 0}, {1, 1, 1}, {1, 0, 0}, 1};
+
 	gcode_arc simple_yz_arc = {Clockwise, YZ, {0, 0, 0}, {0, 1, 1}, {0, 0, 1}, 1};
 	gcode_arc simple_xyz_helix = {Clockwise, XY, {0, 0, 0}, {1, 1, 1}, {1, 0, 0}, 1};
 	gcode_arc xy_circle = {Clockwise, XY, {1, 0, 0}, {1, 0, 0}, {0, 0, 0}, 1};
-	gcode_arc xyz_helix = {Clockwise, XY, {1, 0, 0}, {1, 0, 10}, {0, 0, 0}, 2};
+	gcode_arc xyz_helix = {Clockwise, XY, {1, 0, 0}, {1, 0, 1}, {0, 0, 0}, 1};
 
 	std::cout << "simple_xy_arc\n";
 	arc_test(simple_xy_arc);
-	
 	std::cout << "simple_xy_arc_ccw\n";
 	arc_test(simple_xy_arc_ccw);
-	
 	std::cout << "simple_xy_arc_opp\n";
 	arc_test(simple_xy_arc_opp);
-	
 	std::cout << "simple_xy_arc_ccw_opp\n";
 	arc_test(simple_xy_arc_ccw_opp);
 	
 	std::cout << "simple_zx_arc\n";
 	arc_test(simple_zx_arc);
-	
+	std::cout << "simple_zx_arc_ccw\n";
+	arc_test(simple_zx_arc_ccw);
+	std::cout << "simple_zx_helix\n";
+	arc_test(simple_zx_helix);	
+
 	std::cout << "simple_yz_arc\n";
 	arc_test(simple_yz_arc);
 	
