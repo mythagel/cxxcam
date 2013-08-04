@@ -24,6 +24,7 @@
 
 #include "Path.h"
 #include <tuple>
+#include <boost/units/cmath.hpp>
 
 namespace cxxcam
 {
@@ -124,7 +125,7 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	auto total_steps = length * steps_per_mm;
 	
 	// TODO ugly, wrong hack for pure rotary motion.
-	// Need to interpolate based on the rotary motion
+	// Need to std::vector<step> path;interpolate based on the rotary motion
 	// not some pseudo guestimated constant (8PI)
 	if(total_steps < 1)
 		total_steps = 8*3.14159 * steps_per_mm;
@@ -157,15 +158,178 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	return path;
 }
 
-std::vector<step> expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, unsigned int turns, const limits::AvailableAxes& geometry, size_t steps_per_mm)
+std::vector<step> expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns, const limits::AvailableAxes& geometry, size_t steps_per_mm)
 {
-	std::vector<step> path;
+	static const double PI = 3.14159265358979323846;
+	
 	/*
 	 * TODO
-	 * find the path between the start and end positions given.
-	 * Includes movement in rotary axes.
-	 * Interface for arc paths WILL change.
+	 * Rotations need to be validated.
 	 */
+	auto pos2step = [&geometry](const Position& pos) -> step
+	{
+		step s;
+		for(auto axis : geometry)
+		{
+			switch(axis)
+			{
+				case Axis::Type::X:
+					s.position.x = pos.X;
+					break;
+				case Axis::Type::Y:
+					s.position.y = pos.Y;
+					break;
+				case Axis::Type::Z:
+					s.position.z = pos.Z;
+					break;
+				case Axis::Type::A:
+					if(pos.A != angular_zero)
+						s.orientation *= math::normalise(math::axis2quat(1, 0, 0, pos.A));
+					break;
+				case Axis::Type::B:
+					if(pos.B != angular_zero)
+						s.orientation *= math::normalise(math::axis2quat(0, 1, 0, pos.B));
+					break;
+				case Axis::Type::C:
+					if(pos.C != angular_zero)
+						s.orientation *= math::normalise(math::axis2quat(0, 0, 1, pos.C));
+					break;
+				case Axis::Type::U:
+				case Axis::Type::V:
+				case Axis::Type::W:
+					// TODO how are uvw mapped into the cartesian space
+					break;
+			}
+		}
+		s.orientation = math::normalise(s.orientation);
+		return s;
+	};
+	
+	auto helix_length = [](units::length r, units::length h, double p) -> units::length
+	{
+		auto c = units::length_mm(h).value() / (2*PI);
+		auto l = (2*PI*p) * sqrt(units::length_mm(r*r).value() + (c*c));
+		return units::length{l * units::millimeters};
+	};
+	
+	auto s0 = pos2step(start);
+	auto sn = pos2step(end);
+	
+	math::point_3 arc_start;
+	math::point_3 arc_end;
+	units::length helix;
+	math::point_3 arc_center;
+	
+	if(plane.z == 1)
+	{
+		arc_start = math::point_3{start.X, start.Y, 0};
+		arc_end = math::point_3{end.X, end.Y, 0};
+		helix = units::length(end.Z - start.Z);
+		arc_center = math::point_3{center.X, center.Y, 0};
+	}
+	else if(plane.y == 1)
+	{
+		arc_start = math::point_3{start.X, start.Z, 0};
+		arc_end = math::point_3{end.X, end.Z, 0};
+		helix = units::length(end.Y - start.Y);
+		arc_center = math::point_3{center.X, center.Z, 0};
+	}
+	else if(plane.x == 1)
+	{
+		arc_start = math::point_3{start.Z, start.Y, 0};
+		arc_end = math::point_3{end.Z, end.Y, 0};
+		helix = units::length(end.X - start.X);
+		arc_center = math::point_3{center.Z, center.Z, 0};
+	}
+	else
+		throw std::runtime_error("Unsupported plane.");
+	
+	if(!equidistant(arc_start, arc_end, arc_center, units::length{0.00000001 * units::millimeters}))
+		throw std::runtime_error("Arc center not equidistant from start and end points.");
+
+	auto r = distance(arc_start, arc_center);
+	auto start_theta = atan2(arc_start.y - arc_center.y, arc_start.x - arc_center.x);
+	auto end_theta = atan2(arc_end.y - arc_center.y, arc_end.x - arc_center.x);
+	auto turn_theta = 2*PI*(turns-1);
+	auto delta_theta = end_theta - start_theta;
+	switch(dir)
+	{
+		case ArcDirection::Clockwise:
+		{
+			if(delta_theta > 0)
+				delta_theta -= 2*PI;
+			break;
+		}
+		case ArcDirection::CounterClockwise:
+		{
+			if(delta_theta < 0)
+				delta_theta += 2*PI;
+			break;
+		}
+	}
+	if(delta_theta == 0.0)
+		delta_theta = 2*PI;
+	
+	turn_theta += fabs(delta_theta);
+	
+	double l = helix_length(r, helix / turn_theta, turn_theta);
+	double rads_per_step = turn_theta / static_cast<double>(l * steps_per_mm);
+	
+	double ch = helix / turn_theta;
+	double step = delta_theta < 0 ? -rads_per_step : rads_per_step;
+	size_t total_steps = (l * steps_per_mm);
+	
+	Position axis_movement;
+	axis_movement.A = end.A - start.A;
+	axis_movement.B = end.B - start.B;
+	axis_movement.C = end.C - start.C;
+
+	axis_movement.U = end.U - start.U;
+	axis_movement.V = end.V - start.V;
+	axis_movement.W = end.W - start.W;
+	
+	std::vector<step> path;
+	double t = start_theta;
+	double hdt = helix / total_steps;
+	for(size_t s = 0; s < total_steps; ++s, t += step)
+	{
+		Position p = start;
+		
+		if(plane.z)
+		{
+			p.X = (cos(t)*r)+arc_center.x;
+			p.Y = (sin(t)*r)+arc_center.y;
+			p.Z = (hdt*s) +  arc_start.z;
+		}
+		else if(plane.y)
+		{
+			p.X = (cos(t)*r)+arc_center.x;
+			p.Y = (hdt*s) +  arc_start.y;
+			p.Z = (sin(t)*r)+arc_center.z;
+		}
+		else if(plane.x)
+		{
+			p.X = (hdt*s) + arc_start.x;
+			p.Y = (sin(t)*r)+arc_center.y;
+			p.Z = (cos(t)*r)+arc_center.z;
+		}
+		
+		auto scale = s / static_cast<double>(total_steps);
+		
+		p.A += axis_movement.A * scale;
+		p.B += axis_movement.B * scale;
+		p.C += axis_movement.C * scale;
+
+		p.U += axis_movement.U * scale;
+		p.V += axis_movement.V * scale;
+		p.W += axis_movement.W * scale;
+		
+		path.push_back(pos2step(p));
+	}
+	
+	if(path.empty() || path.back() != sn)
+		path.push_back(sn);
+	
 	return path;
 }
 

@@ -64,6 +64,7 @@ std::ostream& operator<<(std::ostream& os, const vector_3&);
 
 vector_3 normalise(const vector_3& v);
 units::length distance(const point_3& p0, const point_3& p1);
+bool equidistant(const point_3& p0, const point_3& p1, const point_3& ref, units::length tolerance);
 quaternion_t::value_type dot(const quaternion_t& q1, const quaternion_t& q2);
 quaternion_t normalise(const quaternion_t& q);
 quaternion_t axis2quat(const vector_3 v);

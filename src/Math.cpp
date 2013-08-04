@@ -113,6 +113,15 @@ units::length distance(const point_3& p0, const point_3& p1)
 {
 	return units::length{sqrt((p0.x-p1.x)*(p0.x-p1.x) + (p0.y-p1.y)*(p0.y-p1.y) + (p0.z-p1.z)*(p0.z-p1.z))};
 }
+bool equidistant(const point_3& p0, const point_3& p1, const point_3& ref, units::length tolerance)
+{
+	double d0 = distance(p0, ref);
+	double d1 = distance(p1, ref);
+
+	if(fabs(d0 - d1) > tolerance)
+		return false;
+	return true;
+};
 
 quaternion_t::value_type dot(const quaternion_t& q1, const quaternion_t& q2)
 {
