@@ -69,7 +69,6 @@
     - Correct faulty equality ops for math::point_3 and math::vector_3.
  * Simulation
     - Ensure feed rate passed to simulation is normalised.
-    - Correct bounding box (min currently always 0,0,0)
 
 
 ## Code ##
