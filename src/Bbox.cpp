@@ -35,6 +35,8 @@ auto to_tuple(const Bbox& b) -> decltype(std::tie(b.min, b.max))
 	return std::tie(b.min, b.max);
 }
 
+const Bbox Bbox::zero{};
+
 Bbox::Bbox(const math::point_3& min, const math::point_3& max)
  : min(min), max(max)
 {

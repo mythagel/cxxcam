@@ -36,6 +36,8 @@ struct Bbox
 	math::point_3 min;
 	math::point_3 max;
 	
+	static const Bbox zero;
+	
 	Bbox() = default;
 	Bbox(const math::point_3& min, const math::point_3& max);
 	
