@@ -83,6 +83,7 @@ static const auto newton_meters = boost::units::si::newton_meters;
 typedef boost::units::quantity<decltype(millimeter)> length_mm;
 typedef boost::units::quantity<decltype(degrees)> plane_angle_deg;
 typedef boost::units::quantity<decltype(radians)> plane_angle_rads;
+typedef boost::units::quantity<decltype(newton_meters)> torque_nm;
 
 }
 }
