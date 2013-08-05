@@ -17,7 +17,7 @@
        - Correct direction
     - UVW mapped into cartesian space?
     - Arc expansion
-       - *Implement*
+       - Validate implementation
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
@@ -82,6 +82,7 @@
     - Correct faulty equality ops for math::point_3 and math::vector_3.
  * Simulation
     - Ensure feed rate passed to simulation is normalised.
+    - Correct bounding box (min currently always 0,0,0)
 
 
 ## Code ##
