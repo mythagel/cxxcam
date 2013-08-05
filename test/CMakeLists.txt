@@ -42,6 +42,7 @@ simulate_rotary
 simulate_arc 
 simulate_arc_rotary 
 sim_low_angular_res 
+simulate_cut_air 
 fold_adjacent 
 playjs 
 helix 
