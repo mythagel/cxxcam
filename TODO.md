@@ -12,12 +12,7 @@
     - Correct faults with angular movements
        - With zero linear movement (pure rotary motion)
        - Large angular with small linear
-    - ~~Validate rotations~~
-       - ~~Correct axes~~
-       - ~~Correct direction~~
     - UVW mapped into cartesian space?
-    - ~~Arc expansion~~
-       - ~~Validate implementation~~
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
@@ -52,8 +47,6 @@
     - Generate model from this definition.
  * Complete Stock class
     - Needs material properties
- * ~~Spindle class~~
-    - ~~Torque interpolation~~
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Ability to explode stock into individual objects when cut
@@ -84,3 +77,4 @@
  * Add Interface stability test.
  * Split tests (one per source file)
  * Improve Arc code (remove duplication)
+ * Add expected output to tests and verify.
