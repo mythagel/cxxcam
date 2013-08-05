@@ -1,11 +1,27 @@
 #include "Spindle.h"
 #include "Error.h"
 #include <iostream>
+#include "Units.h"
 
 using namespace cxxcam;
 
 int main()
 {
+	{
+		Spindle s;
+		s.AddRange(1, 100);
+		
+		s.SetTorque(1, 1 * units::newton_meters);
+		s.SetTorque(50, 25 * units::newton_meters);
+		s.SetTorque(100, 100 * units::newton_meters);
+		std::cerr << "Machine Range: " << s.str() << "\n\n";
+		std::cout << "T1:   " << s.GetTorque(1) << "\n\n";
+		std::cout << "T25:  " << s.GetTorque(25) << "\n\n";
+		std::cout << "T50:  " << s.GetTorque(50) << "\n\n";
+		std::cout << "T75:  " << s.GetTorque(75) << "\n\n";
+		std::cout << "T100: " << s.GetTorque(100) << "\n\n";
+	}
+
 	{
 		Spindle s;
 		std::cerr << "Machine Range: " << s.str() << "\n";

@@ -146,8 +146,24 @@ units::torque Spindle::GetTorque(unsigned long speed) const
 	if(m_Torque.size() < 2)
 		throw error("Need min & max torque samples at minimum");
 	
-	// TODO
-	return {};
+	auto range = m_Torque.equal_range({speed, {}});
+	auto& low = range.first;
+	auto& high = range.second;
+	
+	if(low != m_Torque.end() && low->rpm == speed)
+		return low->torque;
+	
+	if(low != m_Torque.begin())
+		--low;
+
+	auto x = static_cast<double>(speed);
+	auto x0 = low->rpm;
+	auto y0 = units::torque_nm(low->torque).value();
+	auto x1 = high->rpm;
+	auto y1 = units::torque_nm(high->torque).value();
+	auto torque_nm = y0 + (y1 - y0) * ((x - x0) / (x1 - x0));
+	
+	return torque_nm * units::newton_meters;
 }
 
 void Spindle::AddRange(unsigned long range_start, unsigned long range_end)
