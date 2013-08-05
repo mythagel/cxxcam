@@ -47,6 +47,7 @@ fold_adjacent
 playjs 
 helix 
 bbox 
+play 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()
