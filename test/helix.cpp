@@ -143,7 +143,7 @@ double helix_length(double r, double h, double p)
 
 void arc_test(const gcode_arc& arc)
 {
-	size_t steps_per_mm = 1;
+	size_t steps_per_mm = 10;
 	std::cout << arc << "\n";
 	// Steps:
 	// 0. Determine center point & radius
@@ -201,7 +201,7 @@ void arc_test(const gcode_arc& arc)
 			
 			turn_theta += fabs(delta_theta);
 			
-			double l = helix_length(r, helix / turn_theta, turn_theta);
+			double l = helix_length(r, helix / turn_theta, turn_theta / (2*PI));
 			double rads_per_step = turn_theta / static_cast<double>(l * steps_per_mm);
 			
 			std::cout << "Plane: XY\n";
@@ -260,7 +260,7 @@ void arc_test(const gcode_arc& arc)
 			}
 			turn_theta += fabs(delta_theta);
 			
-			double l = helix_length(r, helix / turn_theta, turn_theta);
+			double l = helix_length(r, helix / turn_theta, turn_theta / (2*PI));
 			double rads_per_step = turn_theta / static_cast<double>(l * steps_per_mm);
 			
 			std::cout << "Plane: ZX\n";
@@ -319,7 +319,7 @@ void arc_test(const gcode_arc& arc)
 			}
 			turn_theta += fabs(delta_theta);
 			
-			double l = helix_length(r, helix / turn_theta, turn_theta);
+			double l = helix_length(r, helix / turn_theta, turn_theta / (2*PI));
 			double rads_per_step = turn_theta / static_cast<double>(l * steps_per_mm);
 			
 			std::cout << "Plane: YZ\n";
