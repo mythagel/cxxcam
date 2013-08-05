@@ -40,6 +40,7 @@ simulate_path-test2
 simulate_path-nintynonmanifold 
 simulate_rotary 
 simulate_arc 
+simulate_arc_rotary 
 sim_low_angular_res 
 fold_adjacent 
 playjs 
