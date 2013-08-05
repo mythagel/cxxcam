@@ -69,6 +69,9 @@ step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 	
 	s.stock.Model -= tool_path;
 	
+	if(s.bounding_box == Bbox::zero)
+		s.bounding_box = {s0.position, s0.position};
+	
 	s.bounding_box += s0.position;
 	s.bounding_box += s1.position;
 	
