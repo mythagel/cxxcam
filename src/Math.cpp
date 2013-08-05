@@ -115,8 +115,8 @@ units::length distance(const point_3& p0, const point_3& p1)
 }
 bool equidistant(const point_3& p0, const point_3& p1, const point_3& ref, units::length tolerance)
 {
-	double d0 = distance(p0, ref);
-	double d1 = distance(p1, ref);
+	auto d0 = distance(p0, ref);
+	auto d1 = distance(p1, ref);
 
 	if(fabs(d0 - d1) > tolerance)
 		return false;
