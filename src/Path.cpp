@@ -59,49 +59,54 @@ std::ostream& operator<<(std::ostream& os, const step& step)
 	return os;
 }
 
+/*
+ * TODO
+ * Rotations need to be validated.
+ */
+step position2step(const Position& pos, const limits::AvailableAxes& geometry)
+{
+	step s;
+	for(auto axis : geometry)
+	{
+		switch(axis)
+		{
+			case Axis::Type::X:
+				s.position.x = pos.X;
+				break;
+			case Axis::Type::Y:
+				s.position.y = pos.Y;
+				break;
+			case Axis::Type::Z:
+				s.position.z = pos.Z;
+				break;
+			case Axis::Type::A:
+				if(pos.A != angular_zero)
+					s.orientation *= math::normalise(math::axis2quat(1, 0, 0, pos.A));
+				break;
+			case Axis::Type::B:
+				if(pos.B != angular_zero)
+					s.orientation *= math::normalise(math::axis2quat(0, 1, 0, pos.B));
+				break;
+			case Axis::Type::C:
+				if(pos.C != angular_zero)
+					s.orientation *= math::normalise(math::axis2quat(0, 0, 1, pos.C));
+				break;
+			case Axis::Type::U:
+			case Axis::Type::V:
+			case Axis::Type::W:
+				// TODO how are uvw mapped into the cartesian space
+				break;
+		}
+	}
+	s.orientation = math::normalise(s.orientation);
+	return s;
+};
+
 std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm)
 {
-	/*
-	 * TODO
-	 * Rotations need to be validated.
-	 */
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
-		step s;
-		for(auto axis : geometry)
-		{
-			switch(axis)
-			{
-				case Axis::Type::X:
-					s.position.x = pos.X;
-					break;
-				case Axis::Type::Y:
-					s.position.y = pos.Y;
-					break;
-				case Axis::Type::Z:
-					s.position.z = pos.Z;
-					break;
-				case Axis::Type::A:
-					if(pos.A != angular_zero)
-						s.orientation *= math::normalise(math::axis2quat(1, 0, 0, pos.A));
-					break;
-				case Axis::Type::B:
-					if(pos.B != angular_zero)
-						s.orientation *= math::normalise(math::axis2quat(0, 1, 0, pos.B));
-					break;
-				case Axis::Type::C:
-					if(pos.C != angular_zero)
-						s.orientation *= math::normalise(math::axis2quat(0, 0, 1, pos.C));
-					break;
-				case Axis::Type::U:
-				case Axis::Type::V:
-				case Axis::Type::W:
-					// TODO how are uvw mapped into the cartesian space
-					break;
-			}
-		}
-		s.orientation = math::normalise(s.orientation);
-		return s;
+		return position2step(pos, geometry);
 	};
 	
 	auto s0 = pos2step(start);
@@ -160,59 +165,21 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 
 std::vector<step> expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns, const limits::AvailableAxes& geometry, size_t steps_per_mm)
 {
-	static const double PI = 3.14159265358979323846;
-	
-	/*
-	 * TODO
-	 * Rotations need to be validated.
-	 */
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
-		step s;
-		for(auto axis : geometry)
-		{
-			switch(axis)
-			{
-				case Axis::Type::X:
-					s.position.x = pos.X;
-					break;
-				case Axis::Type::Y:
-					s.position.y = pos.Y;
-					break;
-				case Axis::Type::Z:
-					s.position.z = pos.Z;
-					break;
-				case Axis::Type::A:
-					if(pos.A != angular_zero)
-						s.orientation *= math::normalise(math::axis2quat(1, 0, 0, pos.A));
-					break;
-				case Axis::Type::B:
-					if(pos.B != angular_zero)
-						s.orientation *= math::normalise(math::axis2quat(0, 1, 0, pos.B));
-					break;
-				case Axis::Type::C:
-					if(pos.C != angular_zero)
-						s.orientation *= math::normalise(math::axis2quat(0, 0, 1, pos.C));
-					break;
-				case Axis::Type::U:
-				case Axis::Type::V:
-				case Axis::Type::W:
-					// TODO how are uvw mapped into the cartesian space
-					break;
-			}
-		}
-		s.orientation = math::normalise(s.orientation);
-		return s;
+		return position2step(pos, geometry);
 	};
 	
-	auto helix_length = [](units::length r, units::length h, double p) -> units::length
+	static const double PI = 3.14159265358979323846;
+	static const units::plane_angle PI2_r( 2 * PI * units::radians );
+
+	auto helix_length = [](double r, double h, double p) -> double
 	{
-		auto c = units::length_mm(h).value() / (2*PI);
-		auto l = (2*PI*p) * sqrt(units::length_mm(r*r).value() + (c*c));
-		return units::length{l * units::millimeters};
+		double c = h / (2*PI);
+		auto l = (2*PI*p) * sqrt((r*r) + (c*c));
+		return l;
 	};
 	
-	auto s0 = pos2step(start);
 	auto sn = pos2step(end);
 	
 	math::point_3 arc_start;
@@ -242,7 +209,7 @@ std::vector<step> expand_arc(const Position& start, const Position& end, const P
 		arc_center = math::point_3{center.Z, center.Z, 0};
 	}
 	else
-		throw std::runtime_error("Unsupported plane.");
+		throw std::runtime_error("Unsupported Arc Plane");
 	
 	if(!equidistant(arc_start, arc_end, arc_center, units::length{0.00000001 * units::millimeters}))
 		throw std::runtime_error("Arc center not equidistant from start and end points.");
@@ -250,34 +217,33 @@ std::vector<step> expand_arc(const Position& start, const Position& end, const P
 	auto r = distance(arc_start, arc_center);
 	auto start_theta = atan2(arc_start.y - arc_center.y, arc_start.x - arc_center.x);
 	auto end_theta = atan2(arc_end.y - arc_center.y, arc_end.x - arc_center.x);
-	auto turn_theta = 2*PI*(turns-1);
+	auto turn_theta = PI2_r * (turns-1);
 	auto delta_theta = end_theta - start_theta;
 	switch(dir)
 	{
 		case ArcDirection::Clockwise:
 		{
-			if(delta_theta > 0)
-				delta_theta -= 2*PI;
+			if(delta_theta > units::plane_angle(0))
+				delta_theta -= PI2_r;
 			break;
 		}
 		case ArcDirection::CounterClockwise:
 		{
-			if(delta_theta < 0)
-				delta_theta += 2*PI;
+			if(delta_theta < units::plane_angle(0))
+				delta_theta += PI2_r;
 			break;
 		}
 	}
-	if(delta_theta == 0.0)
-		delta_theta = 2*PI;
+	if(delta_theta == units::plane_angle(0))
+		delta_theta = PI2_r;
 	
 	turn_theta += fabs(delta_theta);
 	
-	double l = helix_length(r, helix / turn_theta, turn_theta);
-	double rads_per_step = turn_theta / static_cast<double>(l * steps_per_mm);
+	auto l = helix_length(units::length_mm(r).value(), units::length_mm{helix / units::plane_angle_rads{turn_theta}.value()}.value(), units::plane_angle_rads(turn_theta / (2*PI)).value());
+	size_t total_steps = l * steps_per_mm;
+	auto rads_per_step = turn_theta / static_cast<double>(total_steps);
 	
-	double ch = helix / turn_theta;
-	double step = delta_theta < 0 ? -rads_per_step : rads_per_step;
-	size_t total_steps = (l * steps_per_mm);
+	auto step_dt = delta_theta < units::plane_angle(0) ? -rads_per_step : rads_per_step;
 	
 	Position axis_movement;
 	axis_movement.A = end.A - start.A;
@@ -289,27 +255,28 @@ std::vector<step> expand_arc(const Position& start, const Position& end, const P
 	axis_movement.W = end.W - start.W;
 	
 	std::vector<step> path;
-	double t = start_theta;
-	double hdt = helix / total_steps;
-	for(size_t s = 0; s < total_steps; ++s, t += step)
+	auto t = start_theta;
+	auto hdt = helix / static_cast<double>(total_steps);
+	for(size_t s = 0; s < total_steps; ++s, t += step_dt)
 	{
 		Position p = start;
+		auto sd = static_cast<double>(s);
 		
 		if(plane.z)
 		{
 			p.X = (cos(t)*r)+arc_center.x;
 			p.Y = (sin(t)*r)+arc_center.y;
-			p.Z = (hdt*s) +  arc_start.z;
+			p.Z += (hdt*sd);
 		}
 		else if(plane.y)
 		{
 			p.X = (cos(t)*r)+arc_center.x;
-			p.Y = (hdt*s) +  arc_start.y;
+			p.Y += (hdt*sd);
 			p.Z = (sin(t)*r)+arc_center.z;
 		}
 		else if(plane.x)
 		{
-			p.X = (hdt*s) + arc_start.x;
+			p.X += (hdt*sd);
 			p.Y = (sin(t)*r)+arc_center.y;
 			p.Z = (cos(t)*r)+arc_center.z;
 		}
