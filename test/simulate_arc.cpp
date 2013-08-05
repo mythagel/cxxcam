@@ -36,7 +36,8 @@ int main()
 	
 		// Expand path
 		limits::AvailableAxes geometry;
-		steps = expand_arc(start, end, center, ArcDirection::Clockwise, {0, 0, 1}, 1, geometry, 1);
+		path::info_t info;
+		steps = expand_arc(start, end, center, ArcDirection::Clockwise, {0, 0, 1}, 1, geometry, info, 1);
 	}
 	
 	for(auto step : steps)

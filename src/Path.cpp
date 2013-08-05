@@ -102,7 +102,7 @@ step position2step(const Position& pos, const limits::AvailableAxes& geometry)
 	return s;
 };
 
-std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm)
+std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, info_t& info, size_t steps_per_mm)
 {
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
@@ -112,6 +112,7 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	auto s0 = pos2step(start);
 	auto sn = pos2step(end);
 	auto length = units::length_mm(distance(s0.position, sn.position)).value();
+	info.length = units::length{length * units::millimeters};
 	
 	Position axis_movement;
 	axis_movement.X = end.X - start.X;
@@ -163,7 +164,7 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	return path;
 }
 
-std::vector<step> expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns, const limits::AvailableAxes& geometry, size_t steps_per_mm)
+std::vector<step> expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns, const limits::AvailableAxes& geometry, info_t& info, size_t steps_per_mm)
 {
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
@@ -240,6 +241,7 @@ std::vector<step> expand_arc(const Position& start, const Position& end, const P
 	turn_theta += fabs(delta_theta);
 	
 	auto l = helix_length(units::length_mm(r).value(), units::length_mm{helix / units::plane_angle_rads{turn_theta}.value()}.value(), units::plane_angle_rads(turn_theta / (2*PI)).value());
+	info.length = units::length{l * units::millimeters};
 	size_t total_steps = l * steps_per_mm;
 	auto rads_per_step = turn_theta / static_cast<double>(total_steps);
 	
