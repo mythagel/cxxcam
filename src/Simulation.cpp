@@ -25,6 +25,7 @@
 #include "Simulation.h"
 #include "geom/translate.h"
 #include "geom/ops.h"
+#include "geom/query.h"
 
 namespace cxxcam
 {
@@ -67,7 +68,8 @@ step simulate_cut(const path::step& s0, const path::step& s1, state& s)
 	 */
 	//sim_res.swarf = units::volume( geom::volume(material_removed) * units::cubic_millimeters );
 	
-	s.stock.Model -= tool_path;
+	if(intersects(s.stock.Model, tool_path))
+		s.stock.Model -= tool_path;
 	
 	if(s.bounding_box == Bbox::zero)
 		s.bounding_box = {s0.position, s0.position};
