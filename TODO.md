@@ -12,12 +12,12 @@
     - Correct faults with angular movements
        - With zero linear movement (pure rotary motion)
        - Large angular with small linear
-    - Validate rotations
-       - Correct axes
-       - Correct direction
+    - ~~Validate rotations~~
+       - ~~Correct axes~~
+       - ~~Correct direction~~
     - UVW mapped into cartesian space?
-    - Arc expansion
-       - Validate implementation
+    - ~~Arc expansion~~
+       - ~~Validate implementation~~
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
@@ -45,12 +45,6 @@
        - Calculate the path that flute tip passes through material.
        - Gives simulated chip load per tooth.
        - Compare with data (tables? calculated from Material hardness?) for MRR.
-    - Interface for feedback?
-       - Multiple moves must be able to be coalasced into one for analysis.
-       - I.e. use stack push and pop of state to test different configurations to find optimal.
-       - Return vector of stats for each step
-          - volume, forces, engagement, etc.
-          - New functions that augments existing path provided.
  * Higher order curves
  * Complete Tool class - apt_cutter branch
     - APT CUTTER style mill tool definition
@@ -58,13 +52,13 @@
     - Generate model from this definition.
  * Complete Stock class
     - Needs material properties
- * Spindle class
-    - Torque interpolation
+ * ~~Spindle class~~
+    - ~~Torque interpolation~~
  * Plunge motion
     * Will be implemented as primitve (allows optimisation and clarification of intent)
  * Ability to explode stock into individual objects when cut
-    - geom::explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
     - How should user specify which part remains?
+    - geom::explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
  * geom
     - Meshing 
        - Current meshing parameters are too computationally expensive.
