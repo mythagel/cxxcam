@@ -35,6 +35,10 @@
           - Performs analysis on a specified path.
           - Provides information on cutting performance.
           - Cutting time.
+       - Change behaviour of simulation.
+       - Expand tool along path but DO NOT remove material from stock.
+       - Then perform analysis of material removal rate by tracking trocoidal path
+       - created by cutting edges on the tool.
     - Cutting speed
     - Performance
        - Path for each flute is trochoidal.
