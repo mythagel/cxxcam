@@ -1599,6 +1599,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	
 	auto angular_end = m_Private->m_State.m_Current;
 	// arc from start to end expand tool along path.
+	// TODO fill parameters...
 	Position_Cartesian arc_center;
 	path::ArcDirection arc_dir;
 	math::vector_3 arc_plane;
