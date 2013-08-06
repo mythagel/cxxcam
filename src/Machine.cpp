@@ -1426,6 +1426,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	auto& m_Axes = m_Private->m_Axes;
 	auto& m_Stock = m_Private->m_Stock;
 	auto& m_FeedRateLimit = m_Private->m_FeedRateLimit;
+	auto& m_Units = m_State.m_Units;
 
 	if(m_State.m_SpindleRotation == Rotation::Stop)
 		throw error("Spindle is stopped");
@@ -1617,10 +1618,298 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	
 	auto angular_end = m_Private->m_State.m_Current;
 	// arc from start to end expand tool along path.
-	// TODO fill parameters...
 	Position_Cartesian arc_center;
 	path::ArcDirection arc_dir;
 	math::vector_3 arc_plane;
+	
+	// TODO ARRRRRRRRRRRRRRRRRRRRRRRRRGGGGGGHHH
+	// FIX WITH LAMBDAS!!!
+	// WHY AM I WRITING THIS
+	// WHAT'S WRONG WITH ME
+	switch(m_State.m_Plane)
+	{
+		case Plane::XY:
+		{
+			switch(m_State.m_ArcMotion)
+			{
+				case Motion::Absolute:
+				{
+					switch(m_Units)
+					{
+						case Units::Metric:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::I:
+										arc_center.X = units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::J:
+										arc_center.Y = units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::K:
+										throw error("Allowed offsets: I & J");
+								}
+							}
+							break;
+						}
+						case Units::Imperial:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::I:
+										arc_center.X = units::length{offset * units::inches};
+										break;
+									case Offset::Type::J:
+										arc_center.Y = units::length{offset * units::inches};
+										break;
+									case Offset::Type::K:
+										throw error("Allowed offsets: I & J");
+								}
+							}
+							break;
+						}
+					}
+					break;
+				}
+				case Motion::Incremental:
+				{
+					switch(m_Units)
+					{
+						case Units::Metric:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::I:
+										arc_center.X = angular_start.X + units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::J:
+										arc_center.Y = angular_start.Y + units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::K:
+										throw error("Allowed offsets: I & J");
+								}
+							}
+							break;
+						}
+						case Units::Imperial:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::I:
+										arc_center.X = angular_start.X + units::length{offset * units::inches};
+										break;
+									case Offset::Type::J:
+										arc_center.Y = angular_start.Y + units::length{offset * units::inches};
+										break;
+									case Offset::Type::K:
+										throw error("Allowed offsets: I & J");
+								}
+							}
+							break;
+						}
+					}
+					break;
+				}
+			}
+			break;
+		}
+		case Plane::ZX:
+		{
+			switch(m_State.m_ArcMotion)
+			{
+				case Motion::Absolute:
+				{
+					switch(m_Units)
+					{
+						case Units::Metric:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::I:
+										arc_center.X = units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::K:
+										arc_center.Z = units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::J:
+										throw error("Allowed offsets: I & K");
+								}
+							}
+							break;
+						}
+						case Units::Imperial:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::I:
+										arc_center.X = units::length{offset * units::inches};
+										break;
+									case Offset::Type::K:
+										arc_center.Z = units::length{offset * units::inches};
+										break;
+									case Offset::Type::J:
+										throw error("Allowed offsets: I & K");
+								}
+							}
+							break;
+						}
+					}
+					break;
+				}
+				case Motion::Incremental:
+				{
+					switch(m_Units)
+					{
+						case Units::Metric:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::I:
+										arc_center.X = angular_start.X + units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::K:
+										arc_center.Z = angular_start.Z + units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::J:
+										throw error("Allowed offsets: I & K");
+								}
+							}
+							break;
+						}
+						case Units::Imperial:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::I:
+										arc_center.X = angular_start.X + units::length{offset * units::inches};
+										break;
+									case Offset::Type::K:
+										arc_center.Z = angular_start.Z + units::length{offset * units::inches};
+										break;
+									case Offset::Type::J:
+										throw error("Allowed offsets: I & K");
+								}
+							}
+							break;
+						}
+					}
+					break;
+				}
+			}
+			break;
+		}
+		case Plane::YZ:
+		{
+			switch(m_State.m_ArcMotion)
+			{
+				case Motion::Absolute:
+				{
+					switch(m_Units)
+					{
+						case Units::Metric:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::K:
+										arc_center.Z = units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::J:
+										arc_center.Y = units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::I:
+										throw error("Allowed offsets: K & J");
+								}
+							}
+							break;
+						}
+						case Units::Imperial:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::K:
+										arc_center.Z = units::length{offset * units::inches};
+										break;
+									case Offset::Type::J:
+										arc_center.Y = units::length{offset * units::inches};
+										break;
+									case Offset::Type::I:
+										throw error("Allowed offsets: K & J");
+								}
+							}
+							break;
+						}
+					}
+					break;
+				}
+				case Motion::Incremental:
+				{
+					switch(m_Units)
+					{
+						case Units::Metric:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::K:
+										arc_center.Z = angular_start.Z + units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::J:
+										arc_center.Y = angular_start.Y + units::length{offset * units::millimeters};
+										break;
+									case Offset::Type::I:
+										throw error("Allowed offsets: K & J");
+								}
+							}
+							break;
+						}
+						case Units::Imperial:
+						{
+							for(auto& offset : center)
+							{
+								switch(offset)
+								{
+									case Offset::Type::K:
+										arc_center.Z = angular_start.Z + units::length{offset * units::inches};
+										break;
+									case Offset::Type::J:
+										arc_center.Y = angular_start.Y + units::length{offset * units::inches};
+										break;
+									case Offset::Type::I:
+										throw error("Allowed offsets: K & J");
+								}
+							}
+							break;
+						}
+					}
+					break;
+				}
+			}
+			break;
+		}
+		default:
+			throw std::logic_error("Unsupported Arc Plane");
+	}
 	switch(dir)
 	{
 		case Direction::Clockwise:
