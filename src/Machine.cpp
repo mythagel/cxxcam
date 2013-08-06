@@ -1626,290 +1626,58 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	// FIX WITH LAMBDAS!!!
 	// WHY AM I WRITING THIS
 	// WHAT'S WRONG WITH ME
-	switch(m_State.m_Plane)
+	auto offset2length = [&m_Units](const Offset& offset) -> units::length
 	{
-		case Plane::XY:
+		switch(m_Units)
 		{
-			switch(m_State.m_ArcMotion)
-			{
-				case Motion::Absolute:
-				{
-					switch(m_Units)
-					{
-						case Units::Metric:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::I:
-										arc_center.X = units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::J:
-										arc_center.Y = units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::K:
-										throw error("Allowed offsets: I & J");
-								}
-							}
-							break;
-						}
-						case Units::Imperial:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::I:
-										arc_center.X = units::length{offset * units::inches};
-										break;
-									case Offset::Type::J:
-										arc_center.Y = units::length{offset * units::inches};
-										break;
-									case Offset::Type::K:
-										throw error("Allowed offsets: I & J");
-								}
-							}
-							break;
-						}
-					}
-					break;
-				}
-				case Motion::Incremental:
-				{
-					switch(m_Units)
-					{
-						case Units::Metric:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::I:
-										arc_center.X = angular_start.X + units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::J:
-										arc_center.Y = angular_start.Y + units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::K:
-										throw error("Allowed offsets: I & J");
-								}
-							}
-							break;
-						}
-						case Units::Imperial:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::I:
-										arc_center.X = angular_start.X + units::length{offset * units::inches};
-										break;
-									case Offset::Type::J:
-										arc_center.Y = angular_start.Y + units::length{offset * units::inches};
-										break;
-									case Offset::Type::K:
-										throw error("Allowed offsets: I & J");
-								}
-							}
-							break;
-						}
-					}
-					break;
-				}
-			}
-			break;
+			case Units::Metric:
+				return units::length{offset * units::millimeters};
+			case Units::Imperial:
+				return units::length{offset * units::inches};
+			default:
+				throw std::logic_error("Unrecognised units.");
 		}
-		case Plane::ZX:
+	};
+	auto incremental2absolute = [&m_State, &angular_start, offset2length](const Offset& offset) -> units::length
+	{
+		switch(m_State.m_ArcMotion)
 		{
-			switch(m_State.m_ArcMotion)
+			case Motion::Absolute:
+				return offset2length(offset);
+			
+			case Motion::Incremental:
 			{
-				case Motion::Absolute:
+				switch(offset)
 				{
-					switch(m_Units)
-					{
-						case Units::Metric:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::I:
-										arc_center.X = units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::K:
-										arc_center.Z = units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::J:
-										throw error("Allowed offsets: I & K");
-								}
-							}
-							break;
-						}
-						case Units::Imperial:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::I:
-										arc_center.X = units::length{offset * units::inches};
-										break;
-									case Offset::Type::K:
-										arc_center.Z = units::length{offset * units::inches};
-										break;
-									case Offset::Type::J:
-										throw error("Allowed offsets: I & K");
-								}
-							}
-							break;
-						}
-					}
-					break;
+					case Offset::Type::I:
+						return angular_start.X + offset2length(offset);
+					case Offset::Type::J:
+						return angular_start.Y + offset2length(offset);
+					case Offset::Type::K:
+						return angular_start.Z + offset2length(offset);
 				}
-				case Motion::Incremental:
-				{
-					switch(m_Units)
-					{
-						case Units::Metric:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::I:
-										arc_center.X = angular_start.X + units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::K:
-										arc_center.Z = angular_start.Z + units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::J:
-										throw error("Allowed offsets: I & K");
-								}
-							}
-							break;
-						}
-						case Units::Imperial:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::I:
-										arc_center.X = angular_start.X + units::length{offset * units::inches};
-										break;
-									case Offset::Type::K:
-										arc_center.Z = angular_start.Z + units::length{offset * units::inches};
-										break;
-									case Offset::Type::J:
-										throw error("Allowed offsets: I & K");
-								}
-							}
-							break;
-						}
-					}
-					break;
-				}
+				break;
 			}
-			break;
 		}
-		case Plane::YZ:
+		throw std::logic_error("incremental2absolute");
+	};
+	auto update_arc_center = [&arc_center, incremental2absolute](const Offset& offset)
+	{
+		switch(offset)
 		{
-			switch(m_State.m_ArcMotion)
-			{
-				case Motion::Absolute:
-				{
-					switch(m_Units)
-					{
-						case Units::Metric:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::K:
-										arc_center.Z = units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::J:
-										arc_center.Y = units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::I:
-										throw error("Allowed offsets: K & J");
-								}
-							}
-							break;
-						}
-						case Units::Imperial:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::K:
-										arc_center.Z = units::length{offset * units::inches};
-										break;
-									case Offset::Type::J:
-										arc_center.Y = units::length{offset * units::inches};
-										break;
-									case Offset::Type::I:
-										throw error("Allowed offsets: K & J");
-								}
-							}
-							break;
-						}
-					}
-					break;
-				}
-				case Motion::Incremental:
-				{
-					switch(m_Units)
-					{
-						case Units::Metric:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::K:
-										arc_center.Z = angular_start.Z + units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::J:
-										arc_center.Y = angular_start.Y + units::length{offset * units::millimeters};
-										break;
-									case Offset::Type::I:
-										throw error("Allowed offsets: K & J");
-								}
-							}
-							break;
-						}
-						case Units::Imperial:
-						{
-							for(auto& offset : center)
-							{
-								switch(offset)
-								{
-									case Offset::Type::K:
-										arc_center.Z = angular_start.Z + units::length{offset * units::inches};
-										break;
-									case Offset::Type::J:
-										arc_center.Y = angular_start.Y + units::length{offset * units::inches};
-										break;
-									case Offset::Type::I:
-										throw error("Allowed offsets: K & J");
-								}
-							}
-							break;
-						}
-					}
-					break;
-				}
-			}
-			break;
+			case Offset::Type::I:
+				arc_center.X = incremental2absolute(offset);
+				break;
+			case Offset::Type::J:
+				arc_center.Y = incremental2absolute(offset);
+				break;
+			case Offset::Type::K:
+				arc_center.Z = incremental2absolute(offset);
 		}
-		default:
-			throw std::logic_error("Unsupported Arc Plane");
-	}
+	};
+	for(auto& offset : center)
+		update_arc_center(offset);
+
 	switch(dir)
 	{
 		case Direction::Clockwise:
