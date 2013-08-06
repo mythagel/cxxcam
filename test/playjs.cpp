@@ -53,6 +53,7 @@ int main()
 	
 	std::ofstream os("playjs.off");
 	os << geom::format::off << m.GetStock().Model;
+	std::cout << m;
 	return 0;
 }
 

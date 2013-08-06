@@ -1,4 +1,4 @@
-#include <cstdio>
+#include <iostream>
 #include "Machine.h"
 #include "Tool.h"
 #include "Axis.h"
@@ -17,6 +17,7 @@ int main()
 	m.AccuracyExactPath();
 
 	m.SetMotion(Machine::Motion::Incremental);
+	std::cout << m;
 	return 0;
 }
 

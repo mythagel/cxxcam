@@ -1,6 +1,7 @@
 #include "Machine.h"
 #include "Tool.h"
 #include "Axis.h"
+#include <iostream>
 
 using namespace cxxcam;
 
@@ -77,6 +78,8 @@ int main()
 
 	m.NewBlock("Epilogue");
 	m.StopSpindle();
+	
+	std::cout << m;
 	return 0;
 }
 
