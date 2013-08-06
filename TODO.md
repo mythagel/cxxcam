@@ -17,9 +17,8 @@
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
-       - improve geom::polyhedron to be able to create from polygons (list of points) (make_polygon)
-       - glide (minowski sum) rotated tool with polygon
-       - hmmm... polygon or polyhedron....
+       - glide (minowski sum) rotated tool with box formed by linear axis movement
+       - Perform intersection tests.
     - Linear / Arcs
        - *How to measure cutting performance?*
        - Define Inputs and Outputs
