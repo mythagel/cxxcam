@@ -1462,6 +1462,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 					case Axis::Type::Y:
 					{
 						line += AxisToWord(axis);
+						UpdatePosition(axis);
 						break;
 					}
 					case Axis::Type::Z:
@@ -1469,10 +1470,15 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 						auto word = AxisToWord(axis);
 						word.Comment("Helix");
 						line += word;
+						UpdatePosition(axis);
 						break;
 					}
 					default:
-						throw error("Allowed axes: X, Y, & Z (Helix)");
+					{
+						line += AxisToWord(axis);
+						UpdatePosition(axis);
+						break;
+					}
 				}
 			}
 
@@ -1503,6 +1509,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 					case Axis::Type::Z:
 					{
 						line += AxisToWord(axis);
+						UpdatePosition(axis);
 						break;
 					}
 					case Axis::Type::Y:
@@ -1510,10 +1517,15 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 						auto word = AxisToWord(axis);
 						word.Comment("Helix");
 						line += word;
+						UpdatePosition(axis);
 						break;
 					}
 					default:
-						throw error("Allowed axes: X, Z, & Y (Helix)");
+					{
+						line += AxisToWord(axis);
+						UpdatePosition(axis);
+						break;
+					}
 				}
 			}
 
@@ -1544,6 +1556,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 					case Axis::Type::Z:
 					{
 						line += AxisToWord(axis);
+						UpdatePosition(axis);
 						break;
 					}
 					case Axis::Type::X:
@@ -1551,10 +1564,15 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 						auto word = AxisToWord(axis);
 						word.Comment("Helix");
 						line += word;
+						UpdatePosition(axis);
 						break;
 					}
 					default:
-						throw error("Allowed axes: Y, Z, & X (Helix)");
+					{
+						line += AxisToWord(axis);
+						UpdatePosition(axis);
+						break;
+					}
 				}
 			}
 
