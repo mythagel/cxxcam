@@ -1,6 +1,7 @@
 #include "Machine.h"
 #include "Tool.h"
 #include "Axis.h"
+#include "Offset.h"
 #include "Stock.h"
 #include "geom/polyhedron.h"
 #include "geom/primitives.h"
@@ -44,19 +45,19 @@ int main()
 	m.Linear({X(100), Y(100)});
 	m.Linear({Z(11)});
 	
-	m.Linear({X(0)});
+	m.Rapid({X(0)});
+	m.Linear({Z(9)});
+	m.Linear({X(100), Y(0)});
+	m.Linear({Z(11)});
 
-	for(int i = 0; i < 11; ++i)
-	{
-		std::cerr << "{z:" << (10-i) << "}\n";
-		m.Linear({Z(10-i)});
-		std::cerr << "{x:" << 5*i << ", y:" << 5*i << "}\n";
-		m.Linear({X(5*i), Y(5*i)});
-		//m.linear({x:5*i, y:5*i, z:10-i});
-	}
-	
+	m.Rapid({X(50), Y(25)});
+	m.Linear({Z(9)});
+	m.Arc(Machine::Direction::Clockwise, {X(50), Y(25)}, {I(0), J(25)});
+	m.Linear({Z(11)});
+
 	std::ofstream os("play.off");
 	os << geom::format::off << m.GetStock().Model;
+	std::cout << m << "\n";
 	return 0;
 }
 
