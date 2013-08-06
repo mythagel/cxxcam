@@ -11,6 +11,7 @@
  * Path expansion
     - Correct faults with angular movements
        - With zero linear movement (pure rotary motion)
+          - implement path::expand_rotary
        - Large angular with small linear
     - UVW mapped into cartesian space?
  * Check for stock intersection for Linear & Rapid movements
