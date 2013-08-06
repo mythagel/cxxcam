@@ -14,6 +14,7 @@
           - implement path::expand_rotary
        - Large angular with small linear
     - UVW mapped into cartesian space?
+    - Change path::info_t to return an expanded path and info and not a parameter.
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
@@ -34,6 +35,10 @@
           - Performs analysis on a specified path.
           - Provides information on cutting performance.
           - Cutting time.
+       - Change behaviour of simulation.
+       - Expand tool along path but DO NOT remove material from stock.
+       - Then perform analysis of material removal rate by tracking trocoidal path
+       - created by cutting edges on the tool.
     - Cutting speed
     - Performance
        - Path for each flute is trochoidal.
