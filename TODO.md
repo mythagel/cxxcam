@@ -5,7 +5,7 @@
     * Get usage experience
     * Manual everything(feed rate etc.)
     * Reproduce existing gcode programs
- 2. Complete model generation (i.e. remove material from stock object)
+ 2. ...?
 
 ## High Level ##
  * Path expansion
