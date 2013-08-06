@@ -1618,28 +1618,22 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	
 	auto angular_end = m_Private->m_State.m_Current;
 	// arc from start to end expand tool along path.
-	Position_Cartesian arc_center;
-	path::ArcDirection arc_dir;
-	math::vector_3 arc_plane;
 	
-	// TODO ARRRRRRRRRRRRRRRRRRRRRRRRRGGGGGGHHH
-	// FIX WITH LAMBDAS!!!
-	// WHY AM I WRITING THIS
-	// WHAT'S WRONG WITH ME
-	auto offset2length = [&m_Units](const Offset& offset) -> units::length
+	auto incremental2absolute = [&m_State, &angular_start, &m_Units](const Offset& offset) -> units::length
 	{
-		switch(m_Units)
+		auto offset2length = [&m_Units](const Offset& offset) -> units::length
 		{
-			case Units::Metric:
-				return units::length{offset * units::millimeters};
-			case Units::Imperial:
-				return units::length{offset * units::inches};
-			default:
-				throw std::logic_error("Unrecognised units.");
-		}
-	};
-	auto incremental2absolute = [&m_State, &angular_start, offset2length](const Offset& offset) -> units::length
-	{
+			switch(m_Units)
+			{
+				case Units::Metric:
+					return units::length{offset * units::millimeters};
+				case Units::Imperial:
+					return units::length{offset * units::inches};
+				default:
+					throw std::logic_error("Unrecognised units.");
+			}
+		};
+		
 		switch(m_State.m_ArcMotion)
 		{
 			case Motion::Absolute:
@@ -1661,50 +1655,54 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 		}
 		throw std::logic_error("incremental2absolute");
 	};
-	auto update_arc_center = [&arc_center, incremental2absolute](const Offset& offset)
+	auto center2arc_center = [incremental2absolute](const std::vector<Offset>& center) -> Position_Cartesian
 	{
-		switch(offset)
+		Position_Cartesian arc_center;
+		for(auto& offset : center)
 		{
-			case Offset::Type::I:
-				arc_center.X = incremental2absolute(offset);
-				break;
-			case Offset::Type::J:
-				arc_center.Y = incremental2absolute(offset);
-				break;
-			case Offset::Type::K:
-				arc_center.Z = incremental2absolute(offset);
+			switch(offset)
+			{
+				case Offset::Type::I:
+					arc_center.X = incremental2absolute(offset);
+					break;
+				case Offset::Type::J:
+					arc_center.Y = incremental2absolute(offset);
+					break;
+				case Offset::Type::K:
+					arc_center.Z = incremental2absolute(offset);
+			}
+		}
+		return arc_center;
+	};
+	auto dir2arcdir = [](Direction dir) -> path::ArcDirection
+	{
+		switch(dir)
+		{
+			case Direction::Clockwise:
+				return path::ArcDirection::Clockwise;
+			case Direction::CounterClockwise:
+				return path::ArcDirection::CounterClockwise;
+			default:
+				throw std::logic_error("Unknown Arc Direction");
 		}
 	};
-	for(auto& offset : center)
-		update_arc_center(offset);
-
-	switch(dir)
+	auto plane2vector_3 = [](Plane plane) -> math::vector_3
 	{
-		case Direction::Clockwise:
-			arc_dir = path::ArcDirection::Clockwise;
-			break;
-		case Direction::CounterClockwise:
-			arc_dir = path::ArcDirection::CounterClockwise;
-			break;
-		default:
-			throw std::logic_error("Unknown Arc Direction");
-	}
-	switch(m_State.m_Plane)
-	{
-		case Plane::XY:
-			arc_plane = math::vector_3{0, 0, 1};
-			break;
-		case Plane::ZX:
-			arc_plane = math::vector_3{0, 1, 0};
-			break;
-		case Plane::YZ:
-			arc_plane = math::vector_3{1, 0, 0};
-			break;
-		default:
-			throw std::logic_error("Unsupported Arc Plane");
-	}
+		switch(plane)
+		{
+			case Plane::XY:
+				return math::vector_3{0, 0, 1};
+			case Plane::ZX:
+				return math::vector_3{0, 1, 0};
+			case Plane::YZ:
+				return math::vector_3{1, 0, 0};
+			default:
+				throw std::logic_error("Unsupported Arc Plane");
+		}
+	};
+	
 	path::info_t info;
-	auto path = path::expand_arc(angular_start, angular_end, arc_center, arc_dir, arc_plane, turns, m_Axes, info, 1);
+	auto path = path::expand_arc(angular_start, angular_end, center2arc_center(center), dir2arcdir(dir), plane2vector_3(m_State.m_Plane), turns, m_Axes, info, 1);
 	
 	simulation::state state;
 	state.stock = m_Stock;
