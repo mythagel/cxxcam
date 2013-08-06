@@ -73,10 +73,10 @@
 
 
 ## Code ##
+ * *Improve Arc code (remove duplication)*
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
  * Split tests (one per source file)
- * Improve Arc code (remove duplication)
  * Add expected output to tests and verify.
  * User boost::operators to define operatiors on types.
  * Review boost::test for unit tests
