@@ -14,6 +14,7 @@
           - implement path::expand_rotary
        - Large angular with small linear
     - UVW mapped into cartesian space?
+    - Change path::info_t to return an expanded path and info and not a parameter.
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
