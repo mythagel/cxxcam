@@ -31,18 +31,18 @@ int main()
 		// very short linear travel with large angular movement.
 		Position start;
 		start.X = length{25 * millimeters};
-		start.Y = length{25 * millimeters};
+		start.Y = length{26 * millimeters};
 		start.Z = length{90 * millimeters};
 	
 		Position end;
 		end.X = length{25 * millimeters};
-		end.Y = length{26 * millimeters};	// move 1mm
+		end.Y = length{25 * millimeters};	// move 1mm
 		end.Z = length{90 * millimeters};
 		end.A = plane_angle(60 * degrees);	// and 60 deg
 	
 		// Expand path
 		limits::AvailableAxes geometry;
-		steps = expand_linear(start, end, geometry, 1).path;
+		steps = expand_linear(start, end, geometry, 2).path;
 	}
 	
 	std::cout << std::string(25, '=') << "\n";
@@ -85,7 +85,7 @@ int main()
 	std::cout << "Total: " << total << "\n";
 	std::cout << "Bbox: " << s.bounding_box << '\n';
 
-	std::ofstream os("simulate_rotary2.off");
+	std::ofstream os("sim_low_angular_res.off");
 	os << geom::format::off << s.stock.Model;
 	return 0;
 }
