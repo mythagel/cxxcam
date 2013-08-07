@@ -28,10 +28,6 @@
 namespace cxxcam
 {
 
-/*
- * TODO UDL type?
- */
-
 class Offset
 {
 public:

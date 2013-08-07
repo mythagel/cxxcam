@@ -28,11 +28,6 @@
 namespace cxxcam
 {
 
-/*
- * TODO UDL type?
- * move_to(15.5_X, 4.0_Y)
- */
-
 class Axis
 {
 public:
