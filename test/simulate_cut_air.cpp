@@ -32,8 +32,7 @@ int main()
 	
 		// Expand path
 		limits::AvailableAxes geometry;
-		path::info_t info;
-		steps = expand_linear(start, end, geometry, info, 10);
+		steps = expand_linear(start, end, geometry, 10).path;
 	}
 	
 	for(auto step : steps)

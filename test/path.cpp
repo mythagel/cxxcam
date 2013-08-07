@@ -20,8 +20,7 @@ void simple()
 	
 	std::cout << start << " -> " << end << '\n';
 	
-	path::info_t info;
-	auto steps = expand_linear(start, end, geometry, info, 1);
+	auto steps = expand_linear(start, end, geometry, 1).path;
 	
 	for(const auto& step : steps)
 	{
@@ -49,8 +48,7 @@ void check_start_end()
 	
 	std::cout << start << " -> " << end << '\n';
 	
-	path::info_t info;
-	auto steps = expand_linear(start, end, geometry, info, 1);
+	auto steps = expand_linear(start, end, geometry, 1).path;
 	
 	step s0;
 	s0.position.z = length{90 * millimeters};
@@ -88,8 +86,7 @@ void nintydegrees()
 	
 	std::cout << start << " -> " << end << '\n';
 	
-	path::info_t info;
-	auto steps = expand_linear(start, end, geometry, info, 1);
+	auto steps = expand_linear(start, end, geometry, 1).path;
 	
 	for(const auto& step : steps)
 	{
@@ -118,8 +115,7 @@ void nintyonedegrees()
 	
 	std::cout << start << " -> " << end << '\n';
 	
-	path::info_t info;
-	auto steps = expand_linear(start, end, geometry, info, 1);
+	auto steps = expand_linear(start, end, geometry, 1).path;
 	
 	for(const auto& step : steps)
 	{
@@ -150,8 +146,7 @@ void z8()
 	
 	std::cout << start << " -> " << end << '\n';
 	
-	path::info_t info;
-	auto steps = expand_linear(start, end, geometry, info, 1);
+	auto steps = expand_linear(start, end, geometry, 1).path;
 	
 	die_if(steps[steps.size()-1] == steps[steps.size()-2], "Duplicate step");
 	

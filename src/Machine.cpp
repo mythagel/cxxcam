@@ -1352,8 +1352,7 @@ void Machine::Rapid(const std::vector<Axis>& axes)
 	
 	auto end = m_Private->m_State.m_Current;
 	// calculate possible motion path (not a line but a polyhedron.)
-	path::info_t info;
-	auto path = path::expand_linear(start, end, m_Axes, info);
+	auto path = path::expand_linear(start, end, m_Axes);
 }
 
 void Machine::Linear(const std::vector<Axis>& axes)
@@ -1397,8 +1396,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	
 	auto linear_end = m_Private->m_State.m_Current;
 	// line from start to end expand tool along path and subtract tool path from stock.
-	path::info_t info;
-	auto path = path::expand_linear(linear_start, linear_end, m_Axes, info, 1);
+	auto path = path::expand_linear(linear_start, linear_end, m_Axes, 1);
 	
 	simulation::state state;
 	state.stock = m_Stock;
@@ -1408,7 +1406,7 @@ void Machine::Linear(const std::vector<Axis>& axes)
 	state.FeedRateLimit = m_FeedRateLimit;
 	
 	std::vector<simulation::step> sim_res;
-	fold_adjacent(begin(path), end(path), std::back_inserter(sim_res), 
+	fold_adjacent(begin(path.path), end(path.path), std::back_inserter(sim_res), 
 		[&state](const path::step& s0, const path::step& s1) -> simulation::step
 		{
 			return simulation::simulate_cut(s0, s1, state);
@@ -1701,8 +1699,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 		}
 	};
 	
-	path::info_t info;
-	auto path = path::expand_arc(angular_start, angular_end, center2arc_center(center), dir2arcdir(dir), plane2vector_3(m_State.m_Plane), turns, m_Axes, info, 1);
+	auto path = path::expand_arc(angular_start, angular_end, center2arc_center(center), dir2arcdir(dir), plane2vector_3(m_State.m_Plane), turns, m_Axes, 1);
 	
 	simulation::state state;
 	state.stock = m_Stock;
@@ -1712,7 +1709,7 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 	state.FeedRateLimit = m_FeedRateLimit;
 	
 	std::vector<simulation::step> sim_res;
-	fold_adjacent(begin(path), end(path), std::back_inserter(sim_res), 
+	fold_adjacent(begin(path.path), end(path.path), std::back_inserter(sim_res), 
 		[&state](const path::step& s0, const path::step& s1) -> simulation::step
 		{
 			return simulation::simulate_cut(s0, s1, state);

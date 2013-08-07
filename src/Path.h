@@ -48,12 +48,13 @@ struct step
 
 std::ostream& operator<<(std::ostream& os, const step& step);
 
-struct info_t
+struct path_t
 {
+	std::vector<step> path;
 	units::length length;
 };
 
-std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, info_t& info, size_t steps_per_mm = 10);
+path_t expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
 
 enum class ArcDirection
 {
@@ -61,7 +62,7 @@ enum class ArcDirection
 	CounterClockwise
 };
 
-std::vector<step> expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns, const limits::AvailableAxes& geometry, info_t& info, size_t steps_per_mm = 10);
+path_t expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
 
 }
 }

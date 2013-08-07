@@ -102,7 +102,7 @@ step position2step(const Position& pos, const limits::AvailableAxes& geometry)
 	return s;
 };
 
-std::vector<step> expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, info_t& info, size_t steps_per_mm)
+path_t expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm)
 {
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
@@ -112,7 +112,6 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	auto s0 = pos2step(start);
 	auto sn = pos2step(end);
 	auto length = units::length_mm(distance(s0.position, sn.position)).value();
-	info.length = units::length{length * units::millimeters};
 	
 	Position axis_movement;
 	axis_movement.X = end.X - start.X;
@@ -127,7 +126,8 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 	axis_movement.V = end.V - start.V;
 	axis_movement.W = end.W - start.W;
 	
-	std::vector<step> path;
+	path_t path;
+	path.length = units::length{length * units::millimeters};
 	auto total_steps = length * steps_per_mm;
 	
 	// TODO ugly, wrong hack for pure rotary motion.
@@ -155,16 +155,16 @@ std::vector<step> expand_linear(const Position& start, const Position& end, cons
 		p.V += axis_movement.V * scale;
 		p.W += axis_movement.W * scale;
 		
-		path.push_back(pos2step(p));
+		path.path.push_back(pos2step(p));
 	}
 	
-	if(path.empty() || path.back() != sn)
-		path.push_back(sn);
+	if(path.path.empty() || path.path.back() != sn)
+		path.path.push_back(sn);
 	
 	return path;
 }
 
-std::vector<step> expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns, const limits::AvailableAxes& geometry, info_t& info, size_t steps_per_mm)
+path_t expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns, const limits::AvailableAxes& geometry, size_t steps_per_mm)
 {
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
@@ -241,7 +241,6 @@ std::vector<step> expand_arc(const Position& start, const Position& end, const P
 	turn_theta += fabs(delta_theta);
 	
 	auto l = helix_length(units::length_mm(r).value(), units::length_mm{helix / units::plane_angle_rads{turn_theta}.value()}.value(), units::plane_angle_rads(turn_theta / (2*PI)).value());
-	info.length = units::length{l * units::millimeters};
 	size_t total_steps = l * steps_per_mm;
 	auto rads_per_step = turn_theta / static_cast<double>(total_steps);
 	
@@ -256,7 +255,8 @@ std::vector<step> expand_arc(const Position& start, const Position& end, const P
 	axis_movement.V = end.V - start.V;
 	axis_movement.W = end.W - start.W;
 	
-	std::vector<step> path;
+	path_t path;
+	path.length = units::length{l * units::millimeters};
 	auto t = start_theta;
 	auto hdt = helix / static_cast<double>(total_steps);
 	for(size_t s = 0; s < total_steps; ++s, t += step_dt)
@@ -293,11 +293,11 @@ std::vector<step> expand_arc(const Position& start, const Position& end, const P
 		p.V += axis_movement.V * scale;
 		p.W += axis_movement.W * scale;
 		
-		path.push_back(pos2step(p));
+		path.path.push_back(pos2step(p));
 	}
 	
-	if(path.empty() || path.back() != sn)
-		path.push_back(sn);
+	if(path.path.empty() || path.path.back() != sn)
+		path.path.push_back(sn);
 	
 	return path;
 }

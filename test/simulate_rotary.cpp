@@ -41,13 +41,12 @@ int main()
 	
 		// Expand path
 		limits::AvailableAxes geometry;
-		path::info_t info;
-		steps = expand_linear(start, end, geometry, info, 1);
+		steps = expand_linear(start, end, geometry, 1).path;
 		
 		start = end;
 		end.C = plane_angle(359 * degrees);
 		
-		append(expand_linear(start, end, geometry, info, 1), steps);
+		append(expand_linear(start, end, geometry, 1).path, steps);
 	}
 	
 	std::cout << std::string(25, '=') << "\n";
