@@ -9,12 +9,8 @@
 
 ## High Level ##
  * Path expansion
-    - Correct faults with angular movements
-       - With zero linear movement (pure rotary motion)
-          - implement path::expand_rotary
-       - Large angular with small linear
+    - Use path::expand_rotary in Machine when pure rotary motion is detected.
     - UVW mapped into cartesian space?
-    - Change path::info_t to return an expanded path and info and not a parameter.
  * Check for stock intersection for Linear & Rapid movements
     - Rapids
        - Rotate tool along all angular axes
@@ -37,8 +33,7 @@
           - Cutting time.
        - Change behaviour of simulation.
        - Expand tool along path but DO NOT remove material from stock.
-       - Then perform analysis of material removal rate by tracking trocoidal path
-       - created by cutting edges on the tool.
+       - Then perform analysis of material removal rate by tracking trocoidal path created by cutting edges on the tool.
     - Cutting speed
     - Performance
        - Path for each flute is trochoidal.
@@ -77,7 +72,6 @@
 
 
 ## Code ##
- * *Improve Arc code (remove duplication)*
  * Ensure exceptions do not change state (to allow recovery)
  * Add Interface stability test.
  * Split tests (one per source file)
