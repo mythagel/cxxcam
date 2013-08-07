@@ -157,6 +157,43 @@ void z8()
 	}
 }
 
+void reverse()
+{
+	std::cout << "reverse\n";
+	using namespace cxxcam;
+	using namespace cxxcam::path;
+	using namespace cxxcam::units;
+	using namespace cxxcam::math;
+	
+	Position start;
+	start.X = length{25 * millimeters};
+	start.Y = length{26 * millimeters};
+	start.Z = length{90 * millimeters};
+	
+	Position end;
+	end.X = length{25 * millimeters};
+	end.Y = length{25 * millimeters};
+	end.Z = length{90 * millimeters};
+	end.A = plane_angle(60 * degrees);
+	
+	limits::AvailableAxes geometry;
+	
+	std::cout << start << " -> " << end << '\n';
+	
+	auto steps = expand_linear(start, end, geometry, 10).path;
+	
+	/* TODO there is a duplicate step here but the broken comparison operators
+	do not currently expose it. Expect this test to (correctly) break later.
+	*/
+	die_if(steps[steps.size()-1] == steps[steps.size()-2], "Duplicate step");
+	
+	for(const auto& step : steps)
+	{
+		std::cout << step << '\n';
+		std::cout << normalise(vector_3(step.orientation)) << '\n';
+	}
+}
+
 int main()
 {
 	simple();
@@ -164,6 +201,7 @@ int main()
 	nintydegrees();
 	nintyonedegrees();
 	z8();
+	reverse();
 	
 	return 0;
 }
