@@ -44,7 +44,7 @@ int main()
 		steps = expand_linear(start, end, geometry, 1).path;
 		
 		start = end;
-		end.C = plane_angle(359 * degrees);
+		end.C = plane_angle(360 * degrees);
 		
 		append(expand_linear(start, end, geometry, 1).path, steps);
 	}
