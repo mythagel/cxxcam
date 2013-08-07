@@ -56,12 +56,21 @@ int main()
 	}
 	
 	std::vector<simulation::step> sim_res;
-	fold_adjacent(begin(steps), end(steps), std::back_inserter(sim_res), 
-	[&s](const path::step& s0, const path::step& s1) -> simulation::step
+	try
 	{
-		std::cerr << s0 << " -> " << s1 << '\n';
-		return simulate_cut(s0, s1, s);
-	});
+		fold_adjacent(begin(steps), end(steps), std::back_inserter(sim_res), 
+		[&s](const path::step& s0, const path::step& s1) -> simulation::step
+		{
+			std::cerr << s0 << " -> " << s1 << '\n';
+				return simulate_cut(s0, s1, s);
+		});
+	}
+	catch(const std::runtime_error& ex)
+	{
+		std::ofstream os("simulate_path-test2-broken.nef");
+		os << geom::format::nef << s.stock.Model;
+		throw;
+	}
 
 //	Material removal volume disabled.
 //	units::volume total;
