@@ -8,6 +8,14 @@
  2. ...?
 
 ## High Level ##
+ * Simulation
+    - Ensure feed rate passed to simulation is normalised.
+    - Scrap existing behaviour.
+    - Use expanded path to create tool model.
+    - Transform / glide tool between steps
+    - Union together.
+    - Single step to remove subtract tool path from stock.
+    - Path expansion resolution does NOT correlate to simulation analysis resolution (which is primarily concerned with tool rotation.)
  * Path expansion
     - Use path::expand_rotary in Machine when pure rotary motion is detected.
     - UVW mapped into cartesian space?
@@ -67,8 +75,6 @@
     - Use when generating tool and stock models.
  * Math
     - Correct faulty equality ops for math::point_3 and math::vector_3.
- * Simulation
-    - Ensure feed rate passed to simulation is normalised.
 
 
 ## Code ##
