@@ -52,9 +52,12 @@ struct path_t
 {
 	std::vector<step> path;
 	units::length length;
+	units::plane_angle angular_length;
 };
 
 path_t expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
+
+path_t expand_rotary(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_degree = 10);
 
 enum class ArcDirection
 {

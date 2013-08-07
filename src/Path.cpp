@@ -102,6 +102,11 @@ step position2step(const Position& pos, const limits::AvailableAxes& geometry)
 	return s;
 };
 
+units::plane_angle pseudo_cartesian_distance(const Position& start, const Position& end)
+{
+	return units::plane_angle{sqrt((start.A-end.A)*(start.A-end.A) + (start.B-end.B)*(start.B-end.B) + (start.C-end.C)*(start.C-end.C))};
+}
+
 path_t expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm)
 {
 	auto pos2step = [&geometry](const Position& pos) -> step
@@ -112,6 +117,7 @@ path_t expand_linear(const Position& start, const Position& end, const limits::A
 	auto s0 = pos2step(start);
 	auto sn = pos2step(end);
 	auto length = units::length_mm(distance(s0.position, sn.position)).value();
+	auto pseudo_cartesian_length = units::plane_angle_deg{pseudo_cartesian_distance(start, end)}.value();
 	
 	Position axis_movement;
 	axis_movement.X = end.X - start.X;
@@ -128,13 +134,16 @@ path_t expand_linear(const Position& start, const Position& end, const limits::A
 	
 	path_t path;
 	path.length = units::length{length * units::millimeters};
+	path.angular_length = units::plane_angle{pseudo_cartesian_length * units::degrees};
 	auto total_steps = length * steps_per_mm;
 	
-	// TODO ugly, wrong hack for pure rotary motion.
-	// Need to std::vector<step> path;interpolate based on the rotary motion
-	// not some pseudo guestimated constant (8PI)
-	if(total_steps < 1)
-		total_steps = 8*3.14159 * steps_per_mm;
+	/*
+	If the length of the movement is less than the degrees travelled in the pseudo cartesian ABC coordinate system
+	then trade oversampling for undersampling by treating the degrees travelled as length units and reinterpret
+	steps_per_mm as steps_per_degree and use that to sample the path.
+	*/
+	if(length < pseudo_cartesian_length)
+		total_steps = pseudo_cartesian_length * steps_per_mm;
 	
 	for(size_t s = 0; s < total_steps; ++s)
 	{
@@ -164,12 +173,53 @@ path_t expand_linear(const Position& start, const Position& end, const limits::A
 	return path;
 }
 
+path_t expand_rotary(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_degree)
+{
+	auto pos2step = [&geometry](const Position& pos) -> step
+	{
+		return position2step(pos, geometry);
+	};
+	
+	auto pseudo_cartesian_length = units::plane_angle_deg{pseudo_cartesian_distance(start, end)}.value();
+	
+	Position axis_movement;
+	axis_movement.A = end.A - start.A;
+	axis_movement.B = end.B - start.B;
+	axis_movement.C = end.C - start.C;
+	
+	path_t path;
+	path.angular_length = units::plane_angle{pseudo_cartesian_length * units::degrees};
+	auto total_steps = pseudo_cartesian_length * steps_per_degree;
+	
+	for(size_t s = 0; s < total_steps; ++s)
+	{
+		auto scale = s / static_cast<double>(total_steps);
+		
+		// starting at `start` move a scaled amount towards `end`
+		Position p = start;
+		
+		p.A += axis_movement.A * scale;
+		p.B += axis_movement.B * scale;
+		p.C += axis_movement.C * scale;
+		
+		path.path.push_back(pos2step(p));
+	}
+	
+	auto sn = pos2step(end);
+	if(path.path.empty() || path.path.back() != sn)
+		path.path.push_back(sn);
+	
+	return path;
+}
+
 path_t expand_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns, const limits::AvailableAxes& geometry, size_t steps_per_mm)
 {
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
 		return position2step(pos, geometry);
 	};
+	
+	auto pseudo_cartesian_length = units::plane_angle_deg{pseudo_cartesian_distance(start, end)}.value();
 	
 	static const double PI = 3.14159265358979323846;
 	static const units::plane_angle PI2_r( 2 * PI * units::radians );
@@ -180,8 +230,6 @@ path_t expand_arc(const Position& start, const Position& end, const Position_Car
 		auto l = (2*PI*p) * sqrt((r*r) + (c*c));
 		return l;
 	};
-	
-	auto sn = pos2step(end);
 	
 	math::point_3 arc_start;
 	math::point_3 arc_end;
@@ -240,8 +288,17 @@ path_t expand_arc(const Position& start, const Position& end, const Position_Car
 	
 	turn_theta += fabs(delta_theta);
 	
-	auto l = helix_length(units::length_mm(r).value(), units::length_mm{helix / units::plane_angle_rads{turn_theta}.value()}.value(), units::plane_angle_rads(turn_theta / (2*PI)).value());
-	size_t total_steps = l * steps_per_mm;
+	auto length = helix_length(units::length_mm(r).value(), units::length_mm{helix / units::plane_angle_rads{turn_theta}.value()}.value(), units::plane_angle_rads(turn_theta / (2*PI)).value());
+	size_t total_steps = length * steps_per_mm;
+	
+	/*
+	As for linear movement, if the length of the movement is less than the degrees travelled in the pseudo cartesian ABC coordinate system
+	then trade oversampling for undersampling by treating the degrees travelled as length units and reinterpret
+	steps_per_mm as steps_per_degree and use that to sample the path.
+	*/
+	if(length < pseudo_cartesian_length)
+		total_steps = pseudo_cartesian_length * steps_per_mm;
+	
 	auto rads_per_step = turn_theta / static_cast<double>(total_steps);
 	
 	auto step_dt = delta_theta < units::plane_angle(0) ? -rads_per_step : rads_per_step;
@@ -256,7 +313,8 @@ path_t expand_arc(const Position& start, const Position& end, const Position_Car
 	axis_movement.W = end.W - start.W;
 	
 	path_t path;
-	path.length = units::length{l * units::millimeters};
+	path.length = units::length{length * units::millimeters};
+	path.angular_length = units::plane_angle{pseudo_cartesian_length * units::degrees};
 	auto t = start_theta;
 	auto hdt = helix / static_cast<double>(total_steps);
 	for(size_t s = 0; s < total_steps; ++s, t += step_dt)
@@ -296,6 +354,7 @@ path_t expand_arc(const Position& start, const Position& end, const Position_Car
 		path.path.push_back(pos2step(p));
 	}
 	
+	auto sn = pos2step(end);
 	if(path.path.empty() || path.path.back() != sn)
 		path.path.push_back(sn);
 	
