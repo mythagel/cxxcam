@@ -45,6 +45,9 @@
 // glide
 #include <CGAL/minkowski_sum_3.h>
 
+// merge
+#include <CGAL/Nef_nary_union_3.h>
+
 // Meshing
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Inexact_Kernel;
 typedef CGAL::Mesh_polyhedron_3<Inexact_Kernel>::type Mesh_polyhedron_3;
@@ -118,6 +121,16 @@ double volume(const polyhedron_t& polyhedron)
 	}
 	std::sort(volumes.begin(), volumes.end());
 	return std::accumulate(volumes.begin(), volumes.end(), 0.0);
+}
+
+polyhedron_t merge(const std::vector<polyhedron_t>& polyhedra)
+{
+	CGAL::Nef_nary_union_3<Nef_polyhedron_3> op;
+	for(auto polyhedron : polyhedra)
+		op.add_polyhedron(get_priv(polyhedron)->nef);
+
+	auto priv = std::make_shared<polyhedron_t::private_t>(op.get_union());
+	return make_polyhedron( std::move(priv) );
 }
 
 }
