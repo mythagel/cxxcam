@@ -17,29 +17,6 @@
 
 using namespace cxxcam;
 
-geom::polyhedron_t sweep_tool(geom::polyhedron_t tool, const path::step& s0, const path::step& s1)
-{
-	using units::length_mm;
-
-	static const math::quaternion_t identity{1,0,0,0};
-
-	const auto& o0 = s0.orientation;
-	const auto& p0 = s0.position;
-	const auto& p1 = s1.position;
-
-	if(o0 != identity)
-		tool = geom::rotate(tool, o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4());
-
-	if(distance(p0, p1) > units::length{0.000001 * units::millimeters})
-	{
-		geom::polyline_t path{ { {length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value()}, 
-								{length_mm(p1.x).value(), length_mm(p1.y).value(), length_mm(p1.z).value()} } };
-		return geom::glide(tool, path);
-	}
-	
-	return translate(tool, length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value());
-}
-
 int main()
 {
 	using namespace cxxcam::simulation;

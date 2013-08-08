@@ -39,8 +39,9 @@ int main()
 		std::cout << step << '\n';
 	
 	// Configure simulation
-	state s;
-	s.stock.Model = geom::make_box({0, 0, 0}, {50, 50, 100});
+	simulation::simulation_t sim;
+	sim.steps.path = steps;
+	sim.stock.Model = geom::make_box({0, 0, 0}, {50, 50, 100});
 	{
 		auto end_mill = Tool::Mill{};
 		end_mill.type = Tool::Mill::Type::End;
@@ -52,38 +53,15 @@ int main()
 		end_mill.mill_diameter = 10;
 		end_mill.shank_diameter = 10;
 		end_mill.length = 60;
-		s.tool = Tool("10mm End Mill", end_mill);
+		sim.tool = Tool("10mm End Mill", end_mill);
 	}
 	
-	std::vector<simulation::step> sim_res;
-	try
-	{
-		fold_adjacent(begin(steps), end(steps), std::back_inserter(sim_res), 
-		[&s](const path::step& s0, const path::step& s1) -> simulation::step
-		{
-			std::cerr << s0 << " -> " << s1 << '\n';
-				return simulate_cut(s0, s1, s);
-		});
-	}
-	catch(const std::runtime_error& ex)
-	{
-		std::ofstream os("simulate_path-test2-broken.nef");
-		os << geom::format::nef << s.stock.Model;
-		throw;
-	}
-
-//	Material removal volume disabled.
-//	units::volume total;
-//	for(auto step : sim_res)
-//	{
-//		std::cout << step.swarf << "\n";
-//		total += step.swarf;
-//	}
-//	std::cout << "Total: " << total << "\n";
-	std::cout << "Bbox: " << s.bounding_box << '\n';
+	auto result = run(sim);
+	
+	std::cout << "Bbox: " << result.bounding_box << '\n';
 
 	std::ofstream os("simulate_path-test2.off");
-	os << geom::format::off << s.stock.Model;
+	os << geom::format::off << result.stock.Model;
 	return 0;
 }
 

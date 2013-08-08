@@ -38,40 +38,35 @@ namespace simulation
 {
 
 /*
- * Need a better solution for storing simulation results.
- * cxxcam will run simulation for each input step.
- * jscam will provide ability to analyse cutting performance (and use this as feedback for generation)
- * Tool changes change meaning of simulation results. But because of volume of data it is unwise to store
- * tool objects for each step.
- * Tool id is not stable enough.
- * Seems acceptable to push this responsibility onto caller.
- * simulation results are stored - tool etc are not.
+ * Sweep the tool along the path given, applying any needed transformations.
  */
-struct step
-{
-	path::step s0;
-	path::step s1;
-	
-	units::volume swarf;
-};
+geom::polyhedron_t sweep_tool(geom::polyhedron_t tool, const path::step& s0, const path::step& s1);
 
-struct state
+// TODO function to iterate path and validate feedrates
+// TODO function to iterate path and calculate time
+
+Bbox bounding_box(const std::vector<path::step>& steps);
+geom::polyhedron_t remove_material(const geom::polyhedron_t& tool, const geom::polyhedron_t& stock, const std::vector<path::step>& steps);
+
+/*
+ * TODO simulation::run aggregates the individual functions above into a single interface.
+ * TODO It is too easy with the current interface to forget to set a parameter.
+ * Add a constructor to ensure fields are set.
+ */
+struct simulation_t
 {
+	path::path_t steps;
+	
 	Stock stock;
 	Tool tool;
-	double FeedRate;	// TODO normalised.
-	unsigned long SpindleSpeed;	// RPM
-	limits::FeedRate FeedRateLimit;
+};
+struct result_t
+{
+	Stock stock;
 	
 	Bbox bounding_box;
 };
-
-/*
- * Simulate a single time step
- * Simulation of a path will involve multiple calls to this function to analyse each step.
- * standard algorithms + lambda used to fold path sequence.
- */
-step simulate_cut(const path::step& s0, const path::step& s1, state& s);
+result_t run(const simulation_t& simulation);
 
 }
 }

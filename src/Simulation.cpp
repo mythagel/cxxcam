@@ -26,58 +26,71 @@
 #include "geom/translate.h"
 #include "geom/ops.h"
 #include "geom/query.h"
+#include "fold_adjacent.h"
+#include <numeric>
 
 namespace cxxcam
 {
 namespace simulation
 {
 
-step simulate_cut(const path::step& s0, const path::step& s1, state& s)
+geom::polyhedron_t sweep_tool(geom::polyhedron_t tool, const path::step& s0, const path::step& s1)
 {
-	if(s.stock.Model.empty())
-		return {s0, s1, {}};
-	
 	using units::length_mm;
-	step sim_res;
-	sim_res.s0 = s0;
-	sim_res.s1 = s1;
-	
+
+	static const math::quaternion_t identity{1,0,0,0};
+
 	const auto& o0 = s0.orientation;
 	const auto& p0 = s0.position;
 	const auto& p1 = s1.position;
-	
-	auto tool = geom::rotate(s.tool.Model(), o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4());
 
-	geom::polyhedron_t tool_path;
+	if(o0 != identity)
+		tool = geom::rotate(tool, o0.R_component_1(), o0.R_component_2(), o0.R_component_3(), o0.R_component_4());
+
 	if(distance(p0, p1) > units::length{0.000001 * units::millimeters})
 	{
 		geom::polyline_t path{ { {length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value()}, 
 								{length_mm(p1.x).value(), length_mm(p1.y).value(), length_mm(p1.z).value()} } };
-		tool_path = geom::glide(tool, path);
+		return geom::glide(tool, path);
 	}
-	else
+	
+	return translate(tool, length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value());
+}
+
+Bbox bounding_box(const std::vector<path::step>& steps)
+{
+	if(steps.empty())
+		return {};
+	
+	auto s0 = steps.front();
+	return std::accumulate(++begin(steps), end(steps), Bbox{s0.position, s0.position}, [](Bbox& b, const path::step& s0) { return b + s0.position; } );
+}
+
+geom::polyhedron_t remove_material(const geom::polyhedron_t& tool, const geom::polyhedron_t& stock, const std::vector<path::step>& steps)
+{
+	// TODO new design can be parallelised
+	std::vector<geom::polyhedron_t> tool_motion;
+	fold_adjacent(begin(steps), end(steps), std::back_inserter(tool_motion), 
+	[&tool](const path::step& s0, const path::step& s1) -> geom::polyhedron_t
 	{
-		tool_path = translate(tool, length_mm(p0.x).value(), length_mm(p0.y).value(), length_mm(p0.z).value());
-	}
-	//auto material_removed = s.stock.Model * tool_path;
+		return sweep_tool(tool, s0, s1);
+	});
 	
-	/*
-	 * Takes far too long.
-	 * Instead of calculating volume on each step (which is inaccurate and slow)
-	 * accumulate the removed material and calculate it in one go at the end.
-	 */
-	//sim_res.swarf = units::volume( geom::volume(material_removed) * units::cubic_millimeters );
+	auto tool_path = geom::merge(tool_motion);
+	if(intersects(stock, tool_path))
+		return stock - tool_path;
+	else
+		return stock;
+}
+
+result_t run(const simulation_t& simulation)
+{
+	result_t result;
 	
-	if(intersects(s.stock.Model, tool_path))
-		s.stock.Model -= tool_path;
+	result.stock = remove_material(simulation.tool.Model(), simulation.stock.Model, simulation.steps.path);
+	result.bounding_box = bounding_box(simulation.steps.path);
 	
-	if(s.bounding_box == Bbox::zero)
-		s.bounding_box = {s0.position, s0.position};
-	
-	s.bounding_box += s0.position;
-	s.bounding_box += s1.position;
-	
-	return sim_res;
+	return result;
 }
 
 }
