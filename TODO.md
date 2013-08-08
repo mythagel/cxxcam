@@ -85,4 +85,5 @@
  * User boost::operators to define operatiors on types.
  * Review boost::test for unit tests
  * Axis / Offset UDL type.
+ * Tool::Model() -vs- Stock.Model
 
