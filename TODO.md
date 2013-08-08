@@ -29,6 +29,7 @@
           - Path for each flute is trochoidal.
           - Calculate the path that flute tip passes through material.
           - Gives simulated chip load per tooth.
+          - add experiment for flute path
  * Higher order curves
  * Complete Tool class - apt_cutter branch
     - APT CUTTER style mill tool definition
