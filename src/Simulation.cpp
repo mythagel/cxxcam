@@ -77,10 +77,7 @@ geom::polyhedron_t remove_material(const geom::polyhedron_t& tool, const geom::p
 	});
 	
 	auto tool_path = geom::merge(tool_motion);
-	if(intersects(stock, tool_path))
-		return stock - tool_path;
-	else
-		return stock;
+	return stock - tool_path;
 }
 
 result_t run(const simulation_t& simulation)
