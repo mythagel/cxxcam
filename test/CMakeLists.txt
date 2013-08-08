@@ -49,11 +49,10 @@ configuration
 inverse_time 
 path 
 math 
-simulation 
 simulate_path 
 simulate_path-test2 
 simulate_path-nintynonmanifold 
-simulate_rotary 
+# simulate_rotary 
 simulate_arc 
 simulate_arc_rotary 
 sim_low_angular_res 
