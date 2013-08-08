@@ -63,6 +63,7 @@ playjs
 helix 
 bbox 
 play 
+ex_newsim 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()
