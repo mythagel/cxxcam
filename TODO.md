@@ -10,44 +10,25 @@
 ## High Level ##
  * Simulation
     - Ensure feed rate passed to simulation is normalised.
-    - Scrap existing behaviour.
-    - Use expanded path to create tool model.
-    - Transform / glide tool between steps
-    - Union together.
-    - Single step to remove subtract tool path from stock.
-    - Path expansion resolution does NOT correlate to simulation analysis resolution (which is primarily concerned with tool rotation.)
+    - Implement additional simulation steps.
  * Path expansion
     - Use path::expand_rotary in Machine when pure rotary motion is detected.
     - UVW mapped into cartesian space?
  * Check for stock intersection for Linear & Rapid movements
-    - Rapids
+    - Rapids (Positioning)
        - Rotate tool along all angular axes
        - glide (minowski sum) rotated tool with box formed by linear axis movement
        - Perform intersection tests.
-    - Linear / Arcs
-       - *How to measure cutting performance?*
-       - Define Inputs and Outputs
-          - Input
-             - Feed Rate (per step or per segment)
-             - Spindle speed
-          - Output
-             - Annotated path
-                - Chip load per tooth
-                - Cutter engagement
-    - Simulation
-       - Tasks
-          - Performs analysis on a specified path.
-          - Provides information on cutting performance.
+    - Linear / Arcs (Material removal)
+       - Output
+          - Chip load per tooth
+          - Cutter engagement
           - Cutting time.
-       - Change behaviour of simulation.
-       - Expand tool along path but DO NOT remove material from stock.
-       - Then perform analysis of material removal rate by tracking trocoidal path created by cutting edges on the tool.
-    - Cutting speed
-    - Performance
-       - Path for each flute is trochoidal.
-       - Calculate the path that flute tip passes through material.
-       - Gives simulated chip load per tooth.
-       - Compare with data (tables? calculated from Material hardness?) for MRR.
+       - Performance
+          - *How to measure cutting performance?*
+          - Path for each flute is trochoidal.
+          - Calculate the path that flute tip passes through material.
+          - Gives simulated chip load per tooth.
  * Higher order curves
  * Complete Tool class - apt_cutter branch
     - APT CUTTER style mill tool definition
@@ -56,7 +37,7 @@
  * Complete Stock class
     - Needs material properties
  * Plunge motion
-    * Will be implemented as primitve (allows optimisation and clarification of intent)
+    - Will be implemented as primitve (allows optimisation and clarification of intent)
  * Ability to explode stock into individual objects when cut
     - How should user specify which part remains?
     - geom::explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
