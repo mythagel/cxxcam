@@ -58,15 +58,47 @@ double distance(const point_3& p0, const point_3& p1)
 
 int main()
 {
-	int r = 1;
-	double cx = 0;
+	int theta = 2*PI*5;	// 5 = number of spindle revolutions
+	int r = 10;			// radius
+	
+	double cx = 0;		// center point
 	double cy = 0;
-	for(double t = 0; t < 2*PI; t += PI/4)
+	double cz = 0;
+	
+	double distance = 10;	// distance travelled while revolving
+	
+	// Won't really be x but the distance on the vector of the tool motion
+	double xpt = distance / theta;
+	double ypt = 0;
+	double zpt = 0;
+	
+	// 4 flutes evenly spaced
+	std::vector<double/*theta*/> flute_thetas;
 	{
-		double x = cx + r * cos(t);
-		double y = cy + r * sin(t);
+		auto t = (2*PI)/4;
+		flute_thetas.push_back(t*0);
+		flute_thetas.push_back(t*1);
+		flute_thetas.push_back(t*2);
+		flute_thetas.push_back(t*3);
+	}
+	
+	// x = load("points")
+	// plot3(x(:, 1), x(:, 2), x(:, 3),x(:, 4), x(:, 5), x(:, 6),x(:, 7), x(:, 8), x(:, 9),x(:, 10), x(:, 11), x(:, 12))
+	std::ofstream os("points");
+	for(double t = 0; t < theta; t += PI/16)
+	{
+		int i = 0;
+		for(auto ft : flute_thetas)
+		{
+			ft += t;
+			point_3 x = {cx + (r*cos(ft)) + (ft*xpt), 
+				         cy + (r*sin(ft)) + (ft*ypt),
+				         cz + i           + (ft*zpt)};
 		
-		std::cout << "(" << round6(x) << ", " << round6(y) << ")\n";
+			os << x << ", ";
+			++i;
+		}
+		os << "\n";
 	}
 
 	return 0;
