@@ -63,6 +63,7 @@ helix
 bbox 
 play 
 ex_newsim 
+ex_trochoid 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()
