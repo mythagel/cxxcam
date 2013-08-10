@@ -31,29 +31,37 @@ int main()
 	}
 	
 	Stock stock;
-	stock.Model = geom::make_box({x:0, y:0, z:0}, {x:100, y:100, z:10});
+	stock.Model = geom::make_box({x:0, y:0, z:0}, {x:100, y:100, z:-10});
 	m.SetStock(stock);
 
 	m.SetFeedRate(100);
 	m.ToolChange(1);
 	m.StartSpindle(250);
 
-	m.Rapid({Z(11)});
+	m.Rapid({Z(1)});
 	m.Rapid({X(0), Y(0)});
 	
-	m.Linear({Z(9)});
+	m.Linear({Z(-2)});
 	m.Linear({X(100), Y(100)});
-	m.Linear({Z(11)});
+	m.Rapid({Z(1)});
 	
 	m.Rapid({X(0)});
-	m.Linear({Z(9)});
+	m.Linear({Z(-2)});
 	m.Linear({X(100), Y(0)});
-	m.Linear({Z(11)});
+	m.Rapid({Z(1)});
 
 	m.Rapid({X(50), Y(25)});
-	m.Linear({Z(9)});
+	m.Linear({Z(-2)});
 	m.Arc(Machine::Direction::Clockwise, {X(50), Y(25)}, {I(0), J(25)});
-	m.Linear({Z(11)});
+	m.Rapid({Z(1)});
+
+	m.Rapid({X(3), Y(3)});
+	m.Linear({Z(-4)});
+	m.Linear({X(3), Y(97)});
+	m.Linear({X(97), Y(97)});
+	m.Linear({X(97), Y(3)});
+	m.Linear({X(3), Y(3)});
+	m.Rapid({Z(1)});
 
 	std::ofstream os("play.off");
 	os << geom::format::off << m.GetStock().Model;
