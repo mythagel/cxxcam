@@ -8,6 +8,11 @@
  2. ...?
 
 ## High Level ##
+ * Longer term design goal
+    - Change from current design into independant tools
+    - Have a tool that reads gcode and outputs structures objects
+    - Simulator works on this structured objects - not tied to machine object.
+    - Plain gcode could be analysed.
  * Simulation
     - Ensure feed rate passed to simulation is normalised.
     - Implement additional simulation steps.
@@ -43,6 +48,9 @@
     - How should user specify which part remains?
     - geom::explode not needing intermediate Polyhedron_3 objects (spliting based on Nef shells alone)
  * geom
+    - polyhedron_t
+       - Store and update Polyhedron_3
+       - Return copy of Nef_Polyhedron_3
     - Meshing 
        - Current meshing parameters are too computationally expensive.
     - Geometry
