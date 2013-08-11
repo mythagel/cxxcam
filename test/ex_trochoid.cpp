@@ -75,11 +75,10 @@ int main()
 	// 4 flutes evenly spaced
 	std::vector<double/*theta*/> flute_thetas;
 	{
-		auto t = (2*PI)/4;
-		flute_thetas.push_back(t*0);
-		flute_thetas.push_back(t*1);
-		flute_thetas.push_back(t*2);
-		flute_thetas.push_back(t*3);
+		unsigned int n_flutes = 4;
+		auto t = (2*PI)/n_flutes;
+		for(unsigned int n = 0; n < n_flutes; ++n)
+			flute_thetas.push_back(t*n);
 	}
 	
 	// x = load("points")
