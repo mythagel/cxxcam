@@ -126,7 +126,7 @@ double volume(const polyhedron_t& polyhedron)
 polyhedron_t merge(const std::vector<polyhedron_t>& polyhedra)
 {
 	CGAL::Nef_nary_union_3<Nef_polyhedron_3> op;
-	for(auto polyhedron : polyhedra)
+	for(auto& polyhedron : polyhedra)
 		op.add_polyhedron(get_priv(polyhedron)->nef);
 
 	auto priv = std::make_shared<polyhedron_t::private_t>(op.get_union());
