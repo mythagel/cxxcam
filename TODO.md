@@ -13,6 +13,7 @@
     - Have a tool that reads gcode and outputs structures objects
     - Simulator works on this structured objects - not tied to machine object.
     - Plain gcode could be analysed.
+    - Implement gcode parser.
  * Simulation
     - Ensure feed rate passed to simulation is normalised.
     - Implement additional simulation steps.
