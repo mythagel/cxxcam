@@ -69,7 +69,6 @@ Bbox bounding_box(const std::vector<path::step>& steps)
 
 geom::polyhedron_t remove_material(const geom::polyhedron_t& tool, const geom::polyhedron_t& stock, const std::vector<path::step>& steps)
 {
-	// TODO new design can be parallelised
 	auto fold_path = [&tool](std::vector<path::step>::const_iterator begin, std::vector<path::step>::const_iterator end) -> geom::polyhedron_t
 	{
 		std::vector<geom::polyhedron_t> tool_motion;
@@ -83,41 +82,16 @@ geom::polyhedron_t remove_material(const geom::polyhedron_t& tool, const geom::p
 		return geom::merge(tool_motion);
 	};
 
-	// See comment in run
-	if(true || steps.size() < 16)
-	{
-		auto tool_path = fold_path(begin(steps), end(steps));
-		return stock - tool_path;
-	}
-	else
-	{
-		auto mid = begin(steps) + (steps.size()/2);
-		auto r1 = std::async(std::launch::async, fold_path, begin(steps), mid);
-		auto r2 = std::async(std::launch::async, fold_path, mid, end(steps));
-		
-		auto p1 = r1.get();
-		auto p2 = r2.get();
-		
-		auto tool_path = geom::merge({p1, p2});
-		return stock - tool_path;
-	}
+	auto tool_path = fold_path(begin(steps), end(steps));
+	return stock - tool_path;
 }
 
 result_t run(const simulation_t& simulation)
 {
-	/*
-	I would dearly love to set this to async, however CGAL has non-atomic custom
-	reference counters that crash with multiple threads...
-	The patch is simple - Alter Handle* classes to use std::atomic
-	but alas not shipped.
-	*/
-	auto launch_policy = std::launch::deferred;
-	auto stock = std::async(launch_policy, remove_material, simulation.tool.Model(), simulation.stock.Model, simulation.steps.path);
-	auto bbox = std::async(launch_policy, bounding_box, simulation.steps.path);
-	
 	result_t result;
-	result.stock = stock.get();
-	result.bounding_box = bbox.get();
+	
+	result.stock = remove_material(simulation.tool.Model(), simulation.stock.Model, simulation.steps.path);
+	result.bounding_box = bounding_box(simulation.steps.path);
 	
 	return result;
 }
