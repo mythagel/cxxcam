@@ -38,7 +38,7 @@ namespace cxxcam
  */
 struct Stock
 {
-	std::shared_ptr<Material_t> Material;
+	std::shared_ptr<material::Material> Material;
 	geom::polyhedron_t Model;
 
 	Stock() = default;

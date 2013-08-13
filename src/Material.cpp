@@ -26,21 +26,9 @@
 
 namespace cxxcam
 {
-
-Material_t::Material_t(const std::string& name, double brinell)
- : m_Name(name), m_Brinell(brinell)
+namespace material
 {
-}
 
-std::string Material_t::Name() const
-{
-	return m_Name;
 }
-
-double Material_t::Hardness() const
-{
-	return m_Brinell;
-}
-
 }
 

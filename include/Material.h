@@ -25,8 +25,11 @@
 #ifndef MATERIAL_H_
 #define MATERIAL_H_
 #include <string>
+#include <map>
 
 namespace cxxcam
+{
+namespace material
 {
 
 /*
@@ -51,18 +54,47 @@ Leaded steel (Leadloy 12L14)						91
 Aluminium											75–105
 Brass												90-210
  */
-class Material_t
+struct Material
 {
-private:
-	std::string m_Name;
-	double m_Brinell;
-public:
-	Material_t(const std::string& name, double brinell);
-
-	std::string Name() const;
-	double Hardness() const;
+	std::string name;
+	std::string grade;
+	
+	template <typename T>
+	struct range_t
+	{
+		T low;
+		T high;
+		
+		range_t()
+		 : low(), high()
+		{
+		}
+		explicit range_t(T v)
+		 : low(v), high(v)
+		{
+		}
+		range_t(T low, T high)
+		 : low(low), high(high)
+		{
+		}
+	};
+	
+	range_t<double> hardness;
+	range_t<double> machinability;
+	
+	range_t<double> mmpm_hss;
+	range_t<double> mmpm_carbide;
 };
 
+class MaterialTable
+{
+private:
+	std::map<std::string, Material> table;
+public:
+	
+};
+
+}
 }
 
 #endif /* MATERIAL_H_ */
