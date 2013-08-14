@@ -64,6 +64,7 @@ bbox
 play 
 ex_newsim 
 ex_trochoid 
+ex_rate 
 )
 	CXXCAM_TEST(${test})
 ENDFOREACH()
