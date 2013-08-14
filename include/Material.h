@@ -26,11 +26,39 @@
 #define MATERIAL_H_
 #include <string>
 #include <map>
+#include <stdexcept>
 
 namespace cxxcam
 {
 namespace material
 {
+
+/*
+Not needed here but I'm sure this idea will be useful later..
+*/
+template<typename T, T min, T max>
+class bounded_t
+{
+private:
+	T val;
+	
+	void check_invariant()
+	{
+		if(val < min || val > max)
+			throw std::range_error("Value out of range.");
+	}
+public:
+	bounded_t(T val)
+	 : val(val)
+	{
+		check_invariant();
+	}
+	
+	operator T() const
+	{
+		return val;
+	}
+};
 
 /*
  * A representation of the material the stock is made out of.
@@ -56,8 +84,8 @@ Brass												90-210
  */
 struct Material
 {
-	std::string name;
-	std::string grade;
+	std::string name;	// Aluminium
+	std::string grade;	// 6061-T6
 	
 	template <typename T>
 	struct range_t
@@ -79,11 +107,15 @@ struct Material
 		}
 	};
 	
-	range_t<double> hardness;
-	range_t<double> machinability;
+	range_t<double> hardness;			// 95
+	range_t<double> machinability;		// 1.9
 	
-	range_t<double> mmpm_hss;
-	range_t<double> mmpm_carbide;
+	enum class Tool
+	{
+		HSS,
+		Carbide
+	};
+	std::map<Tool, range_t<double>> surface_mmpm;
 };
 
 class MaterialTable
