@@ -8,7 +8,7 @@
  2. ...?
 
 ## High Level ##
- * Longer term design goal
+ * Longer term design goal (on branch postp)
     - Change from current design into independant tools
     - Have a tool that reads gcode and outputs structures objects
     - Simulator works on this structured objects - not tied to machine object.
