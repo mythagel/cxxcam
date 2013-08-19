@@ -160,6 +160,8 @@ private:
 	
 	void parse_word(const char*& c, const char* end)
 	{
+		if(!isalpha(*c))
+			throw std::runtime_error("parse_word: Expected alpha.");
 		char code = *c;
 		++c;
 		word(code, read_double(c, end));
@@ -236,50 +238,8 @@ public:
 					parse_comment(c, end);
 					break;
 				}
-				case 'A':
-				case 'a':
-				case 'B':
-				case 'b':
-				case 'C':
-				case 'c':
-				case 'D':
-				case 'd':
-				case 'F':
-				case 'f':
-				case 'G':
-				case 'g':
-				case 'H':
-				case 'h':
-				case 'I':
-				case 'i':
-				case 'J':
-				case 'j':
-				case 'K':
-				case 'k':
-				case 'M':
-				case 'm':
-				case 'P':
-				case 'p':
-				case 'Q':
-				case 'q':
-				case 'R':
-				case 'r':
-				case 'S':
-				case 's':
-				case 'T':
-				case 't':
-				case 'U':
-				case 'u':
-				case 'V':
-				case 'v':
-				case 'W':
-				case 'w':
-				case 'X':
-				case 'x':
-				case 'Y':
-				case 'y':
-				case 'Z':
-				case 'z':
+				default:
+				{
 					if(!in_block)
 					{
 						begin_block(line_no, false);
@@ -287,8 +247,7 @@ public:
 					}
 					parse_word(c, end);
 					break;
-				default:
-					throw std::runtime_error("Unexpected error");
+				}
 			}
 		}
 	}
