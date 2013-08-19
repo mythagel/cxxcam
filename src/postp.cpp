@@ -33,7 +33,7 @@ public:
 	{
 		std::cout << "(@ " << line_no << ") " << (block_delete? "/" : "") << " ";
 	}
-	virtual void block_number(unsigned int block_no) override
+	virtual void block_number(double block_no) override
 	{
 		std::cout << "N" << block_no << " ";
 	}
@@ -71,9 +71,11 @@ int main()
 
 	std::noskipws(*is);
 	std::vector<char> source{std::istream_iterator<char>(*is), std::istream_iterator<char>()};
-	parser p;
+	
 	const char* begin = source.data();
 	const char* end = source.data() + source.size();
+	
+	parser p;
 	p.parse(begin, end);
 	
 	return 0;

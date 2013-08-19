@@ -33,19 +33,17 @@ namespace gcode
 
 class parser
 {
-public:
+private:
 	virtual void begin_block(std::size_t line_no, bool block_delete) =0;
-	virtual void block_number(unsigned int block_no) =0;
+	virtual void block_number(double block_no) =0;
 	virtual void word(char code, double value) =0;
 	virtual void comment(const char* begin, const char* end) =0;
 	virtual void end_block() =0;
-private:
+
 	void parse_comment(const char*& c, const char* end);
-	unsigned long read_ulong(const char*& c, const char* end);
-	double read_double(const char*& c, const char* end);
+	double read_number(const char*& c, const char* end);
 	void parse_block_number(const char*& c, const char* end);
 	void parse_word(const char*& c, const char* end);
-
 public:
 	void parse(const char*& c, const char* end);
 	

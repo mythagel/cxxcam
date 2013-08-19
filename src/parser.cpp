@@ -49,7 +49,7 @@ void parser::parse_comment(const char*& c, const char* end)
 	}
 }
 
-unsigned long parser::read_ulong(const char*& c, const char* end)
+double parser::read_number(const char*& c, const char* end)
 {
 	auto valid_first = [](char c) -> bool
 	{
@@ -58,53 +58,7 @@ unsigned long parser::read_ulong(const char*& c, const char* end)
 	
 	const char* begin = c;
 	if(!valid_first(*c))
-		throw std::logic_error("read_ulong: Expected 0-9/+/-/.");
-	bool has_point = *c == '.';
-	bool has_digit = std::isdigit(*c);
-	bool has_sign = *c == '-';
-	++c;
-	while(c != end)
-	{
-		if(isdigit(*c))
-		{
-			has_digit = true;
-		}
-		else if(*c == '.')
-		{
-			if(!has_point)
-				has_point = true;
-			else
-				break;
-		}
-		else
-		{
-			break;
-		}
-		++c;
-	}
-	
-	if(!has_digit)
-		throw std::logic_error("read_ulong: Expected digits");
-	if(has_point || has_sign)
-		throw std::logic_error("read_ulong: Expected unsigned long");
-	
-	char* str_end;
-	auto x = std::strtoul(begin, &str_end, 10);
-	if(str_end != c)
-		throw std::logic_error("read_ulong: strtoul consumed more digits than parsed.");
-	return x;
-}
-
-double parser::read_double(const char*& c, const char* end)
-{
-	auto valid_first = [](char c) -> bool
-	{
-		return c == '+' || c == '-' || c == '.' || std::isdigit(c);
-	};
-	
-	const char* begin = c;
-	if(!valid_first(*c))
-		throw std::logic_error("read_double: Expected 0-9/+/-/.");
+		throw std::logic_error("read_number: Expected 0-9/+/-/.");
 	bool has_point = *c == '.';
 	bool has_digit = std::isdigit(*c);
 	++c;
@@ -129,12 +83,12 @@ double parser::read_double(const char*& c, const char* end)
 	}
 	
 	if(!has_digit)
-		throw std::logic_error("read_double: Expected digits");
+		throw std::logic_error("read_number: Expected digits");
 	
 	char* str_end;
 	auto x = std::strtod(begin, &str_end);
 	if(str_end != c)
-		throw std::logic_error("read_double: strtoul consumed more digits than parsed.");
+		throw std::logic_error("read_number: strtod consumed more digits than parsed.");
 	return x;
 }
 
@@ -143,7 +97,7 @@ void parser::parse_block_number(const char*& c, const char* end)
 	if(*c != 'N' && *c != 'n')
 		throw std::logic_error("parse_block_number: Unexpected character.");
 	
-	block_number(read_ulong(c, end));
+	block_number(read_number(c, end));
 }
 
 void parser::parse_word(const char*& c, const char* end)
@@ -152,13 +106,28 @@ void parser::parse_word(const char*& c, const char* end)
 		throw std::runtime_error("parse_word: Expected alpha.");
 	char code = *c;
 	++c;
-	word(code, read_double(c, end));
+	word(code, read_number(c, end));
 }
 
 void parser::parse(const char*& c, const char* end)
 {
 	std::size_t line_no = 1;
 	bool in_block = false;
+	
+	auto open_block = [&line_no, &in_block, this](bool del = false)
+	{
+		if(!in_block)
+		{
+			begin_block(line_no, del);
+			in_block = true;
+		}
+	};
+	auto close_block = [&in_block, this]
+	{
+		if(in_block)
+			end_block();
+		in_block = false;
+	};
 	
 	while(c != end)
 	{
@@ -168,10 +137,7 @@ void parser::parse(const char*& c, const char* end)
 			{
 				++c;
 				++line_no;
-				
-				if(in_block)
-					end_block();
-				in_block = false;
+				close_block();
 				
 				if(c != end && *c == '\n')
 					++c;
@@ -181,10 +147,7 @@ void parser::parse(const char*& c, const char* end)
 			{
 				++c;
 				++line_no;
-			
-				if(in_block)
-					end_block();
-				in_block = false;
+				close_block();
 				break;
 			}
 			case ' ':
@@ -195,48 +158,35 @@ void parser::parse(const char*& c, const char* end)
 			}
 			case '/':
 			{
-				if(!in_block)
-				{
-					begin_block(line_no, true);
-					in_block = true;
-					++c;
-					break;
-				}
-				throw std::runtime_error("parse: Unexpected character.");
+				if(in_block)
+					throw std::runtime_error("parse: Unexpected character.");
+				
+				open_block(true);
+				++c;
+				break;
 			}
 			case 'N':
 			case 'n':
 			{
-				if(!in_block)
-				{
-					begin_block(line_no, false);
-					in_block = true;
-				}
+				open_block();
 				parse_block_number(c, end);
 				break;
 			}
 			case '(':
 			{
-				if(!in_block)
-				{
-					begin_block(line_no, false);
-					in_block = true;
-				}
+				open_block();
 				parse_comment(c, end);
 				break;
 			}
 			default:
 			{
-				if(!in_block)
-				{
-					begin_block(line_no, false);
-					in_block = true;
-				}
+				open_block();
 				parse_word(c, end);
 				break;
 			}
 		}
 	}
+	close_block();
 }
 
 parser::~parser()
