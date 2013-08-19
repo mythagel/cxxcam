@@ -24,9 +24,8 @@
 
 #ifndef PARSER_H_
 #define PARSER_H_
-#include <cstddef>
 #include <stdexcept>
-#include <cctype>
+#include <string>
 
 namespace gcode
 {
@@ -45,6 +44,21 @@ private:
 	void parse_block_number(const char*& c, const char* end);
 	void parse_word(const char*& c, const char* end);
 public:
+	struct expected_character : std::runtime_error
+	{
+		expected_character(const std::string& what)
+		 : std::runtime_error(what)
+		{
+		}
+	};
+	struct unexpected_character : std::runtime_error
+	{
+		unexpected_character(const std::string& what)
+		 : std::runtime_error(what)
+		{
+		}
+	};
+
 	void parse(const char*& c, const char* end);
 	
 	virtual ~parser();

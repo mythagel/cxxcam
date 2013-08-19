@@ -23,6 +23,8 @@
  */
 
 #include "parser.h"
+#include <cstddef>
+#include <cctype>
 
 namespace gcode
 {
@@ -30,14 +32,14 @@ namespace gcode
 void parser::parse_comment(const char*& c, const char* end)
 {
 	if(*c != '(')
-		throw std::logic_error("parse_comment: Unexpected character.");
+		throw std::logic_error("parse_comment called on non-comment.");
 	
 	const char* begin = ++c;
 	while(c != end)
 	{
 		if(*c == '\r' || *c == '\n')
 		{
-			throw std::runtime_error("parse_comment: Expected ')'");
+			throw expected_character(")");
 		}
 		else if(*c == ')')
 		{
@@ -58,7 +60,8 @@ double parser::read_number(const char*& c, const char* end)
 	
 	const char* begin = c;
 	if(!valid_first(*c))
-		throw std::logic_error("read_number: Expected 0-9/+/-/.");
+		throw expected_character("0-9/+/-/.");
+	
 	bool has_point = *c == '.';
 	bool has_digit = std::isdigit(*c);
 	++c;
@@ -83,19 +86,19 @@ double parser::read_number(const char*& c, const char* end)
 	}
 	
 	if(!has_digit)
-		throw std::logic_error("read_number: Expected digits");
+		throw expected_character("0-9+");
 	
 	char* str_end;
 	auto x = std::strtod(begin, &str_end);
 	if(str_end != c)
-		throw std::logic_error("read_number: strtod consumed more digits than parsed.");
+		throw std::logic_error("strtod consumed more digits than parsed.");
 	return x;
 }
 
 void parser::parse_block_number(const char*& c, const char* end)
 {
 	if(*c != 'N' && *c != 'n')
-		throw std::logic_error("parse_block_number: Unexpected character.");
+		throw std::logic_error("parse_block_number called on non-block-number");
 	
 	block_number(read_number(c, end));
 }
@@ -103,9 +106,8 @@ void parser::parse_block_number(const char*& c, const char* end)
 void parser::parse_word(const char*& c, const char* end)
 {
 	if(!isalpha(*c))
-		throw std::runtime_error("parse_word: Expected alpha.");
-	char code = *c;
-	++c;
+		throw expected_character("a-zA-Z");
+	char code = *c++;
 	word(code, read_number(c, end));
 }
 
@@ -159,7 +161,7 @@ void parser::parse(const char*& c, const char* end)
 			case '/':
 			{
 				if(in_block)
-					throw std::runtime_error("parse: Unexpected character.");
+					throw unexpected_character("/");
 				
 				open_block(true);
 				++c;
@@ -168,6 +170,9 @@ void parser::parse(const char*& c, const char* end)
 			case 'N':
 			case 'n':
 			{
+				if(in_block)
+					throw unexpected_character("Nn");
+				
 				open_block();
 				parse_block_number(c, end);
 				break;
