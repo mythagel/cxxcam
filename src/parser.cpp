@@ -31,24 +31,39 @@ namespace gcode
 
 void parser::parse_comment(const char*& c, const char* end)
 {
-	if(*c != '(')
-		throw std::logic_error("parse_comment called on non-comment.");
-	
-	const char* begin = ++c;
-	while(c != end)
+	if(*c == '(')
 	{
-		if(*c == '\r' || *c == '\n')
+		const char* begin = ++c;
+		while(c != end)
 		{
-			throw expected_character(")");
-		}
-		else if(*c == ')')
-		{
+			if(*c == '\r' || *c == '\n')
+			{
+				throw expected_character(")");
+			}
+			else if(*c == ')')
+			{
+				++c;
+				comment(begin, c);
+				break;
+			}
 			++c;
-			comment(begin, c);
-			break;
 		}
-		++c;
 	}
+	else if(*c == ';')
+	{
+		const char* begin = ++c;
+		while(c != end)
+		{
+			if(*c == '\r' || *c == '\n')
+			{
+				comment(begin, c);
+				break;
+			}
+			++c;
+		}
+	}
+	else
+		throw std::logic_error("parse_comment called on non-comment.");
 }
 
 double parser::read_number(const char*& c, const char* end)
@@ -178,6 +193,7 @@ void parser::parse(const char*& c, const char* end)
 				break;
 			}
 			case '(':
+			case ';':
 			{
 				open_block();
 				parse_comment(c, end);
