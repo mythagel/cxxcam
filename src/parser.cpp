@@ -27,5 +27,9 @@
 namespace gcode
 {
 
+parser::~parser()
+{
+}
+
 }
 
