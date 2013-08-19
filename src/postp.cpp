@@ -67,6 +67,15 @@ int main()
 	How to specify machine configuration & stock etc.
 	*/
 	
+	/*
+	Parser reads gcode syntax - but does no semantic validation
+	need validator module to ensure file is valid
+	validator would need access to information e.g. current modes set.
+	perhaps just a single sematic object that uses the parser to read the input data.
+	the semanic parser would use the base parser, implement the callbacks and provide
+	access to current program state (active codes etc.)
+	*/
+	
 	std::istream* is = &std::cin;
 
 	std::noskipws(*is);
