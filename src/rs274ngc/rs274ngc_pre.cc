@@ -119,11 +119,12 @@
 
    /****************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <cstring>
+#include <cctype>
+#include <algorithm>
 #include "rs274ngc.hh"
 #include "rs274ngc_return.hh"
 #include "rs274ngc_errors.cc"
@@ -148,32 +149,32 @@
    */
 
 #define ERM(error_code) do{ if (1) { \
-    _setup.stack_index SET_TO 0; \
+    _setup.stack_index = 0; \
     strcpy(_setup.stack[_setup.stack_index++], name); \
-    _setup.stack[_setup.stack_index][0] SET_TO 0; \
+    _setup.stack[_setup.stack_index][0] = 0; \
     return error_code; \
 } } while(0)
 
 #define ERP(error_code) do{ if (_setup.stack_index < 49) { \
     strcpy(_setup.stack[_setup.stack_index++], name); \
-    _setup.stack[_setup.stack_index][0] SET_TO 0; \
+    _setup.stack[_setup.stack_index][0] = 0; \
     return error_code; \
 } else return error_code; } while(0)
 
 #define CHK(bad, error_code) do{ if (bad) { \
-    _setup.stack_index SET_TO 0; \
+    _setup.stack_index = 0; \
     strcpy(_setup.stack[_setup.stack_index++], name); \
-    _setup.stack[_setup.stack_index][0] SET_TO 0; \
+    _setup.stack[_setup.stack_index][0] = 0; \
     return error_code; \
 } } while(0)
 
 #define CHP(try_this) do {\
-if ((status SET_TO (try_this)) ISNT RS274NGC_OK) \
+if ((status = (try_this)) != RS274NGC_OK) \
 { \
     if (_setup.stack_index < 49) \
     { \
         strcpy(_setup.stack[_setup.stack_index++], name); \
-        _setup.stack[_setup.stack_index][0] SET_TO 0; \
+        _setup.stack[_setup.stack_index][0] = 0; \
         return status; \
     } \
     else {return status;} \
@@ -583,7 +584,7 @@ static int write_settings(setup_pointer settings);
 
    */
 
-static const int _gees[] SET_TO
+static const int _gees[] =
 {
     /*   0 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
         /*  20 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -652,7 +653,7 @@ static const int _gees[] SET_TO
 
    */
 
-    static const int _ems[] SET_TO
+    static const int _ems[] =
     {
         4,  4,  4,  7,  7,  7,  6,  8,  8,  8,
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -675,7 +676,7 @@ static const int _gees[] SET_TO
 
    */
 
-    static const int _required_parameters[] SET_TO
+    static const int _required_parameters[] =
     {
         5161, 5162, 5163,                         /* G28 home */
     #ifdef AA
@@ -808,7 +809,7 @@ static const int _gees[] SET_TO
 
    */
 
-    static const read_function_pointer _readers[] SET_TO
+    static const read_function_pointer _readers[] =
     {
         0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
             0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
@@ -880,25 +881,25 @@ static const int _gees[] SET_TO
     int * turn,                                   /* pointer to number of full or partial circles CCW */
     double tolerance)                             /* tolerance of differing radii                     */
     {
-        static char name[] SET_TO "arc_data_comp_ijk";
+        static char name[] = "arc_data_comp_ijk";
         double arc_radius;
         double radius2;
 
-        *center_x SET_TO (current_x + i_number);
-        *center_y SET_TO (current_y + j_number);
-        arc_radius SET_TO hypot(i_number, j_number);
-        radius2 SET_TO hypot((*center_x - end_x), (*center_y - end_y));
-        radius2 SET_TO
-            (((side IS LEFT ) AND (move IS 30)) OR
-            ((side IS RIGHT) AND (move IS 20))) ?
+        *center_x = (current_x + i_number);
+        *center_y = (current_y + j_number);
+        arc_radius = hypot(i_number, j_number);
+        radius2 = hypot((*center_x - end_x), (*center_y - end_y));
+        radius2 =
+            (((side == LEFT ) and (move == 30)) or
+            ((side == RIGHT) and (move == 20))) ?
             (radius2 - tool_radius): (radius2 + tool_radius);
         CHK((fabs(arc_radius - radius2) > tolerance),
             NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
    /* This catches an arc too small for the tool, also */
-        if (move IS G_2)
-            *turn SET_TO -1;
-        else if (move IS G_3)
-            *turn SET_TO 1;
+        if (move == G_2)
+            *turn = -1;
+        else if (move == G_3)
+            *turn = 1;
         else
             ERM(NCE_BUG_CODE_NOT_G2_OR_G3);
         return RS274NGC_OK;
@@ -974,7 +975,7 @@ static const int _gees[] SET_TO
     double * center_y,                            /* pointer to second coordinate of center of arc    */
     int * turn)                                   /* pointer to number of full or partial circles CCW */
     {
-        static char name[] SET_TO "arc_data_comp_r";
+        static char name[] = "arc_data_comp_r";
         double abs_radius;                        /* absolute value of big_radius          */
         double alpha;                             /* direction of line from current to end */
         double distance;                          /* length of line L from current to end  */
@@ -985,31 +986,31 @@ static const int _gees[] SET_TO
         double mid_y;                             /* y-value of point P                    */
         double theta;                             /* direction of line from P to center    */
 
-        abs_radius SET_TO fabs(big_radius);
-        CHK(((abs_radius <= tool_radius) AND (((side IS LEFT ) AND (move IS G_3)) OR
-            ((side IS RIGHT) AND (move IS G_2)))),
+        abs_radius = fabs(big_radius);
+        CHK(((abs_radius <= tool_radius) and (((side == LEFT ) and (move == G_3)) or
+            ((side == RIGHT) and (move == G_2)))),
             NCE_TOOL_RADIUS_NOT_LESS_THAN_ARC_RADIUS_WITH_COMP);
 
-        distance SET_TO hypot((end_x - current_x), (end_y - current_y));
-        alpha SET_TO atan2 ((end_y - current_y), (end_x - current_x));
-        theta SET_TO (((move IS G_3) AND (big_radius > 0)) OR
-            ((move IS G_2) AND (big_radius < 0))) ?
+        distance = hypot((end_x - current_x), (end_y - current_y));
+        alpha = atan2 ((end_y - current_y), (end_x - current_x));
+        theta = (((move == G_3) and (big_radius > 0)) or
+            ((move == G_2) and (big_radius < 0))) ?
             (alpha + PI2) : (alpha - PI2);
-        radius2 SET_TO (((side IS LEFT ) AND (move IS G_3)) OR
-            ((side IS RIGHT) AND (move IS G_2))) ?
+        radius2 = (((side == LEFT ) and (move == G_3)) or
+            ((side == RIGHT) and (move == G_2))) ?
             (abs_radius - tool_radius) : (abs_radius + tool_radius);
         CHK((distance > (radius2 + abs_radius)),
             NCE_RADIUS_TOO_SMALL_TO_REACH_END_POINT);
-        mid_length SET_TO (((radius2 * radius2) + (distance * distance) -
+        mid_length = (((radius2 * radius2) + (distance * distance) -
             (abs_radius * abs_radius)) / (2.0 * distance));
-        mid_x SET_TO (current_x + (mid_length * cos(alpha)));
-        mid_y SET_TO (current_y + (mid_length * sin(alpha)));
+        mid_x = (current_x + (mid_length * cos(alpha)));
+        mid_y = (current_y + (mid_length * sin(alpha)));
         CHK(((radius2 * radius2) <= (mid_length * mid_length)),
             NCE_BUG_IN_TOOL_RADIUS_COMP);
-        offset SET_TO sqrt((radius2 * radius2) - (mid_length * mid_length));
-        *center_x SET_TO mid_x + (offset * cos(theta));
-        *center_y SET_TO mid_y + (offset * sin(theta));
-        *turn SET_TO (move IS G_2) ? -1 : 1;
+        offset = sqrt((radius2 * radius2) - (mid_length * mid_length));
+        *center_x = mid_x + (offset * cos(theta));
+        *center_y = mid_y + (offset * sin(theta));
+        *turn = (move == G_2) ? -1 : 1;
 
         return RS274NGC_OK;
     }
@@ -1056,20 +1057,20 @@ static const int _gees[] SET_TO
     int * turn,                                   /* pointer to no. of full or partial circles CCW   */
     double tolerance)                             /* tolerance of differing radii                    */
     {
-        static char name[] SET_TO "arc_data_ijk";
+        static char name[] = "arc_data_ijk";
         double radius;                            /* radius to current point */
         double radius2;                           /* radius to end point     */
-        *center_x SET_TO (current_x + i_number);
-        *center_y SET_TO (current_y + j_number);
-        radius SET_TO hypot((*center_x - current_x), (*center_y - current_y));
-        radius2 SET_TO hypot((*center_x - end_x), (*center_y - end_y));
-        CHK(((radius IS 0.0) OR (radius2 IS 0.0)), NCE_ZERO_RADIUS_ARC);
+        *center_x = (current_x + i_number);
+        *center_y = (current_y + j_number);
+        radius = hypot((*center_x - current_x), (*center_y - current_y));
+        radius2 = hypot((*center_x - end_x), (*center_y - end_y));
+        CHK(((radius == 0.0) or (radius2 == 0.0)), NCE_ZERO_RADIUS_ARC);
         CHK((fabs(radius - radius2) > tolerance),
             NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
-        if (move IS G_2)
-            *turn SET_TO -1;
-        else if (move IS G_3)
-            *turn SET_TO 1;
+        if (move == G_2)
+            *turn = -1;
+        else if (move == G_3)
+            *turn = 1;
         else
             ERM(NCE_BUG_CODE_NOT_G2_OR_G3);
         return RS274NGC_OK;
@@ -1122,7 +1123,7 @@ static const int _gees[] SET_TO
     double * center_y,                            /* pointer to second coordinate of center of arc */
     int * turn)                                   /* pointer to no. of full or partial circles CCW */
     {
-        static char name[] SET_TO "arc_data_r";
+        static char name[] = "arc_data_r";
         double abs_radius;                        /* absolute value of given radius */
         double half_length;                       /* distance from M to end point   */
         double mid_x;                             /* first coordinate of M          */
@@ -1131,28 +1132,28 @@ static const int _gees[] SET_TO
         double theta;                             /* angle of line from M to center */
         double turn2;                             /* absolute value of half of turn */
 
-        CHK(((end_x IS current_x) AND (end_y IS current_y)),
+        CHK(((end_x == current_x) and (end_y == current_y)),
             NCE_CURRENT_POINT_SAME_AS_END_POINT_OF_ARC);
-        abs_radius SET_TO fabs(radius);
-        mid_x SET_TO (end_x + current_x)/2.0;
-        mid_y SET_TO (end_y + current_y)/2.0;
-        half_length SET_TO hypot((mid_x - end_x), (mid_y - end_y));
+        abs_radius = fabs(radius);
+        mid_x = (end_x + current_x)/2.0;
+        mid_y = (end_y + current_y)/2.0;
+        half_length = hypot((mid_x - end_x), (mid_y - end_y));
         CHK(((half_length/abs_radius) > (1+TINY)),
             NCE_ARC_RADIUS_TOO_SMALL_TO_REACH_END_POINT);
         if ((half_length/abs_radius) > (1-TINY))
-            half_length SET_TO abs_radius;        /* allow a small error for semicircle */
+            half_length = abs_radius;        /* allow a small error for semicircle */
    /* check needed before calling asin   */
-        if (((move IS G_2) AND (radius > 0)) OR
-            ((move IS G_3) AND (radius < 0)))
-            theta SET_TO atan2((end_y - current_y), (end_x - current_x)) - PI2;
+        if (((move == G_2) and (radius > 0)) or
+            ((move == G_3) and (radius < 0)))
+            theta = atan2((end_y - current_y), (end_x - current_x)) - PI2;
         else
-            theta SET_TO atan2((end_y - current_y), (end_x - current_x)) + PI2;
+            theta = atan2((end_y - current_y), (end_x - current_x)) + PI2;
 
-        turn2 SET_TO asin (half_length/abs_radius);
-        offset SET_TO abs_radius * cos(turn2);
-        *center_x SET_TO mid_x + (offset * cos(theta));
-        *center_y SET_TO mid_y + (offset * sin(theta));
-        *turn SET_TO (move IS G_2) ? -1 : 1;
+        turn2 = asin (half_length/abs_radius);
+        offset = abs_radius * cos(turn2);
+        *center_x = mid_x + (offset * cos(theta));
+        *center_y = mid_y + (offset * sin(theta));
+        *turn = (move == G_2) ? -1 : 1;
 
         return RS274NGC_OK;
     }
@@ -1212,42 +1213,42 @@ static const int _gees[] SET_TO
     block_pointer block,                          /* pointer to a block to be checked */
     setup_pointer settings)                       /* pointer to machine settings      */
     {
-        static char name[] SET_TO "check_g_codes";
+        static char name[] = "check_g_codes";
         int mode0;
         int p_int;
 
-        mode0 SET_TO block->g_modes[0];
+        mode0 = block->g_modes[0];
 
-        if (mode0 IS -1)
+        if (mode0 == -1)
             {}
-            else if (mode0 IS G_4)
+            else if (mode0 == G_4)
         {
-            CHK((block->p_number IS -1.0), NCE_DWELL_TIME_MISSING_WITH_G4);
+            CHK((block->p_number == -1.0), NCE_DWELL_TIME_MISSING_WITH_G4);
         }
-        else if (mode0 IS G_10)
+        else if (mode0 == G_10)
         {
-            p_int SET_TO (int)(block->p_number + 0.0001);
-            CHK((block->l_number ISNT 2), NCE_LINE_WITH_G10_DOES_NOT_HAVE_L2);
+            p_int = (int)(block->p_number + 0.0001);
+            CHK((block->l_number != 2), NCE_LINE_WITH_G10_DOES_NOT_HAVE_L2);
             CHK((((block->p_number + 0.0001) - p_int) > 0.0002),
                 NCE_P_VALUE_NOT_AN_INTEGER_WITH_G10_L2);
-            CHK(((p_int < 1) OR (p_int > 9)), NCE_P_VALUE_OUT_OF_RANGE_WITH_G10_L2);
+            CHK(((p_int < 1) or (p_int > 9)), NCE_P_VALUE_OUT_OF_RANGE_WITH_G10_L2);
         }
-        else if (mode0 IS G_28)
+        else if (mode0 == G_28)
             {}
-            else if (mode0 IS G_30)
+            else if (mode0 == G_30)
                 {}
-                else if (mode0 IS G_53)
+                else if (mode0 == G_53)
                 {
-                    CHK(((block->motion_to_be ISNT G_0) AND (block->motion_to_be ISNT G_1)),
+                    CHK(((block->motion_to_be != G_0) and (block->motion_to_be != G_1)),
                 NCE_MUST_USE_G0_OR_G1_WITH_G53);
-            CHK(((block->g_modes[3] IS G_91) OR
-                ((block->g_modes[3] ISNT G_90) AND
-                (settings->distance_mode IS MODE_INCREMENTAL))),
+            CHK(((block->g_modes[3] == G_91) or
+                ((block->g_modes[3] != G_90) and
+                (settings->distance_mode == MODE_INCREMENTAL))),
                 NCE_CANNOT_USE_G53_INCREMENTAL);
         }
-        else if (mode0 IS G_92)
+        else if (mode0 == G_92)
             {}
-            else if ((mode0 IS G_92_1) OR (mode0 IS G_92_2) OR (mode0 IS G_92_3))
+            else if ((mode0 == G_92_1) or (mode0 == G_92_2) or (mode0 == G_92_3))
                 {}
                 else
                     ERM(NCE_BUG_BAD_G_CODE_MODAL_GROUP_0);
@@ -1287,7 +1288,7 @@ static const int _gees[] SET_TO
     block_pointer block,                          /* pointer to a block to be checked */
     setup_pointer settings)                       /* pointer to machine settings      */
     {
-        static char name[] SET_TO "check_items";
+        static char name[] = "check_items";
         int status;
 
         CHP(check_g_codes(block, settings));
@@ -1319,7 +1320,7 @@ static const int _gees[] SET_TO
     static int check_m_codes(                     /* ARGUMENTS                        */
     block_pointer block)                          /* pointer to a block to be checked */
     {
-        static char name[] SET_TO "check_m_codes";
+        static char name[] = "check_m_codes";
 
         CHK((block->m_count > MAX_EMS), NCE_TOO_MANY_M_CODES_ON_LINE);
         return RS274NGC_OK;
@@ -1372,84 +1373,84 @@ static const int _gees[] SET_TO
     static int check_other_codes(                 /* ARGUMENTS                               */
     block_pointer block)                          /* pointer to a block of RS274/NGC instructions */
     {
-        static char name[] SET_TO "check_other_codes";
+        static char name[] = "check_other_codes";
         int motion;
 
-        motion SET_TO block->motion_to_be;
+        motion = block->motion_to_be;
 #ifdef AA
-        if (block->a_flag ISNT OFF)
+        if (block->a_flag != OFF)
         {
-            CHK(((block->g_modes[1] > G_80) AND (block->g_modes[1] < G_90)),
+            CHK(((block->g_modes[1] > G_80) and (block->g_modes[1] < G_90)),
                 NCE_CANNOT_PUT_AN_A_IN_CANNED_CYCLE);
         }
 #endif
 #ifdef BB
-        if (block->b_flag ISNT OFF)
+        if (block->b_flag != OFF)
         {
-            CHK(((block->g_modes[1] > G_80) AND (block->g_modes[1] < G_90)),
+            CHK(((block->g_modes[1] > G_80) and (block->g_modes[1] < G_90)),
                 NCE_CANNOT_PUT_A_B_IN_CANNED_CYCLE);
         }
 #endif
 #ifdef CC
-        if (block->c_flag ISNT OFF)
+        if (block->c_flag != OFF)
         {
-            CHK(((block->g_modes[1] > G_80) AND (block->g_modes[1] < G_90)),
+            CHK(((block->g_modes[1] > G_80) and (block->g_modes[1] < G_90)),
                 NCE_CANNOT_PUT_A_C_IN_CANNED_CYCLE);
         }
 #endif
-        if (block->d_number ISNT -1)
+        if (block->d_number != -1)
         {
-            CHK(((block->g_modes[7] ISNT G_41) AND (block->g_modes[7] ISNT G_42)),
+            CHK(((block->g_modes[7] != G_41) and (block->g_modes[7] != G_42)),
                 NCE_D_WORD_WITH_NO_G41_OR_G42);
         }
-        if (block->h_number ISNT -1)
+        if (block->h_number != -1)
         {
-            CHK((block->g_modes[8] ISNT G_43), NCE_H_WORD_WITH_NO_G43);
+            CHK((block->g_modes[8] != G_43), NCE_H_WORD_WITH_NO_G43);
         }
 
-        if (block->i_flag IS ON)                  /* could still be useless if yz_plane arc */
+        if (block->i_flag == ON)                  /* could still be useless if yz_plane arc */
         {
-            CHK(((motion ISNT G_2) AND (motion ISNT G_3) AND (motion ISNT G_87)),
+            CHK(((motion != G_2) and (motion != G_3) and (motion != G_87)),
                 NCE_I_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
         }
 
-        if (block->j_flag IS ON)                  /* could still be useless if xz_plane arc */
+        if (block->j_flag == ON)                  /* could still be useless if xz_plane arc */
         {
-            CHK(((motion ISNT G_2) AND (motion ISNT G_3) AND (motion ISNT G_87)),
+            CHK(((motion != G_2) and (motion != G_3) and (motion != G_87)),
                 NCE_J_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
         }
 
-        if (block->k_flag IS ON)                  /* could still be useless if xy_plane arc */
+        if (block->k_flag == ON)                  /* could still be useless if xy_plane arc */
         {
-            CHK(((motion ISNT G_2) AND (motion ISNT G_3) AND (motion ISNT G_87)),
+            CHK(((motion != G_2) and (motion != G_3) and (motion != G_87)),
                 NCE_K_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
         }
 
-        if (block->l_number ISNT -1)
+        if (block->l_number != -1)
         {
-            CHK((((motion < G_81) OR (motion > G_89)) AND
-                (block->g_modes[0] ISNT G_10)),
+            CHK((((motion < G_81) or (motion > G_89)) and
+                (block->g_modes[0] != G_10)),
                 NCE_L_WORD_WITH_NO_CANNED_CYCLE_OR_G10);
         }
 
-        if (block->p_number ISNT -1.0)
+        if (block->p_number != -1.0)
         {
-            CHK(((block->g_modes[0] ISNT G_10) AND
-                (block->g_modes[0] ISNT G_4) AND
-                (motion ISNT G_82) AND (motion ISNT G_86) AND
-                (motion ISNT G_88) AND (motion ISNT G_89)),
+            CHK(((block->g_modes[0] != G_10) and
+                (block->g_modes[0] != G_4) and
+                (motion != G_82) and (motion != G_86) and
+                (motion != G_88) and (motion != G_89)),
                 NCE_P_WORD_WITH_NO_G4_G10_G82_G86_G88_G89);
         }
 
-        if (block->q_number ISNT -1.0)
+        if (block->q_number != -1.0)
         {
-            CHK((motion ISNT G_83), NCE_Q_WORD_WITH_NO_G83);
+            CHK((motion != G_83), NCE_Q_WORD_WITH_NO_G83);
         }
 
-        if (block->r_flag IS ON)
+        if (block->r_flag == ON)
         {
-            CHK((((motion ISNT G_2) AND (motion ISNT G_3)) AND
-                ((motion < G_81) OR (motion > G_89))),
+            CHK((((motion != G_2) and (motion != G_3)) and
+                ((motion < G_81) or (motion > G_89))),
                 NCE_R_WORD_WITH_NO_G_CODE_THAT_USES_IT);
         }
 
@@ -1501,46 +1502,46 @@ static const int _gees[] SET_TO
     static int close_and_downcase(                /* ARGUMENTS                   */
     char * line)                                  /* string: one line of NC code */
     {
-        static char name[] SET_TO "close_and_downcase";
+        static char name[] = "close_and_downcase";
         int m;
         int n;
         int comment;
         char item;
-        comment SET_TO 0;
-        for (n SET_TO 0, m SET_TO 0; (item SET_TO line[m]) ISNT (char) NULL; m++)
+        comment = 0;
+        for (n = 0, m = 0; (item = line[m]) != (char) NULL; m++)
         {
             if (comment)
             {
-                line[n++] SET_TO item;
-                if (item IS ')')
+                line[n++] = item;
+                if (item == ')')
                 {
-                    comment SET_TO 0;
+                    comment = 0;
                 }
-                else if (item IS '(')
+                else if (item == '(')
                     ERM(NCE_NESTED_COMMENT_FOUND);
             }
-            else if ((item IS ' ') OR (item IS '\t') OR (item IS '\r'));
+            else if ((item == ' ') or (item == '\t') or (item == '\r'));
    /* don't copy blank or tab or CR */
-            else if (item IS '\n')                /* don't copy newline            */
+            else if (item == '\n')                /* don't copy newline            */
             {                                     /* but check null follows        */
-                CHK((line[m+1] ISNT 0), NCE_NULL_MISSING_AFTER_NEWLINE);
+                CHK((line[m+1] != 0), NCE_NULL_MISSING_AFTER_NEWLINE);
             }
-            else if ((64 < item) AND (item < 91)) /* downcase upper case letters */
+            else if ((64 < item) and (item < 91)) /* downcase upper case letters */
             {
-                line[n++] SET_TO (32 + item);
+                line[n++] = (32 + item);
             }
-            else if (item IS '(')                 /* comment is starting */
+            else if (item == '(')                 /* comment is starting */
             {
-                comment SET_TO 1;
-                line[n++] SET_TO item;
+                comment = 1;
+                line[n++] = item;
             }
             else
             {
-                line[n++] SET_TO item;            /* copy anything else */
+                line[n++] = item;            /* copy anything else */
             }
         }
         CHK((comment), NCE_UNCLOSED_COMMENT_FOUND);
-        line[n] SET_TO 0;
+        line[n] = 0;
         return RS274NGC_OK;
     }
 
@@ -1603,7 +1604,7 @@ static const int _gees[] SET_TO
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] SET_TO "convert_arc";
+        static char name[] = "convert_arc";
         int status;
         int first;                                /* flag set ON if this is first move after comp ON */
         int ijk_flag;                             /* flag set ON if any of i,j,k present in NC code  */
@@ -1620,49 +1621,49 @@ static const int _gees[] SET_TO
         double CC_end;                            /*CC*/
 #endif
 
-        ijk_flag SET_TO
-            ((block->i_flag OR block->j_flag) OR block->k_flag) ? ON : OFF;
-        first SET_TO (settings->program_x IS UNKNOWN);
+        ijk_flag =
+            ((block->i_flag or block->j_flag) or block->k_flag) ? ON : OFF;
+        first = (settings->program_x == UNKNOWN);
 
-        CHK(((block->r_flag ISNT ON) AND (ijk_flag ISNT ON)),
+        CHK(((block->r_flag != ON) and (ijk_flag != ON)),
             NCE_R_I_J_K_WORDS_ALL_MISSING_FOR_ARC);
-        CHK(((block->r_flag IS ON) AND (ijk_flag IS ON)),
+        CHK(((block->r_flag == ON) and (ijk_flag == ON)),
             NCE_MIXED_RADIUS_IJK_FORMAT_FOR_ARC);
-        if (settings->feed_mode IS UNITS_PER_MINUTE)
+        if (settings->feed_mode == UNITS_PER_MINUTE)
         {
-            CHK((settings->feed_rate IS 0.0),
+            CHK((settings->feed_rate == 0.0),
                 NCE_CANNOT_MAKE_ARC_WITH_ZERO_FEED_RATE);
         }
-        else if (settings->feed_mode IS INVERSE_TIME)
+        else if (settings->feed_mode == INVERSE_TIME)
         {
-            CHK((block->f_number IS -1.0),
+            CHK((block->f_number == -1.0),
                 NCE_F_WORD_MISSING_WITH_INVERSE_TIME_ARC_MOVE);
         }
         if (ijk_flag)
         {
-            if (settings->plane IS CANON_PLANE_XY)
+            if (settings->plane == CANON_PLANE_XY)
             {
                 CHK((block->k_flag), NCE_K_WORD_GIVEN_FOR_ARC_IN_XY_PLANE);
-                if (block->i_flag IS OFF)         /* i or j flag on to get here */
-                    block->i_number SET_TO 0.0;
-                else if (block->j_flag IS OFF)
-                    block->j_number SET_TO 0.0;
+                if (block->i_flag == OFF)         /* i or j flag on to get here */
+                    block->i_number = 0.0;
+                else if (block->j_flag == OFF)
+                    block->j_number = 0.0;
             }
-            else if (settings->plane IS CANON_PLANE_YZ)
+            else if (settings->plane == CANON_PLANE_YZ)
             {
                 CHK((block->i_flag), NCE_I_WORD_GIVEN_FOR_ARC_IN_YZ_PLANE);
-                if (block->j_flag IS OFF)         /* j or k flag on to get here */
-                    block->j_number SET_TO 0.0;
-                else if (block->k_flag IS OFF)
-                    block->k_number SET_TO 0.0;
+                if (block->j_flag == OFF)         /* j or k flag on to get here */
+                    block->j_number = 0.0;
+                else if (block->k_flag == OFF)
+                    block->k_number = 0.0;
             }
-            else if (settings->plane IS CANON_PLANE_XZ)
+            else if (settings->plane == CANON_PLANE_XZ)
             {
                 CHK((block->j_flag), NCE_J_WORD_GIVEN_FOR_ARC_IN_XZ_PLANE);
-                if (block->i_flag IS OFF)         /* i or k flag on to get here */
-                    block->i_number SET_TO 0.0;
-                else if (block->k_flag IS OFF)
-                    block->k_number SET_TO 0.0;
+                if (block->i_flag == OFF)         /* i or k flag on to get here */
+                    block->i_number = 0.0;
+                else if (block->k_flag == OFF)
+                    block->k_number = 0.0;
             }
             else
                 ERM(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
@@ -1672,19 +1673,19 @@ static const int _gees[] SET_TO
              /* r format arc; no other checks needed specific to this format */
         }
 
-        if (settings->plane IS CANON_PLANE_XY)    /* checks for both formats */
+        if (settings->plane == CANON_PLANE_XY)    /* checks for both formats */
         {
-            CHK(((block->x_flag IS OFF) AND (block->y_flag IS OFF)),
+            CHK(((block->x_flag == OFF) and (block->y_flag == OFF)),
                 NCE_X_AND_Y_WORDS_MISSING_FOR_ARC_IN_XY_PLANE);
         }
-        else if (settings->plane IS CANON_PLANE_YZ)
+        else if (settings->plane == CANON_PLANE_YZ)
         {
-            CHK(((block->y_flag IS OFF) AND (block->z_flag IS OFF)),
+            CHK(((block->y_flag == OFF) and (block->z_flag == OFF)),
                 NCE_Y_AND_Z_WORDS_MISSING_FOR_ARC_IN_YZ_PLANE);
         }
-        else if (settings->plane IS CANON_PLANE_XZ)
+        else if (settings->plane == CANON_PLANE_XZ)
         {
-            CHK(((block->x_flag IS OFF) AND (block->z_flag IS OFF)),
+            CHK(((block->x_flag == OFF) and (block->z_flag == OFF)),
                 NCE_X_AND_Z_WORDS_MISSING_FOR_ARC_IN_XZ_PLANE);
         }
 
@@ -1702,14 +1703,14 @@ static const int _gees[] SET_TO
             , &CC_end
     #endif
             );
-        settings->motion_mode SET_TO move;
+        settings->motion_mode = move;
 
-        if (settings->plane IS CANON_PLANE_XY)
+        if (settings->plane == CANON_PLANE_XY)
         {
-            if ((settings->cutter_comp_side IS OFF) OR
-                (settings->cutter_comp_radius IS 0.0))
+            if ((settings->cutter_comp_side == OFF) or
+                (settings->cutter_comp_radius == 0.0))
             {
-                status SET_TO
+                status =
                     convert_arc2(move, block, settings,
                     &(settings->current_x), &(settings->current_y),
                     &(settings->current_z), end_x, end_y,
@@ -1731,7 +1732,7 @@ static const int _gees[] SET_TO
             }
             else if (first)
             {
-                status SET_TO
+                status =
                     convert_arc_comp1(move, block, settings, end_x, end_y,
                     end_z
     #ifdef AA
@@ -1750,7 +1751,7 @@ static const int _gees[] SET_TO
             }
             else
             {
-                status SET_TO
+                status =
                     convert_arc_comp2(move, block, settings, end_x, end_y,
                     end_z
     #ifdef AA
@@ -1769,9 +1770,9 @@ static const int _gees[] SET_TO
                 CHP(status);
             }
         }
-        else if (settings->plane IS CANON_PLANE_XZ)
+        else if (settings->plane == CANON_PLANE_XZ)
         {
-            status SET_TO
+            status =
                 convert_arc2 (move, block, settings,
                 &(settings->current_z), &(settings->current_x),
                 &(settings->current_y), end_z, end_x,
@@ -1791,9 +1792,9 @@ static const int _gees[] SET_TO
                 block->i_number);
             CHP(status);
         }
-        else if (settings->plane IS CANON_PLANE_YZ)
+        else if (settings->plane == CANON_PLANE_YZ)
         {
-            status SET_TO
+            status =
                 convert_arc2 (move, block, settings,
                 &(settings->current_y), &(settings->current_z),
                 &(settings->current_x), end_y, end_z,
@@ -1860,14 +1861,14 @@ static const int _gees[] SET_TO
     double offset1,                               /* offset of center from current1           */
     double offset2)                               /* offset of center from current2           */
     {
-        static char name[] SET_TO "convert_arc2";
+        static char name[] = "convert_arc2";
         double center1;
         double center2;
         int status;                               /* status returned from CHP function call     */
         double tolerance;                         /* tolerance for difference of radii          */
         int turn;                                 /* number of full or partial turns CCW in arc */
 
-        tolerance SET_TO (settings->length_units IS CANON_UNITS_INCHES) ?
+        tolerance = (settings->length_units == CANON_UNITS_INCHES) ?
             TOLERANCE_INCH : TOLERANCE_MM;
 
         if (block->r_flag)
@@ -1881,7 +1882,7 @@ static const int _gees[] SET_TO
                 offset2, &center1, &center2, &turn, tolerance));
         }
 
-        if (settings->feed_mode IS INVERSE_TIME)
+        if (settings->feed_mode == INVERSE_TIME)
             inverse_time_rate_arc(*current1, *current2, *current3, center1, center2,
                 turn, end1, end2, end3, block, settings);
         ARC_FEED(end1, end2, center1, center2, turn,
@@ -1908,17 +1909,17 @@ static const int _gees[] SET_TO
     #endif
     #endif
             );
-        *current1 SET_TO end1;
-        *current2 SET_TO end2;
-        *current3 SET_TO end3;
+        *current1 = end1;
+        *current2 = end2;
+        *current3 = end3;
 #ifdef AA
-        settings->AA_current SET_TO AA_end;       /*AA*/
+        settings->AA_current = AA_end;       /*AA*/
 #endif
 #ifdef BB
-        settings->BB_current SET_TO BB_end;       /*BB*/
+        settings->BB_current = BB_end;       /*BB*/
 #endif
 #ifdef CC
-        settings->CC_current SET_TO CC_end;       /*CC*/
+        settings->CC_current = CC_end;       /*CC*/
 #endif
         return RS274NGC_OK;
     }
@@ -1969,7 +1970,7 @@ static const int _gees[] SET_TO
 #endif
     )
     {
-        static char name[] SET_TO "convert_arc_comp1";
+        static char name[] = "convert_arc_comp1";
         double center_x;
         double center_y;
         double gamma;                             /* direction of perpendicular to arc at end */
@@ -1979,10 +1980,10 @@ static const int _gees[] SET_TO
         double tool_radius;
         int turn;                                 /* 1 for counterclockwise, -1 for clockwise */
 
-        side SET_TO settings->cutter_comp_side;
+        side = settings->cutter_comp_side;
    /* always is positive */
-        tool_radius SET_TO settings->cutter_comp_radius;
-        tolerance SET_TO (settings->length_units IS CANON_UNITS_INCHES) ?
+        tool_radius = settings->cutter_comp_radius;
+        tolerance = (settings->length_units == CANON_UNITS_INCHES) ?
             TOLERANCE_INCH : TOLERANCE_MM;
 
         CHK((hypot((end_x - settings->current_x),
@@ -2003,20 +2004,20 @@ static const int _gees[] SET_TO
                 &center_x, &center_y, &turn, tolerance));
         }
 
-        gamma SET_TO
-            (((side IS LEFT) AND (move IS G_3)) OR
-            ((side IS RIGHT) AND (move IS G_2))) ?
+        gamma =
+            (((side == LEFT) and (move == G_3)) or
+            ((side == RIGHT) and (move == G_2))) ?
             atan2 ((center_y - end_y), (center_x - end_x)) :
         atan2 ((end_y - center_y), (end_x - center_x));
 
-        settings->program_x SET_TO end_x;
-        settings->program_y SET_TO end_y;
+        settings->program_x = end_x;
+        settings->program_y = end_y;
    /* end_x reset actual */
-        end_x SET_TO (end_x + (tool_radius * cos(gamma)));
+        end_x = (end_x + (tool_radius * cos(gamma)));
    /* end_y reset actual */
-        end_y SET_TO (end_y + (tool_radius * sin(gamma)));
+        end_y = (end_y + (tool_radius * sin(gamma)));
 
-        if (settings->feed_mode IS INVERSE_TIME)
+        if (settings->feed_mode == INVERSE_TIME)
             inverse_time_rate_arc(settings->current_x, settings->current_y,
                 settings->current_z, center_x, center_y, turn,
                 end_x, end_y, end_z, block, settings);
@@ -2044,17 +2045,17 @@ static const int _gees[] SET_TO
     #endif
     #endif
             );
-        settings->current_x SET_TO end_x;
-        settings->current_y SET_TO end_y;
-        settings->current_z SET_TO end_z;
+        settings->current_x = end_x;
+        settings->current_y = end_y;
+        settings->current_z = end_z;
 #ifdef AA
-        settings->AA_current SET_TO AA_end;       /*AA*/
+        settings->AA_current = AA_end;       /*AA*/
 #endif
 #ifdef BB
-        settings->BB_current SET_TO BB_end;       /*BB*/
+        settings->BB_current = BB_end;       /*BB*/
 #endif
 #ifdef CC
-        settings->CC_current SET_TO CC_end;       /*CC*/
+        settings->CC_current = CC_end;       /*CC*/
 #endif
 
         return RS274NGC_OK;
@@ -2117,7 +2118,7 @@ static const int _gees[] SET_TO
 #endif
     )
     {
-        static char name[] SET_TO "convert_arc_comp2";
+        static char name[] = "convert_arc_comp2";
         double alpha;                             /* direction of tangent to start of arc */
         double arc_radius;
         double beta;                              /* angle between two tangents above */
@@ -2129,7 +2130,7 @@ static const int _gees[] SET_TO
         double mid_y;
         int side;
    /* angle for testing corners */
-        double small SET_TO TOLERANCE_CONCAVE_CORNER;
+        double small = TOLERANCE_CONCAVE_CORNER;
         double start_x;
         double start_y;
         int status;                               /* status returned from CHP function call     */
@@ -2140,9 +2141,9 @@ static const int _gees[] SET_TO
 
    /* find basic arc data: center_x, center_y, and turn */
 
-        start_x SET_TO settings->program_x;
-        start_y SET_TO settings->program_y;
-        tolerance SET_TO (settings->length_units IS CANON_UNITS_INCHES) ?
+        start_x = settings->program_x;
+        start_y = settings->program_y;
+        tolerance = (settings->length_units == CANON_UNITS_INCHES) ?
             TOLERANCE_INCH : TOLERANCE_MM;
 
         if (block->r_flag)
@@ -2158,52 +2159,52 @@ static const int _gees[] SET_TO
         }
 
    /* compute other data */
-        side SET_TO settings->cutter_comp_side;
+        side = settings->cutter_comp_side;
    /* always is positive */
-        tool_radius SET_TO settings->cutter_comp_radius;
-        arc_radius SET_TO hypot((center_x - end_x), (center_y - end_y));
-        theta SET_TO
+        tool_radius = settings->cutter_comp_radius;
+        arc_radius = hypot((center_x - end_x), (center_y - end_y));
+        theta =
             atan2(settings->current_y - start_y, settings->current_x - start_x);
-        theta SET_TO (side IS LEFT) ? (theta - PI2) : (theta + PI2);
-        delta SET_TO atan2(center_y - start_y, center_x - start_x);
-        alpha SET_TO (move IS G_3) ? (delta - PI2) : (delta + PI2);
-        beta SET_TO (side IS LEFT) ? (theta - alpha) : (alpha - theta);
-        beta SET_TO (beta > (1.5 * PI))  ? (beta - TWO_PI) :
+        theta = (side == LEFT) ? (theta - PI2) : (theta + PI2);
+        delta = atan2(center_y - start_y, center_x - start_x);
+        alpha = (move == G_3) ? (delta - PI2) : (delta + PI2);
+        beta = (side == LEFT) ? (theta - alpha) : (alpha - theta);
+        beta = (beta > (1.5 * PI))  ? (beta - TWO_PI) :
         (beta < -PI2) ? (beta + TWO_PI) : beta;
 
-        if (((side IS LEFT)  AND (move IS G_3)) OR
-            ((side IS RIGHT) AND (move IS G_2)))
+        if (((side == LEFT)  and (move == G_3)) or
+            ((side == RIGHT) and (move == G_2)))
         {
-            gamma SET_TO atan2 ((center_y - end_y), (center_x - end_x));
+            gamma = atan2 ((center_y - end_y), (center_x - end_x));
             CHK((arc_radius <= tool_radius),
                 NCE_TOOL_RADIUS_NOT_LESS_THAN_ARC_RADIUS_WITH_COMP);
         }
         else
         {
-            gamma SET_TO atan2 ((end_y - center_y), (end_x - center_x));
-            delta SET_TO (delta + PI);
+            gamma = atan2 ((end_y - center_y), (end_x - center_x));
+            delta = (delta + PI);
         }
 
-        settings->program_x SET_TO end_x;
-        settings->program_y SET_TO end_y;
+        settings->program_x = end_x;
+        settings->program_y = end_y;
    /* end_x reset actual */
-        end_x SET_TO (end_x + (tool_radius * cos(gamma)));
+        end_x = (end_x + (tool_radius * cos(gamma)));
    /* end_y reset actual */
-        end_y SET_TO (end_y + (tool_radius * sin(gamma)));
+        end_y = (end_y + (tool_radius * sin(gamma)));
 
    /* check if extra arc needed and insert if so */
 
-        CHK(((beta < -small) OR (beta > (PI + small))),
+        CHK(((beta < -small) or (beta > (PI + small))),
             NCE_CONCAVE_CORNER_WITH_CUTTER_RADIUS_COMP);
         if (beta > small)                         /* two arcs needed */
         {
-            mid_x SET_TO (start_x + (tool_radius * cos(delta)));
-            mid_y SET_TO (start_y + (tool_radius * sin(delta)));
-            if (settings->feed_mode IS INVERSE_TIME)
-                inverse_time_rate_arc2(start_x, start_y, (side IS LEFT) ? -1 : 1,
+            mid_x = (start_x + (tool_radius * cos(delta)));
+            mid_y = (start_y + (tool_radius * sin(delta)));
+            if (settings->feed_mode == INVERSE_TIME)
+                inverse_time_rate_arc2(start_x, start_y, (side == LEFT) ? -1 : 1,
                 mid_x, mid_y, center_x, center_y, turn,
                 end_x, end_y, end_z, block, settings);
-            ARC_FEED(mid_x, mid_y, start_x, start_y, ((side IS LEFT) ? -1 : 1),
+            ARC_FEED(mid_x, mid_y, start_x, start_y, ((side == LEFT) ? -1 : 1),
                 settings->current_z
     #ifdef AA
                 , AA_end
@@ -2254,7 +2255,7 @@ static const int _gees[] SET_TO
         }
         else                                      /* one arc needed */
         {
-            if (settings->feed_mode IS INVERSE_TIME)
+            if (settings->feed_mode == INVERSE_TIME)
                 inverse_time_rate_arc(settings->current_x, settings->current_y,
                     settings->current_z, center_x, center_y, turn,
                     end_x, end_y, end_z, block, settings);
@@ -2284,17 +2285,17 @@ static const int _gees[] SET_TO
                 );
         }
 
-        settings->current_x SET_TO end_x;
-        settings->current_y SET_TO end_y;
-        settings->current_z SET_TO end_z;
+        settings->current_x = end_x;
+        settings->current_y = end_y;
+        settings->current_z = end_z;
 #ifdef AA
-        settings->AA_current SET_TO AA_end;       /*AA*/
+        settings->AA_current = AA_end;       /*AA*/
 #endif
 #ifdef BB
-        settings->BB_current SET_TO BB_end;       /*BB*/
+        settings->BB_current = BB_end;       /*BB*/
 #endif
 #ifdef CC
-        settings->CC_current SET_TO CC_end;       /*CC*/
+        settings->CC_current = CC_end;       /*CC*/
 #endif
 
         return RS274NGC_OK;
@@ -2364,41 +2365,41 @@ static const int _gees[] SET_TO
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions   */
     setup_pointer settings)                       /* pointer to machine settings                    */
     {
-        static char name[] SET_TO "convert_axis_offsets";
+        static char name[] = "convert_axis_offsets";
         double * pars;                            /* short name for settings->parameters            */
 
-        CHK((settings->cutter_comp_side ISNT OFF),/* not "IS ON" */
+        CHK((settings->cutter_comp_side != OFF),/* not "IS ON" */
             NCE_CANNOT_CHANGE_AXIS_OFFSETS_WITH_CUTTER_RADIUS_COMP);
-        pars SET_TO settings->parameters;
-        if (g_code IS G_92)
+        pars = settings->parameters;
+        if (g_code == G_92)
         {
-            if (block->x_flag IS ON)
+            if (block->x_flag == ON)
             {
-                settings->axis_offset_x SET_TO
+                settings->axis_offset_x =
                     (settings->current_x + settings->axis_offset_x - block->x_number);
-                settings->current_x SET_TO block->x_number;
+                settings->current_x = block->x_number;
             }
 
-            if (block->y_flag IS ON)
+            if (block->y_flag == ON)
             {
-                settings->axis_offset_y SET_TO
+                settings->axis_offset_y =
                     (settings->current_y + settings->axis_offset_y - block->y_number);
-                settings->current_y SET_TO block->y_number;
+                settings->current_y = block->y_number;
             }
 
-            if (block->z_flag IS ON)
+            if (block->z_flag == ON)
             {
-                settings->axis_offset_z SET_TO
+                settings->axis_offset_z =
                     (settings->current_z + settings->axis_offset_z - block->z_number);
-                settings->current_z SET_TO block->z_number;
+                settings->current_z = block->z_number;
             }
 
 #ifdef AA
-            if (block->a_flag IS ON)              /*AA*/
+            if (block->a_flag == ON)              /*AA*/
 #endif
 #ifdef AA
             {                                     /*AA*/
-                settings->AA_axis_offset SET_TO (settings->AA_current +
+                settings->AA_axis_offset = (settings->AA_current +
     #endif
     #ifdef AA
    /*AA*/
@@ -2406,16 +2407,16 @@ static const int _gees[] SET_TO
 #endif
 #ifdef AA
    /*AA*/
-                settings->AA_current SET_TO block->a_number;
+                settings->AA_current = block->a_number;
             }
 #endif
 
 #ifdef BB
-            if (block->b_flag IS ON)              /*BB*/
+            if (block->b_flag == ON)              /*BB*/
 #endif
 #ifdef BB
             {                                     /*BB*/
-                settings->BB_axis_offset SET_TO (settings->BB_current +
+                settings->BB_axis_offset = (settings->BB_current +
     #endif
     #ifdef BB
    /*BB*/
@@ -2423,16 +2424,16 @@ static const int _gees[] SET_TO
 #endif
 #ifdef BB
    /*BB*/
-                settings->BB_current SET_TO block->b_number;
+                settings->BB_current = block->b_number;
             }
 #endif
 
 #ifdef CC
-            if (block->c_flag IS ON)              /*CC*/
+            if (block->c_flag == ON)              /*CC*/
 #endif
 #ifdef CC
             {                                     /*CC*/
-                settings->CC_axis_offset SET_TO (settings->CC_current +
+                settings->CC_axis_offset = (settings->CC_current +
     #endif
     #ifdef CC
    /*CC*/
@@ -2440,7 +2441,7 @@ static const int _gees[] SET_TO
 #endif
 #ifdef CC
    /*CC*/
-                settings->CC_current SET_TO block->c_number;
+                settings->CC_current = block->c_number;
             }
 #endif
 
@@ -2469,47 +2470,47 @@ static const int _gees[] SET_TO
     #endif
     #endif
                 );
-            pars[5211] SET_TO settings->axis_offset_x;
-            pars[5212] SET_TO settings->axis_offset_y;
-            pars[5213] SET_TO settings->axis_offset_z;
+            pars[5211] = settings->axis_offset_x;
+            pars[5212] = settings->axis_offset_y;
+            pars[5213] = settings->axis_offset_z;
 #ifdef AA
    /*AA*/
-            pars[5214] SET_TO settings->AA_axis_offset;
+            pars[5214] = settings->AA_axis_offset;
 #endif
 #ifdef BB
    /*BB*/
-            pars[5215] SET_TO settings->BB_axis_offset;
+            pars[5215] = settings->BB_axis_offset;
 #endif
 #ifdef CC
    /*CC*/
-            pars[5216] SET_TO settings->CC_axis_offset;
+            pars[5216] = settings->CC_axis_offset;
 #endif
 
         }
-        else if ((g_code IS G_92_1) OR (g_code IS G_92_2))
+        else if ((g_code == G_92_1) or (g_code == G_92_2))
         {
-            settings->current_x SET_TO
+            settings->current_x =
                 settings->current_x + settings->axis_offset_x;
-            settings->current_y SET_TO
+            settings->current_y =
                 settings->current_y + settings->axis_offset_y;
-            settings->current_z SET_TO
+            settings->current_z =
                 settings->current_z + settings->axis_offset_z;
 #ifdef AA
-            settings->AA_current SET_TO           /*AA*/
+            settings->AA_current =           /*AA*/
     #endif
     #ifdef AA
    /*AA*/
                 (settings->AA_current + settings->AA_axis_offset);
 #endif
 #ifdef BB
-            settings->BB_current SET_TO           /*BB*/
+            settings->BB_current =           /*BB*/
     #endif
     #ifdef BB
    /*BB*/
                 (settings->BB_current + settings->BB_axis_offset);
 #endif
 #ifdef CC
-            settings->CC_current SET_TO           /*CC*/
+            settings->CC_current =           /*CC*/
     #endif
     #ifdef CC
    /*CC*/
@@ -2540,77 +2541,77 @@ static const int _gees[] SET_TO
     #endif
     #endif
                 );
-            settings->axis_offset_x SET_TO 0.0;
-            settings->axis_offset_y SET_TO 0.0;
-            settings->axis_offset_z SET_TO 0.0;
+            settings->axis_offset_x = 0.0;
+            settings->axis_offset_y = 0.0;
+            settings->axis_offset_z = 0.0;
 #ifdef AA
-            settings->AA_axis_offset SET_TO 0.0;  /*AA*/
+            settings->AA_axis_offset = 0.0;  /*AA*/
 #endif
 #ifdef BB
-            settings->BB_axis_offset SET_TO 0.0;  /*BB*/
+            settings->BB_axis_offset = 0.0;  /*BB*/
 #endif
 #ifdef CC
-            settings->CC_axis_offset SET_TO 0.0;  /*CC*/
+            settings->CC_axis_offset = 0.0;  /*CC*/
 #endif
-            if (g_code IS G_92_1)
+            if (g_code == G_92_1)
             {
-                pars[5211] SET_TO 0.0;
-                pars[5212] SET_TO 0.0;
-                pars[5213] SET_TO 0.0;
+                pars[5211] = 0.0;
+                pars[5212] = 0.0;
+                pars[5213] = 0.0;
 #ifdef AA
-                pars[5214] SET_TO 0.0;            /*AA*/
+                pars[5214] = 0.0;            /*AA*/
 #endif
 #ifdef BB
-                pars[5215] SET_TO 0.0;            /*BB*/
+                pars[5215] = 0.0;            /*BB*/
 #endif
 #ifdef CC
-                pars[5216] SET_TO 0.0;            /*CC*/
+                pars[5216] = 0.0;            /*CC*/
 #endif
             }
         }
-        else if (g_code IS G_92_3)
+        else if (g_code == G_92_3)
         {
-            settings->current_x SET_TO
+            settings->current_x =
                 settings->current_x + settings->axis_offset_x - pars[5211];
-            settings->current_y SET_TO
+            settings->current_y =
                 settings->current_y + settings->axis_offset_y - pars[5212];
-            settings->current_z SET_TO
+            settings->current_z =
                 settings->current_z + settings->axis_offset_z - pars[5213];
 #ifdef AA
-            settings->AA_current SET_TO           /*AA*/
+            settings->AA_current =           /*AA*/
     #endif
     #ifdef AA
    /*AA*/
                 settings->AA_current + settings->AA_axis_offset - pars[5214];
 #endif
 #ifdef BB
-            settings->BB_current SET_TO           /*BB*/
+            settings->BB_current =           /*BB*/
     #endif
     #ifdef BB
    /*BB*/
                 settings->BB_current + settings->BB_axis_offset - pars[5215];
 #endif
 #ifdef CC
-            settings->CC_current SET_TO           /*CC*/
+            settings->CC_current =           /*CC*/
     #endif
     #ifdef CC
    /*CC*/
                 settings->CC_current + settings->CC_axis_offset - pars[5216];
 #endif
-            settings->axis_offset_x SET_TO pars[5211];
-            settings->axis_offset_y SET_TO pars[5212];
-            settings->axis_offset_z SET_TO pars[5213];
+            settings->axis_offset_x = pars[5211];
+            settings->axis_offset_y = pars[5212];
+            settings->axis_offset_z = pars[5213];
 #ifdef AA
    /*AA*/
-            settings->AA_axis_offset SET_TO pars[5214];
+            settings->AA_axis_offset = pars[5214];
 #endif
 #ifdef BB
    /*BB*/
-            settings->BB_axis_offset SET_TO pars[5215];
+            settings->BB_axis_offset = pars[5215];
 #endif
 #ifdef CC
    /*CC*/
-            settings->CC_axis_offset SET_TO pars[5216];
+            settings->CC_axis_offset = pars[5216];
 #endif
             SET_ORIGIN_OFFSETS(settings->origin_offset_x + settings->axis_offset_x,
                 settings->origin_offset_y + settings->axis_offset_y,
@@ -2673,26 +2674,26 @@ static const int _gees[] SET_TO
         int m;
         int item;
 
-        for (m SET_TO 0; ((item SET_TO comment[m]) IS ' ') OR (item IS '\t') ; m++);
-        if ((item ISNT 'M') AND (item ISNT 'm'))
+        for (m = 0; ((item = comment[m]) == ' ') or (item == '\t') ; m++);
+        if ((item != 'M') and (item != 'm'))
         {
             COMMENT(comment);
             return RS274NGC_OK;
         }
-        for (m++; ((item SET_TO comment[m]) IS ' ') OR (item IS '\t') ; m++);
-        if ((item ISNT 'S') AND (item ISNT 's'))
+        for (m++; ((item = comment[m]) == ' ') or (item == '\t') ; m++);
+        if ((item != 'S') and (item != 's'))
         {
             COMMENT(comment);
             return RS274NGC_OK;
         }
-        for (m++; ((item SET_TO comment[m]) IS ' ') OR (item IS '\t') ; m++);
-        if ((item ISNT 'G') AND (item ISNT 'g'))
+        for (m++; ((item = comment[m]) == ' ') or (item == '\t') ; m++);
+        if ((item != 'G') and (item != 'g'))
         {
             COMMENT(comment);
             return RS274NGC_OK;
         }
-        for (m++; ((item SET_TO comment[m]) IS ' ') OR (item IS '\t') ; m++);
-        if (item ISNT ',')
+        for (m++; ((item = comment[m]) == ' ') or (item == '\t') ; m++);
+        if (item != ',')
         {
             COMMENT(comment);
             return RS274NGC_OK;
@@ -2735,24 +2736,24 @@ static const int _gees[] SET_TO
    */
 
     static int convert_control_mode(              /* ARGUMENTS                             */
-    int g_code,                                   /* g_code being executed (G_61, G61_1, OR G_64) */
+    int g_code,                                   /* g_code being executed (G_61, G61_1, or G_64) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_control_mode";
-        if (g_code IS G_61)
+        static char name[] = "convert_control_mode";
+        if (g_code == G_61)
         {
             SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
-            settings->control_mode SET_TO CANON_EXACT_PATH;
+            settings->control_mode = CANON_EXACT_PATH;
         }
-        else if (g_code IS G_61_1)
+        else if (g_code == G_61_1)
         {
             SET_MOTION_CONTROL_MODE(CANON_EXACT_STOP);
-            settings->control_mode SET_TO CANON_EXACT_STOP;
+            settings->control_mode = CANON_EXACT_STOP;
         }
-        else if (g_code IS G_64)
+        else if (g_code == G_64)
         {
             SET_MOTION_CONTROL_MODE(CANON_CONTINUOUS);
-            settings->control_mode SET_TO CANON_CONTINUOUS;
+            settings->control_mode = CANON_CONTINUOUS;
         }
         else
             ERM(NCE_BUG_CODE_NOT_G61_G61_1_OR_G64);
@@ -2834,7 +2835,7 @@ static const int _gees[] SET_TO
     int g_code,                                   /* g_code called (must be one listed above)      */
     setup_pointer settings)                       /* pointer to machine settings                   */
     {
-        static char name[] SET_TO "convert_coordinate_system";
+        static char name[] = "convert_coordinate_system";
         int origin;
         double x;
         double y;
@@ -2850,41 +2851,41 @@ static const int _gees[] SET_TO
 #endif
         double * parameters;
 
-        parameters SET_TO settings->parameters;
+        parameters = settings->parameters;
         switch(g_code)
         {
             case 540:
-                origin SET_TO 1;
+                origin = 1;
                 break;
             case 550:
-                origin SET_TO 2;
+                origin = 2;
                 break;
             case 560:
-                origin SET_TO 3;
+                origin = 3;
                 break;
             case 570:
-                origin SET_TO 4;
+                origin = 4;
                 break;
             case 580:
-                origin SET_TO 5;
+                origin = 5;
                 break;
             case 590:
-                origin SET_TO 6;
+                origin = 6;
                 break;
             case 591:
-                origin SET_TO 7;
+                origin = 7;
                 break;
             case 592:
-                origin SET_TO 8;
+                origin = 8;
                 break;
             case 593:
-                origin SET_TO 9;
+                origin = 9;
                 break;
             default:
                 ERM(NCE_BUG_CODE_NOT_IN_RANGE_G54_TO_G593);
         }
 
-        if (origin IS settings->origin_index)     /* already using this origin */
+        if (origin == settings->origin_index)     /* already using this origin */
         {
 #ifdef DEBUG_EMC
             COMMENT("interpreter: continuing to use same coordinate system");
@@ -2892,80 +2893,80 @@ static const int _gees[] SET_TO
             return RS274NGC_OK;
         }
 
-        settings->origin_index SET_TO origin;
-        parameters[5220] SET_TO (double)origin;
+        settings->origin_index = origin;
+        parameters[5220] = (double)origin;
 
    /* axis offsets could be included in the two set of calculations for
       current_x, current_y, etc., but do not need to be because the results
       would be the same. They would be added in then subtracted out. */
-        settings->current_x SET_TO
+        settings->current_x =
             (settings->current_x + settings->origin_offset_x);
-        settings->current_y SET_TO
+        settings->current_y =
             (settings->current_y + settings->origin_offset_y);
-        settings->current_z SET_TO
+        settings->current_z =
             (settings->current_z + settings->origin_offset_z);
 #ifdef AA
-        settings->AA_current SET_TO               /*AA*/
+        settings->AA_current =               /*AA*/
     #endif
     #ifdef AA
    /*AA*/
             (settings->AA_current + settings->AA_origin_offset);
 #endif
 #ifdef BB
-        settings->BB_current SET_TO               /*BB*/
+        settings->BB_current =               /*BB*/
     #endif
     #ifdef BB
    /*BB*/
             (settings->BB_current + settings->BB_origin_offset);
 #endif
 #ifdef CC
-        settings->CC_current SET_TO               /*CC*/
+        settings->CC_current =               /*CC*/
     #endif
     #ifdef CC
    /*CC*/
             (settings->CC_current + settings->CC_origin_offset);
 #endif
 
-        x SET_TO parameters[5201 + (origin * 20)];
-        y SET_TO parameters[5202 + (origin * 20)];
-        z SET_TO parameters[5203 + (origin * 20)];
+        x = parameters[5201 + (origin * 20)];
+        y = parameters[5202 + (origin * 20)];
+        z = parameters[5203 + (origin * 20)];
 #ifdef AA
-        a SET_TO parameters[5204 + (origin * 20)];/*AA*/
+        a = parameters[5204 + (origin * 20)];/*AA*/
 #endif
 #ifdef BB
-        b SET_TO parameters[5205 + (origin * 20)];/*BB*/
+        b = parameters[5205 + (origin * 20)];/*BB*/
 #endif
 #ifdef CC
-        c SET_TO parameters[5206 + (origin * 20)];/*CC*/
+        c = parameters[5206 + (origin * 20)];/*CC*/
 #endif
 
-        settings->origin_offset_x SET_TO x;
-        settings->origin_offset_y SET_TO y;
-        settings->origin_offset_z SET_TO z;
+        settings->origin_offset_x = x;
+        settings->origin_offset_y = y;
+        settings->origin_offset_z = z;
 #ifdef AA
-        settings->AA_origin_offset SET_TO a;      /*AA*/
+        settings->AA_origin_offset = a;      /*AA*/
 #endif
 #ifdef BB
-        settings->BB_origin_offset SET_TO b;      /*BB*/
+        settings->BB_origin_offset = b;      /*BB*/
 #endif
 #ifdef CC
-        settings->CC_origin_offset SET_TO c;      /*CC*/
+        settings->CC_origin_offset = c;      /*CC*/
 #endif
 
-        settings->current_x SET_TO (settings->current_x - x);
-        settings->current_y SET_TO (settings->current_y - y);
-        settings->current_z SET_TO (settings->current_z - z);
+        settings->current_x = (settings->current_x - x);
+        settings->current_y = (settings->current_y - y);
+        settings->current_z = (settings->current_z - z);
 #ifdef AA
    /*AA*/
-        settings->AA_current SET_TO (settings->AA_current - a);
+        settings->AA_current = (settings->AA_current - a);
 #endif
 #ifdef BB
    /*BB*/
-        settings->BB_current SET_TO (settings->BB_current - b);
+        settings->BB_current = (settings->BB_current - b);
 #endif
 #ifdef CC
    /*CC*/
-        settings->CC_current SET_TO (settings->CC_current - c);
+        settings->CC_current = (settings->CC_current - c);
 #endif
 
         SET_ORIGIN_OFFSETS(x + settings->axis_offset_x,
@@ -3026,18 +3027,18 @@ static const int _gees[] SET_TO
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] SET_TO "convert_cutter_compensation";
+        static char name[] = "convert_cutter_compensation";
         int status;
 
-        if (g_code IS G_40)
+        if (g_code == G_40)
         {
             CHP(convert_cutter_compensation_off(settings));
         }
-        else if (g_code IS G_41)
+        else if (g_code == G_41)
         {
             CHP(convert_cutter_compensation_on(LEFT, block, settings));
         }
-        else if (g_code IS G_42)
+        else if (g_code == G_42)
         {
             CHP(convert_cutter_compensation_on(RIGHT, block, settings));
         }
@@ -3070,8 +3071,8 @@ static const int _gees[] SET_TO
 #ifdef DEBUG_EMC
         COMMENT("interpreter: cutter radius compensation off");
 #endif
-        settings->cutter_comp_side SET_TO OFF;
-        settings->program_x SET_TO UNKNOWN;
+        settings->cutter_comp_side = OFF;
+        settings->program_x = UNKNOWN;
         return RS274NGC_OK;
     }
 
@@ -3132,37 +3133,37 @@ static const int _gees[] SET_TO
     block_pointer block,                          /* pointer to a block of RS274 instructions  */
     setup_pointer settings)                       /* pointer to machine settings               */
     {
-        static char name[] SET_TO "convert_cutter_compensation_on";
+        static char name[] = "convert_cutter_compensation_on";
         double radius;
         int index;
 
-        CHK((settings->plane ISNT CANON_PLANE_XY),
+        CHK((settings->plane != CANON_PLANE_XY),
             NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_OUT_OF_XY_PLANE);
-        CHK((settings->cutter_comp_side ISNT OFF),
+        CHK((settings->cutter_comp_side != OFF),
             NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_WHEN_ON);
-        index SET_TO
-            (block->d_number ISNT -1) ? block->d_number : settings->current_slot;
-        radius SET_TO ((settings->tool_table[index].diameter)/2.0);
+        index =
+            (block->d_number != -1) ? block->d_number : settings->current_slot;
+        radius = ((settings->tool_table[index].diameter)/2.0);
 
         if (radius < 0.0)                         /* switch side & make radius positive if radius negative */
         {
-            radius SET_TO -radius;
-            if (side IS RIGHT)
-                side SET_TO LEFT;
+            radius = -radius;
+            if (side == RIGHT)
+                side = LEFT;
             else
-                side SET_TO RIGHT;
+                side = RIGHT;
         }
 
 #ifdef DEBUG_EMC
-        if (side IS RIGHT)
+        if (side == RIGHT)
             COMMENT("interpreter: cutter radius compensation on right");
         else
             COMMENT("interpreter: cutter radius compensation on left");
 #endif
 
-        settings->cutter_comp_radius SET_TO radius;
-        settings->tool_table_index SET_TO index;
-        settings->cutter_comp_side SET_TO side;
+        settings->cutter_comp_radius = radius;
+        settings->tool_table_index = index;
+        settings->cutter_comp_side = side;
         return RS274NGC_OK;
     }
 
@@ -3201,41 +3202,41 @@ static const int _gees[] SET_TO
     block_pointer block,                          /* pointer to a block of RS274 instructions       */
     setup_pointer settings)                       /* pointer to machine settings                    */
     {
-        static char name[] SET_TO "convert_cycle";
+        static char name[] = "convert_cycle";
         CANON_PLANE plane;
         int status;
 
-        plane SET_TO settings->plane;
-        if (block->r_flag IS OFF)
+        plane = settings->plane;
+        if (block->r_flag == OFF)
         {
-            if (settings->motion_mode IS motion)
-                block->r_number SET_TO settings->cycle_r;
+            if (settings->motion_mode == motion)
+                block->r_number = settings->cycle_r;
             else
                 ERM(NCE_R_CLEARANCE_PLANE_UNSPECIFIED_IN_CYCLE);
         }
 
-        CHK((block->l_number IS 0), NCE_CANNOT_DO_ZERO_REPEATS_OF_CYCLE);
-        if (block->l_number IS -1)
-            block->l_number SET_TO 1;
+        CHK((block->l_number == 0), NCE_CANNOT_DO_ZERO_REPEATS_OF_CYCLE);
+        if (block->l_number == -1)
+            block->l_number = 1;
 
-        if (plane IS CANON_PLANE_XY)
+        if (plane == CANON_PLANE_XY)
         {
             CHP(convert_cycle_xy(motion, block, settings));
         }
-        else if (plane IS CANON_PLANE_YZ)
+        else if (plane == CANON_PLANE_YZ)
         {
             CHP(convert_cycle_yz(motion, block, settings));
         }
-        else if (plane IS CANON_PLANE_XZ)
+        else if (plane == CANON_PLANE_XZ)
         {
             CHP(convert_cycle_zx(motion, block, settings));
         }
         else
             ERM(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
 
-        settings->cycle_l SET_TO block->l_number;
-        settings->cycle_r SET_TO block->r_number;
-        settings->motion_mode SET_TO motion;
+        settings->cycle_l = block->l_number;
+        settings->cycle_r = block->r_number;
+        settings->motion_mode = motion;
         return RS274NGC_OK;
     }
 
@@ -3272,7 +3273,7 @@ static const int _gees[] SET_TO
     double clear_z,                               /* z-value of clearance plane       */
     double bottom_z)                              /* value of z at bottom of cycle    */
     {
-        static char name[] SET_TO "convert_cycle_g81";
+        static char name[] = "convert_cycle_g81";
 
         cycle_feed(plane, x, y, bottom_z);
         cycle_traverse(plane, x, y, clear_z);
@@ -3313,7 +3314,7 @@ static const int _gees[] SET_TO
     double bottom_z,                              /* value of z at bottom of cycle    */
     double dwell)                                 /* dwell time                       */
     {
-        static char name[] SET_TO "convert_cycle_g82";
+        static char name[] = "convert_cycle_g82";
 
         cycle_feed(plane, x, y, bottom_z);
         DWELL(dwell);
@@ -3367,17 +3368,17 @@ static const int _gees[] SET_TO
     double bottom_z,                              /* value of z at bottom of cycle    */
     double delta)                                 /* size of z-axis feed increment    */
     {
-        static char name[] SET_TO "convert_cycle_g83";
+        static char name[] = "convert_cycle_g83";
         double current_depth;
         double rapid_delta;
 
-        rapid_delta SET_TO G83_RAPID_DELTA;
-        if (_setup.length_units IS CANON_UNITS_MM)
-            rapid_delta SET_TO (rapid_delta * 25.4);
+        rapid_delta = G83_RAPID_DELTA;
+        if (_setup.length_units == CANON_UNITS_MM)
+            rapid_delta = (rapid_delta * 25.4);
 
-        for (current_depth SET_TO (r - delta);
+        for (current_depth = (r - delta);
             current_depth > bottom_z;
-            current_depth SET_TO (current_depth - delta))
+            current_depth = (current_depth - delta))
         {
             cycle_feed(plane, x, y, current_depth);
             cycle_traverse(plane, x, y, clear_z);
@@ -3432,16 +3433,16 @@ static const int _gees[] SET_TO
     CANON_DIRECTION direction,                    /* direction spindle turning at outset */
     CANON_SPEED_FEED_MODE mode)                   /* the speed-feed mode at outset       */
     {
-        static char name[] SET_TO "convert_cycle_g84";
+        static char name[] = "convert_cycle_g84";
 
-        CHK((direction ISNT CANON_CLOCKWISE),
+        CHK((direction != CANON_CLOCKWISE),
             NCE_SPINDLE_NOT_TURNING_CLOCKWISE_IN_G84);
         START_SPEED_FEED_SYNCH();
         cycle_feed(plane, x, y, bottom_z);
         STOP_SPINDLE_TURNING();
         START_SPINDLE_COUNTERCLOCKWISE();
         cycle_feed(plane, x, y, clear_z);
-        if (mode ISNT CANON_SYNCHED)
+        if (mode != CANON_SYNCHED)
             STOP_SPEED_FEED_SYNCH();
         STOP_SPINDLE_TURNING();
         START_SPINDLE_CLOCKWISE();
@@ -3481,7 +3482,7 @@ static const int _gees[] SET_TO
     double clear_z,                               /* z-value of clearance plane       */
     double bottom_z)                              /* value of z at bottom of cycle    */
     {
-        static char name[] SET_TO "convert_cycle_g85";
+        static char name[] = "convert_cycle_g85";
 
         cycle_feed(plane, x, y, bottom_z);
         cycle_feed(plane, x, y, clear_z);
@@ -3529,17 +3530,17 @@ static const int _gees[] SET_TO
     double dwell,                                 /* dwell time                          */
     CANON_DIRECTION direction)                    /* direction spindle turning at outset */
     {
-        static char name[] SET_TO "convert_cycle_g86";
+        static char name[] = "convert_cycle_g86";
 
-        CHK(((direction ISNT CANON_CLOCKWISE) AND
-            (direction ISNT CANON_COUNTERCLOCKWISE)),
+        CHK(((direction != CANON_CLOCKWISE) and
+            (direction != CANON_COUNTERCLOCKWISE)),
             NCE_SPINDLE_NOT_TURNING_IN_G86);
 
         cycle_feed(plane, x, y, bottom_z);
         DWELL(dwell);
         STOP_SPINDLE_TURNING();
         cycle_traverse(plane, x, y, clear_z);
-        if (direction IS CANON_CLOCKWISE)
+        if (direction == CANON_CLOCKWISE)
             START_SPINDLE_CLOCKWISE();
         else
             START_SPINDLE_COUNTERCLOCKWISE();
@@ -3618,10 +3619,10 @@ static const int _gees[] SET_TO
     double bottom_z,                              /* value of z at bottom of cycle       */
     CANON_DIRECTION direction)                    /* direction spindle turning at outset */
     {
-        static char name[] SET_TO "convert_cycle_g87";
+        static char name[] = "convert_cycle_g87";
 
-        CHK(((direction ISNT CANON_CLOCKWISE) AND
-            (direction ISNT CANON_COUNTERCLOCKWISE)),
+        CHK(((direction != CANON_CLOCKWISE) and
+            (direction != CANON_COUNTERCLOCKWISE)),
             NCE_SPINDLE_NOT_TURNING_IN_G87);
 
         cycle_traverse(plane, offset_x, offset_y, r);
@@ -3629,7 +3630,7 @@ static const int _gees[] SET_TO
         ORIENT_SPINDLE(0.0, direction);
         cycle_traverse(plane, offset_x, offset_y, bottom_z);
         cycle_traverse(plane, x, y, bottom_z);
-        if (direction IS CANON_CLOCKWISE)
+        if (direction == CANON_CLOCKWISE)
             START_SPINDLE_CLOCKWISE();
         else
             START_SPINDLE_COUNTERCLOCKWISE();
@@ -3640,7 +3641,7 @@ static const int _gees[] SET_TO
         cycle_traverse(plane, offset_x, offset_y, bottom_z);
         cycle_traverse(plane, offset_x, offset_y, clear_z);
         cycle_traverse(plane, x, y, clear_z);
-        if (direction IS CANON_CLOCKWISE)
+        if (direction == CANON_CLOCKWISE)
             START_SPINDLE_CLOCKWISE();
         else
             START_SPINDLE_COUNTERCLOCKWISE();
@@ -3686,17 +3687,17 @@ static const int _gees[] SET_TO
     double dwell,                                 /* dwell time                          */
     CANON_DIRECTION direction)                    /* direction spindle turning at outset */
     {
-        static char name[] SET_TO "convert_cycle_g88";
+        static char name[] = "convert_cycle_g88";
 
-        CHK(((direction ISNT CANON_CLOCKWISE) AND
-            (direction ISNT CANON_COUNTERCLOCKWISE)),
+        CHK(((direction != CANON_CLOCKWISE) and
+            (direction != CANON_COUNTERCLOCKWISE)),
             NCE_SPINDLE_NOT_TURNING_IN_G88);
 
         cycle_feed(plane, x, y, bottom_z);
         DWELL(dwell);
         STOP_SPINDLE_TURNING();
         PROGRAM_STOP();                           /* operator retracts the spindle here */
-        if (direction IS CANON_CLOCKWISE)
+        if (direction == CANON_CLOCKWISE)
             START_SPINDLE_CLOCKWISE();
         else
             START_SPINDLE_COUNTERCLOCKWISE();
@@ -3736,7 +3737,7 @@ static const int _gees[] SET_TO
     double bottom_z,                              /* value of z at bottom of cycle    */
     double dwell)                                 /* dwell time                       */
     {
-        static char name[] SET_TO "convert_cycle_g89";
+        static char name[] = "convert_cycle_g89";
 
         cycle_feed(plane, x, y, bottom_z);
         DWELL(dwell);
@@ -3849,17 +3850,17 @@ static const int _gees[] SET_TO
 
    */
 
-#define CYCLE_MACRO(call) for (repeat SET_TO block->l_number; \
+#define CYCLE_MACRO(call) for (repeat = block->l_number; \
 repeat > 0; \
 repeat--) \
 { \
-    aa SET_TO (aa + aa_increment); \
-    bb SET_TO (bb + bb_increment); \
+    aa = (aa + aa_increment); \
+    bb = (bb + bb_increment); \
     cycle_traverse(plane, aa, bb, old_cc); \
-    if (old_cc ISNT r) \
+    if (old_cc != r) \
     cycle_traverse(plane, aa, bb, r); \
     CHP(call); \
-    old_cc SET_TO clear_cc; \
+    old_cc = clear_cc; \
 }
 
         static int convert_cycle_xy(              /* ARGUMENTS                                 */
@@ -3867,7 +3868,7 @@ repeat--) \
         block_pointer block,                      /* pointer to a block of RS274 instructions       */
         setup_pointer settings)                   /* pointer to machine settings                    */
     {
-        static char name[] SET_TO "convert_cycle_xy";
+        static char name[] = "convert_cycle_xy";
         double aa;
         double aa_increment;
         double bb;
@@ -3884,33 +3885,33 @@ repeat--) \
         CANON_MOTION_MODE save_mode;
         int status;
 
-        plane SET_TO CANON_PLANE_XY;
-        if (settings->motion_mode ISNT motion)
+        plane = CANON_PLANE_XY;
+        if (settings->motion_mode != motion)
         {
-            CHK((block->z_flag IS OFF),
+            CHK((block->z_flag == OFF),
                 NCE_Z_VALUE_UNSPECIFIED_IN_XY_PLANE_CANNED_CYCLE);
         }
-        block->z_number SET_TO
-            block->z_flag IS ON ? block->z_number : settings->cycle_cc;
-        old_cc SET_TO settings->current_z;
+        block->z_number =
+            block->z_flag == ON ? block->z_number : settings->cycle_cc;
+        old_cc = settings->current_z;
 
-        if (settings->distance_mode IS MODE_ABSOLUTE)
+        if (settings->distance_mode == MODE_ABSOLUTE)
         {
-            aa_increment SET_TO 0.0;
-            bb_increment SET_TO 0.0;
-            r SET_TO block->r_number;
-            cc SET_TO block->z_number;
-            aa SET_TO block->x_flag IS ON ? block->x_number : settings->current_x;
-            bb SET_TO block->y_flag IS ON ? block->y_number : settings->current_y;
+            aa_increment = 0.0;
+            bb_increment = 0.0;
+            r = block->r_number;
+            cc = block->z_number;
+            aa = block->x_flag == ON ? block->x_number : settings->current_x;
+            bb = block->y_flag == ON ? block->y_number : settings->current_y;
         }
-        else if (settings->distance_mode IS MODE_INCREMENTAL)
+        else if (settings->distance_mode == MODE_INCREMENTAL)
         {
-            aa_increment SET_TO block->x_number;
-            bb_increment SET_TO block->y_number;
-            r SET_TO (block->r_number + old_cc);
-            cc SET_TO (r + block->z_number);      /* [NCMS, page 98] */
-            aa SET_TO settings->current_x;
-            bb SET_TO settings->current_y;
+            aa_increment = block->x_number;
+            bb_increment = block->y_number;
+            r = (block->r_number + old_cc);
+            cc = (r + block->z_number);      /* [NCMS, page 98] */
+            aa = settings->current_x;
+            bb = settings->current_y;
         }
         else
             ERM(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
@@ -3941,12 +3942,12 @@ repeat--) \
     #endif
     #endif
                 );
-            old_cc SET_TO r;
+            old_cc = r;
         }
-        clear_cc SET_TO (settings->retract_mode IS R_PLANE) ? r : old_cc;
+        clear_cc = (settings->retract_mode == R_PLANE) ? r : old_cc;
 
-        save_mode SET_TO GET_EXTERNAL_MOTION_CONTROL_MODE();
-        if (save_mode ISNT CANON_EXACT_PATH)
+        save_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
+        if (save_mode != CANON_EXACT_PATH)
             SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
 
         switch(motion)
@@ -3955,22 +3956,22 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g81(CANON_PLANE_XY, aa, bb, clear_cc, cc))
                     break;
             case G_82:
-                CHK(((settings->motion_mode ISNT G_82) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_82) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
                     block->p_number))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             case G_83:
-                CHK(((settings->motion_mode ISNT G_83) AND (block->q_number IS -1.0)),
+                CHK(((settings->motion_mode != G_83) and (block->q_number == -1.0)),
                     NCE_Q_WORD_MISSING_WITH_G83);
-                block->q_number SET_TO
-                    block->q_number IS -1.0 ? settings->cycle_q : block->q_number;
+                block->q_number =
+                    block->q_number == -1.0 ? settings->cycle_q : block->q_number;
                 CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_XY, aa, bb, r, clear_cc, cc,
                     block->q_number))
-                    settings->cycle_q SET_TO block->q_number;
+                    settings->cycle_q = block->q_number;
                 break;
             case G_84:
                 CYCLE_MACRO(convert_cycle_g84 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
@@ -3980,61 +3981,61 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g85 (CANON_PLANE_XY, aa, bb, clear_cc, cc))
                     break;
             case G_86:
-                CHK(((settings->motion_mode ISNT G_86) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_86) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g86 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
                     block->p_number, settings->spindle_turning))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             case G_87:
-                if (settings->motion_mode ISNT G_87)
+                if (settings->motion_mode != G_87)
                 {
-                    CHK((block->i_flag IS OFF), NCE_I_WORD_MISSING_WITH_G87);
-                    CHK((block->j_flag IS OFF), NCE_J_WORD_MISSING_WITH_G87);
-                    CHK((block->k_flag IS OFF), NCE_K_WORD_MISSING_WITH_G87);
+                    CHK((block->i_flag == OFF), NCE_I_WORD_MISSING_WITH_G87);
+                    CHK((block->j_flag == OFF), NCE_J_WORD_MISSING_WITH_G87);
+                    CHK((block->k_flag == OFF), NCE_K_WORD_MISSING_WITH_G87);
                 }
-                i SET_TO block->i_flag IS ON ? block->i_number : settings->cycle_i;
-                j SET_TO block->j_flag IS ON ? block->j_number : settings->cycle_j;
-                k SET_TO block->k_flag IS ON ? block->k_number : settings->cycle_k;
-                settings->cycle_i SET_TO i;
-                settings->cycle_j SET_TO j;
-                settings->cycle_k SET_TO k;
-                if (settings->distance_mode IS MODE_INCREMENTAL)
+                i = block->i_flag == ON ? block->i_number : settings->cycle_i;
+                j = block->j_flag == ON ? block->j_number : settings->cycle_j;
+                k = block->k_flag == ON ? block->k_number : settings->cycle_k;
+                settings->cycle_i = i;
+                settings->cycle_j = j;
+                settings->cycle_k = k;
+                if (settings->distance_mode == MODE_INCREMENTAL)
                 {
-                    k SET_TO (cc + k);            /* k always absolute in function call below */
+                    k = (cc + k);            /* k always absolute in function call below */
                 }
                 CYCLE_MACRO(convert_cycle_g87 (CANON_PLANE_XY, aa, (aa + i), bb,
                     (bb + j), r, clear_cc, k, cc, settings->spindle_turning))
                     break;
             case G_88:
-                CHK(((settings->motion_mode ISNT G_88) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_88) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g88 (CANON_PLANE_XY, aa, bb, cc,
                     block->p_number, settings->spindle_turning))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             case G_89:
-                CHK(((settings->motion_mode ISNT G_89) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_89) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g89 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
                     block->p_number))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             default:
                 ERM(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         }
-        settings->current_x SET_TO aa;            /* CYCLE_MACRO updates aa and bb */
-        settings->current_y SET_TO bb;
-        settings->current_z SET_TO clear_cc;
-        settings->cycle_cc SET_TO block->z_number;
+        settings->current_x = aa;            /* CYCLE_MACRO updates aa and bb */
+        settings->current_y = bb;
+        settings->current_z = clear_cc;
+        settings->cycle_cc = block->z_number;
 
-        if (save_mode ISNT CANON_EXACT_PATH)
+        if (save_mode != CANON_EXACT_PATH)
             SET_MOTION_CONTROL_MODE(save_mode);
 
         return RS274NGC_OK;
@@ -4094,7 +4095,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions   */
     setup_pointer settings)                       /* pointer to machine settings                    */
     {
-        static char name[] SET_TO "convert_cycle_yz";
+        static char name[] = "convert_cycle_yz";
         double aa;
         double aa_increment;
         double bb;
@@ -4111,33 +4112,33 @@ repeat--) \
         CANON_MOTION_MODE save_mode;
         int status;
 
-        plane SET_TO CANON_PLANE_YZ;
-        if (settings->motion_mode ISNT motion)
+        plane = CANON_PLANE_YZ;
+        if (settings->motion_mode != motion)
         {
-            CHK((block->x_flag IS OFF),
+            CHK((block->x_flag == OFF),
                 NCE_X_VALUE_UNSPECIFIED_IN_YZ_PLANE_CANNED_CYCLE);
         }
-        block->x_number SET_TO
-            block->x_flag IS ON ? block->x_number : settings->cycle_cc;
-        old_cc SET_TO settings->current_x;
+        block->x_number =
+            block->x_flag == ON ? block->x_number : settings->cycle_cc;
+        old_cc = settings->current_x;
 
-        if (settings->distance_mode IS MODE_ABSOLUTE)
+        if (settings->distance_mode == MODE_ABSOLUTE)
         {
-            aa_increment SET_TO 0.0;
-            bb_increment SET_TO 0.0;
-            r SET_TO block->r_number;
-            cc SET_TO block->x_number;
-            aa SET_TO block->y_flag IS ON ? block->y_number : settings->current_y;
-            bb SET_TO block->z_flag IS ON ? block->z_number : settings->current_z;
+            aa_increment = 0.0;
+            bb_increment = 0.0;
+            r = block->r_number;
+            cc = block->x_number;
+            aa = block->y_flag == ON ? block->y_number : settings->current_y;
+            bb = block->z_flag == ON ? block->z_number : settings->current_z;
         }
-        else if (settings->distance_mode IS MODE_INCREMENTAL)
+        else if (settings->distance_mode == MODE_INCREMENTAL)
         {
-            aa_increment SET_TO block->y_number;
-            bb_increment SET_TO block->z_number;
-            r SET_TO (block->r_number + old_cc);
-            cc SET_TO (r + block->x_number);      /* [NCMS, page 98] */
-            aa SET_TO settings->current_y;
-            bb SET_TO settings->current_z;
+            aa_increment = block->y_number;
+            bb_increment = block->z_number;
+            r = (block->r_number + old_cc);
+            cc = (r + block->x_number);      /* [NCMS, page 98] */
+            aa = settings->current_y;
+            bb = settings->current_z;
         }
         else
             ERM(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
@@ -4168,12 +4169,12 @@ repeat--) \
     #endif
     #endif
                 );
-            old_cc SET_TO r;
+            old_cc = r;
         }
-        clear_cc SET_TO (settings->retract_mode IS R_PLANE) ? r : old_cc;
+        clear_cc = (settings->retract_mode == R_PLANE) ? r : old_cc;
 
         save_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
-        if (save_mode ISNT CANON_EXACT_PATH)
+        if (save_mode != CANON_EXACT_PATH)
             SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
 
         switch(motion)
@@ -4182,22 +4183,22 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g81(CANON_PLANE_YZ, aa, bb, clear_cc, cc))
                     break;
             case G_82:
-                CHK(((settings->motion_mode ISNT G_82) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_82) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
                     block->p_number))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             case G_83:
-                CHK(((settings->motion_mode ISNT G_83) AND (block->q_number IS -1.0)),
+                CHK(((settings->motion_mode != G_83) and (block->q_number == -1.0)),
                     NCE_Q_WORD_MISSING_WITH_G83);
-                block->q_number SET_TO
-                    block->q_number IS -1.0 ? settings->cycle_q : block->q_number;
+                block->q_number =
+                    block->q_number == -1.0 ? settings->cycle_q : block->q_number;
                 CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_YZ, aa, bb, r, clear_cc, cc,
                     block->q_number))
-                    settings->cycle_q SET_TO block->q_number;
+                    settings->cycle_q = block->q_number;
                 break;
             case G_84:
                 CYCLE_MACRO(convert_cycle_g84 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
@@ -4207,61 +4208,61 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g85 (CANON_PLANE_YZ, aa, bb, clear_cc, cc))
                     break;
             case G_86:
-                CHK(((settings->motion_mode ISNT G_86) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_86) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g86 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
                     block->p_number, settings->spindle_turning))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             case G_87:
-                if (settings->motion_mode ISNT G_87)
+                if (settings->motion_mode != G_87)
                 {
-                    CHK((block->i_flag IS OFF), NCE_I_WORD_MISSING_WITH_G87);
-                    CHK((block->j_flag IS OFF), NCE_J_WORD_MISSING_WITH_G87);
-                    CHK((block->k_flag IS OFF), NCE_K_WORD_MISSING_WITH_G87);
+                    CHK((block->i_flag == OFF), NCE_I_WORD_MISSING_WITH_G87);
+                    CHK((block->j_flag == OFF), NCE_J_WORD_MISSING_WITH_G87);
+                    CHK((block->k_flag == OFF), NCE_K_WORD_MISSING_WITH_G87);
                 }
-                i SET_TO block->i_flag IS ON ? block->i_number : settings->cycle_i;
-                j SET_TO block->j_flag IS ON ? block->j_number : settings->cycle_j;
-                k SET_TO block->k_flag IS ON ? block->k_number : settings->cycle_k;
-                settings->cycle_i SET_TO i;
-                settings->cycle_j SET_TO j;
-                settings->cycle_k SET_TO k;
-                if (settings->distance_mode IS MODE_INCREMENTAL)
+                i = block->i_flag == ON ? block->i_number : settings->cycle_i;
+                j = block->j_flag == ON ? block->j_number : settings->cycle_j;
+                k = block->k_flag == ON ? block->k_number : settings->cycle_k;
+                settings->cycle_i = i;
+                settings->cycle_j = j;
+                settings->cycle_k = k;
+                if (settings->distance_mode == MODE_INCREMENTAL)
                 {
-                    i SET_TO (cc + i);            /* i always absolute in function call below */
+                    i = (cc + i);            /* i always absolute in function call below */
                 }
                 CYCLE_MACRO(convert_cycle_g87 (CANON_PLANE_YZ, aa, (aa + j), bb,
                     (bb + k), r, clear_cc, i, cc, settings->spindle_turning))
                     break;
             case G_88:
-                CHK(((settings->motion_mode ISNT G_88) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_88) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g88 (CANON_PLANE_YZ, aa, bb, cc,
                     block->p_number, settings->spindle_turning))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             case G_89:
-                CHK(((settings->motion_mode ISNT G_89) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_89) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g89 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
                     block->p_number))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             default:
                 ERM(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         }
-        settings->current_y SET_TO aa;            /* CYCLE_MACRO updates aa and bb */
-        settings->current_z SET_TO bb;
-        settings->current_x SET_TO clear_cc;
-        settings->cycle_cc SET_TO block->x_number;
+        settings->current_y = aa;            /* CYCLE_MACRO updates aa and bb */
+        settings->current_z = bb;
+        settings->current_x = clear_cc;
+        settings->cycle_cc = block->x_number;
 
-        if (save_mode ISNT CANON_EXACT_PATH)
+        if (save_mode != CANON_EXACT_PATH)
             SET_MOTION_CONTROL_MODE(save_mode);
 
         return RS274NGC_OK;
@@ -4329,7 +4330,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions       */
     setup_pointer settings)                       /* pointer to machine settings                    */
     {
-        static char name[] SET_TO "convert_cycle_zx";
+        static char name[] = "convert_cycle_zx";
         double aa;
         double aa_increment;
         double bb;
@@ -4346,33 +4347,33 @@ repeat--) \
         CANON_MOTION_MODE save_mode;
         int status;
 
-        plane SET_TO CANON_PLANE_XZ;
-        if (settings->motion_mode ISNT motion)
+        plane = CANON_PLANE_XZ;
+        if (settings->motion_mode != motion)
         {
-            CHK((block->y_flag IS OFF),
+            CHK((block->y_flag == OFF),
                 NCE_Y_VALUE_UNSPECIFIED_IN_XZ_PLANE_CANNED_CYCLE);
         }
-        block->y_number SET_TO
-            block->y_flag IS ON ? block->y_number : settings->cycle_cc;
-        old_cc SET_TO settings->current_y;
+        block->y_number =
+            block->y_flag == ON ? block->y_number : settings->cycle_cc;
+        old_cc = settings->current_y;
 
-        if (settings->distance_mode IS MODE_ABSOLUTE)
+        if (settings->distance_mode == MODE_ABSOLUTE)
         {
-            aa_increment SET_TO 0.0;
-            bb_increment SET_TO 0.0;
-            r SET_TO block->r_number;
-            cc SET_TO block->y_number;
-            aa SET_TO block->z_flag IS ON ? block->z_number : settings->current_z;
-            bb SET_TO block->x_flag IS ON ? block->x_number : settings->current_x;
+            aa_increment = 0.0;
+            bb_increment = 0.0;
+            r = block->r_number;
+            cc = block->y_number;
+            aa = block->z_flag == ON ? block->z_number : settings->current_z;
+            bb = block->x_flag == ON ? block->x_number : settings->current_x;
         }
-        else if (settings->distance_mode IS MODE_INCREMENTAL)
+        else if (settings->distance_mode == MODE_INCREMENTAL)
         {
-            aa_increment SET_TO block->z_number;
-            bb_increment SET_TO block->x_number;
-            r SET_TO (block->r_number + old_cc);
-            cc SET_TO (r + block->y_number);      /* [NCMS, page 98] */
-            aa SET_TO settings->current_z;
-            bb SET_TO settings->current_x;
+            aa_increment = block->z_number;
+            bb_increment = block->x_number;
+            r = (block->r_number + old_cc);
+            cc = (r + block->y_number);      /* [NCMS, page 98] */
+            aa = settings->current_z;
+            bb = settings->current_x;
         }
         else
             ERM(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
@@ -4403,12 +4404,12 @@ repeat--) \
     #endif
     #endif
                 );
-            old_cc SET_TO r;
+            old_cc = r;
         }
-        clear_cc SET_TO (settings->retract_mode IS R_PLANE) ? r : old_cc;
+        clear_cc = (settings->retract_mode == R_PLANE) ? r : old_cc;
 
         save_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
-        if (save_mode ISNT CANON_EXACT_PATH)
+        if (save_mode != CANON_EXACT_PATH)
             SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
 
         switch(motion)
@@ -4417,22 +4418,22 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g81(CANON_PLANE_XZ, aa, bb, clear_cc, cc))
                     break;
             case G_82:
-                CHK(((settings->motion_mode ISNT G_82) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_82) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_XZ, aa, bb, clear_cc, cc,
                     block->p_number))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             case G_83:
-                CHK(((settings->motion_mode ISNT G_83) AND (block->q_number IS -1.0)),
+                CHK(((settings->motion_mode != G_83) and (block->q_number == -1.0)),
                     NCE_Q_WORD_MISSING_WITH_G83);
-                block->q_number SET_TO
-                    block->q_number IS -1.0 ? settings->cycle_q : block->q_number;
+                block->q_number =
+                    block->q_number == -1.0 ? settings->cycle_q : block->q_number;
                 CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_XZ, aa, bb, r, clear_cc, cc,
                     block->q_number))
-                    settings->cycle_q SET_TO block->q_number;
+                    settings->cycle_q = block->q_number;
                 break;
             case G_84:
                 CYCLE_MACRO(convert_cycle_g84 (CANON_PLANE_XZ, aa, bb, clear_cc, cc,
@@ -4442,61 +4443,61 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g85 (CANON_PLANE_XZ, aa, bb, clear_cc, cc))
                     break;
             case G_86:
-                CHK(((settings->motion_mode ISNT G_86) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_86) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g86 (CANON_PLANE_XZ, aa, bb, clear_cc, cc,
                     block->p_number, settings->spindle_turning))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             case G_87:
-                if (settings->motion_mode ISNT G_87)
+                if (settings->motion_mode != G_87)
                 {
-                    CHK((block->i_flag IS OFF), NCE_I_WORD_MISSING_WITH_G87);
-                    CHK((block->j_flag IS OFF), NCE_J_WORD_MISSING_WITH_G87);
-                    CHK((block->k_flag IS OFF), NCE_K_WORD_MISSING_WITH_G87);
+                    CHK((block->i_flag == OFF), NCE_I_WORD_MISSING_WITH_G87);
+                    CHK((block->j_flag == OFF), NCE_J_WORD_MISSING_WITH_G87);
+                    CHK((block->k_flag == OFF), NCE_K_WORD_MISSING_WITH_G87);
                 }
-                i SET_TO block->i_flag IS ON ? block->i_number : settings->cycle_i;
-                j SET_TO block->j_flag IS ON ? block->j_number : settings->cycle_j;
-                k SET_TO block->k_flag IS ON ? block->k_number : settings->cycle_k;
-                settings->cycle_i SET_TO i;
-                settings->cycle_j SET_TO j;
-                settings->cycle_k SET_TO k;
-                if (settings->distance_mode IS MODE_INCREMENTAL)
+                i = block->i_flag == ON ? block->i_number : settings->cycle_i;
+                j = block->j_flag == ON ? block->j_number : settings->cycle_j;
+                k = block->k_flag == ON ? block->k_number : settings->cycle_k;
+                settings->cycle_i = i;
+                settings->cycle_j = j;
+                settings->cycle_k = k;
+                if (settings->distance_mode == MODE_INCREMENTAL)
                 {
-                    j SET_TO (cc + j);            /* j always absolute in function call below */
+                    j = (cc + j);            /* j always absolute in function call below */
                 }
                 CYCLE_MACRO(convert_cycle_g87 (CANON_PLANE_XZ, aa, (aa + k), bb,
                     (bb + i), r, clear_cc, j, cc, settings->spindle_turning))
                     break;
             case G_88:
-                CHK(((settings->motion_mode ISNT G_88) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_88) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g88 (CANON_PLANE_XZ, aa, bb, cc,
                     block->p_number, settings->spindle_turning))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             case G_89:
-                CHK(((settings->motion_mode ISNT G_89) AND (block->p_number IS -1.0)),
+                CHK(((settings->motion_mode != G_89) and (block->p_number == -1.0)),
                     NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
-                block->p_number SET_TO
-                    block->p_number IS -1.0 ? settings->cycle_p : block->p_number;
+                block->p_number =
+                    block->p_number == -1.0 ? settings->cycle_p : block->p_number;
                 CYCLE_MACRO(convert_cycle_g89 (CANON_PLANE_XZ, aa, bb, clear_cc, cc,
                     block->p_number))
-                    settings->cycle_p SET_TO block->p_number;
+                    settings->cycle_p = block->p_number;
                 break;
             default:
                 ERM(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         }
-        settings->current_z SET_TO aa;            /* CYCLE_MACRO updates aa and bb */
-        settings->current_x SET_TO bb;
-        settings->current_y SET_TO clear_cc;
-        settings->cycle_cc SET_TO block->y_number;
+        settings->current_z = aa;            /* CYCLE_MACRO updates aa and bb */
+        settings->current_x = bb;
+        settings->current_y = clear_cc;
+        settings->cycle_cc = block->y_number;
 
-        if (save_mode ISNT CANON_EXACT_PATH)
+        if (save_mode != CANON_EXACT_PATH)
             SET_MOTION_CONTROL_MODE(save_mode);
 
         return RS274NGC_OK;
@@ -4528,25 +4529,25 @@ repeat--) \
     int g_code,                                   /* g_code being executed (must be G_90 or G_91) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_distance_mode";
-        if (g_code IS G_90)
+        static char name[] = "convert_distance_mode";
+        if (g_code == G_90)
         {
-            if (settings->distance_mode ISNT MODE_ABSOLUTE)
+            if (settings->distance_mode != MODE_ABSOLUTE)
             {
 #ifdef DEBUG_EMC
                 COMMENT("interpreter: distance mode changed to absolute");
 #endif
-                settings->distance_mode SET_TO MODE_ABSOLUTE;
+                settings->distance_mode = MODE_ABSOLUTE;
             }
         }
-        else if (g_code IS G_91)
+        else if (g_code == G_91)
         {
-            if (settings->distance_mode ISNT MODE_INCREMENTAL)
+            if (settings->distance_mode != MODE_INCREMENTAL)
             {
 #ifdef DEBUG_EMC
                 COMMENT("interpreter: distance mode changed to incremental");
 #endif
-                settings->distance_mode SET_TO MODE_INCREMENTAL;
+                settings->distance_mode = MODE_INCREMENTAL;
             }
         }
         else
@@ -4600,20 +4601,20 @@ repeat--) \
     int g_code,                                   /* g_code being executed (must be G_93 or G_94) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_feed_mode";
-        if (g_code IS G_93)
+        static char name[] = "convert_feed_mode";
+        if (g_code == G_93)
         {
 #ifdef DEBUG_EMC
             COMMENT("interpreter: feed mode set to inverse time");
 #endif
-            settings->feed_mode SET_TO INVERSE_TIME;
+            settings->feed_mode = INVERSE_TIME;
         }
-        else if (g_code IS G_94)
+        else if (g_code == G_94)
         {
 #ifdef DEBUG_EMC
             COMMENT("interpreter: feed mode set to units per minute");
 #endif
-            settings->feed_mode SET_TO UNITS_PER_MINUTE;
+            settings->feed_mode = UNITS_PER_MINUTE;
         }
         else
             ERM(NCE_BUG_CODE_NOT_G93_OR_G94);
@@ -4642,7 +4643,7 @@ repeat--) \
     setup_pointer settings)                       /* pointer to machine settings              */
     {
         SET_FEED_RATE(block->f_number);
-        settings->feed_rate SET_TO block->f_number;
+        settings->feed_rate = block->f_number;
         return RS274NGC_OK;
     }
 
@@ -4706,50 +4707,50 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_g";
+        static char name[] = "convert_g";
         int status;
 
-        if (block->g_modes[0] IS G_4)
+        if (block->g_modes[0] == G_4)
         {
             CHP(convert_dwell(block->p_number));
         }
-        if (block->g_modes[2] ISNT -1)
+        if (block->g_modes[2] != -1)
         {
             CHP(convert_set_plane(block->g_modes[2], settings));
         }
-        if (block->g_modes[6] ISNT -1)
+        if (block->g_modes[6] != -1)
         {
             CHP(convert_length_units(block->g_modes[6], settings));
         }
-        if (block->g_modes[7] ISNT -1)
+        if (block->g_modes[7] != -1)
         {
             CHP(convert_cutter_compensation(block->g_modes[7], block, settings));
         }
-        if (block->g_modes[8] ISNT -1)
+        if (block->g_modes[8] != -1)
         {
             CHP(convert_tool_length_offset(block->g_modes[8], block, settings));
         }
-        if (block->g_modes[12] ISNT -1)
+        if (block->g_modes[12] != -1)
         {
             CHP(convert_coordinate_system(block->g_modes[12], settings));
         }
-        if (block->g_modes[13] ISNT -1)
+        if (block->g_modes[13] != -1)
         {
             CHP(convert_control_mode(block->g_modes[13], settings));
         }
-        if (block->g_modes[3] ISNT -1)
+        if (block->g_modes[3] != -1)
         {
             CHP(convert_distance_mode(block->g_modes[3], settings));
         }
-        if (block->g_modes[10] ISNT -1)
+        if (block->g_modes[10] != -1)
         {
             CHP(convert_retract_mode(block->g_modes[10], settings));
         }
-        if (block->g_modes[0] ISNT -1)
+        if (block->g_modes[0] != -1)
         {
             CHP(convert_modal_0(block->g_modes[0], block, settings));
         }
-        if (block->motion_to_be ISNT -1)
+        if (block->motion_to_be != -1)
         {
             CHP(convert_motion(block->motion_to_be, block, settings));
         }
@@ -4791,7 +4792,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] SET_TO "convert_home";
+        static char name[] = "convert_home";
         double end_x;
         double end_y;
         double end_z;
@@ -4815,7 +4816,7 @@ repeat--) \
 #endif
         double * parameters;
 
-        parameters SET_TO settings->parameters;
+        parameters = settings->parameters;
         find_ends(block, settings, &end_x, &end_y,
             &end_z
     #ifdef AA
@@ -4831,7 +4832,7 @@ repeat--) \
     #endif
             );
 
-        CHK((settings->cutter_comp_side ISNT OFF),
+        CHK((settings->cutter_comp_side != OFF),
             NCE_CANNOT_USE_G28_OR_G30_WITH_CUTTER_RADIUS_COMP);
         STRAIGHT_TRAVERSE(end_x, end_y, end_z
     #ifdef AA
@@ -4856,7 +4857,7 @@ repeat--) \
     #endif
     #endif
             );
-        if (move IS G_28)
+        if (move == G_28)
         {
             find_relative
                 (parameters[5161], parameters[5162], parameters[5163],
@@ -4883,7 +4884,7 @@ repeat--) \
     #endif
                 , settings);
         }
-        else if (move IS G_30)
+        else if (move == G_30)
         {
             find_relative
                 (parameters[5181], parameters[5182], parameters[5183],
@@ -4935,17 +4936,17 @@ repeat--) \
     #endif
     #endif
             );
-        settings->current_x SET_TO end_x;
-        settings->current_y SET_TO end_y;
-        settings->current_z SET_TO end_z;
+        settings->current_x = end_x;
+        settings->current_y = end_y;
+        settings->current_z = end_z;
 #ifdef AA
-        settings->AA_current SET_TO AA_end2;      /*AA*/
+        settings->AA_current = AA_end2;      /*AA*/
 #endif
 #ifdef BB
-        settings->BB_current SET_TO BB_end2;      /*BB*/
+        settings->BB_current = BB_end2;      /*BB*/
 #endif
 #ifdef CC
-        settings->CC_current SET_TO CC_end2;      /*CC*/
+        settings->CC_current = CC_end2;      /*CC*/
 #endif
         return RS274NGC_OK;
     }
@@ -4996,52 +4997,52 @@ repeat--) \
     int g_code,                                   /* g_code being executed (must be G_20 or G_21) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_length_units";
-        CHK((settings->cutter_comp_side ISNT OFF),
+        static char name[] = "convert_length_units";
+        CHK((settings->cutter_comp_side != OFF),
             NCE_CANNOT_CHANGE_UNITS_WITH_CUTTER_RADIUS_COMP);
-        if (g_code IS G_20)
+        if (g_code == G_20)
         {
             USE_LENGTH_UNITS(CANON_UNITS_INCHES);
-            if (settings->length_units ISNT CANON_UNITS_INCHES)
+            if (settings->length_units != CANON_UNITS_INCHES)
             {
-                settings->length_units SET_TO CANON_UNITS_INCHES;
-                settings->current_x SET_TO (settings->current_x * INCH_PER_MM);
-                settings->current_y SET_TO (settings->current_y * INCH_PER_MM);
-                settings->current_z SET_TO (settings->current_z * INCH_PER_MM);
-                settings->axis_offset_x SET_TO
+                settings->length_units = CANON_UNITS_INCHES;
+                settings->current_x = (settings->current_x * INCH_PER_MM);
+                settings->current_y = (settings->current_y * INCH_PER_MM);
+                settings->current_z = (settings->current_z * INCH_PER_MM);
+                settings->axis_offset_x =
                     (settings->axis_offset_x * INCH_PER_MM);
-                settings->axis_offset_y SET_TO
+                settings->axis_offset_y =
                     (settings->axis_offset_y * INCH_PER_MM);
-                settings->axis_offset_z SET_TO
+                settings->axis_offset_z =
                     (settings->axis_offset_z * INCH_PER_MM);
-                settings->origin_offset_x SET_TO
+                settings->origin_offset_x =
                     (settings->origin_offset_x * INCH_PER_MM);
-                settings->origin_offset_y SET_TO
+                settings->origin_offset_y =
                     (settings->origin_offset_y * INCH_PER_MM);
-                settings->origin_offset_z SET_TO
+                settings->origin_offset_z =
                     (settings->origin_offset_z * INCH_PER_MM);
             }
         }
-        else if (g_code IS G_21)
+        else if (g_code == G_21)
         {
             USE_LENGTH_UNITS(CANON_UNITS_MM);
-            if (settings->length_units ISNT CANON_UNITS_MM)
+            if (settings->length_units != CANON_UNITS_MM)
             {
-                settings->length_units SET_TO CANON_UNITS_MM;
-                settings->current_x SET_TO (settings->current_x * MM_PER_INCH);
-                settings->current_y SET_TO (settings->current_y * MM_PER_INCH);
-                settings->current_z SET_TO (settings->current_z * MM_PER_INCH);
-                settings->axis_offset_x SET_TO
+                settings->length_units = CANON_UNITS_MM;
+                settings->current_x = (settings->current_x * MM_PER_INCH);
+                settings->current_y = (settings->current_y * MM_PER_INCH);
+                settings->current_z = (settings->current_z * MM_PER_INCH);
+                settings->axis_offset_x =
                     (settings->axis_offset_x * MM_PER_INCH);
-                settings->axis_offset_y SET_TO
+                settings->axis_offset_y =
                     (settings->axis_offset_y * MM_PER_INCH);
-                settings->axis_offset_z SET_TO
+                settings->axis_offset_z =
                     (settings->axis_offset_z * MM_PER_INCH);
-                settings->origin_offset_x SET_TO
+                settings->origin_offset_x =
                     (settings->origin_offset_x * MM_PER_INCH);
-                settings->origin_offset_y SET_TO
+                settings->origin_offset_y =
                     (settings->origin_offset_y * MM_PER_INCH);
-                settings->origin_offset_z SET_TO
+                settings->origin_offset_z =
                     (settings->origin_offset_z * MM_PER_INCH);
             }
         }
@@ -5082,78 +5083,78 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_m";
+        static char name[] = "convert_m";
         int status;
 
-        if (block->m_modes[6] ISNT -1)
+        if (block->m_modes[6] != -1)
         {
             CHP(convert_tool_change(settings));
         }
 
-        if (block->m_modes[7] IS 3)
+        if (block->m_modes[7] == 3)
         {
             START_SPINDLE_CLOCKWISE();
-            settings->spindle_turning SET_TO CANON_CLOCKWISE;
+            settings->spindle_turning = CANON_CLOCKWISE;
         }
-        else if (block->m_modes[7] IS 4)
+        else if (block->m_modes[7] == 4)
         {
             START_SPINDLE_COUNTERCLOCKWISE();
-            settings->spindle_turning SET_TO CANON_COUNTERCLOCKWISE;
+            settings->spindle_turning = CANON_COUNTERCLOCKWISE;
         }
-        else if (block->m_modes[7] IS 5)
+        else if (block->m_modes[7] == 5)
         {
             STOP_SPINDLE_TURNING();
-            settings->spindle_turning SET_TO CANON_STOPPED;
+            settings->spindle_turning = CANON_STOPPED;
         }
 
-        if (block->m_modes[8] IS 7)
+        if (block->m_modes[8] == 7)
         {
             MIST_ON();
-            settings->mist SET_TO ON;
+            settings->mist = ON;
         }
-        else if (block->m_modes[8] IS 8)
+        else if (block->m_modes[8] == 8)
         {
             FLOOD_ON();
-            settings->flood SET_TO ON;
+            settings->flood = ON;
         }
-        else if (block->m_modes[8] IS 9)
+        else if (block->m_modes[8] == 9)
         {
             MIST_OFF();
-            settings->mist SET_TO OFF;
+            settings->mist = OFF;
             FLOOD_OFF();
-            settings->flood SET_TO OFF;
+            settings->flood = OFF;
         }
 
    /* No axis clamps in this version
-     if (block->m_modes[2] IS 26)
+     if (block->m_modes[2] == 26)
        {
    #ifdef DEBUG_EMC
    COMMENT("interpreter: automatic A-axis clamping turned on");
    #endif
-   settings->a_axis_clamping SET_TO ON;
+   settings->a_axis_clamping = ON;
    }
-   else if (block->m_modes[2] IS 27)
+   else if (block->m_modes[2] == 27)
    {
    #ifdef DEBUG_EMC
    COMMENT("interpreter: automatic A-axis clamping turned off");
    #endif
-   settings->a_axis_clamping SET_TO OFF;
+   settings->a_axis_clamping = OFF;
    }
    */
 
-        if (block->m_modes[9] IS 48)
+        if (block->m_modes[9] == 48)
         {
             ENABLE_FEED_OVERRIDE();
             ENABLE_SPEED_OVERRIDE();
-            settings->feed_override SET_TO ON;
-            settings->speed_override SET_TO ON;
+            settings->feed_override = ON;
+            settings->speed_override = ON;
         }
-        else if (block->m_modes[9] IS 49)
+        else if (block->m_modes[9] == 49)
         {
             DISABLE_FEED_OVERRIDE();
             DISABLE_SPEED_OVERRIDE();
-            settings->feed_override SET_TO OFF;
-            settings->speed_override SET_TO OFF;
+            settings->feed_override = OFF;
+            settings->speed_override = OFF;
         }
 
         return RS274NGC_OK;
@@ -5189,23 +5190,23 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_modal_0";
+        static char name[] = "convert_modal_0";
         int status;
 
-        if (code IS G_10)
+        if (code == G_10)
         {
             CHP(convert_setup(block, settings));
         }
-        else if ((code IS G_28) OR (code IS G_30))
+        else if ((code == G_28) or (code == G_30))
         {
             CHP(convert_home(code, block, settings));
         }
-        else if ((code IS G_92)   OR (code IS G_92_1) OR
-            (code IS G_92_2) OR (code IS G_92_3))
+        else if ((code == G_92)   or (code == G_92_1) or
+            (code == G_92_2) or (code == G_92_3))
         {
             CHP(convert_axis_offsets(code, block, settings));
         }
-        else if ((code IS G_4) OR (code IS G_53));/* handled elsewhere */
+        else if ((code == G_4) or (code == G_53));/* handled elsewhere */
         else
             ERM(NCE_BUG_CODE_NOT_G4_G10_G28_G30_G53_OR_G92_SERIES);
         return RS274NGC_OK;
@@ -5239,29 +5240,29 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions  */
     setup_pointer settings)                       /* pointer to machine settings               */
     {
-        static char name[] SET_TO "convert_motion";
+        static char name[] = "convert_motion";
         int status;
 
-        if ((motion IS G_0) OR (motion IS G_1))
+        if ((motion == G_0) or (motion == G_1))
         {
             CHP(convert_straight(motion, block, settings));
         }
-        else if ((motion IS G_3) OR (motion IS G_2))
+        else if ((motion == G_3) or (motion == G_2))
         {
             CHP(convert_arc(motion, block, settings));
         }
-        else if (motion IS G_38_2)
+        else if (motion == G_38_2)
         {
             CHP(convert_probe(block, settings));
         }
-        else if (motion IS G_80)
+        else if (motion == G_80)
         {
 #ifdef DEBUG_EMC
             COMMENT("interpreter: motion mode set to none");
 #endif
-            settings->motion_mode SET_TO G_80;
+            settings->motion_mode = G_80;
         }
-        else if ((motion > G_80) AND (motion < G_90))
+        else if ((motion > G_80) and (motion < G_90))
         {
             CHP(convert_cycle(motion, block, settings));
         }
@@ -5312,7 +5313,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] SET_TO "convert_probe";
+        static char name[] = "convert_probe";
         double distance;
         double end_x;
         double end_y;
@@ -5327,13 +5328,13 @@ repeat--) \
         double CC_end;                            /*CC*/
 #endif
 
-        CHK((((block->x_flag IS OFF) AND (block->y_flag IS OFF)) AND
-            (block->z_flag IS OFF)), NCE_X_Y_AND_Z_WORDS_ALL_MISSING_WITH_G38_2);
-        CHK((settings->feed_mode IS INVERSE_TIME),
+        CHK((((block->x_flag == OFF) and (block->y_flag == OFF)) and
+            (block->z_flag == OFF)), NCE_X_Y_AND_Z_WORDS_ALL_MISSING_WITH_G38_2);
+        CHK((settings->feed_mode == INVERSE_TIME),
             NCE_CANNOT_PROBE_IN_INVERSE_TIME_FEED_MODE);
-        CHK((settings->cutter_comp_side ISNT OFF),
+        CHK((settings->cutter_comp_side != OFF),
             NCE_CANNOT_PROBE_WITH_CUTTER_RADIUS_COMP_ON);
-        CHK((settings->feed_rate IS 0.0), NCE_CANNOT_PROBE_WITH_ZERO_FEED_RATE);
+        CHK((settings->feed_rate == 0.0), NCE_CANNOT_PROBE_WITH_ZERO_FEED_RATE);
         find_ends(block, settings, &end_x, &end_y,
             &end_z
     #ifdef AA
@@ -5350,20 +5351,20 @@ repeat--) \
             );
         if (0
     #ifdef AA
-            OR (AA_end ISNT settings->AA_current) /*AA*/
+            or (AA_end != settings->AA_current) /*AA*/
     #endif
     #ifdef BB
-            OR (BB_end ISNT settings->BB_current) /*BB*/
+            or (BB_end != settings->BB_current) /*BB*/
     #endif
     #ifdef CC
-            OR (CC_end ISNT settings->CC_current) /*CC*/
+            or (CC_end != settings->CC_current) /*CC*/
     #endif
             )
             ERM(NCE_CANNOT_MOVE_ROTARY_AXES_DURING_PROBING);
-        distance SET_TO sqrt(pow((settings->current_x - end_x), 2) +
+        distance = sqrt(pow((settings->current_x - end_x), 2) +
             pow((settings->current_y - end_y), 2) +
             pow((settings->current_z - end_z), 2));
-        CHK((distance < ((settings->length_units IS CANON_UNITS_MM) ? 0.254 : 0.01)),
+        CHK((distance < ((settings->length_units == CANON_UNITS_MM) ? 0.254 : 0.01)),
             NCE_START_POINT_TOO_CLOSE_TO_PROBE_POINT);
         TURN_PROBE_ON();
         STRAIGHT_PROBE(end_x, end_y, end_z
@@ -5390,8 +5391,8 @@ repeat--) \
     #endif
             );
         TURN_PROBE_OFF();
-        settings->motion_mode SET_TO G_38_2;
-        settings->probe_flag SET_TO ON;
+        settings->motion_mode = G_38_2;
+        settings->probe_flag = ON;
         return RS274NGC_OK;
     }
 
@@ -5420,20 +5421,20 @@ repeat--) \
     int g_code,                                   /* g_code being executed (must be G_98 or G_99) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_retract_mode";
-        if (g_code IS G_98)
+        static char name[] = "convert_retract_mode";
+        if (g_code == G_98)
         {
 #ifdef DEBUG_EMC
             COMMENT("interpreter: retract mode set to old_z");
 #endif
-            settings->retract_mode SET_TO OLD_Z;
+            settings->retract_mode = OLD_Z;
         }
-        else if (g_code IS G_99)
+        else if (g_code == G_99)
         {
 #ifdef DEBUG_EMC
             COMMENT("interpreter: retract mode set to r_plane");
 #endif
-            settings->retract_mode SET_TO R_PLANE;
+            settings->retract_mode = R_PLANE;
         }
         else
             ERM(NCE_BUG_CODE_NOT_G98_OR_G99);
@@ -5472,7 +5473,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_setup";
+        static char name[] = "convert_setup";
         double x;
         double y;
         double z;
@@ -5488,122 +5489,122 @@ repeat--) \
         double * parameters;
         int p_int;
 
-        parameters SET_TO settings->parameters;
-        p_int SET_TO (int)(block->p_number + 0.0001);
+        parameters = settings->parameters;
+        p_int = (int)(block->p_number + 0.0001);
 
-        if (block->x_flag IS ON)
+        if (block->x_flag == ON)
         {
-            x SET_TO block->x_number;
-            parameters[5201 + (p_int * 20)] SET_TO x;
+            x = block->x_number;
+            parameters[5201 + (p_int * 20)] = x;
         }
         else
-            x SET_TO parameters[5201 + (p_int * 20)];
+            x = parameters[5201 + (p_int * 20)];
 
-        if (block->y_flag IS ON)
+        if (block->y_flag == ON)
         {
-            y SET_TO block->y_number;
-            parameters[5202 + (p_int * 20)] SET_TO y;
+            y = block->y_number;
+            parameters[5202 + (p_int * 20)] = y;
         }
         else
-            y SET_TO parameters[5202 + (p_int * 20)];
-        if (block->z_flag IS ON)
+            y = parameters[5202 + (p_int * 20)];
+        if (block->z_flag == ON)
         {
-            z SET_TO block->z_number;
-            parameters[5203 + (p_int * 20)] SET_TO z;
+            z = block->z_number;
+            parameters[5203 + (p_int * 20)] = z;
         }
         else
-            z SET_TO parameters[5203 + (p_int * 20)];
+            z = parameters[5203 + (p_int * 20)];
 
 #ifdef AA
-        if (block->a_flag IS ON)
+        if (block->a_flag == ON)
         {
-            a SET_TO block->a_number;
-            parameters[5204 + (p_int * 20)] SET_TO a;
+            a = block->a_number;
+            parameters[5204 + (p_int * 20)] = a;
         }
         else
-            a SET_TO parameters[5204 + (p_int * 20)];
+            a = parameters[5204 + (p_int * 20)];
 #endif
 
 #ifdef BB
-        if (block->b_flag IS ON)
+        if (block->b_flag == ON)
         {
-            b SET_TO block->b_number;
-            parameters[5205 + (p_int * 20)] SET_TO b;
+            b = block->b_number;
+            parameters[5205 + (p_int * 20)] = b;
         }
         else
-            b SET_TO parameters[5205 + (p_int * 20)];
+            b = parameters[5205 + (p_int * 20)];
 #endif
 
 #ifdef CC
-        if (block->c_flag IS ON)
+        if (block->c_flag == ON)
         {
-            c SET_TO block->c_number;
-            parameters[5206 + (p_int * 20)] SET_TO c;
+            c = block->c_number;
+            parameters[5206 + (p_int * 20)] = c;
         }
         else
-            c SET_TO parameters[5206 + (p_int * 20)];
+            c = parameters[5206 + (p_int * 20)];
 #endif
 
    /* axis offsets could be included in the two sets of calculations for
       current_x, current_y, etc., but do not need to be because the results
       would be the same. They would be added in then subtracted out. */
-        if (p_int IS settings->origin_index)      /* system is currently used */
+        if (p_int == settings->origin_index)      /* system is currently used */
         {
-            settings->current_x SET_TO
+            settings->current_x =
                 (settings->current_x + settings->origin_offset_x);
-            settings->current_y SET_TO
+            settings->current_y =
                 (settings->current_y + settings->origin_offset_y);
-            settings->current_z SET_TO
+            settings->current_z =
                 (settings->current_z + settings->origin_offset_z);
 #ifdef AA
-            settings->AA_current SET_TO           /*AA*/
+            settings->AA_current =           /*AA*/
     #endif
     #ifdef AA
    /*AA*/
                 (settings->AA_current + settings->AA_origin_offset);
 #endif
 #ifdef BB
-            settings->BB_current SET_TO           /*BB*/
+            settings->BB_current =           /*BB*/
     #endif
     #ifdef BB
    /*BB*/
                 (settings->BB_current + settings->BB_origin_offset);
 #endif
 #ifdef CC
-            settings->CC_current SET_TO           /*CC*/
+            settings->CC_current =           /*CC*/
     #endif
     #ifdef CC
    /*CC*/
                 (settings->CC_current + settings->CC_origin_offset);
 #endif
 
-            settings->origin_offset_x SET_TO x;
-            settings->origin_offset_y SET_TO y;
-            settings->origin_offset_z SET_TO z;
+            settings->origin_offset_x = x;
+            settings->origin_offset_y = y;
+            settings->origin_offset_z = z;
 #ifdef AA
-            settings->AA_origin_offset SET_TO a;  /*AA*/
+            settings->AA_origin_offset = a;  /*AA*/
 #endif
 #ifdef BB
-            settings->BB_origin_offset SET_TO b;  /*BB*/
+            settings->BB_origin_offset = b;  /*BB*/
 #endif
 #ifdef CC
-            settings->CC_origin_offset SET_TO c;  /*CC*/
+            settings->CC_origin_offset = c;  /*CC*/
 #endif
 
-            settings->current_x SET_TO (settings->current_x - x);
-            settings->current_y SET_TO (settings->current_y - y);
-            settings->current_z SET_TO (settings->current_z - z);
+            settings->current_x = (settings->current_x - x);
+            settings->current_y = (settings->current_y - y);
+            settings->current_z = (settings->current_z - z);
 #ifdef AA
    /*AA*/
-            settings->AA_current SET_TO (settings->AA_current - a);
+            settings->AA_current = (settings->AA_current - a);
 #endif
 #ifdef BB
    /*BB*/
-            settings->BB_current SET_TO (settings->BB_current - b);
+            settings->BB_current = (settings->BB_current - b);
 #endif
 #ifdef CC
    /*CC*/
-            settings->CC_current SET_TO (settings->CC_current - c);
+            settings->CC_current = (settings->CC_current - c);
 #endif
 
             SET_ORIGIN_OFFSETS(x + settings->axis_offset_x,
@@ -5663,25 +5664,25 @@ repeat--) \
     int g_code,                                   /* must be G_17, G_18, or G_19  */
     setup_pointer settings)                       /* pointer to machine settings  */
     {
-        static char name[] SET_TO "convert_set_plane";
-        if (g_code IS G_17)
+        static char name[] = "convert_set_plane";
+        if (g_code == G_17)
         {
             SELECT_PLANE(CANON_PLANE_XY);
-            settings->plane SET_TO CANON_PLANE_XY;
+            settings->plane = CANON_PLANE_XY;
         }
-        else if (g_code IS G_18)
+        else if (g_code == G_18)
         {
-            CHK((settings->cutter_comp_side ISNT OFF),
+            CHK((settings->cutter_comp_side != OFF),
                 NCE_CANNOT_USE_XZ_PLANE_WITH_CUTTER_RADIUS_COMP);
             SELECT_PLANE(CANON_PLANE_XZ);
-            settings->plane SET_TO CANON_PLANE_XZ;
+            settings->plane = CANON_PLANE_XZ;
         }
-        else if (g_code IS G_19)
+        else if (g_code == G_19)
         {
-            CHK((settings->cutter_comp_side ISNT OFF),
+            CHK((settings->cutter_comp_side != OFF),
                 NCE_CANNOT_USE_YZ_PLANE_WITH_CUTTER_RADIUS_COMP);
             SELECT_PLANE(CANON_PLANE_YZ);
-            settings->plane SET_TO CANON_PLANE_YZ;
+            settings->plane = CANON_PLANE_YZ;
         }
         else
             ERM(NCE_BUG_CODE_NOT_G17_G18_OR_G19);
@@ -5708,7 +5709,7 @@ repeat--) \
     setup_pointer settings)                       /* pointer to machine settings              */
     {
         SET_SPINDLE_SPEED(block->s_number);
-        settings->speed SET_TO block->s_number;
+        settings->speed = block->s_number;
         return RS274NGC_OK;
     }
 
@@ -5779,36 +5780,36 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_stop";
+        static char name[] = "convert_stop";
         int index;
         char * line;
         int length;
 
-        if (block->m_modes[4] IS 0)
+        if (block->m_modes[4] == 0)
         {
             PROGRAM_STOP();
         }
-        else if (block->m_modes[4] IS 60)
+        else if (block->m_modes[4] == 60)
         {
             PALLET_SHUTTLE();
             PROGRAM_STOP();
         }
-        else if (block->m_modes[4] IS 1)
+        else if (block->m_modes[4] == 1)
         {
             OPTIONAL_PROGRAM_STOP();
         }
-        else if ((block->m_modes[4] IS 2) OR (block->m_modes[4] IS 30))
+        else if ((block->m_modes[4] == 2) or (block->m_modes[4] == 30))
         {                                         /* reset stuff here */
    /*1*/
-            settings->current_x SET_TO settings->current_x
+            settings->current_x = settings->current_x
                 + settings->origin_offset_x + settings->axis_offset_x;
-            settings->current_y SET_TO settings->current_y
+            settings->current_y = settings->current_y
                 + settings->origin_offset_y + settings->axis_offset_y;
-            settings->current_z SET_TO settings->current_z
+            settings->current_z = settings->current_z
                 + settings->origin_offset_z + settings->axis_offset_z;
 #ifdef AA
    /*AA*/
-            settings->AA_current SET_TO settings->AA_current
+            settings->AA_current = settings->AA_current
     #endif
     #ifdef AA
    /*AA*/
@@ -5816,7 +5817,7 @@ repeat--) \
 #endif
 #ifdef BB
    /*BB*/
-            settings->BB_current SET_TO settings->BB_current
+            settings->BB_current = settings->BB_current
     #endif
     #ifdef BB
    /*BB*/
@@ -5824,67 +5825,67 @@ repeat--) \
 #endif
 #ifdef CC
    /*CC*/
-            settings->CC_current SET_TO settings->CC_current
+            settings->CC_current = settings->CC_current
     #endif
     #ifdef CC
    /*CC*/
                 + settings->CC_origin_offset + settings->CC_axis_offset;
 #endif
 
-            settings->origin_index SET_TO 1;
-            settings->parameters[5220] SET_TO 1.0;
-            settings->origin_offset_x SET_TO settings->parameters[5221];
-            settings->origin_offset_y SET_TO settings->parameters[5222];
-            settings->origin_offset_z SET_TO settings->parameters[5223];
+            settings->origin_index = 1;
+            settings->parameters[5220] = 1.0;
+            settings->origin_offset_x = settings->parameters[5221];
+            settings->origin_offset_y = settings->parameters[5222];
+            settings->origin_offset_z = settings->parameters[5223];
 #ifdef AA
    /*AA*/
-            settings->AA_origin_offset SET_TO settings->parameters[5224];
+            settings->AA_origin_offset = settings->parameters[5224];
 #endif
 #ifdef BB
    /*BB*/
-            settings->BB_origin_offset SET_TO settings->parameters[5225];
+            settings->BB_origin_offset = settings->parameters[5225];
 #endif
 #ifdef CC
    /*CC*/
-            settings->CC_origin_offset SET_TO settings->parameters[5226];
+            settings->CC_origin_offset = settings->parameters[5226];
 #endif
 
-            settings->axis_offset_x SET_TO 0;
-            settings->axis_offset_x SET_TO 0;
-            settings->axis_offset_x SET_TO 0;
+            settings->axis_offset_x = 0;
+            settings->axis_offset_x = 0;
+            settings->axis_offset_x = 0;
 #ifdef AA
-            settings->AA_axis_offset SET_TO 0;    /*AA*/
+            settings->AA_axis_offset = 0;    /*AA*/
 #endif
 #ifdef BB
-            settings->BB_axis_offset SET_TO 0;    /*BB*/
+            settings->BB_axis_offset = 0;    /*BB*/
 #endif
 #ifdef CC
-            settings->CC_axis_offset SET_TO 0;    /*CC*/
+            settings->CC_axis_offset = 0;    /*CC*/
 #endif
 
-            settings->current_x SET_TO settings->current_x -
+            settings->current_x = settings->current_x -
                 settings->origin_offset_x;
-            settings->current_y SET_TO settings->current_y -
+            settings->current_y = settings->current_y -
                 settings->origin_offset_y;
-            settings->current_z SET_TO settings->current_z -
+            settings->current_z = settings->current_z -
                 settings->origin_offset_z;
 #ifdef AA
    /*AA*/
-            settings->AA_current SET_TO settings->AA_current -
+            settings->AA_current = settings->AA_current -
     #endif
     #ifdef AA
                 settings->AA_origin_offset;       /*AA*/
 #endif
 #ifdef BB
    /*BB*/
-            settings->BB_current SET_TO settings->BB_current -
+            settings->BB_current = settings->BB_current -
     #endif
     #ifdef BB
                 settings->BB_origin_offset;       /*BB*/
 #endif
 #ifdef CC
    /*CC*/
-            settings->CC_current SET_TO settings->CC_current -
+            settings->CC_current = settings->CC_current -
     #endif
     #ifdef CC
                 settings->CC_origin_offset;       /*CC*/
@@ -5916,74 +5917,74 @@ repeat--) \
     #endif
                 );
 
-            /*2*/ if (settings->plane ISNT CANON_PLANE_XY)
+            /*2*/ if (settings->plane != CANON_PLANE_XY)
             {
                 SELECT_PLANE(CANON_PLANE_XY);
-                settings->plane SET_TO CANON_PLANE_XY;
+                settings->plane = CANON_PLANE_XY;
             }
 
-            /*3*/ settings->distance_mode SET_TO MODE_ABSOLUTE;
+            /*3*/ settings->distance_mode = MODE_ABSOLUTE;
 
-            /*4*/ settings->feed_mode SET_TO UNITS_PER_MINUTE;
+            /*4*/ settings->feed_mode = UNITS_PER_MINUTE;
 
-            /*5*/ if (settings->feed_override ISNT ON)
+            /*5*/ if (settings->feed_override != ON)
             {
                 ENABLE_FEED_OVERRIDE();
-                settings->feed_override SET_TO ON;
+                settings->feed_override = ON;
             }
-            if (settings->speed_override ISNT ON)
+            if (settings->speed_override != ON)
             {
                 ENABLE_SPEED_OVERRIDE();
-                settings->speed_override SET_TO ON;
+                settings->speed_override = ON;
             }
 
-            /*6*/ settings->cutter_comp_side SET_TO OFF;
-            settings->program_x SET_TO UNKNOWN;
+            /*6*/ settings->cutter_comp_side = OFF;
+            settings->program_x = UNKNOWN;
 
             /*7*/ STOP_SPINDLE_TURNING();
-            settings->spindle_turning SET_TO CANON_STOPPED;
+            settings->spindle_turning = CANON_STOPPED;
 
-            /*8*/ settings->motion_mode SET_TO G_1;
+            /*8*/ settings->motion_mode = G_1;
 
-            /*9*/ if (settings->mist IS ON)
+            /*9*/ if (settings->mist == ON)
             {
                 MIST_OFF();
-                settings->mist SET_TO OFF;
+                settings->mist = OFF;
             }
-            if (settings->flood IS ON)
+            if (settings->flood == ON)
             {
                 FLOOD_OFF();
-                settings->flood SET_TO OFF;
+                settings->flood = OFF;
             }
 
-            if (block->m_modes[4] IS 30)
+            if (block->m_modes[4] == 30)
                 PALLET_SHUTTLE();
             PROGRAM_END();
-            if (_setup.percent_flag IS ON)
+            if (_setup.percent_flag == ON)
             {
-                CHK((_setup.file_pointer IS NULL), NCE_UNABLE_TO_OPEN_FILE);
-                line SET_TO _setup.linetext;
+                CHK((_setup.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
+                line = _setup.linetext;
                 for(; ;)                          /* check for ending percent sign and comment if missing */
                 {
-                    if (fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) IS NULL)
+                    if (fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) == NULL)
                     {
                         COMMENT
                             ("interpreter: percent sign missing from end of file");
                         break;
                     }
-                    length SET_TO strlen(line);
-                    if (length IS (RS274NGC_TEXT_SIZE - 1))
+                    length = strlen(line);
+                    if (length == (RS274NGC_TEXT_SIZE - 1))
                     {                             // line is too long. need to finish reading the line
-                        for(;fgetc(_setup.file_pointer) ISNT '\n';);
+                        for(;fgetc(_setup.file_pointer) != '\n';);
                         continue;
                     }
-                    for(index SET_TO (length -1); // index set on last char
-                        (index >= 0) AND (isspace(line[index]));
+                    for(index = (length -1); // index set on last char
+                        (index >= 0) and (isspace(line[index]));
                         index--);
-                    if (line[index] IS '%')       // found line with % at end
+                    if (line[index] == '%')       // found line with % at end
                     {
-                        for(index--; (index >= 0)AND(isspace(line[index])); index--);
-                        if (index IS -1)          // found line with only percent sign
+                        for(index--; (index >= 0) and (isspace(line[index])); index--);
+                        if (index == -1)          // found line with only percent sign
                             break;
                     }
                 }
@@ -6042,7 +6043,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] SET_TO "convert_straight";
+        static char name[] = "convert_straight";
         double end_x;
         double end_y;
         double end_z;
@@ -6057,21 +6058,21 @@ repeat--) \
 #endif
         int status;
 
-        if (move IS G_1)
+        if (move == G_1)
         {
-            if (settings->feed_mode IS UNITS_PER_MINUTE)
+            if (settings->feed_mode == UNITS_PER_MINUTE)
             {
-                CHK((settings->feed_rate IS 0.0),
+                CHK((settings->feed_rate == 0.0),
                     NCE_CANNOT_DO_G1_WITH_ZERO_FEED_RATE);
             }
-            else if (settings->feed_mode IS INVERSE_TIME)
+            else if (settings->feed_mode == INVERSE_TIME)
             {
-                CHK((block->f_number IS -1.0),
+                CHK((block->f_number == -1.0),
                     NCE_F_WORD_MISSING_WITH_INVERSE_TIME_G1_MOVE);
             }
         }
 
-        settings->motion_mode SET_TO move;
+        settings->motion_mode = move;
         find_ends(block, settings, &end_x, &end_y,
             &end_z
     #ifdef AA
@@ -6086,15 +6087,15 @@ repeat--) \
             , &CC_end
     #endif
             );
-   /* NOT "IS ON" */
-        if ((settings->cutter_comp_side ISNT OFF) AND
+   /* not "IS ON" */
+        if ((settings->cutter_comp_side != OFF) and
             (settings->cutter_comp_radius > 0.0)) /* radius always is >= 0 */
         {
-            CHK((block->g_modes[0] IS G_53),
+            CHK((block->g_modes[0] == G_53),
                 NCE_CANNOT_USE_G53_WITH_CUTTER_RADIUS_COMP);
-            if (settings->program_x IS UNKNOWN)
+            if (settings->program_x == UNKNOWN)
             {
-                status SET_TO
+                status =
                     convert_straight_comp1(move, block, settings, end_x, end_y,
                     end_z
     #ifdef AA
@@ -6113,7 +6114,7 @@ repeat--) \
             }
             else
             {
-                status SET_TO
+                status =
                     convert_straight_comp2 (move, block, settings, end_x, end_y,
                     end_z
     #ifdef AA
@@ -6131,7 +6132,7 @@ repeat--) \
                 CHP(status);
             }
         }
-        else if (move IS G_0)
+        else if (move == G_0)
         {
             STRAIGHT_TRAVERSE(end_x, end_y, end_z
     #ifdef AA
@@ -6156,12 +6157,12 @@ repeat--) \
     #endif
     #endif
                 );
-            settings->current_x SET_TO end_x;
-            settings->current_y SET_TO end_y;
+            settings->current_x = end_x;
+            settings->current_y = end_y;
         }
-        else if (move IS G_1)
+        else if (move == G_1)
         {
-            if (settings->feed_mode IS INVERSE_TIME)
+            if (settings->feed_mode == INVERSE_TIME)
                 inverse_time_rate_straight
                     (end_x, end_y, end_z
         #ifdef AA
@@ -6199,21 +6200,21 @@ repeat--) \
     #endif
     #endif
                 );
-            settings->current_x SET_TO end_x;
-            settings->current_y SET_TO end_y;
+            settings->current_x = end_x;
+            settings->current_y = end_y;
         }
         else
             ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
 
-        settings->current_z SET_TO end_z;
+        settings->current_z = end_z;
 #ifdef AA
-        settings->AA_current SET_TO AA_end;       /*AA*/
+        settings->AA_current = AA_end;       /*AA*/
 #endif
 #ifdef BB
-        settings->BB_current SET_TO BB_end;       /*BB*/
+        settings->BB_current = BB_end;       /*BB*/
 #endif
 #ifdef CC
-        settings->CC_current SET_TO CC_end;       /*CC*/
+        settings->CC_current = CC_end;       /*CC*/
 #endif
         return RS274NGC_OK;
     }
@@ -6272,7 +6273,7 @@ repeat--) \
 #endif
     )
     {
-        static char name[] SET_TO "convert_straight_comp1";
+        static char name[] = "convert_straight_comp1";
         double alpha;
         double cx;                                /* first current point x then end point x */
         double cy;                                /* first current point y then end point y */
@@ -6281,23 +6282,23 @@ repeat--) \
         int side;
         double theta;
 
-        side SET_TO settings->cutter_comp_side;
-        cx SET_TO settings->current_x;
-        cy SET_TO settings->current_y;
+        side = settings->cutter_comp_side;
+        cx = settings->current_x;
+        cy = settings->current_y;
 
    /* always will be positive */
-        radius SET_TO settings->cutter_comp_radius;
-        distance SET_TO hypot((px - cx), (py -cy));
+        radius = settings->cutter_comp_radius;
+        distance = hypot((px - cx), (py -cy));
 
-        CHK(((side ISNT LEFT) AND (side ISNT RIGHT)),NCE_BUG_SIDE_NOT_RIGHT_OR_LEFT);
+        CHK(((side != LEFT) and (side != RIGHT)),NCE_BUG_SIDE_NOT_RIGHT_OR_LEFT);
         CHK((distance <= radius), NCE_CUTTER_GOUGING_WITH_CUTTER_RADIUS_COMP);
 
-        theta SET_TO acos(radius/distance);
-        alpha SET_TO (side IS LEFT) ? (atan2((cy - py), (cx - px)) - theta) :
+        theta = acos(radius/distance);
+        alpha = (side == LEFT) ? (atan2((cy - py), (cx - px)) - theta) :
         (atan2((cy - py), (cx - px)) + theta);
-        cx SET_TO (px + (radius * cos(alpha)));   /* reset to end location */
-        cy SET_TO (py + (radius * sin(alpha)));
-        if (move IS G_0)
+        cx = (px + (radius * cos(alpha)));   /* reset to end location */
+        cy = (py + (radius * sin(alpha)));
+        if (move == G_0)
             STRAIGHT_TRAVERSE(cx, cy, end_z
         #ifdef AA
                 ,             AA_end
@@ -6321,9 +6322,9 @@ repeat--) \
         #endif
         #endif
                 );
-        else if (move IS G_1)
+        else if (move == G_1)
         {
-            if (settings->feed_mode IS INVERSE_TIME)
+            if (settings->feed_mode == INVERSE_TIME)
                 inverse_time_rate_straight
                     (cx, cy, end_z
         #ifdef AA
@@ -6365,10 +6366,10 @@ repeat--) \
         else
             ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
 
-        settings->current_x SET_TO cx;
-        settings->current_y SET_TO cy;
-        settings->program_x SET_TO px;
-        settings->program_y SET_TO py;
+        settings->current_x = cx;
+        settings->current_y = cy;
+        settings->program_x = px;
+        settings->program_y = py;
         return RS274NGC_OK;
     }
 
@@ -6462,7 +6463,7 @@ repeat--) \
 #endif
     )
     {
-        static char name[] SET_TO "convert_straight_comp2";
+        static char name[] = "convert_straight_comp2";
         double alpha;
         double beta;
         double end_x;                             /* x-coordinate of actual end point */
@@ -6473,17 +6474,17 @@ repeat--) \
         double radius;
         int side;
    /* radians, testing corners */
-        double small SET_TO TOLERANCE_CONCAVE_CORNER;
+        double small = TOLERANCE_CONCAVE_CORNER;
         double start_x, start_y;                  /* programmed beginning point */
         double theta;
 
-        start_x SET_TO settings->program_x;
-        start_y SET_TO settings->program_y;
-        if ((py IS start_y) AND (px IS start_x))  /* no XY motion */
+        start_x = settings->program_x;
+        start_y = settings->program_y;
+        if ((py == start_y) and (px == start_x))  /* no XY motion */
         {
-            end_x SET_TO settings->current_x;
-            end_y SET_TO settings->current_y;
-            if (move IS G_0)
+            end_x = settings->current_x;
+            end_y = settings->current_y;
+            if (move == G_0)
                 STRAIGHT_TRAVERSE(end_x, end_y, end_z
         #ifdef AA
                     ,             AA_end
@@ -6507,9 +6508,9 @@ repeat--) \
         #endif
         #endif
                     );
-            else if (move IS G_1)
+            else if (move == G_1)
             {
-                if (settings->feed_mode IS INVERSE_TIME)
+                if (settings->feed_mode == INVERSE_TIME)
                     inverse_time_rate_straight
                         (end_x, end_y, end_z
         #ifdef AA
@@ -6553,37 +6554,37 @@ repeat--) \
         }
         else
         {
-            side SET_TO settings->cutter_comp_side;
+            side = settings->cutter_comp_side;
    /* will always be positive */
-            radius SET_TO settings->cutter_comp_radius;
-            theta SET_TO atan2(settings->current_y - start_y,
+            radius = settings->cutter_comp_radius;
+            theta = atan2(settings->current_y - start_y,
                 settings->current_x - start_x);
-            alpha SET_TO atan2(py - start_y, px - start_x);
+            alpha = atan2(py - start_y, px - start_x);
 
-            if (side IS LEFT)
+            if (side == LEFT)
             {
                 if (theta < alpha)
-                    theta SET_TO (theta + TWO_PI);
-                beta SET_TO ((theta - alpha) - PI2);
-                gamma SET_TO PI2;
+                    theta = (theta + TWO_PI);
+                beta = ((theta - alpha) - PI2);
+                gamma = PI2;
             }
-            else if (side IS RIGHT)
+            else if (side == RIGHT)
             {
                 if (alpha < theta)
-                    alpha SET_TO (alpha + TWO_PI);
-                beta SET_TO ((alpha - theta) - PI2);
-                gamma SET_TO -PI2;
+                    alpha = (alpha + TWO_PI);
+                beta = ((alpha - theta) - PI2);
+                gamma = -PI2;
             }
             else
                 ERM(NCE_BUG_SIDE_NOT_RIGHT_OR_LEFT);
-            end_x SET_TO (px + (radius * cos(alpha + gamma)));
-            end_y SET_TO (py + (radius * sin(alpha + gamma)));
-            mid_x SET_TO (start_x + (radius * cos(alpha + gamma)));
-            mid_y SET_TO (start_y + (radius * sin(alpha + gamma)));
+            end_x = (px + (radius * cos(alpha + gamma)));
+            end_y = (py + (radius * sin(alpha + gamma)));
+            mid_x = (start_x + (radius * cos(alpha + gamma)));
+            mid_y = (start_y + (radius * sin(alpha + gamma)));
 
-            CHK(((beta < -small) OR (beta > (PI + small))),
+            CHK(((beta < -small) or (beta > (PI + small))),
                 NCE_CONCAVE_CORNER_WITH_CUTTER_RADIUS_COMP);
-            if (move IS G_0)
+            if (move == G_0)
                 STRAIGHT_TRAVERSE(end_x, end_y, end_z
         #ifdef AA
                     ,             AA_end
@@ -6607,12 +6608,12 @@ repeat--) \
         #endif
         #endif
                     );
-            else if (move IS G_1)
+            else if (move == G_1)
             {
                 if (beta > small)                 /* ARC NEEDED */
                 {
-                    if (settings->feed_mode IS INVERSE_TIME)
-                        inverse_time_rate_as(start_x, start_y, (side IS LEFT) ? -1 : 1,
+                    if (settings->feed_mode == INVERSE_TIME)
+                        inverse_time_rate_as(start_x, start_y, (side == LEFT) ? -1 : 1,
                         mid_x, mid_y, end_x, end_y,
                         end_z
     #ifdef AA
@@ -6628,7 +6629,7 @@ repeat--) \
     #endif
                         ,
                         block, settings);
-                    ARC_FEED(mid_x,mid_y,start_x, start_y,((side IS LEFT) ? -1 : 1),
+                    ARC_FEED(mid_x,mid_y,start_x, start_y,((side == LEFT) ? -1 : 1),
                         settings->current_z
     #ifdef AA
                         , AA_end
@@ -6678,7 +6679,7 @@ repeat--) \
                 }
                 else
                 {
-                    if (settings->feed_mode IS INVERSE_TIME)
+                    if (settings->feed_mode == INVERSE_TIME)
                         inverse_time_rate_straight
                             (end_x,end_y,end_z
         #ifdef AA
@@ -6722,10 +6723,10 @@ repeat--) \
                 ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
         }
 
-        settings->current_x SET_TO end_x;
-        settings->current_y SET_TO end_y;
-        settings->program_x SET_TO px;
-        settings->program_y SET_TO py;
+        settings->current_x = end_x;
+        settings->current_y = end_y;
+        settings->program_x = px;
+        settings->program_y = py;
         return RS274NGC_OK;
     }
 
@@ -6791,11 +6792,11 @@ repeat--) \
     static int convert_tool_change(               /* ARGUMENTS                   */
     setup_pointer settings)                       /* pointer to machine settings */
     {
-        static char name[] SET_TO "convert_tool_change";
+        static char name[] = "convert_tool_change";
 
         CHANGE_TOOL(settings->selected_tool_slot);
-        settings->current_slot SET_TO settings->selected_tool_slot;
-        settings->spindle_turning SET_TO CANON_STOPPED;
+        settings->current_slot = settings->selected_tool_slot;
+        settings->spindle_turning = CANON_STOPPED;
 
         return RS274NGC_OK;
     }
@@ -6836,28 +6837,28 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "convert_tool_length_offset";
+        static char name[] = "convert_tool_length_offset";
         int index;
         double offset;
 
-        if (g_code IS G_49)
+        if (g_code == G_49)
         {
             USE_TOOL_LENGTH_OFFSET(0.0);
-            settings->current_z SET_TO (settings->current_z +
+            settings->current_z = (settings->current_z +
                 settings->tool_length_offset);
-            settings->tool_length_offset SET_TO 0.0;
-            settings->length_offset_index SET_TO 0;
+            settings->tool_length_offset = 0.0;
+            settings->length_offset_index = 0;
         }
-        else if (g_code IS G_43)
+        else if (g_code == G_43)
         {
-            index SET_TO block->h_number;
-            CHK((index IS -1), NCE_OFFSET_INDEX_MISSING);
-            offset SET_TO settings->tool_table[index].length;
+            index = block->h_number;
+            CHK((index == -1), NCE_OFFSET_INDEX_MISSING);
+            offset = settings->tool_table[index].length;
             USE_TOOL_LENGTH_OFFSET(offset);
-            settings->current_z SET_TO
+            settings->current_z =
                 (settings->current_z + settings->tool_length_offset - offset);
-            settings->tool_length_offset SET_TO offset;
-            settings->length_offset_index SET_TO index;
+            settings->tool_length_offset = offset;
+            settings->length_offset_index = index;
         }
         else
             ERM(NCE_BUG_CODE_NOT_G43_OR_G49);
@@ -6894,12 +6895,12 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] SET_TO "convert_tool_select";
+        static char name[] = "convert_tool_select";
 
         CHK((block->t_number > settings->tool_max),
             NCE_SELECTED_TOOL_SLOT_NUMBER_TOO_LARGE);
         SELECT_TOOL(block->t_number);
-        settings->selected_tool_slot SET_TO block->t_number;
+        settings->selected_tool_slot = block->t_number;
         return RS274NGC_OK;
     }
 
@@ -6934,9 +6935,9 @@ repeat--) \
     double end2,                                  /* second coordinate value    */
     double end3)                                  /* third coordinate value     */
     {
-        static char name[] SET_TO "cycle_feed";
+        static char name[] = "cycle_feed";
 
-        if (plane IS CANON_PLANE_XY)
+        if (plane == CANON_PLANE_XY)
             STRAIGHT_FEED(end1, end2, end3
         #ifdef AA
                 ,         _setup.AA_current
@@ -6960,7 +6961,7 @@ repeat--) \
         #endif
         #endif
                 );
-        else if (plane IS CANON_PLANE_YZ)
+        else if (plane == CANON_PLANE_YZ)
             STRAIGHT_FEED(end3, end1, end2
             #ifdef AA
                     ,         _setup.AA_current
@@ -6984,7 +6985,7 @@ repeat--) \
             #endif
             #endif
                     );
-        else                                      /* if (plane IS CANON_PLANE_XZ) */
+        else                                      /* if (plane == CANON_PLANE_XZ) */
             STRAIGHT_FEED(end2, end3, end1
         #ifdef AA
                 ,         _setup.AA_current
@@ -7043,8 +7044,8 @@ repeat--) \
     double end2,                                  /* second coordinate value   */
     double end3)                                  /* third coordinate value    */
     {
-        static char name[] SET_TO "cycle_traverse";
-        if (plane IS CANON_PLANE_XY)
+        static char name[] = "cycle_traverse";
+        if (plane == CANON_PLANE_XY)
             STRAIGHT_TRAVERSE(end1, end2, end3
         #ifdef AA
                 ,             _setup.AA_current
@@ -7068,7 +7069,7 @@ repeat--) \
         #endif
         #endif
                 );
-        else if (plane IS CANON_PLANE_YZ)
+        else if (plane == CANON_PLANE_YZ)
             STRAIGHT_TRAVERSE(end3, end1, end2
             #ifdef AA
                     ,             _setup.AA_current
@@ -7092,7 +7093,7 @@ repeat--) \
             #endif
             #endif
                     );
-        else                                      /* if (plane IS CANON_PLANE_XZ) */
+        else                                      /* if (plane == CANON_PLANE_XZ) */
             STRAIGHT_TRAVERSE(end2, end3, end1
         #ifdef AA
                 ,             _setup.AA_current
@@ -7159,54 +7160,54 @@ repeat--) \
     block_pointer block,                          /* pointer to a block to be checked  */
     setup_pointer settings)                       /* pointer to machine settings       */
     {
-        static char name[] SET_TO "enhance_block";
+        static char name[] = "enhance_block";
         int axis_flag;
         int mode_zero_covets_axes;
 
-        axis_flag SET_TO ((block->x_flag IS ON) OR
-            (block->y_flag IS ON) OR
+        axis_flag = ((block->x_flag == ON) or
+            (block->y_flag == ON) or
     #ifdef AA
-            (block->a_flag IS ON) OR              /*AA*/
+            (block->a_flag == ON) or              /*AA*/
     #endif
     #ifdef BB
-            (block->b_flag IS ON) OR              /*BB*/
+            (block->b_flag == ON) or              /*BB*/
     #endif
     #ifdef CC
-            (block->c_flag IS ON) OR              /*CC*/
+            (block->c_flag == ON) or              /*CC*/
     #endif
-            (block->z_flag IS ON));
-        mode_zero_covets_axes SET_TO ((block->g_modes[0] IS G_10) OR
-            (block->g_modes[0] IS G_28) OR
-            (block->g_modes[0] IS G_30) OR
-            (block->g_modes[0] IS G_92));
+            (block->z_flag == ON));
+        mode_zero_covets_axes = ((block->g_modes[0] == G_10) or
+            (block->g_modes[0] == G_28) or
+            (block->g_modes[0] == G_30) or
+            (block->g_modes[0] == G_92));
 
-        if (block->g_modes[1] ISNT -1)
+        if (block->g_modes[1] != -1)
         {
-            if (block->g_modes[1] IS G_80)
+            if (block->g_modes[1] == G_80)
             {
-                CHK((axis_flag AND (NOT mode_zero_covets_axes)),
+                CHK((axis_flag and (not mode_zero_covets_axes)),
                     NCE_CANNOT_USE_AXIS_VALUES_WITH_G80);
-                CHK(((NOT axis_flag) AND (block->g_modes[0] IS G_92)),
+                CHK(((not axis_flag) and (block->g_modes[0] == G_92)),
                     NCE_ALL_AXES_MISSING_WITH_G92);
             }
             else
             {
                 CHK(mode_zero_covets_axes,
                     NCE_CANNOT_USE_TWO_G_CODES_THAT_BOTH_USE_AXIS_VALUES);
-                CHK((NOT axis_flag), NCE_ALL_AXES_MISSING_WITH_MOTION_CODE);
+                CHK((not axis_flag), NCE_ALL_AXES_MISSING_WITH_MOTION_CODE);
             }
-            block->motion_to_be SET_TO block->g_modes[1];
+            block->motion_to_be = block->g_modes[1];
         }
         else if (mode_zero_covets_axes)
         {                                         /* other 3 can get by without axes but not G92 */
-            CHK(((NOT axis_flag) AND (block->g_modes[0] IS G_92)),
+            CHK(((not axis_flag) and (block->g_modes[0] == G_92)),
                 NCE_ALL_AXES_MISSING_WITH_G92);
         }
         else if (axis_flag)
         {
-            CHK(((settings->motion_mode IS -1) OR (settings->motion_mode IS G_80)),
+            CHK(((settings->motion_mode == -1) or (settings->motion_mode == G_80)),
                 NCE_CANNOT_USE_AXIS_VALUES_WITHOUT_A_G_CODE_THAT_USES_THEM);
-            block->motion_to_be SET_TO settings->motion_mode;
+            block->motion_to_be = settings->motion_mode;
         }
         return RS274NGC_OK;
     }
@@ -7234,7 +7235,7 @@ repeat--) \
     int operation,
     double * right)
     {
-        static char name[] SET_TO "execute_binary";
+        static char name[] = "execute_binary";
         int status;
 
         if (operation < AND2)
@@ -7270,27 +7271,27 @@ repeat--) \
     int operation,                                /* integer code for the operation  */
     double * right)                               /* pointer to the right operand    */
     {
-        static char name[] SET_TO "execute_binary1";
+        static char name[] = "execute_binary1";
         switch (operation)
         {
             case DIVIDED_BY:
-                CHK((*right IS 0.0), NCE_ATTEMPT_TO_DIVIDE_BY_ZERO);
-                *left SET_TO (*left / *right);
+                CHK((*right == 0.0), NCE_ATTEMPT_TO_DIVIDE_BY_ZERO);
+                *left = (*left / *right);
                 break;
             case MODULO:                          /* always calculates a positive answer */
-                *left SET_TO fmod(*left, *right);
+                *left = fmod(*left, *right);
                 if (*left < 0.0)
                 {
-                    *left SET_TO (*left + fabs(*right));
+                    *left = (*left + fabs(*right));
                 }
                 break;
             case POWER:
-                CHK(((*left < 0.0) AND (floor(*right) ISNT *right)),
+                CHK(((*left < 0.0) and (floor(*right) != *right)),
                     NCE_ATTEMPT_TO_RAISE_NEGATIVE_TO_NON_INTEGER_POWER);
-                *left SET_TO pow(*left, *right);
+                *left = pow(*left, *right);
                 break;
             case TIMES:
-                *left SET_TO (*left * *right);
+                *left = (*left * *right);
                 break;
             default:
                 ERM(NCE_BUG_UNKNOWN_OPERATION);
@@ -7326,24 +7327,24 @@ repeat--) \
     int operation,                                /* integer code for the operation  */
     double * right)                               /* pointer to the right operand    */
     {
-        static char name[] SET_TO "execute_binary2";
+        static char name[] = "execute_binary2";
         switch (operation)
         {
             case AND2:
-                *left SET_TO ((*left IS 0.0) OR (*right IS 0.0)) ? 0.0 : 1.0;
+                *left = ((*left == 0.0) or (*right == 0.0)) ? 0.0 : 1.0;
                 break;
             case EXCLUSIVE_OR:
-                *left SET_TO (((*left IS 0.0) AND (*right ISNT 0.0)) OR
-                    ((*left ISNT 0.0) AND (*right IS 0.0))) ? 1.0 : 0.0;
+                *left = (((*left == 0.0) and (*right != 0.0)) or
+                    ((*left != 0.0) and (*right == 0.0))) ? 1.0 : 0.0;
                 break;
             case MINUS:
-                *left SET_TO (*left - *right);
+                *left = (*left - *right);
                 break;
             case NON_EXCLUSIVE_OR:
-                *left SET_TO ((*left ISNT 0.0) OR (*right ISNT 0.0)) ? 1.0 : 0.0;
+                *left = ((*left != 0.0) or (*right != 0.0)) ? 1.0 : 0.0;
                 break;
             case PLUS:
-                *left SET_TO (*left + *right);
+                *left = (*left + *right);
                 break;
             default:
                 ERM(NCE_BUG_UNKNOWN_OPERATION);
@@ -7403,21 +7404,21 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] SET_TO "execute_block";
+        static char name[] = "execute_block";
         int status;
 
-        if (block->comment[0] ISNT 0)
+        if (block->comment[0] != 0)
         {
             CHP(convert_comment(block->comment));
         }
-        if (block->g_modes[5] ISNT -1)
+        if (block->g_modes[5] != -1)
         {
             CHP(convert_feed_mode(block->g_modes[5], settings));
         }
         if (block->f_number > -1.0)
         {
    /* handle elsewhere */
-            if (settings->feed_mode IS INVERSE_TIME);
+            if (settings->feed_mode == INVERSE_TIME);
             else
             {
                 CHP(convert_feed_rate(block, settings));
@@ -7427,21 +7428,21 @@ repeat--) \
         {
             CHP(convert_speed(block, settings));
         }
-        if (block->t_number ISNT -1)
+        if (block->t_number != -1)
         {
             CHP(convert_tool_select(block, settings));
         }
         CHP(convert_m(block, settings));
         CHP(convert_g(block, settings));
-        if (block->m_modes[4] ISNT -1)            /* converts m0, m1, m2, m30, or m60 */
+        if (block->m_modes[4] != -1)            /* converts m0, m1, m2, m30, or m60 */
         {
-            status SET_TO convert_stop(block, settings);
-            if (status IS RS274NGC_EXIT)
+            status = convert_stop(block, settings);
+            if (status == RS274NGC_EXIT)
                 return RS274NGC_EXIT;
-            else if (status ISNT RS274NGC_OK)
+            else if (status != RS274NGC_OK)
                 ERP(status);
         }
-        return ((settings->probe_flag IS ON) ? RS274NGC_EXECUTE_FINISH: RS274NGC_OK);
+        return ((settings->probe_flag == ON) ? RS274NGC_EXECUTE_FINISH: RS274NGC_OK);
     }
 
    /****************************************************************************/
@@ -7478,54 +7479,54 @@ repeat--) \
     double * double_ptr,                          /* pointer to the operand          */
     int operation)                                /* integer code for the operation  */
     {
-        static char name[] SET_TO "execute_unary";
+        static char name[] = "execute_unary";
         switch (operation)
         {
             case ABS:
                 if (*double_ptr < 0.0)
-                    *double_ptr SET_TO (-1.0 * *double_ptr);
+                    *double_ptr = (-1.0 * *double_ptr);
                 break;
             case ACOS:
-                CHK(((*double_ptr < -1.0) OR (*double_ptr > 1.0)),
+                CHK(((*double_ptr < -1.0) or (*double_ptr > 1.0)),
                     NCE_ARGUMENT_TO_ACOS_OUT_OF_RANGE);
-                *double_ptr SET_TO acos(*double_ptr);
-                *double_ptr SET_TO ((*double_ptr * 180.0)/ PI);
+                *double_ptr = acos(*double_ptr);
+                *double_ptr = ((*double_ptr * 180.0)/ PI);
                 break;
             case ASIN:
-                CHK(((*double_ptr < -1.0) OR (*double_ptr > 1.0)),
+                CHK(((*double_ptr < -1.0) or (*double_ptr > 1.0)),
                     NCE_ARGUMENT_TO_ASIN_OUT_OF_RANGE);
-                *double_ptr SET_TO asin(*double_ptr);
-                *double_ptr SET_TO ((*double_ptr * 180.0)/ PI);
+                *double_ptr = asin(*double_ptr);
+                *double_ptr = ((*double_ptr * 180.0)/ PI);
                 break;
             case COS:
-                *double_ptr SET_TO cos((*double_ptr * PI)/180.0);
+                *double_ptr = cos((*double_ptr * PI)/180.0);
                 break;
             case EXP:
-                *double_ptr SET_TO exp(*double_ptr);
+                *double_ptr = exp(*double_ptr);
                 break;
             case FIX:
-                *double_ptr SET_TO floor(*double_ptr);
+                *double_ptr = floor(*double_ptr);
                 break;
             case FUP:
-                *double_ptr SET_TO ceil(*double_ptr);
+                *double_ptr = ceil(*double_ptr);
                 break;
             case LN:
                 CHK((*double_ptr <= 0.0), NCE_ZERO_OR_NEGATIVE_ARGUMENT_TO_LN);
-                *double_ptr SET_TO log(*double_ptr);
+                *double_ptr = log(*double_ptr);
                 break;
             case ROUND:
-                *double_ptr SET_TO (double)
+                *double_ptr = (double)
                     ((int) (*double_ptr + ((*double_ptr < 0.0) ? -0.5 : 0.5)));
                 break;
             case SIN:
-                *double_ptr SET_TO sin((*double_ptr * PI)/180.0);
+                *double_ptr = sin((*double_ptr * PI)/180.0);
                 break;
             case SQRT:
                 CHK((*double_ptr < 0.0), NCE_NEGATIVE_ARGUMENT_TO_SQRT);
-                *double_ptr SET_TO sqrt(*double_ptr);
+                *double_ptr = sqrt(*double_ptr);
                 break;
             case TAN:
-                *double_ptr SET_TO tan((*double_ptr * PI)/180.0);
+                *double_ptr = tan((*double_ptr * PI)/180.0);
                 break;
             default:
                 ERM(NCE_BUG_UNKNOWN_OPERATION);
@@ -7582,9 +7583,9 @@ repeat--) \
         double radius;
         double theta;                             /* amount of turn of arc in radians */
 
-        radius SET_TO hypot((center_x - x1), (center_y - y1));
-        theta SET_TO find_turn(x1, y1, center_x, center_y, turn, x2, y2);
-        if (z2 IS z1)
+        radius = hypot((center_x - x1), (center_y - y1));
+        theta = find_turn(x1, y1, center_x, center_y, turn, x2, y2);
+        if (z2 == z1)
             return (radius * fabs(theta));
         else
             return hypot((radius * theta), (z2 - z1));
@@ -7651,27 +7652,27 @@ repeat--) \
         int middle;
         int comp;
 
-        mode SET_TO settings->distance_mode;
-        middle SET_TO (settings->program_x ISNT UNKNOWN);
-        comp SET_TO (settings->cutter_comp_side ISNT OFF);
+        mode = settings->distance_mode;
+        middle = (settings->program_x != UNKNOWN);
+        comp = (settings->cutter_comp_side != OFF);
 
-        if (block->g_modes[0] IS G_53)            /* distance mode is absolute in this case */
+        if (block->g_modes[0] == G_53)            /* distance mode is absolute in this case */
         {
 #ifdef DEBUG_EMC
             COMMENT("interpreter: offsets temporarily suspended");
 #endif
-            *px SET_TO (block->x_flag IS ON) ? (block->x_number -
+            *px = (block->x_flag == ON) ? (block->x_number -
                 (settings->origin_offset_x + settings->axis_offset_x)) :
             settings->current_x;
-            *py SET_TO (block->y_flag IS ON) ? (block->y_number -
+            *py = (block->y_flag == ON) ? (block->y_number -
                 (settings->origin_offset_y + settings->axis_offset_y)) :
             settings->current_y;
-            *pz SET_TO (block->z_flag IS ON) ? (block->z_number -
+            *pz = (block->z_flag == ON) ? (block->z_number -
                 (settings->tool_length_offset + settings->origin_offset_z
                 + settings->axis_offset_z)) : settings->current_z;
 #ifdef AA
    /*AA*/
-            *AA_p SET_TO (block->a_flag IS ON) ? (block->a_number -
+            *AA_p = (block->a_flag == ON) ? (block->a_number -
     #endif
     #ifdef AA
    /*AA*/
@@ -7682,7 +7683,7 @@ repeat--) \
 #endif
 #ifdef BB
    /*BB*/
-            *BB_p SET_TO (block->b_flag IS ON) ? (block->b_number -
+            *BB_p = (block->b_flag == ON) ? (block->b_number -
     #endif
     #ifdef BB
    /*BB*/
@@ -7693,7 +7694,7 @@ repeat--) \
 #endif
 #ifdef CC
    /*CC*/
-            *CC_p SET_TO (block->c_flag IS ON) ? (block->c_number -
+            *CC_p = (block->c_flag == ON) ? (block->c_number -
     #endif
     #ifdef CC
    /*CC*/
@@ -7704,35 +7705,35 @@ repeat--) \
                 + settings->CC_axis_offset)) : settings->CC_current;
 #endif
         }
-        else if (mode IS MODE_ABSOLUTE)
+        else if (mode == MODE_ABSOLUTE)
         {
-            *px SET_TO (block->x_flag IS ON) ? block->x_number     :
-            (comp AND middle)     ? settings->program_x :
+            *px = (block->x_flag == ON) ? block->x_number     :
+            (comp and middle)     ? settings->program_x :
             settings->current_x ;
 
-            *py SET_TO (block->y_flag IS ON) ? block->y_number     :
-            (comp AND middle)     ? settings->program_y :
+            *py = (block->y_flag == ON) ? block->y_number     :
+            (comp and middle)     ? settings->program_y :
             settings->current_y ;
 
-            *pz SET_TO (block->z_flag IS ON) ? block->z_number     :
+            *pz = (block->z_flag == ON) ? block->z_number     :
             settings->current_z ;
 #ifdef AA
    /*AA*/
-            *AA_p SET_TO (block->a_flag IS ON) ? block->a_number     :
+            *AA_p = (block->a_flag == ON) ? block->a_number     :
 #endif
 #ifdef AA
             settings->AA_current ;                /*AA*/
 #endif
 #ifdef BB
    /*BB*/
-            *BB_p SET_TO (block->b_flag IS ON) ? block->b_number     :
+            *BB_p = (block->b_flag == ON) ? block->b_number     :
 #endif
 #ifdef BB
             settings->BB_current ;                /*BB*/
 #endif
 #ifdef CC
    /*CC*/
-            *CC_p SET_TO (block->c_flag IS ON) ? block->c_number     :
+            *CC_p = (block->c_flag == ON) ? block->c_number     :
 #endif
 #ifdef CC
             settings->CC_current ;                /*CC*/
@@ -7740,36 +7741,36 @@ repeat--) \
         }
         else                                      /* mode is MODE_INCREMENTAL */
         {
-            *px SET_TO (block->x_flag IS ON)
-                ? ((comp AND middle) ? (block->x_number + settings->program_x)
+            *px = (block->x_flag == ON)
+                ? ((comp and middle) ? (block->x_number + settings->program_x)
                 : (block->x_number + settings->current_x))
-                : ((comp AND middle) ? settings->program_x
+                : ((comp and middle) ? settings->program_x
                 : settings->current_x);
 
-            *py SET_TO (block->y_flag IS ON)
-                ? ((comp AND middle) ? (block->y_number + settings->program_y)
+            *py = (block->y_flag == ON)
+                ? ((comp and middle) ? (block->y_number + settings->program_y)
                 : (block->y_number + settings->current_y))
-                : ((comp AND middle) ? settings->program_y
+                : ((comp and middle) ? settings->program_y
                 : settings->current_y);
 
-            *pz SET_TO (block->z_flag IS ON) ?
+            *pz = (block->z_flag == ON) ?
                 (settings->current_z + block->z_number) : settings->current_z;
 #ifdef AA
-            *AA_p SET_TO (block->a_flag IS ON) ?  /*AA*/
+            *AA_p = (block->a_flag == ON) ?  /*AA*/
     #endif
     #ifdef AA
    /*AA*/
                 (settings->AA_current + block->a_number) : settings->AA_current;
 #endif
 #ifdef BB
-            *BB_p SET_TO (block->b_flag IS ON) ?  /*BB*/
+            *BB_p = (block->b_flag == ON) ?  /*BB*/
     #endif
     #ifdef BB
    /*BB*/
                 (settings->BB_current + block->b_number) : settings->BB_current;
 #endif
 #ifdef CC
-            *CC_p SET_TO (block->c_flag IS ON) ?  /*CC*/
+            *CC_p = (block->c_flag == ON) ?  /*CC*/
     #endif
     #ifdef CC
    /*CC*/
@@ -7828,27 +7829,27 @@ repeat--) \
 #endif
     setup_pointer settings)                       /* pointer to machine settings */
     {
-        *x2 SET_TO (x1 - (settings->origin_offset_x + settings->axis_offset_x));
-        *y2 SET_TO (y1 - (settings->origin_offset_y + settings->axis_offset_y));
-        *z2 SET_TO (z1 - (settings->tool_length_offset +
+        *x2 = (x1 - (settings->origin_offset_x + settings->axis_offset_x));
+        *y2 = (y1 - (settings->origin_offset_y + settings->axis_offset_y));
+        *z2 = (z1 - (settings->tool_length_offset +
             settings->origin_offset_z + settings->axis_offset_z));
 #ifdef AA
    /*AA*/
-        *AA_2 SET_TO (AA_1 - (settings->AA_origin_offset +
+        *AA_2 = (AA_1 - (settings->AA_origin_offset +
     #endif
     #ifdef AA
             settings->AA_axis_offset));           /*AA*/
 #endif
 #ifdef BB
    /*BB*/
-        *BB_2 SET_TO (BB_1 - (settings->BB_origin_offset +
+        *BB_2 = (BB_1 - (settings->BB_origin_offset +
     #endif
     #ifdef BB
             settings->BB_axis_offset));           /*BB*/
 #endif
 #ifdef CC
    /*CC*/
-        *CC_2 SET_TO (CC_1 - (settings->CC_origin_offset +
+        *CC_2 = (CC_1 - (settings->CC_origin_offset +
     #endif
     #ifdef CC
             settings->CC_axis_offset));           /*CC*/
@@ -7916,16 +7917,16 @@ repeat--) \
 #endif
     )
     {
-        if ((x1 ISNT x2) OR (y1 ISNT y2) OR (z1 ISNT z2) OR
+        if ((x1 != x2) or (y1 != y2) or (z1 != z2) or
             (1
     #ifdef AA
-            AND (AA_2 IS AA_1)                    /*AA*/
+            and (AA_2 == AA_1)                    /*AA*/
     #endif
     #ifdef BB
-            AND (BB_2 IS BB_1)                    /*BB*/
+            and (BB_2 == BB_1)                    /*BB*/
     #endif
     #ifdef CC
-            AND (CC_2 IS CC_1)                    /*CC*/
+            and (CC_2 == CC_1)                    /*CC*/
     #endif
             ))                                    /* straight line */
             return sqrt(pow((x2 - x1),2) + pow((y2 - y1),2) + pow((z2 - z1),2));
@@ -7970,21 +7971,21 @@ repeat--) \
         double beta;                              /* angle of second radius                     */
         double theta;                             /* amount of turn of arc CCW - negative if CW */
 
-        if (turn IS 0)
+        if (turn == 0)
             return 0.0;
-        alpha SET_TO atan2((y1 - center_y), (x1 - center_x));
-        beta SET_TO atan2((y2 - center_y), (x2 - center_x));
+        alpha = atan2((y1 - center_y), (x1 - center_x));
+        beta = atan2((y2 - center_y), (x2 - center_x));
         if (turn > 0)
         {
             if (beta <= alpha)
-                beta SET_TO (beta + TWO_PI);
-            theta SET_TO ((beta - alpha) + ((turn - 1) * TWO_PI));
+                beta = (beta + TWO_PI);
+            theta = ((beta - alpha) + ((turn - 1) * TWO_PI));
         }
         else                                      /* turn < 0 */
         {
             if (alpha <= beta)
-                alpha SET_TO (alpha + TWO_PI);
-            theta SET_TO ((beta - alpha) + ((turn + 1) * TWO_PI));
+                alpha = (alpha + TWO_PI);
+            theta = ((beta - alpha) + ((turn + 1) * TWO_PI));
         }
         return (theta);
     }
@@ -8032,41 +8033,41 @@ repeat--) \
     {
         int n;
 #ifdef AA
-        block->a_flag SET_TO OFF;                 /*AA*/
+        block->a_flag = OFF;                 /*AA*/
 #endif
 #ifdef BB
-        block->b_flag SET_TO OFF;                 /*BB*/
+        block->b_flag = OFF;                 /*BB*/
 #endif
 #ifdef CC
-        block->c_flag SET_TO OFF;                 /*CC*/
+        block->c_flag = OFF;                 /*CC*/
 #endif
-        block->comment[0] SET_TO 0;
-        block->d_number SET_TO -1;
-        block->f_number SET_TO -1.0;
-        for (n SET_TO 0; n < 14; n++)
+        block->comment[0] = 0;
+        block->d_number = -1;
+        block->f_number = -1.0;
+        for (n = 0; n < 14; n++)
         {
-            block->g_modes[n] SET_TO -1;
+            block->g_modes[n] = -1;
         }
-        block->h_number SET_TO -1;
-        block->i_flag SET_TO OFF;
-        block->j_flag SET_TO OFF;
-        block->k_flag SET_TO OFF;
-        block->l_number SET_TO -1;
-        block->line_number SET_TO -1;
-        block->motion_to_be SET_TO -1;
-        block->m_count SET_TO 0;
-        for (n SET_TO 0; n < 10; n++)
+        block->h_number = -1;
+        block->i_flag = OFF;
+        block->j_flag = OFF;
+        block->k_flag = OFF;
+        block->l_number = -1;
+        block->line_number = -1;
+        block->motion_to_be = -1;
+        block->m_count = 0;
+        for (n = 0; n < 10; n++)
         {
-            block->m_modes[n] SET_TO -1;
+            block->m_modes[n] = -1;
         }
-        block->p_number SET_TO -1.0;
-        block->q_number SET_TO -1.0;
-        block->r_flag SET_TO OFF;
-        block->s_number SET_TO -1.0;
-        block->t_number SET_TO -1;
-        block->x_flag SET_TO OFF;
-        block->y_flag SET_TO OFF;
-        block->z_flag SET_TO OFF;
+        block->p_number = -1.0;
+        block->q_number = -1.0;
+        block->r_flag = OFF;
+        block->s_number = -1.0;
+        block->t_number = -1;
+        block->x_flag = OFF;
+        block->y_flag = OFF;
+        block->z_flag = OFF;
 
         return RS274NGC_OK;
     }
@@ -8106,10 +8107,10 @@ repeat--) \
         double length;
         double rate;
 
-        length SET_TO find_arc_length (x1, y1, z1, cx, cy, turn, x2, y2, z2);
-        rate SET_TO MAX(0.1, (length * block->f_number));
+        length = find_arc_length (x1, y1, z1, cx, cy, turn, x2, y2, z2);
+        rate = std::max(0.1, (length * block->f_number));
         SET_FEED_RATE (rate);
-        settings->feed_rate SET_TO rate;
+        settings->feed_rate = rate;
 
         return RS274NGC_OK;
     }
@@ -8154,14 +8155,14 @@ repeat--) \
         double length;
         double rate;
 
-        length SET_TO (find_arc_length (settings->current_x, settings->current_y,
+        length = (find_arc_length (settings->current_x, settings->current_y,
             settings->current_z, start_x, start_y,
             turn1, mid_x, mid_y, settings->current_z) +
             find_arc_length(mid_x, mid_y, settings->current_z,
             cx, cy, turn2, end_x, end_y, end_z));
-        rate SET_TO MAX(0.1, (length * block->f_number));
+        rate = std::max(0.1, (length * block->f_number));
         SET_FEED_RATE (rate);
-        settings->feed_rate SET_TO rate;
+        settings->feed_rate = rate;
 
         return RS274NGC_OK;
     }
@@ -8213,7 +8214,7 @@ repeat--) \
         double length;
         double rate;
 
-        length SET_TO (find_arc_length (settings->current_x, settings->current_y,
+        length = (find_arc_length (settings->current_x, settings->current_y,
             settings->current_z, start_x, start_y,
             turn, mid_x, mid_y, settings->current_z) +
             find_straight_length(end_x, end_y,
@@ -8243,9 +8244,9 @@ repeat--) \
             , CC_end
     #endif
             ));
-        rate SET_TO MAX(0.1, (length * block->f_number));
+        rate = std::max(0.1, (length * block->f_number));
         SET_FEED_RATE (rate);
-        settings->feed_rate SET_TO rate;
+        settings->feed_rate = rate;
 
         return RS274NGC_OK;
     }
@@ -8284,11 +8285,11 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions   */
     setup_pointer settings)                       /* pointer to machine settings                */
     {
-        static char name[] SET_TO "inverse_time_rate_straight";
+        static char name[] = "inverse_time_rate_straight";
         double length;
         double rate;
 
-        length SET_TO find_straight_length
+        length = find_straight_length
             (end_x, end_y, end_z
     #ifdef AA
             , AA_end
@@ -8316,9 +8317,9 @@ repeat--) \
             , settings->CC_current
     #endif
             );
-        rate SET_TO MAX(0.1, (length * block->f_number));
+        rate = std::max(0.1, (length * block->f_number));
         SET_FEED_RATE (rate);
-        settings->feed_rate SET_TO rate;
+        settings->feed_rate = rate;
 
         return RS274NGC_OK;
     }
@@ -8349,7 +8350,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block to be filled      */
     setup_pointer settings)                       /* pointer to machine settings          */
     {
-        static char name[] SET_TO "parse_line";
+        static char name[] = "parse_line";
         int status;
 
         CHP(init_block (block));
@@ -8377,9 +8378,9 @@ repeat--) \
     static int precedence(                        /* ARGUMENTS  */
     int an_operator)
     {
-        if (an_operator IS RIGHT_BRACKET)
+        if (an_operator == RIGHT_BRACKET)
             return 1;
-        else if (an_operator IS POWER)
+        else if (an_operator == POWER)
             return 4;
         else if (an_operator >= AND2)
             return 2;
@@ -8432,20 +8433,20 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_a";
+        static char name[] = "read_a";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'a'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'a'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
 #ifdef AA
    /*AA*/
-        CHK((block->a_flag ISNT OFF), NCE_MULTIPLE_A_WORDS_ON_ONE_LINE);
+        CHK((block->a_flag != OFF), NCE_MULTIPLE_A_WORDS_ON_ONE_LINE);
 #endif
         CHP(read_real_value(line, counter, &value, parameters));
 #ifdef AA
-        block->a_flag SET_TO ON;
-        block->a_number SET_TO value;
+        block->a_flag = ON;
+        block->a_number = value;
 #else
 #ifdef AXIS_ERROR
         ERM(NCE_CANNOT_USE_A_WORD);
@@ -8495,19 +8496,19 @@ repeat--) \
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_atan";
+        static char name[] = "read_atan";
         double argument2;
         int status;
 
-        CHK((line [*counter] ISNT '/'), NCE_SLASH_MISSING_AFTER_FIRST_ATAN_ARGUMENT);
-        *counter SET_TO (*counter + 1);
-        CHK((line[*counter] ISNT '['),
+        CHK((line [*counter] != '/'), NCE_SLASH_MISSING_AFTER_FIRST_ATAN_ARGUMENT);
+        *counter = (*counter + 1);
+        CHK((line[*counter] != '['),
             NCE_LEFT_BRACKET_MISSING_AFTER_SLASH_WITH_ATAN);
         CHP(read_real_expression (line, counter, &argument2, parameters));
    /* value in radians */
-        *double_ptr SET_TO atan2(*double_ptr, argument2);
+        *double_ptr = atan2(*double_ptr, argument2);
    /* convert to degrees */
-        *double_ptr SET_TO ((*double_ptr * 180.0)/PI);
+        *double_ptr = ((*double_ptr * 180.0)/PI);
         return RS274NGC_OK;
     }
 
@@ -8556,20 +8557,20 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_b";
+        static char name[] = "read_b";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'b'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'b'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
 #ifdef BB
    /*BB*/
-        CHK((block->b_flag ISNT OFF), NCE_MULTIPLE_B_WORDS_ON_ONE_LINE);
+        CHK((block->b_flag != OFF), NCE_MULTIPLE_B_WORDS_ON_ONE_LINE);
 #endif
         CHP(read_real_value(line, counter, &value, parameters));
 #ifdef BB
-        block->b_flag SET_TO ON;
-        block->b_number SET_TO value;
+        block->b_flag = ON;
+        block->b_number = value;
 #else
 #ifdef AXIS_ERROR
         ERM(NCE_CANNOT_USE_B_WORD);
@@ -8623,20 +8624,20 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_c";
+        static char name[] = "read_c";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'c'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'c'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
 #ifdef CC
    /*CC*/
-        CHK((block->c_flag ISNT OFF), NCE_MULTIPLE_C_WORDS_ON_ONE_LINE);
+        CHK((block->c_flag != OFF), NCE_MULTIPLE_C_WORDS_ON_ONE_LINE);
 #endif
         CHP(read_real_value(line, counter, &value, parameters));
 #ifdef CC
-        block->c_flag SET_TO ON;
-        block->c_number SET_TO value;
+        block->c_flag = ON;
+        block->c_number = value;
 #else
 #ifdef AXIS_ERROR
         ERM(NCE_CANNOT_USE_C_WORD);
@@ -8685,16 +8686,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] SET_TO "read_comment";
+        static char name[] = "read_comment";
         int n;
 
-        CHK((line[*counter] ISNT '('), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        CHK((line[*counter] != '('), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         (*counter)++;
-        for (n SET_TO 0; line[*counter] ISNT ')' ; (*counter)++, n++)
+        for (n = 0; line[*counter] != ')' ; (*counter)++, n++)
         {
-            block->comment[n] SET_TO line[*counter];
+            block->comment[n] = line[*counter];
         }
-        block->comment[n] SET_TO 0;
+        block->comment[n] = 0;
         (*counter)++;
         return RS274NGC_OK;
     }
@@ -8738,17 +8739,17 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] SET_TO "read_d";
+        static char name[] = "read_d";
         int value;
         int status;
 
-        CHK((line[*counter] ISNT 'd'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'd'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHK((block->d_number > -1), NCE_MULTIPLE_D_WORDS_ON_ONE_LINE);
         CHP(read_integer_value(line, counter, &value, parameters));
         CHK((value < 0), NCE_NEGATIVE_D_WORD_TOOL_RADIUS_INDEX_USED);
         CHK((value > _setup.tool_max), NCE_TOOL_RADIUS_INDEX_TOO_BIG);
-        block->d_number SET_TO value;
+        block->d_number = value;
         return RS274NGC_OK;
     }
 
@@ -8790,16 +8791,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] SET_TO "read_f";
+        static char name[] = "read_f";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'f'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'f'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHK((block->f_number > -1.0), NCE_MULTIPLE_F_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
         CHK((value < 0.0), NCE_NEGATIVE_F_WORD_USED);
-        block->f_number SET_TO value;
+        block->f_number = value;
         return RS274NGC_OK;
     }
 
@@ -8858,30 +8859,30 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_g";
+        static char name[] = "read_g";
         double value_read;
         int value;
         int mode;
         int status;
 
-        CHK((line[*counter] ISNT 'g'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'g'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHP(read_real_value(line, counter, &value_read, parameters));
-        value_read SET_TO (10.0 * value_read);
-        value SET_TO (int)floor(value_read);
+        value_read = (10.0 * value_read);
+        value = (int)floor(value_read);
 
         if ((value_read - value) > 0.999)
-            value SET_TO (int)ceil(value_read);
+            value = (int)ceil(value_read);
         else if ((value_read - value) > 0.001)
             ERM(NCE_G_CODE_OUT_OF_RANGE);
 
         CHK((value > 999), NCE_G_CODE_OUT_OF_RANGE);
         CHK((value < 0), NCE_NEGATIVE_G_CODE_USED);
-        mode SET_TO _gees[value];
-        CHK((mode IS -1), NCE_UNKNOWN_G_CODE_USED);
-        CHK((block->g_modes[mode] ISNT -1),
+        mode = _gees[value];
+        CHK((mode == -1), NCE_UNKNOWN_G_CODE_USED);
+        CHK((block->g_modes[mode] != -1),
             NCE_TWO_G_CODES_USED_FROM_SAME_MODAL_GROUP);
-        block->g_modes[mode] SET_TO value;
+        block->g_modes[mode] = value;
         return RS274NGC_OK;
     }
 
@@ -8921,17 +8922,17 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_h";
+        static char name[] = "read_h";
         int value;
         int status;
 
-        CHK((line[*counter] ISNT 'h'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'h'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHK((block->h_number > -1), NCE_MULTIPLE_H_WORDS_ON_ONE_LINE);
         CHP(read_integer_value(line, counter, &value, parameters));
         CHK((value < 0), NCE_NEGATIVE_H_WORD_TOOL_LENGTH_OFFSET_INDEX_USED);
         CHK((value > _setup.tool_max), NCE_TOOL_LENGTH_OFFSET_INDEX_TOO_BIG);
-        block->h_number SET_TO value;
+        block->h_number = value;
         return RS274NGC_OK;
     }
 
@@ -8974,16 +8975,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_i";
+        static char name[] = "read_i";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'i'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
-        CHK((block->i_flag ISNT OFF), NCE_MULTIPLE_I_WORDS_ON_ONE_LINE);
+        CHK((line[*counter] != 'i'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
+        CHK((block->i_flag != OFF), NCE_MULTIPLE_I_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
-        block->i_flag SET_TO ON;
-        block->i_number SET_TO value;
+        block->i_flag = ON;
+        block->i_number = value;
         return RS274NGC_OK;
     }
 
@@ -9015,20 +9016,20 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line */
     int * integer_ptr)                            /* pointer to the value being read               */
     {
-        static char name[] SET_TO "read_integer_unsigned";
+        static char name[] = "read_integer_unsigned";
         int n;
         char c;
 
-        for (n SET_TO *counter; ; n++)
+        for (n = *counter; ; n++)
         {
-            c SET_TO line[n];
-            if ((c < 48) OR (c > 57))
+            c = line[n];
+            if ((c < 48) or (c > 57))
                 break;
         }
-        CHK((n IS *counter), NCE_BAD_FORMAT_UNSIGNED_INTEGER);
-        if (sscanf(line + *counter, "%d", integer_ptr) IS 0)
+        CHK((n == *counter), NCE_BAD_FORMAT_UNSIGNED_INTEGER);
+        if (sscanf(line + *counter, "%d", integer_ptr) == 0)
             ERM(NCE_SSCANF_FAILED);
-        *counter SET_TO n;
+        *counter = n;
         return RS274NGC_OK;
     }
 
@@ -9072,15 +9073,15 @@ repeat--) \
     int * integer_ptr,                            /* pointer to the value being read                */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_integer_value";
+        static char name[] = "read_integer_value";
         double float_value;
         int status;
 
         CHP(read_real_value(line, counter, &float_value, parameters));
-        *integer_ptr SET_TO (int)floor(float_value);
+        *integer_ptr = (int)floor(float_value);
         if ((float_value - *integer_ptr) > 0.9999)
         {
-            *integer_ptr SET_TO (int)ceil(float_value);
+            *integer_ptr = (int)ceil(float_value);
         }
         else if ((float_value - *integer_ptr) > 0.0001)
             ERM(NCE_NON_INTEGER_VALUE_FOR_INTEGER);
@@ -9110,17 +9111,17 @@ repeat--) \
     char * line,                                  /* string: line of RS274/NGC code being processed */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_items";
+        static char name[] = "read_items";
         int counter;
         int length;
         int status;
 
-        length SET_TO strlen(line);
-        counter SET_TO 0;
+        length = strlen(line);
+        counter = 0;
 
-        if (line[counter] IS '/')                 /* skip the slash character if first */
+        if (line[counter] == '/')                 /* skip the slash character if first */
             counter++;
-        if (line[counter] IS 'n')
+        if (line[counter] == 'n')
         {
             CHP(read_line_number(line, &counter, block));
         }
@@ -9170,16 +9171,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_j";
+        static char name[] = "read_j";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'j'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
-        CHK((block->j_flag ISNT OFF), NCE_MULTIPLE_J_WORDS_ON_ONE_LINE);
+        CHK((line[*counter] != 'j'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
+        CHK((block->j_flag != OFF), NCE_MULTIPLE_J_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
-        block->j_flag SET_TO ON;
-        block->j_number SET_TO value;
+        block->j_flag = ON;
+        block->j_number = value;
         return RS274NGC_OK;
     }
 
@@ -9222,16 +9223,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_k";
+        static char name[] = "read_k";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'k'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
-        CHK((block->k_flag ISNT OFF), NCE_MULTIPLE_K_WORDS_ON_ONE_LINE);
+        CHK((line[*counter] != 'k'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
+        CHK((block->k_flag != OFF), NCE_MULTIPLE_K_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
-        block->k_flag SET_TO ON;
-        block->k_number SET_TO value;
+        block->k_flag = ON;
+        block->k_number = value;
         return RS274NGC_OK;
     }
 
@@ -9272,16 +9273,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_l";
+        static char name[] = "read_l";
         int value;
         int status;
 
-        CHK((line[*counter] ISNT 'l'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'l'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHK((block->l_number > -1), NCE_MULTIPLE_L_WORDS_ON_ONE_LINE);
         CHP(read_integer_value(line, counter, &value, parameters));
         CHK((value < 0), NCE_NEGATIVE_L_WORD_USED);
-        block->l_number SET_TO value;
+        block->l_number = value;
         return RS274NGC_OK;
     }
 
@@ -9319,15 +9320,15 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     block_pointer block)                          /* pointer to a block being filled from the line  */
     {
-        static char name[] SET_TO "read_line_number";
+        static char name[] = "read_line_number";
         int value;
         int status;
 
-        CHK((line[*counter] ISNT 'n'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'n'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHP(read_integer_unsigned(line, counter, &value));
         CHK((value > 99999), NCE_LINE_NUMBER_GREATER_THAN_99999);
-        block->line_number SET_TO value;
+        block->line_number = value;
         return RS274NGC_OK;
     }
 
@@ -9371,21 +9372,21 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] SET_TO "read_m";
+        static char name[] = "read_m";
         int value;
         int mode;
         int status;
 
-        CHK((line[*counter] ISNT 'm'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'm'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHP(read_integer_value(line, counter, &value, parameters));
         CHK((value < 0), NCE_NEGATIVE_M_CODE_USED);
         CHK((value > 99), NCE_M_CODE_GREATER_THAN_99);
-        mode SET_TO _ems[value];
-        CHK((mode IS -1), NCE_UNKNOWN_M_CODE_USED);
-        CHK((block->m_modes[mode] ISNT -1),
+        mode = _ems[value];
+        CHK((mode == -1), NCE_UNKNOWN_M_CODE_USED);
+        CHK((block->m_modes[mode] != -1),
             NCE_TWO_M_CODES_USED_FROM_SAME_MODAL_GROUP);
-        block->m_modes[mode] SET_TO value;
+        block->m_modes[mode] = value;
         block->m_count++;
         return RS274NGC_OK;
     }
@@ -9441,15 +9442,15 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_one_item";
+        static char name[] = "read_one_item";
         int status;
         read_function_pointer function_pointer;
         char letter;
 
-        letter SET_TO line[*counter];             /* check if in array range */
-        CHK(((letter < 0) OR (letter > 'z')), NCE_BAD_CHARACTER_USED);
-        function_pointer SET_TO _readers[letter];
-        CHK((function_pointer IS 0), NCE_BAD_CHARACTER_USED);
+        letter = line[*counter];             /* check if in array range */
+        CHK(((letter < 0) or (letter > 'z')), NCE_BAD_CHARACTER_USED);
+        function_pointer = _readers[static_cast<unsigned int>(letter)];
+        CHK((function_pointer == 0), NCE_BAD_CHARACTER_USED);
         CHP(function_pointer(line, counter, block, parameters));
         return RS274NGC_OK;
     }
@@ -9488,66 +9489,66 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     int * operation)                              /* pointer to operation to be read                */
     {
-        static char name[] SET_TO "read_operation";
+        static char name[] = "read_operation";
         char c;
 
-        c SET_TO line[*counter];
-        *counter SET_TO (*counter + 1);
+        c = line[*counter];
+        *counter = (*counter + 1);
         switch(c)
         {
             case '+':
-                *operation SET_TO PLUS;
+                *operation = PLUS;
                 break;
             case '-':
-                *operation SET_TO MINUS;
+                *operation = MINUS;
                 break;
             case '/':
-                *operation SET_TO DIVIDED_BY;
+                *operation = DIVIDED_BY;
                 break;
             case '*':
-                if(line[*counter] IS '*')
+                if(line[*counter] == '*')
                 {
-                    *operation SET_TO POWER;
-                    *counter SET_TO (*counter + 1);
+                    *operation = POWER;
+                    *counter = (*counter + 1);
                 }
                 else
-                    *operation SET_TO TIMES;
+                    *operation = TIMES;
                 break;
             case ']':
-                *operation SET_TO RIGHT_BRACKET;
+                *operation = RIGHT_BRACKET;
                 break;
             case 'a':
-                if((line[*counter] IS 'n') AND (line[(*counter)+1] IS 'd'))
+                if((line[*counter] == 'n') and (line[(*counter)+1] == 'd'))
                 {
-                    *operation SET_TO AND2;
-                    *counter SET_TO (*counter + 2);
+                    *operation = AND2;
+                    *counter = (*counter + 2);
                 }
                 else
                     ERM(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_A);
                 break;
             case 'm':
-                if((line[*counter] IS 'o') AND (line[(*counter)+1] IS 'd'))
+                if((line[*counter] == 'o') and (line[(*counter)+1] == 'd'))
                 {
-                    *operation SET_TO MODULO;
-                    *counter SET_TO (*counter + 2);
+                    *operation = MODULO;
+                    *counter = (*counter + 2);
                 }
                 else
                     ERM(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_M);
                 break;
             case 'o':
-                if(line[*counter] IS 'r')
+                if(line[*counter] == 'r')
                 {
-                    *operation SET_TO NON_EXCLUSIVE_OR;
-                    *counter SET_TO (*counter + 1);
+                    *operation = NON_EXCLUSIVE_OR;
+                    *counter = (*counter + 1);
                 }
                 else
                     ERM(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_O);
                 break;
             case 'x':
-                if((line[*counter] IS 'o') AND (line[(*counter)+1] IS 'r'))
+                if((line[*counter] == 'o') and (line[(*counter)+1] == 'r'))
                 {
-                    *operation SET_TO EXCLUSIVE_OR;
-                    *counter SET_TO (*counter + 2);
+                    *operation = EXCLUSIVE_OR;
+                    *counter = (*counter + 2);
                 }
                 else
                     ERM(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_X);
@@ -9598,106 +9599,106 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     int * operation)                              /* pointer to operation to be read                */
     {
-        static char name[] SET_TO "read_operation_unary";
+        static char name[] = "read_operation_unary";
         char c;
 
-        c SET_TO line[*counter];
-        *counter SET_TO (*counter + 1);
+        c = line[*counter];
+        *counter = (*counter + 1);
         switch (c)
         {
             case 'a':
-                if((line[*counter] IS 'b') AND (line[(*counter)+1] IS 's'))
+                if((line[*counter] == 'b') and (line[(*counter)+1] == 's'))
                 {
-                    *operation SET_TO ABS;
-                    *counter SET_TO (*counter + 2);
+                    *operation = ABS;
+                    *counter = (*counter + 2);
                 }
-                else if(strncmp((line + *counter), "cos", 3) IS 0)
+                else if(strncmp((line + *counter), "cos", 3) == 0)
                 {
-                    *operation SET_TO ACOS;
-                    *counter SET_TO (*counter + 3);
+                    *operation = ACOS;
+                    *counter = (*counter + 3);
                 }
-                else if(strncmp((line + *counter), "sin", 3) IS 0)
+                else if(strncmp((line + *counter), "sin", 3) == 0)
                 {
-                    *operation SET_TO ASIN;
-                    *counter SET_TO (*counter + 3);
+                    *operation = ASIN;
+                    *counter = (*counter + 3);
                 }
-                else if(strncmp((line + *counter), "tan", 3) IS 0)
+                else if(strncmp((line + *counter), "tan", 3) == 0)
                 {
-                    *operation SET_TO ATAN;
-                    *counter SET_TO (*counter + 3);
+                    *operation = ATAN;
+                    *counter = (*counter + 3);
                 }
                 else
                     ERM(NCE_UNKNOWN_WORD_STARTING_WITH_A);
                 break;
             case 'c':
-                if((line[*counter] IS 'o') AND (line[(*counter)+1] IS 's'))
+                if((line[*counter] == 'o') and (line[(*counter)+1] == 's'))
                 {
-                    *operation SET_TO COS;
-                    *counter SET_TO (*counter + 2);
+                    *operation = COS;
+                    *counter = (*counter + 2);
                 }
                 else
                     ERM(NCE_UNKNOWN_WORD_STARTING_WITH_C);
                 break;
             case 'e':
-                if((line[*counter] IS 'x') AND (line[(*counter)+1] IS 'p'))
+                if((line[*counter] == 'x') and (line[(*counter)+1] == 'p'))
                 {
-                    *operation SET_TO EXP;
-                    *counter SET_TO (*counter + 2);
+                    *operation = EXP;
+                    *counter = (*counter + 2);
                 }
                 else
                     ERM(NCE_UNKNOWN_WORD_STARTING_WITH_E);
                 break;
             case 'f':
-                if((line[*counter] IS 'i') AND (line[(*counter)+1] IS 'x'))
+                if((line[*counter] == 'i') and (line[(*counter)+1] == 'x'))
                 {
-                    *operation SET_TO FIX;
-                    *counter SET_TO (*counter + 2);
+                    *operation = FIX;
+                    *counter = (*counter + 2);
                 }
-                else if((line[*counter] IS 'u') AND (line[(*counter)+1] IS 'p'))
+                else if((line[*counter] == 'u') and (line[(*counter)+1] == 'p'))
                 {
-                    *operation SET_TO FUP;
-                    *counter SET_TO (*counter + 2);
+                    *operation = FUP;
+                    *counter = (*counter + 2);
                 }
                 else
                     ERM(NCE_UNKNOWN_WORD_STARTING_WITH_F);
                 break;
             case 'l':
-                if(line[*counter] IS 'n')
+                if(line[*counter] == 'n')
                 {
-                    *operation SET_TO LN;
-                    *counter SET_TO (*counter + 1);
+                    *operation = LN;
+                    *counter = (*counter + 1);
                 }
                 else
                     ERM(NCE_UNKNOWN_WORD_STARTING_WITH_L);
                 break;
             case 'r':
-                if(strncmp((line + *counter), "ound", 4) IS 0)
+                if(strncmp((line + *counter), "ound", 4) == 0)
                 {
-                    *operation SET_TO ROUND;
-                    *counter SET_TO (*counter + 4);
+                    *operation = ROUND;
+                    *counter = (*counter + 4);
                 }
                 else
                     ERM(NCE_UNKNOWN_WORD_STARTING_WITH_R);
                 break;
             case 's':
-                if((line[*counter] IS 'i') AND (line[(*counter)+1] IS 'n'))
+                if((line[*counter] == 'i') and (line[(*counter)+1] == 'n'))
                 {
-                    *operation SET_TO SIN;
-                    *counter SET_TO (*counter + 2);
+                    *operation = SIN;
+                    *counter = (*counter + 2);
                 }
-                else if(strncmp((line + *counter), "qrt", 3) IS 0)
+                else if(strncmp((line + *counter), "qrt", 3) == 0)
                 {
-                    *operation SET_TO SQRT;
-                    *counter SET_TO (*counter + 3);
+                    *operation = SQRT;
+                    *counter = (*counter + 3);
                 }
                 else
                     ERM(NCE_UNKNOWN_WORD_STARTING_WITH_S);
                 break;
             case 't':
-                if((line[*counter] IS 'a') AND (line[(*counter)+1] IS 'n'))
+                if((line[*counter] == 'a') and (line[(*counter)+1] == 'n'))
                 {
-                    *operation SET_TO TAN;
-                    *counter SET_TO (*counter + 2);
+                    *operation = TAN;
+                    *counter = (*counter + 2);
                 }
                 else
                     ERM(NCE_UNKNOWN_WORD_STARTING_WITH_T);
@@ -9746,16 +9747,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_p";
+        static char name[] = "read_p";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'p'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'p'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHK((block->p_number > -1.0), NCE_MULTIPLE_P_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
         CHK((value < 0.0), NCE_NEGATIVE_P_WORD_USED);
-        block->p_number SET_TO value;
+        block->p_number = value;
         return RS274NGC_OK;
     }
 
@@ -9802,16 +9803,16 @@ repeat--) \
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_parameter";
+        static char name[] = "read_parameter";
         int index;
         int status;
 
-        CHK((line[*counter] ISNT '#'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != '#'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHP(read_integer_value(line, counter, &index, parameters));
-        CHK(((index < 1) OR (index >= RS274NGC_MAX_PARAMETERS)),
+        CHK(((index < 1) or (index >= RS274NGC_MAX_PARAMETERS)),
             NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
-        *double_ptr SET_TO parameters[index];
+        *double_ptr = parameters[index];
         return RS274NGC_OK;
     }
 
@@ -9888,21 +9889,21 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_parameter_setting";
+        static char name[] = "read_parameter_setting";
         int index;
         double value;
         int status;
 
-        CHK((line[*counter] ISNT '#'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != '#'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHP(read_integer_value(line, counter, &index, parameters));
-        CHK(((index < 1) OR (index >= RS274NGC_MAX_PARAMETERS)),
+        CHK(((index < 1) or (index >= RS274NGC_MAX_PARAMETERS)),
             NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
-        CHK((line[*counter] ISNT '='), NCE_EQUAL_SIGN_MISSING_IN_PARAMETER_SETTING);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != '='), NCE_EQUAL_SIGN_MISSING_IN_PARAMETER_SETTING);
+        *counter = (*counter + 1);
         CHP(read_real_value(line, counter, &value, parameters));
-        _setup.parameter_numbers[_setup.parameter_occurrence] SET_TO index;
-        _setup.parameter_values[_setup.parameter_occurrence] SET_TO value;
+        _setup.parameter_numbers[_setup.parameter_occurrence] = index;
+        _setup.parameter_values[_setup.parameter_occurrence] = value;
         _setup.parameter_occurrence++;
         return RS274NGC_OK;
     }
@@ -9944,16 +9945,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_q";
+        static char name[] = "read_q";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'q'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 'q'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHK((block->q_number > -1.0), NCE_MULTIPLE_Q_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
         CHK((value <= 0.0), NCE_NEGATIVE_OR_ZERO_Q_VALUE_USED);
-        block->q_number SET_TO value;
+        block->q_number = value;
         return RS274NGC_OK;
     }
 
@@ -9998,16 +9999,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] SET_TO "read_r";
+        static char name[] = "read_r";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'r'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
-        CHK((block->r_flag ISNT OFF), NCE_MULTIPLE_R_WORDS_ON_ONE_LINE);
+        CHK((line[*counter] != 'r'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
+        CHK((block->r_flag != OFF), NCE_MULTIPLE_R_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
-        block->r_flag SET_TO ON;
-        block->r_number SET_TO value;
+        block->r_flag = ON;
+        block->r_number = value;
         return RS274NGC_OK;
     }
 
@@ -10062,8 +10063,8 @@ repeat--) \
    group (such as * and / in Example 1), the operation on the left is
    performed first. The first group is: multiplication (*), division (/),
    and modulus (MOD). The second group is: addition(+), subtraction (-),
-   logical non-exclusive OR (OR), logical exclusive OR (XOR), and logical
-   AND (AND2). We have added a third group with higher precedence than
+   logical non-exclusive or (OR), logical exclusive or (XOR), and logical
+   and (AND2). We have added a third group with higher precedence than
    the first group. The third group contains only the power (**)
    operation.
 
@@ -10214,19 +10215,19 @@ repeat--) \
     double * value,                               /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_real_expression";
+        static char name[] = "read_real_expression";
         int next_operation;
         int status;
 
-        CHK((line[*counter] ISNT '['), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != '['), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHP(read_real_value(line, counter, value, parameters));
         CHP(read_operation(line, counter, &next_operation));
-        if (next_operation IS RIGHT_BRACKET);     /* nothing to do */
+        if (next_operation == RIGHT_BRACKET);     /* nothing to do */
         else if (next_operation < AND2)           /* next operation is a bop1, times-like */
         {
             CHP(read_rest_bop1(line, counter, value, &next_operation, parameters));
-            if (next_operation IS RIGHT_BRACKET); /* next_operation has been reset */
+            if (next_operation == RIGHT_BRACKET); /* next_operation has been reset */
             else                                  /* next_operation is now a bop2, plus-like */
                 CHP(read_rest_bop2(line, counter, value, next_operation, parameters));
         }
@@ -10264,18 +10265,18 @@ repeat--) \
     double * value,                               /* pointer to double to be computed               */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_real_expression";
+        static char name[] = "read_real_expression";
         double values[MAX_STACK];
         int operators[MAX_STACK];
         int stack_index;
         int status;
 
-        CHK((line[*counter] ISNT '['), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != '['), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHP(read_real_value(line, counter, values, parameters));
         CHP(read_operation(line, counter, operators));
-        stack_index SET_TO 1;
-        for(; operators[0] ISNT RIGHT_BRACKET ;)
+        stack_index = 1;
+        for(; operators[0] != RIGHT_BRACKET ;)
         {
             CHP(read_real_value(line, counter, values+stack_index, parameters));
             CHP(read_operation(line, counter, operators+stack_index));
@@ -10290,8 +10291,8 @@ repeat--) \
                     CHP(execute_binary((values + stack_index - 1),
                         operators[stack_index -1],
                         (values + stack_index)));
-                    operators[stack_index - 1] SET_TO operators[stack_index];
-                    if ((stack_index > 1) AND
+                    operators[stack_index - 1] = operators[stack_index];
+                    if ((stack_index > 1) and
                         (precedence(operators[stack_index - 1]) <=
                         precedence(operators[stack_index - 2])))
                         stack_index--;
@@ -10300,7 +10301,7 @@ repeat--) \
                 }
             }
         }
-        *value SET_TO values[0];
+        *value = values[0];
         return RS274NGC_OK;
     }
 
@@ -10346,42 +10347,42 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr)                          /* pointer to double to be read                   */
     {
-        static char name[] SET_TO "read_real_number";
+        static char name[] = "read_real_number";
         char c;                                   /* for character being processed    */
         int flag_digit;                           /* set to ON if digit found         */
         int flag_point;                           /* set to ON if decimal point found */
         int n;                                    /* for indexing line                */
 
-        n SET_TO *counter;
-        flag_point SET_TO OFF;
-        flag_digit SET_TO OFF;
+        n = *counter;
+        flag_point = OFF;
+        flag_digit = OFF;
 
    /* check first character */
-        c SET_TO line[n];
-        if (c IS '+')
+        c = line[n];
+        if (c == '+')
         {
-            *counter SET_TO (*counter + 1);       /* skip plus sign */
+            *counter = (*counter + 1);       /* skip plus sign */
             n++;
         }
-        else if (c IS '-')
+        else if (c == '-')
         {
             n++;
         }
-        else if ((c ISNT '.') AND ((c < 48) OR (c > 57)))
+        else if ((c != '.') and ((c < 48) or (c > 57)))
             ERM(NCE_BAD_NUMBER_FORMAT);
 
    /* check out rest of characters (must be digit or decimal point) */
-        for (; (c SET_TO line[n]) ISNT (char) NULL; n++)
+        for (; (c = line[n]) != (char) NULL; n++)
         {
-            if (( 47 < c) AND ( c < 58))
+            if (( 47 < c) and ( c < 58))
             {
-                flag_digit SET_TO ON;
+                flag_digit = ON;
             }
-            else if (c IS '.')
+            else if (c == '.')
             {
-                if (flag_point IS OFF)
+                if (flag_point == OFF)
                 {
-                    flag_point SET_TO ON;
+                    flag_point = ON;
                 }
                 else
                     break;                        /* two decimal points, error appears on reading next item */
@@ -10390,17 +10391,17 @@ repeat--) \
                 break;
         }
 
-        CHK((flag_digit IS OFF), NCE_NO_DIGITS_FOUND_WHERE_REAL_NUMBER_SHOULD_BE);
-        line[n] SET_TO (char) NULL;               /* temporary string termination for sscanf */
-        if (sscanf(line + *counter, "%lf", double_ptr) IS 0)
+        CHK((flag_digit == OFF), NCE_NO_DIGITS_FOUND_WHERE_REAL_NUMBER_SHOULD_BE);
+        line[n] = (char) NULL;               /* temporary string termination for sscanf */
+        if (sscanf(line + *counter, "%lf", double_ptr) == 0)
         {
-            line[n] SET_TO c;
+            line[n] = c;
             ERM(NCE_SSCANF_FAILED);
         }
         else
         {
-            line[n] SET_TO c;
-            *counter SET_TO n;
+            line[n] = c;
+            *counter = n;
         }
         return RS274NGC_OK;
     }
@@ -10458,17 +10459,17 @@ repeat--) \
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_real_value";
+        static char name[] = "read_real_value";
         char c;
         int status;
 
-        c SET_TO line[*counter];
-        CHK((c IS 0), NCE_NO_CHARACTERS_FOUND_IN_READING_REAL_VALUE);
-        if (c IS '[')
+        c = line[*counter];
+        CHK((c == 0), NCE_NO_CHARACTERS_FOUND_IN_READING_REAL_VALUE);
+        if (c == '[')
             CHP(read_real_expression (line, counter, double_ptr, parameters));
-        else if (c IS '#')
+        else if (c == '#')
             CHP(read_parameter(line, counter, double_ptr, parameters));
-        else if ((c >= 'a') AND (c <= 'z'))
+        else if ((c >= 'a') and (c <= 'z'))
             CHP(read_unary(line, counter, double_ptr, parameters));
         else
             CHP(read_real_number(line, counter, double_ptr));
@@ -10516,7 +10517,7 @@ repeat--) \
     int * last_operation,                         /* last operation read, reset to next operation   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_rest_bop1";
+        static char name[] = "read_rest_bop1";
         double next_value;
         int next_operation;
         int status;
@@ -10526,7 +10527,7 @@ repeat--) \
             CHP(read_real_value(line, counter, &next_value, parameters));
             CHP(read_operation(line, counter, &next_operation));
             CHP(execute_binary1(value, *last_operation, &next_value));
-            *last_operation SET_TO next_operation;
+            *last_operation = next_operation;
             if (next_operation >= AND2)           /* next op is a bop2 or right bracket */
                 break;
         }
@@ -10573,12 +10574,12 @@ repeat--) \
     int last_operation,                           /* last operation read                            */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_rest_bop2";
+        static char name[] = "read_rest_bop2";
         double next_value;
         int next_operation;
         int status;
 
-        for(; ; last_operation SET_TO next_operation)
+        for(; ; last_operation = next_operation)
         {
             CHP(read_real_value(line, counter, &next_value, parameters));
             CHP(read_operation(line, counter, &next_operation));
@@ -10588,7 +10589,7 @@ repeat--) \
                     &next_operation, parameters));
             }
             CHP(execute_binary2(value, last_operation, &next_value));
-            if (next_operation IS RIGHT_BRACKET)
+            if (next_operation == RIGHT_BRACKET)
                 break;
         }
         return RS274NGC_OK;
@@ -10632,16 +10633,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] SET_TO "read_s";
+        static char name[] = "read_s";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 's'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 's'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHK((block->s_number > -1.0), NCE_MULTIPLE_S_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
         CHK((value < 0.0), NCE_NEGATIVE_SPINDLE_SPEED_USED);
-        block->s_number SET_TO value;
+        block->s_number = value;
         return RS274NGC_OK;
     }
 
@@ -10682,16 +10683,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_t";
+        static char name[] = "read_t";
         int value;
         int status;
 
-        CHK((line[*counter] ISNT 't'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
+        CHK((line[*counter] != 't'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
         CHK((block->t_number > -1), NCE_MULTIPLE_T_WORDS_ON_ONE_LINE);
         CHP(read_integer_value(line, counter, &value, parameters));
         CHK((value < 0), NCE_NEGATIVE_TOOL_ID_USED);
-        block->t_number SET_TO value;
+        block->t_number = value;
         return RS274NGC_OK;
     }
 
@@ -10767,36 +10768,36 @@ repeat--) \
     char * line,                                  /* array for input line to be processed in     */
     int * length)                                 /* a pointer to an integer to be set           */
     {
-        static char name[] SET_TO "read_text";
+        static char name[] = "read_text";
         int status;                               /* used in CHP */
         int index;
 
-        if (command IS NULL)
+        if (command == NULL)
         {
-            if(fgets(raw_line, RS274NGC_TEXT_SIZE, inport) IS NULL)
+            if(fgets(raw_line, RS274NGC_TEXT_SIZE, inport) == NULL)
             {
-                if (_setup.percent_flag IS ON)
+                if (_setup.percent_flag == ON)
                     ERM(NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN);
                 else
                     ERM(NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN_OR_PROGRAM_END);
             }
-            if (strlen(raw_line) IS (RS274NGC_TEXT_SIZE - 1))
+            if (strlen(raw_line) == (RS274NGC_TEXT_SIZE - 1))
             {                                     // line is too long. need to finish reading the line to recover
-                for(;fgetc(inport) ISNT '\n';)    // could also look for EOF
+                for(;fgetc(inport) != '\n';)    // could also look for EOF
                 {
                 }
                 ERM(NCE_COMMAND_TOO_LONG);
             }
    // index set on last char
-            for(index SET_TO (strlen(raw_line) -1);
-                (index >= 0) AND (isspace(raw_line[index]));
+            for(index = (strlen(raw_line) -1);
+                (index >= 0) and (isspace(raw_line[index]));
                 index--)
             {                                     // remove space at end of raw_line, especially CR & LF
-                raw_line[index] SET_TO 0;
+                raw_line[index] = 0;
             }
             strcpy(line, raw_line);
             CHP(close_and_downcase(line));
-            if ((line[0] IS '%') AND (line[1] IS 0) AND (_setup.percent_flag IS ON))
+            if ((line[0] == '%') and (line[1] == 0) and (_setup.percent_flag == ON))
                 return RS274NGC_ENDFILE;
         }
         else
@@ -10807,13 +10808,13 @@ repeat--) \
             CHP(close_and_downcase(line));
         }
         _setup.sequence_number++;
-        _setup.parameter_occurrence SET_TO 0;     /* initialize parameter buffer */
-        if ((line[0] IS 0) OR ((line[0] IS '/') AND (line[1] IS 0)))
-            *length SET_TO 0;
+        _setup.parameter_occurrence = 0;     /* initialize parameter buffer */
+        if ((line[0] == 0) or ((line[0] == '/') and (line[1] == 0)))
+            *length = 0;
         else
-            *length SET_TO strlen(line);
+            *length = strlen(line);
 
-        return ((line[0] IS '/')? RS274NGC_EXECUTE_FINISH : RS274NGC_OK);
+        return ((line[0] == '/')? RS274NGC_EXECUTE_FINISH : RS274NGC_OK);
     }
 
    /****************************************************************************/
@@ -10851,16 +10852,16 @@ repeat--) \
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_unary";
+        static char name[] = "read_unary";
         int operation;
         int status;
 
         CHP(read_operation_unary (line, counter, &operation));
-        CHK((line[*counter] ISNT '['),
+        CHK((line[*counter] != '['),
             NCE_LEFT_BRACKET_MISSING_AFTER_UNARY_OPERATION_NAME);
         CHP(read_real_expression (line, counter, double_ptr, parameters));
 
-        if (operation IS ATAN)
+        if (operation == ATAN)
             CHP(read_atan(line, counter, double_ptr, parameters));
         else
             CHP(execute_unary(double_ptr, operation));
@@ -10906,16 +10907,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_x";
+        static char name[] = "read_x";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'x'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
-        CHK((block->x_flag ISNT OFF), NCE_MULTIPLE_X_WORDS_ON_ONE_LINE);
+        CHK((line[*counter] != 'x'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
+        CHK((block->x_flag != OFF), NCE_MULTIPLE_X_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
-        block->x_flag SET_TO ON;
-        block->x_number SET_TO value;
+        block->x_flag = ON;
+        block->x_number = value;
         return RS274NGC_OK;
     }
 
@@ -10958,16 +10959,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_y";
+        static char name[] = "read_y";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'y'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
-        CHK((block->y_flag ISNT OFF), NCE_MULTIPLE_Y_WORDS_ON_ONE_LINE);
+        CHK((line[*counter] != 'y'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
+        CHK((block->y_flag != OFF), NCE_MULTIPLE_Y_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
-        block->y_flag SET_TO ON;
-        block->y_number SET_TO value;
+        block->y_flag = ON;
+        block->y_number = value;
         return RS274NGC_OK;
     }
 
@@ -11010,16 +11011,16 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] SET_TO "read_z";
+        static char name[] = "read_z";
         double value;
         int status;
 
-        CHK((line[*counter] ISNT 'z'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
-        *counter SET_TO (*counter + 1);
-        CHK((block->z_flag ISNT OFF), NCE_MULTIPLE_Z_WORDS_ON_ONE_LINE);
+        CHK((line[*counter] != 'z'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        *counter = (*counter + 1);
+        CHK((block->z_flag != OFF), NCE_MULTIPLE_Z_WORDS_ON_ONE_LINE);
         CHP(read_real_value(line, counter, &value, parameters));
-        block->z_flag SET_TO ON;
-        block->z_number SET_TO value;
+        block->z_flag = ON;
+        block->z_number = value;
         return RS274NGC_OK;
     }
 
@@ -11040,39 +11041,39 @@ repeat--) \
     static int set_probe_data(                    /* ARGUMENTS                   */
     setup_pointer settings)                       /* pointer to machine settings */
     {
-        static char name[] SET_TO "set_probe_data";
+        static char name[] = "set_probe_data";
 
-        settings->current_x SET_TO GET_EXTERNAL_POSITION_X();
-        settings->current_y SET_TO GET_EXTERNAL_POSITION_Y();
-        settings->current_z SET_TO GET_EXTERNAL_POSITION_Z();
+        settings->current_x = GET_EXTERNAL_POSITION_X();
+        settings->current_y = GET_EXTERNAL_POSITION_Y();
+        settings->current_z = GET_EXTERNAL_POSITION_Z();
 #ifdef AA
    /*AA*/
-        settings->AA_current SET_TO GET_EXTERNAL_POSITION_A();
+        settings->AA_current = GET_EXTERNAL_POSITION_A();
 #endif
 #ifdef BB
    /*BB*/
-        settings->BB_current SET_TO GET_EXTERNAL_POSITION_B();
+        settings->BB_current = GET_EXTERNAL_POSITION_B();
 #endif
 #ifdef CC
    /*CC*/
-        settings->CC_current SET_TO GET_EXTERNAL_POSITION_C();
+        settings->CC_current = GET_EXTERNAL_POSITION_C();
 #endif
-        settings->parameters[5061] SET_TO GET_EXTERNAL_PROBE_POSITION_X();
-        settings->parameters[5062] SET_TO GET_EXTERNAL_PROBE_POSITION_Y();
-        settings->parameters[5063] SET_TO GET_EXTERNAL_PROBE_POSITION_Z();
+        settings->parameters[5061] = GET_EXTERNAL_PROBE_POSITION_X();
+        settings->parameters[5062] = GET_EXTERNAL_PROBE_POSITION_Y();
+        settings->parameters[5063] = GET_EXTERNAL_PROBE_POSITION_Z();
 #ifdef AA
    /*AA*/
-        settings->parameters[5064] SET_TO GET_EXTERNAL_PROBE_POSITION_A();
+        settings->parameters[5064] = GET_EXTERNAL_PROBE_POSITION_A();
 #endif
 #ifdef BB
    /*BB*/
-        settings->parameters[5065] SET_TO GET_EXTERNAL_PROBE_POSITION_B();
+        settings->parameters[5065] = GET_EXTERNAL_PROBE_POSITION_B();
 #endif
 #ifdef CC
    /*CC*/
-        settings->parameters[5066] SET_TO GET_EXTERNAL_PROBE_POSITION_C();
+        settings->parameters[5066] = GET_EXTERNAL_PROBE_POSITION_C();
 #endif
-        settings->parameters[5067] SET_TO GET_EXTERNAL_PROBE_VALUE();
+        settings->parameters[5067] = GET_EXTERNAL_PROBE_VALUE();
         return RS274NGC_OK;
     }
 
@@ -11126,32 +11127,32 @@ repeat--) \
     {
         int * gez;
 
-        gez SET_TO settings->active_g_codes;
-        gez[0] SET_TO settings->sequence_number;
-        gez[1] SET_TO settings->motion_mode;
-        gez[2] SET_TO ((block IS NULL) ? -1 : block->g_modes[0]);
-        gez[3] SET_TO
-            (settings->plane IS CANON_PLANE_XY) ? G_17 :
-        (settings->plane IS CANON_PLANE_XZ) ? G_18 : G_19;
-        gez[4] SET_TO
-            (settings->cutter_comp_side IS RIGHT) ? G_42 :
-        (settings->cutter_comp_side IS LEFT) ? G_41 : G_40;
-        gez[5] SET_TO
-            (settings->length_units IS CANON_UNITS_INCHES) ? G_20 : G_21;
-        gez[6] SET_TO
-            (settings->distance_mode IS MODE_ABSOLUTE) ? G_90 : G_91;
-        gez[7] SET_TO
-            (settings->feed_mode IS INVERSE_TIME) ? G_93 : G_94;
-        gez[8] SET_TO
+        gez = settings->active_g_codes;
+        gez[0] = settings->sequence_number;
+        gez[1] = settings->motion_mode;
+        gez[2] = ((block == NULL) ? -1 : block->g_modes[0]);
+        gez[3] =
+            (settings->plane == CANON_PLANE_XY) ? G_17 :
+        (settings->plane == CANON_PLANE_XZ) ? G_18 : G_19;
+        gez[4] =
+            (settings->cutter_comp_side == RIGHT) ? G_42 :
+        (settings->cutter_comp_side == LEFT) ? G_41 : G_40;
+        gez[5] =
+            (settings->length_units == CANON_UNITS_INCHES) ? G_20 : G_21;
+        gez[6] =
+            (settings->distance_mode == MODE_ABSOLUTE) ? G_90 : G_91;
+        gez[7] =
+            (settings->feed_mode == INVERSE_TIME) ? G_93 : G_94;
+        gez[8] =
             (settings->origin_index < 7) ? (530 + (10 * settings->origin_index)) :
         (584 + settings->origin_index);
-        gez[9] SET_TO
-            (settings->tool_length_offset IS 0.0) ? G_49 : G_43;
-        gez[10] SET_TO
-            (settings->retract_mode IS OLD_Z) ? G_98 : G_99;
-        gez[11] SET_TO
-            (settings->control_mode IS CANON_CONTINUOUS) ? G_64 :
-        (settings->control_mode IS CANON_EXACT_PATH) ? G_61 : G_61_1;
+        gez[9] =
+            (settings->tool_length_offset == 0.0) ? G_49 : G_43;
+        gez[10] =
+            (settings->retract_mode == OLD_Z) ? G_98 : G_99;
+        gez[11] =
+            (settings->control_mode == CANON_CONTINUOUS) ? G_64 :
+        (settings->control_mode == CANON_EXACT_PATH) ? G_61 : G_61_1;
 
         return RS274NGC_OK;
     }
@@ -11180,23 +11181,23 @@ repeat--) \
     {
         int * emz;
 
-        emz SET_TO settings->active_m_codes;
-        emz[0] SET_TO settings->sequence_number;  /* 0 seq number  */
-        emz[1] SET_TO
-            (block IS NULL) ? -1 : block->m_modes[4];/* 1 stopping    */
-        emz[2] SET_TO
+        emz = settings->active_m_codes;
+        emz[0] = settings->sequence_number;  /* 0 seq number  */
+        emz[1] =
+            (block == NULL) ? -1 : block->m_modes[4];/* 1 stopping    */
+        emz[2] =
    /* 2 spindle     */
-            (settings->spindle_turning IS CANON_STOPPED) ? 5 :
-        (settings->spindle_turning IS CANON_CLOCKWISE) ? 3 : 4;
-        emz[3] SET_TO                             /* 3 tool change */
-            (block IS NULL) ? -1 : block->m_modes[6];
-        emz[4] SET_TO                             /* 4 mist        */
-            (settings->mist IS ON) ? 7 :
-        (settings->flood IS ON) ? -1 : 9;
-        emz[5] SET_TO                             /* 5 flood       */
-            (settings->flood IS ON) ? 8 : -1;
-        emz[6] SET_TO                             /* 6 overrides   */
-            (settings->feed_override IS ON) ? 48 : 49;
+            (settings->spindle_turning == CANON_STOPPED) ? 5 :
+        (settings->spindle_turning == CANON_CLOCKWISE) ? 3 : 4;
+        emz[3] =                             /* 3 tool change */
+            (block == NULL) ? -1 : block->m_modes[6];
+        emz[4] =                             /* 4 mist        */
+            (settings->mist == ON) ? 7 :
+        (settings->flood == ON) ? -1 : 9;
+        emz[5] =                             /* 5 flood       */
+            (settings->flood == ON) ? 8 : -1;
+        emz[6] =                             /* 6 overrides   */
+            (settings->feed_override == ON) ? 48 : 49;
 
         return RS274NGC_OK;
     }
@@ -11222,10 +11223,10 @@ repeat--) \
     {
         double * vals;
 
-        vals SET_TO settings->active_settings;
-        vals[0] SET_TO settings->sequence_number; /* 0 sequence number */
-        vals[1] SET_TO settings->feed_rate;       /* 1 feed rate       */
-        vals[2] SET_TO settings->speed;           /* 2 spindle speed   */
+        vals = settings->active_settings;
+        vals[0] = settings->sequence_number; /* 0 sequence number */
+        vals[1] = settings->feed_rate;       /* 1 feed rate       */
+        vals[2] = settings->speed;           /* 2 spindle speed   */
 
         return RS274NGC_OK;
     }
@@ -11257,10 +11258,10 @@ repeat--) \
 
     int rs274ngc_close()
     {
-        if (_setup.file_pointer ISNT NULL)
+        if (_setup.file_pointer != NULL)
         {
             fclose(_setup.file_pointer);
-            _setup.file_pointer SET_TO NULL;
+            _setup.file_pointer = NULL;
         }
         rs274ngc_reset();
 
@@ -11291,28 +11292,28 @@ repeat--) \
 
     int rs274ngc_execute()                        /* NO ARGUMENTS */
     {
-        static char name[] SET_TO "rs274ngc_execute";
+        static char name[] = "rs274ngc_execute";
         int status;
         int n;
 
-        for (n SET_TO 0; n < _setup.parameter_occurrence; n++)
+        for (n = 0; n < _setup.parameter_occurrence; n++)
         {                                         // copy parameter settings from parameter buffer into parameter table
             _setup.parameters[_setup.parameter_numbers[n]]
-                SET_TO _setup.parameter_values[n];
+                = _setup.parameter_values[n];
         }
-        if (_setup.line_length ISNT 0)            /* line not blank */
+        if (_setup.line_length != 0)            /* line not blank */
         {
-            status SET_TO execute_block (&(_setup.block1), &_setup);
+            status = execute_block (&(_setup.block1), &_setup);
             write_g_codes(&(_setup.block1), &_setup);
             write_m_codes(&(_setup.block1), &_setup);
             write_settings(&_setup);
-            if ((status ISNT RS274NGC_OK) AND
-                (status ISNT RS274NGC_EXECUTE_FINISH) AND
-                (status ISNT RS274NGC_EXIT))
+            if ((status != RS274NGC_OK) and
+                (status != RS274NGC_EXECUTE_FINISH) and
+                (status != RS274NGC_EXIT))
                 ERP(status);
         }
         else                                      /* blank line is OK */
-            status SET_TO RS274NGC_OK;
+            status = RS274NGC_OK;
         return status;
     }
 
@@ -11339,7 +11340,7 @@ repeat--) \
 
         GET_EXTERNAL_PARAMETER_FILE_NAME(file_name, (RS274NGC_TEXT_SIZE - 1));
         rs274ngc_save_parameters
-            (((file_name[0] IS 0) ? RS274NGC_PARAMETER_FILE_NAME_DEFAULT : file_name),
+            (((file_name[0] == 0) ? RS274NGC_PARAMETER_FILE_NAME_DEFAULT : file_name),
             _setup.parameters);
         rs274ngc_reset();
 
@@ -11375,24 +11376,24 @@ repeat--) \
 
     int rs274ngc_init()                           /* NO ARGUMENTS */
     {
-        static char name[] SET_TO "rs274ngc_init";
+        static char name[] = "rs274ngc_init";
         int k;                                    // starting index in parameters of origin offsets
         int status;
         char filename[RS274NGC_TEXT_SIZE];
         double * pars;                            // short name for _setup.parameters
 
         INIT_CANON();
-        _setup.length_units SET_TO GET_EXTERNAL_LENGTH_UNIT_TYPE();
+        _setup.length_units = GET_EXTERNAL_LENGTH_UNIT_TYPE();
         USE_LENGTH_UNITS(_setup.length_units);
         GET_EXTERNAL_PARAMETER_FILE_NAME(filename, RS274NGC_TEXT_SIZE);
-        if (filename[0] IS 0)
+        if (filename[0] == 0)
             strcpy(filename, RS274NGC_PARAMETER_FILE_NAME_DEFAULT);
         CHP(rs274ngc_restore_parameters(filename));
-        pars SET_TO _setup.parameters;
-        _setup.origin_index SET_TO (int)(pars[5220] + 0.0001);
-        CHK(((_setup.origin_index < 1) OR (_setup.origin_index > 9)),
+        pars = _setup.parameters;
+        _setup.origin_index = (int)(pars[5220] + 0.0001);
+        CHK(((_setup.origin_index < 1) or (_setup.origin_index > 9)),
             NCE_COORDINATE_SYSTEM_INDEX_PARAMETER_5220_OUT_OF_RANGE);
-        k SET_TO (5200 + (_setup.origin_index * 20));
+        k = (5200 + (_setup.origin_index * 20));
         SET_ORIGIN_OFFSETS((pars[k + 1] + pars[5211]),
             (pars[k + 2] + pars[5212]),
             (pars[k + 3] + pars[5213])
@@ -11420,82 +11421,82 @@ repeat--) \
             );
         SET_FEED_REFERENCE(CANON_XYZ);
 #ifdef AA
-        _setup.AA_axis_offset SET_TO pars[5214];  /*AA*/
+        _setup.AA_axis_offset = pars[5214];  /*AA*/
 #endif
    //_setup.Aa_current set in rs274ngc_synch
 #ifdef AA
    /*AA*/
-        _setup.AA_origin_offset SET_TO pars[k + 4];
+        _setup.AA_origin_offset = pars[k + 4];
 #endif
    //_setup.active_g_codes initialized below
    //_setup.active_m_codes initialized below
    //_setup.active_settings initialized below
-        _setup.axis_offset_x SET_TO pars[5211];
-        _setup.axis_offset_y SET_TO pars[5212];
-        _setup.axis_offset_z SET_TO pars[5213];
+        _setup.axis_offset_x = pars[5211];
+        _setup.axis_offset_y = pars[5212];
+        _setup.axis_offset_z = pars[5213];
 #ifdef BB
-        _setup.BB_axis_offset SET_TO pars[5215];  /*BB*/
+        _setup.BB_axis_offset = pars[5215];  /*BB*/
 #endif
    //_setup.Bb_current set in rs274ngc_synch
 #ifdef BB
    /*BB*/
-        _setup.BB_origin_offset SET_TO pars[k + 5];
+        _setup.BB_origin_offset = pars[k + 5];
 #endif
    //_setup.block1 does not need initialization
-        _setup.blocktext[0] SET_TO 0;
+        _setup.blocktext[0] = 0;
 #ifdef CC
-        _setup.CC_axis_offset SET_TO pars[5216];  /*CC*/
+        _setup.CC_axis_offset = pars[5216];  /*CC*/
 #endif
    //_setup.Cc_current set in rs274ngc_synch
 #ifdef CC
    /*CC*/
-        _setup.CC_origin_offset SET_TO pars[k + 6];
+        _setup.CC_origin_offset = pars[k + 6];
 #endif
    //_setup.current_slot set in rs274ngc_synch
    //_setup.current_x set in rs274ngc_synch
    //_setup.current_y set in rs274ngc_synch
    //_setup.current_z set in rs274ngc_synch
-        _setup.cutter_comp_side SET_TO OFF;
+        _setup.cutter_comp_side = OFF;
    //_setup.cycle values do not need initialization
-        _setup.distance_mode SET_TO MODE_ABSOLUTE;
-        _setup.feed_mode SET_TO UNITS_PER_MINUTE;
-        _setup.feed_override SET_TO ON;
+        _setup.distance_mode = MODE_ABSOLUTE;
+        _setup.feed_mode = UNITS_PER_MINUTE;
+        _setup.feed_override = ON;
    //_setup.feed_rate set in rs274ngc_synch
-        _setup.filename[0] SET_TO 0;
-        _setup.file_pointer SET_TO NULL;
+        _setup.filename[0] = 0;
+        _setup.file_pointer = NULL;
    //_setup.flood set in rs274ngc_synch
-        _setup.length_offset_index SET_TO 1;
+        _setup.length_offset_index = 1;
    //_setup.length_units set in rs274ngc_synch
-        _setup.line_length SET_TO 0;
-        _setup.linetext[0] SET_TO 0;
+        _setup.line_length = 0;
+        _setup.linetext[0] = 0;
    //_setup.mist set in rs274ngc_synch
-        _setup.motion_mode SET_TO G_80;
+        _setup.motion_mode = G_80;
    //_setup.origin_index set above
-        _setup.origin_offset_x SET_TO pars[k + 1];
-        _setup.origin_offset_y SET_TO pars[k + 2];
-        _setup.origin_offset_z SET_TO pars[k + 3];
+        _setup.origin_offset_x = pars[k + 1];
+        _setup.origin_offset_y = pars[k + 2];
+        _setup.origin_offset_z = pars[k + 3];
    //_setup.parameters set above
    //_setup.parameter_occurrence does not need initialization
    //_setup.parameter_numbers does not need initialization
    //_setup.parameter_values does not need initialization
    //_setup.percent_flag does not need initialization
    //_setup.plane set in rs274ngc_synch
-        _setup.probe_flag SET_TO OFF;
-        _setup.program_x SET_TO UNKNOWN;          /* for cutter comp */
-        _setup.program_y SET_TO UNKNOWN;          /* for cutter comp */
+        _setup.probe_flag = OFF;
+        _setup.program_x = UNKNOWN;          /* for cutter comp */
+        _setup.program_y = UNKNOWN;          /* for cutter comp */
    //_setup.retract_mode does not need initialization
    //_setup.selected_tool_slot set in rs274ngc_synch
-        _setup.sequence_number SET_TO 0;          /*DOES THIS NEED TO BE AT TOP? */
+        _setup.sequence_number = 0;          /*DOES THIS NEED TO BE AT TOP? */
    //_setup.speed set in rs274ngc_synch
-        _setup.speed_feed_mode SET_TO CANON_INDEPENDENT;
-        _setup.speed_override SET_TO ON;
+        _setup.speed_feed_mode = CANON_INDEPENDENT;
+        _setup.speed_override = ON;
    //_setup.spindle_turning set in rs274ngc_synch
    //_setup.stack does not need initialization
    //_setup.stack_index does not need initialization
-        _setup.tool_length_offset SET_TO 0.0;
+        _setup.tool_length_offset = 0.0;
    //_setup.tool_max set in rs274ngc_synch
    //_setup.tool_table set in rs274ngc_synch
-        _setup.tool_table_index SET_TO 1;
+        _setup.tool_table_index = 1;
    //_setup.traverse_rate set in rs274ngc_synch
 
         write_g_codes((block_pointer)NULL, &_setup);
@@ -11534,19 +11535,19 @@ repeat--) \
 
     int rs274ngc_load_tool_table()                /* NO ARGUMENTS */
     {
-        static char name[] SET_TO "rs274ngc_load_tool_table";
+        static char name[] = "rs274ngc_load_tool_table";
         int n;
 
         CHK((_setup.tool_max > CANON_TOOL_MAX), NCE_TOOL_MAX_TOO_LARGE);
-        for (n SET_TO 0; n <= _setup.tool_max; n++)
+        for (n = 0; n <= _setup.tool_max; n++)
         {
-            _setup.tool_table[n] SET_TO GET_EXTERNAL_TOOL_TABLE(n);
+            _setup.tool_table[n] = GET_EXTERNAL_TOOL_TABLE(n);
         }
         for(; n <= CANON_TOOL_MAX; n++)
         {
-            _setup.tool_table[n].id SET_TO 0;
-            _setup.tool_table[n].length SET_TO 0;
-            _setup.tool_table[n].diameter SET_TO 0;
+            _setup.tool_table[n].id = 0;
+            _setup.tool_table[n].length = 0;
+            _setup.tool_table[n].diameter = 0;
         }
 
         return RS274NGC_OK;
@@ -11601,49 +11602,49 @@ repeat--) \
     int rs274ngc_open(                            /* ARGUMENTS                                     */
     const char * filename)                        /* string: the name of the input NC-program file */
     {
-        static char name[] SET_TO "rs274ngc_open";
+        static char name[] = "rs274ngc_open";
         char * line;
         int index;
         int length;
 
-        CHK((_setup.file_pointer ISNT NULL), NCE_A_FILE_IS_ALREADY_OPEN);
+        CHK((_setup.file_pointer != NULL), NCE_A_FILE_IS_ALREADY_OPEN);
         CHK((strlen(filename) > (RS274NGC_TEXT_SIZE - 1)), NCE_FILE_NAME_TOO_LONG);
-        _setup.file_pointer SET_TO fopen(filename, "r");
-        CHK((_setup.file_pointer IS NULL), NCE_UNABLE_TO_OPEN_FILE);
-        line SET_TO _setup.linetext;
-        for(index SET_TO -1; index IS -1;)        /* skip blank lines */
+        _setup.file_pointer = fopen(filename, "r");
+        CHK((_setup.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
+        line = _setup.linetext;
+        for(index = -1; index == -1;)        /* skip blank lines */
         {
-            CHK((fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) IS NULL),
+            CHK((fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) == NULL),
                 NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN);
-            length SET_TO strlen(line);
-            if (length IS (RS274NGC_TEXT_SIZE - 1))
+            length = strlen(line);
+            if (length == (RS274NGC_TEXT_SIZE - 1))
             {                                     // line is too long. need to finish reading the line to recover
    // could look for EOF
-                for(;fgetc(_setup.file_pointer) ISNT '\n';);
+                for(;fgetc(_setup.file_pointer) != '\n';);
                 ERM(NCE_COMMAND_TOO_LONG);
             }
-            for(index SET_TO (length -1);         // index set on last char
-                (index >= 0) AND (isspace(line[index]));
+            for(index = (length -1);         // index set on last char
+                (index >= 0) and (isspace(line[index]));
                 index--);
         }
-        if(line[index] IS '%')
+        if(line[index] == '%')
         {
-            for(index--; (index >= 0) AND (isspace(line[index])); index--);
-            if (index IS -1)
-                _setup.percent_flag SET_TO ON;
+            for(index--; (index >= 0) and (isspace(line[index])); index--);
+            if (index == -1)
+                _setup.percent_flag = ON;
             else
             {
                 fseek(_setup.file_pointer, 0, SEEK_SET);
-                _setup.percent_flag SET_TO OFF;
+                _setup.percent_flag = OFF;
             }
         }
         else
         {
             fseek(_setup.file_pointer, 0, SEEK_SET);
-            _setup.percent_flag SET_TO OFF;
+            _setup.percent_flag = OFF;
         }
         strcpy(_setup.filename, filename);
-        _setup.sequence_number SET_TO 0;
+        _setup.sequence_number = 0;
         rs274ngc_reset();
         return RS274NGC_OK;
     }
@@ -11682,30 +11683,30 @@ repeat--) \
     int rs274ngc_read(                            /* ARGUMENTS                       */
     const char * command)                         /* may be NULL or a string to read */
     {
-        static char name[] SET_TO "rs274ngc_read";
+        static char name[] = "rs274ngc_read";
         int status;
         int read_status;
 
-        if (_setup.probe_flag IS ON)
+        if (_setup.probe_flag == ON)
         {
-            CHK((GET_EXTERNAL_QUEUE_EMPTY() IS 0),
+            CHK((GET_EXTERNAL_QUEUE_EMPTY() == 0),
                 NCE_QUEUE_IS_NOT_EMPTY_AFTER_PROBING);
             set_probe_data(&_setup);
-            _setup.probe_flag SET_TO OFF;
+            _setup.probe_flag = OFF;
         }
-        CHK(((command IS NULL) AND (_setup.file_pointer IS NULL)),
+        CHK(((command == NULL) and (_setup.file_pointer == NULL)),
             NCE_FILE_NOT_OPEN);
-        read_status SET_TO read_text(command, _setup.file_pointer, _setup.linetext,
+        read_status = read_text(command, _setup.file_pointer, _setup.linetext,
             _setup.blocktext, &_setup.line_length);
-        if ((read_status IS RS274NGC_EXECUTE_FINISH) OR
-            (read_status IS RS274NGC_OK))
+        if ((read_status == RS274NGC_EXECUTE_FINISH) or
+            (read_status == RS274NGC_OK))
         {
-            if (_setup.line_length ISNT 0)
+            if (_setup.line_length != 0)
             {
                 CHP(parse_line(_setup.blocktext, &(_setup.block1), &_setup));
             }
         }
-        else if (read_status IS RS274NGC_ENDFILE);
+        else if (read_status == RS274NGC_ENDFILE);
         else
             ERP(read_status);
         return read_status;
@@ -11744,9 +11745,9 @@ repeat--) \
 
     int rs274ngc_reset()
     {
-        _setup.linetext[0] SET_TO 0;
-        _setup.blocktext[0] SET_TO 0;
-        _setup.line_length SET_TO 0;
+        _setup.linetext[0] = 0;
+        _setup.blocktext[0] = 0;
+        _setup.line_length = 0;
 
         return RS274NGC_OK;
     }
@@ -11791,7 +11792,7 @@ repeat--) \
     int rs274ngc_restore_parameters(              /* ARGUMENTS                        */
     const char * filename)                        /* name of parameter file to read   */
     {
-        static char name[] SET_TO "rs274ngc_restore_parameters";
+        static char name[] = "rs274ngc_restore_parameters";
         FILE * infile;
         char line[256];
         int variable;
@@ -11802,52 +11803,52 @@ repeat--) \
         int k;
 
    // open original for reading
-        infile SET_TO fopen(filename, "r");
-        CHK((infile IS NULL), NCE_UNABLE_TO_OPEN_FILE);
+        infile = fopen(filename, "r");
+        CHK((infile == NULL), NCE_UNABLE_TO_OPEN_FILE);
 
-        pars SET_TO _setup.parameters;
-        k SET_TO 0;
-        index SET_TO 0;
-        required SET_TO _required_parameters[index++];
-        while (feof(infile) IS 0)
+        pars = _setup.parameters;
+        k = 0;
+        index = 0;
+        required = _required_parameters[index++];
+        while (feof(infile) == 0)
         {
-            if (fgets(line, 256, infile) IS NULL)
+            if (fgets(line, 256, infile) == NULL)
             {
                 break;
             }
 
    // try for a variable-value match in the file
-            if (sscanf(line, "%d %lf", &variable, &value) IS 2)
+            if (sscanf(line, "%d %lf", &variable, &value) == 2)
             {
-                CHK(((variable <= 0) OR (variable >= RS274NGC_MAX_PARAMETERS)),
+                CHK(((variable <= 0) or (variable >= RS274NGC_MAX_PARAMETERS)),
                     NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
                 for (; k < RS274NGC_MAX_PARAMETERS; k++)
                 {
                     if (k > variable)
                         ERM(NCE_PARAMETER_FILE_OUT_OF_ORDER);
-                    else if (k IS variable)
+                    else if (k == variable)
                     {
-                        pars[k] SET_TO value;
-                        if (k IS required)
-                            required SET_TO _required_parameters[index++];
+                        pars[k] = value;
+                        if (k == required)
+                            required = _required_parameters[index++];
                         k++;
                         break;
                     }
                     else                          // if (k < variable)
                     {
-                        if (k IS required)
+                        if (k == required)
                             ERM(NCE_REQUIRED_PARAMETER_MISSING);
                         else
-                            pars[k] SET_TO 0;
+                            pars[k] = 0;
                     }
                 }
             }
         }
         fclose(infile);
-        CHK((required ISNT RS274NGC_MAX_PARAMETERS), NCE_REQUIRED_PARAMETER_MISSING);
+        CHK((required != RS274NGC_MAX_PARAMETERS), NCE_REQUIRED_PARAMETER_MISSING);
         for (; k < RS274NGC_MAX_PARAMETERS; k++)
         {
-            pars[k] SET_TO 0;
+            pars[k] = 0;
         }
         return RS274NGC_OK;
     }
@@ -11890,7 +11891,7 @@ repeat--) \
     const char * filename,                        /* name of file to write */
     const double parameters[])                    /* parameters to save    */
     {
-        static char name[] SET_TO "rs274ngc_save_parameters";
+        static char name[] = "rs274ngc_save_parameters";
         FILE * infile;
         FILE * outfile;
         char line[256];
@@ -11903,48 +11904,48 @@ repeat--) \
    // rename as .bak
         strcpy(line, filename);
         strcat(line, RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX);
-        CHK((rename(filename, line) ISNT 0), NCE_CANNOT_CREATE_BACKUP_FILE);
+        CHK((rename(filename, line) != 0), NCE_CANNOT_CREATE_BACKUP_FILE);
 
    // open backup for reading
-        infile SET_TO fopen(line, "r");
-        CHK((infile IS NULL), NCE_CANNOT_OPEN_BACKUP_FILE);
+        infile = fopen(line, "r");
+        CHK((infile == NULL), NCE_CANNOT_OPEN_BACKUP_FILE);
 
    // open original for writing
-        outfile SET_TO fopen(filename, "w");
-        CHK((outfile IS NULL), NCE_CANNOT_OPEN_VARIABLE_FILE);
+        outfile = fopen(filename, "w");
+        CHK((outfile == NULL), NCE_CANNOT_OPEN_VARIABLE_FILE);
 
-        k SET_TO 0;
-        index SET_TO 0;
-        required SET_TO _required_parameters[index++];
-        while (feof(infile) IS 0)
+        k = 0;
+        index = 0;
+        required = _required_parameters[index++];
+        while (feof(infile) == 0)
         {
-            if (fgets(line, 256, infile) IS NULL)
+            if (fgets(line, 256, infile) == NULL)
             {
                 break;
             }
    // try for a variable-value match
-            if (sscanf(line, "%d %f", &variable, &value) IS 2)
+            if (sscanf(line, "%d %lf", &variable, &value) == 2)
             {
-                CHK(((variable <= 0) OR (variable >= RS274NGC_MAX_PARAMETERS)),
+                CHK(((variable <= 0) or (variable >= RS274NGC_MAX_PARAMETERS)),
                     NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
                 for (; k < RS274NGC_MAX_PARAMETERS; k++)
                 {
                     if (k > variable)
                         ERM(NCE_PARAMETER_FILE_OUT_OF_ORDER);
-                    else if (k IS variable)
+                    else if (k == variable)
                     {
                         sprintf(line, "%d\t%f\n", k, parameters[k]);
                         fputs(line, outfile);
-                        if (k IS required)
-                            required SET_TO _required_parameters[index++];
+                        if (k == required)
+                            required = _required_parameters[index++];
                         k++;
                         break;
                     }
-                    else if (k IS required)       // know (k < variable)
+                    else if (k == required)       // know (k < variable)
                     {
                         sprintf(line, "%d\t%f\n", k, parameters[k]);
                         fputs(line, outfile);
-                        required SET_TO _required_parameters[index++];
+                        required = _required_parameters[index++];
                     }
                 }
             }
@@ -11952,11 +11953,11 @@ repeat--) \
         fclose(infile);
         for (; k < RS274NGC_MAX_PARAMETERS; k++)
         {
-            if (k IS required)
+            if (k == required)
             {
                 sprintf(line, "%d\t%f\n", k, parameters[k]);
                 fputs(line, outfile);
-                required SET_TO _required_parameters[index++];
+                required = _required_parameters[index++];
             }
         }
         fclose(outfile);
@@ -11985,33 +11986,33 @@ repeat--) \
 
     int rs274ngc_synch()                          /* NO ARGUMENTS */
     {
-        _setup.control_mode SET_TO GET_EXTERNAL_MOTION_CONTROL_MODE();
+        _setup.control_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
 #ifdef AA
    /*AA*/
-        _setup.AA_current SET_TO GET_EXTERNAL_POSITION_A();
+        _setup.AA_current = GET_EXTERNAL_POSITION_A();
 #endif
 #ifdef BB
    /*BB*/
-        _setup.BB_current SET_TO GET_EXTERNAL_POSITION_B();
+        _setup.BB_current = GET_EXTERNAL_POSITION_B();
 #endif
 #ifdef CC
    /*CC*/
-        _setup.CC_current SET_TO GET_EXTERNAL_POSITION_C();
+        _setup.CC_current = GET_EXTERNAL_POSITION_C();
 #endif
-        _setup.current_slot SET_TO GET_EXTERNAL_TOOL_SLOT();
-        _setup.current_x SET_TO GET_EXTERNAL_POSITION_X();
-        _setup.current_y SET_TO GET_EXTERNAL_POSITION_Y();
-        _setup.current_z SET_TO GET_EXTERNAL_POSITION_Z();
-        _setup.feed_rate SET_TO GET_EXTERNAL_FEED_RATE();
-        _setup.flood SET_TO (GET_EXTERNAL_FLOOD() ISNT 0) ? ON : OFF;
-        _setup.length_units SET_TO GET_EXTERNAL_LENGTH_UNIT_TYPE();
-        _setup.mist SET_TO (GET_EXTERNAL_MIST() ISNT 0) ? ON : OFF;
-        _setup.plane SET_TO GET_EXTERNAL_PLANE();
-        _setup.selected_tool_slot SET_TO GET_EXTERNAL_TOOL_SLOT();
-        _setup.speed SET_TO GET_EXTERNAL_SPEED();
-        _setup.spindle_turning SET_TO GET_EXTERNAL_SPINDLE();
-        _setup.tool_max SET_TO GET_EXTERNAL_TOOL_MAX();
-        _setup.traverse_rate SET_TO GET_EXTERNAL_TRAVERSE_RATE();
+        _setup.current_slot = GET_EXTERNAL_TOOL_SLOT();
+        _setup.current_x = GET_EXTERNAL_POSITION_X();
+        _setup.current_y = GET_EXTERNAL_POSITION_Y();
+        _setup.current_z = GET_EXTERNAL_POSITION_Z();
+        _setup.feed_rate = GET_EXTERNAL_FEED_RATE();
+        _setup.flood = (GET_EXTERNAL_FLOOD() != 0) ? ON : OFF;
+        _setup.length_units = GET_EXTERNAL_LENGTH_UNIT_TYPE();
+        _setup.mist = (GET_EXTERNAL_MIST() != 0) ? ON : OFF;
+        _setup.plane = GET_EXTERNAL_PLANE();
+        _setup.selected_tool_slot = GET_EXTERNAL_TOOL_SLOT();
+        _setup.speed = GET_EXTERNAL_SPEED();
+        _setup.spindle_turning = GET_EXTERNAL_SPINDLE();
+        _setup.tool_max = GET_EXTERNAL_TOOL_MAX();
+        _setup.traverse_rate = GET_EXTERNAL_TRAVERSE_RATE();
 
         rs274ngc_load_tool_table();               /*  must set  _setup.tool_max first */
 
@@ -12047,9 +12048,9 @@ repeat--) \
     {
         int n;
 
-        for (n SET_TO 0; n < RS274NGC_ACTIVE_G_CODES; n++)
+        for (n = 0; n < RS274NGC_ACTIVE_G_CODES; n++)
         {
-            codes[n] SET_TO _setup.active_g_codes[n];
+            codes[n] = _setup.active_g_codes[n];
         }
     }
 
@@ -12072,9 +12073,9 @@ repeat--) \
     {
         int n;
 
-        for (n SET_TO 0; n < RS274NGC_ACTIVE_M_CODES; n++)
+        for (n = 0; n < RS274NGC_ACTIVE_M_CODES; n++)
         {
-            codes[n] SET_TO _setup.active_m_codes[n];
+            codes[n] = _setup.active_m_codes[n];
         }
     }
 
@@ -12097,9 +12098,9 @@ repeat--) \
     {
         int n;
 
-        for (n SET_TO 0; n < RS274NGC_ACTIVE_SETTINGS; n++)
+        for (n = 0; n < RS274NGC_ACTIVE_SETTINGS; n++)
         {
-            settings[n] SET_TO _setup.active_settings[n];
+            settings[n] = _setup.active_settings[n];
         }
     }
 
@@ -12127,14 +12128,14 @@ repeat--) \
     char * error_text,                            /* char array to copy error text into   */
     size_t max_size)                                 /* maximum number of characters to copy */
     {
-        if (((error_code >= RS274NGC_MIN_ERROR) AND
-            (error_code <= RS274NGC_MAX_ERROR)) AND
+        if (((error_code >= RS274NGC_MIN_ERROR) and
+            (error_code <= RS274NGC_MAX_ERROR)) and
             (strlen(_rs274ngc_errors[error_code]) < max_size))
         {
             strcpy(error_text, _rs274ngc_errors[error_code]);
         }
         else
-            error_text[0] SET_TO 0;
+            error_text[0] = 0;
     }
 
    /***********************************************************************/
@@ -12160,7 +12161,7 @@ repeat--) \
         if (strlen(_setup.filename) < max_size)
             strcpy(file_name, _setup.filename);
         else
-            file_name[0] SET_TO 0;
+            file_name[0] = 0;
     }
 
    /***********************************************************************/
@@ -12203,15 +12204,15 @@ repeat--) \
         size_t n;
         char * the_text;
 
-        the_text SET_TO _setup.linetext;
-        for (n SET_TO 0; n < (max_size - 1); n++)
+        the_text = _setup.linetext;
+        for (n = 0; n < (max_size - 1); n++)
         {
-            if (the_text[n] ISNT 0)
-                line_text[n] SET_TO the_text[n];
+            if (the_text[n] != 0)
+                line_text[n] = the_text[n];
             else
                 break;
         }
-        line_text[n] SET_TO 0;
+        line_text[n] = 0;
     }
 
    /***********************************************************************/
@@ -12265,20 +12266,20 @@ repeat--) \
         int n;
         char * the_name;
 
-        if ((stack_index > -1) AND (stack_index < 20))
+        if ((stack_index > -1) and (stack_index < 20))
         {
-            the_name SET_TO _setup.stack[stack_index];
-            for (n SET_TO 0; n < (max_size - 1); n++)
+            the_name = _setup.stack[stack_index];
+            for (n = 0; n < (max_size - 1); n++)
             {
-                if (the_name[n] ISNT 0)
-                    function_name[n] SET_TO the_name[n];
+                if (the_name[n] != 0)
+                    function_name[n] = the_name[n];
                 else
                     break;
             }
-            function_name[n] SET_TO 0;
+            function_name[n] = 0;
         }
         else
-            function_name[0] SET_TO 0;
+            function_name[0] = 0;
     }
 
    /***********************************************************************/

@@ -36,7 +36,7 @@
    /* INCLUDE DIRECTIVES */
    /**********************/
 
-#include <stdio.h>
+#include <cstdio>
 #include "canon.hh"
 
    /**********************/
