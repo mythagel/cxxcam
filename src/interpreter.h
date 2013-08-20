@@ -25,6 +25,7 @@
 #ifndef INTERPRETER_H_
 #define INTERPRETER_H_
 #include "parser.h"
+#include <vector>
 
 namespace gcode
 {
@@ -37,25 +38,32 @@ intentionally limited in scope.
 class interpreter : public parser
 {
 private:
+	struct word
+	{
+		char code;
+		double value;
+	};
+	size_t line_no;
+	std::vector<word> block;
+	
 	virtual void begin_block(std::size_t line_no, bool block_delete)
 	{
-	
+		this->line_no = line_no;
 	}
 	virtual void block_number(double block_no)
 	{
-	
 	}
 	virtual void word(char code, double value)
 	{
-	
+		block.push_back({code, value});
 	}
 	virtual void comment(const char* begin, const char* end)
 	{
-	
 	}
 	virtual void end_block()
 	{
-	
+		// process block
+		block.clear();
 	}
 public:
 	
