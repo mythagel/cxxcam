@@ -119,6 +119,12 @@
 
    /****************************************************************************/
 
+/*
+
+Significant modifications by Nicholas Gill.
+
+*/
+
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>

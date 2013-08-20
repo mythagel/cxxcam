@@ -22,6 +22,17 @@
 
    ************************************************************************/
 
+/*
+
+Significant modifications by Nicholas Gill.
+Slight restructure then plan to rip out gcode parsing for
+post processor tool. Current design discards the raw block
+when interpreting the high level motion etc. (which in intentional).
+
+Plan to reuse gcode parsing and interpreter individually.
+
+*/
+
 #ifndef RS274NGC_HH
 #define RS274NGC_HH
 
@@ -42,14 +53,6 @@
    /**********************/
    /*   COMPILER MACROS  */
    /**********************/
-
-//#define AND              &&
-//#define IS               ==
-//#define ISNT             !=
-//#define MAX(x, y)        ((x) > (y) ? (x) : (y))
-//#define NOT              !
-//#define OR               ||
-//#define SET_TO           =
 
 #define RS274NGC_TEXT_SIZE 256
 
@@ -135,74 +138,74 @@
 #define RIGHT_BRACKET 10
 
    // G Codes are symbolic to be dialect-independent in source code
-#define G_0      0
-#define G_1     10
-#define G_2     20
-#define G_3     30
-#define G_4     40
-#define G_10   100
-#define G_17   170
-#define G_18   180
-#define G_19   190
-#define G_20   200
-#define G_21   210
-#define G_28   280
-#define G_30   300
-#define G_38_2 382
-#define G_40   400
-#define G_41   410
-#define G_42   420
-#define G_43   430
-#define G_49   490
-#define G_53   530
-#define G_54   540
-#define G_55   550
-#define G_56   560
-#define G_57   570
-#define G_58   580
-#define G_59   590
-#define G_59_1 591
-#define G_59_2 592
-#define G_59_3 593
-#define G_61   610
-#define G_61_1 611
-#define G_64   640
-#define G_80   800
-#define G_81   810
-#define G_82   820
-#define G_83   830
-#define G_84   840
-#define G_85   850
-#define G_86   860
-#define G_87   870
-#define G_88   880
-#define G_89   890
-#define G_90   900
-#define G_91   910
-#define G_92   920
-#define G_92_1 921
-#define G_92_2 922
-#define G_92_3 923
-#define G_93   930
-#define G_94   940
-#define G_98   980
-#define G_99   990
-
+enum
+{
+	G_0 =       0,
+	G_1 =      10,
+	G_2 =      20,
+	G_3 =      30,
+	G_4 =      40,
+	G_10 =    100,
+	G_17 =    170,
+	G_18 =    180,
+	G_19 =    190,
+	G_20 =    200,
+	G_21 =    210,
+	G_28 =    280,
+	G_30 =    300,
+	G_38_2 =  382,
+	G_40 =    400,
+	G_41 =    410,
+	G_42 =    420,
+	G_43 =    430,
+	G_49 =    490,
+	G_53 =    530,
+	G_54 =    540,
+	G_55 =    550,
+	G_56 =    560,
+	G_57 =    570,
+	G_58 =    580,
+	G_59 =    590,
+	G_59_1 =  591,
+	G_59_2 =  592,
+	G_59_3 =  593,
+	G_61 =    610,
+	G_61_1 =  611,
+	G_64 =    640,
+	G_80 =    800,
+	G_81 =    810,
+	G_82 =    820,
+	G_83 =    830,
+	G_84 =    840,
+	G_85 =    850,
+	G_86 =    860,
+	G_87 =    870,
+	G_88 =    880,
+	G_89 =    890,
+	G_90 =    900,
+	G_91 =    910,
+	G_92 =    920,
+	G_92_1 =  921,
+	G_92_2 =  922,
+	G_92_3 =  923,
+	G_93 =    930,
+	G_94 =    940,
+	G_98 =    980,
+	G_99 =    990
+};
    /**********************/
    /*      TYPEDEFS      */
    /**********************/
 
    /* distance_mode */
-typedef enum {MODE_ABSOLUTE, MODE_INCREMENTAL}
-DISTANCE_MODE;
+enum DISTANCE_MODE {MODE_ABSOLUTE, MODE_INCREMENTAL};
 
    /* retract_mode for cycles */
-typedef enum {R_PLANE, OLD_Z}
-RETRACT_MODE;
+enum RETRACT_MODE {R_PLANE, OLD_Z};
 
 typedef int ON_OFF;
 
-typedef struct block_struct
+struct block
 {
 #ifdef AA
     ON_OFF   a_flag;
@@ -244,7 +247,7 @@ typedef struct block_struct
     double   y_number;
     ON_OFF   z_flag;
     double   z_number;
-} block;
+};
 
 typedef block * block_pointer;
 
@@ -263,7 +266,7 @@ typedef block * block_pointer;
 
    */
 
-typedef struct setup_struct
+struct setup
 {
 #ifdef AA
     double AA_axis_offset;                        // A-axis g92 offset
@@ -348,7 +351,7 @@ typedef struct setup_struct
         [CANON_TOOL_MAX + 1];                     // index is slot number
     int tool_table_index;                         // tool index used with cutter comp
     double traverse_rate;                         // rate for traverse motions
-} setup;
+};
 
 typedef setup * setup_pointer;
 
@@ -439,6 +442,6 @@ extern int rs274ngc_sequence_number();
    // copy the function name from the stack_index'th position of the
    // function call stack at the time of the most recent error into
    // the function name string, but stop at max_size if the name is longer
-extern void rs274ngc_stack_name(int stack_index, char * function_name,
-int max_size);
+extern void rs274ngc_stack_name(int stack_index, char * function_name, int max_size);
+
 #endif
