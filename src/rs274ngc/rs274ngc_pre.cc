@@ -881,7 +881,7 @@ static const int _gees[] =
     int * turn,                                   /* pointer to number of full or partial circles CCW */
     double tolerance)                             /* tolerance of differing radii                     */
     {
-        static char name[] = "arc_data_comp_ijk";
+        static const char name[] = "arc_data_comp_ijk";
         double arc_radius;
         double radius2;
 
@@ -975,7 +975,7 @@ static const int _gees[] =
     double * center_y,                            /* pointer to second coordinate of center of arc    */
     int * turn)                                   /* pointer to number of full or partial circles CCW */
     {
-        static char name[] = "arc_data_comp_r";
+        static const char name[] = "arc_data_comp_r";
         double abs_radius;                        /* absolute value of big_radius          */
         double alpha;                             /* direction of line from current to end */
         double distance;                          /* length of line L from current to end  */
@@ -1057,7 +1057,7 @@ static const int _gees[] =
     int * turn,                                   /* pointer to no. of full or partial circles CCW   */
     double tolerance)                             /* tolerance of differing radii                    */
     {
-        static char name[] = "arc_data_ijk";
+        static const char name[] = "arc_data_ijk";
         double radius;                            /* radius to current point */
         double radius2;                           /* radius to end point     */
         *center_x = (current_x + i_number);
@@ -1123,7 +1123,7 @@ static const int _gees[] =
     double * center_y,                            /* pointer to second coordinate of center of arc */
     int * turn)                                   /* pointer to no. of full or partial circles CCW */
     {
-        static char name[] = "arc_data_r";
+        static const char name[] = "arc_data_r";
         double abs_radius;                        /* absolute value of given radius */
         double half_length;                       /* distance from M to end point   */
         double mid_x;                             /* first coordinate of M          */
@@ -1213,7 +1213,7 @@ static const int _gees[] =
     block_pointer block,                          /* pointer to a block to be checked */
     setup_pointer settings)                       /* pointer to machine settings      */
     {
-        static char name[] = "check_g_codes";
+        static const char name[] = "check_g_codes";
         int mode0;
         int p_int;
 
@@ -1288,7 +1288,7 @@ static const int _gees[] =
     block_pointer block,                          /* pointer to a block to be checked */
     setup_pointer settings)                       /* pointer to machine settings      */
     {
-        static char name[] = "check_items";
+        static const char name[] = "check_items";
         int status;
 
         CHP(check_g_codes(block, settings));
@@ -1320,7 +1320,7 @@ static const int _gees[] =
     static int check_m_codes(                     /* ARGUMENTS                        */
     block_pointer block)                          /* pointer to a block to be checked */
     {
-        static char name[] = "check_m_codes";
+        static const char name[] = "check_m_codes";
 
         CHK((block->m_count > MAX_EMS), NCE_TOO_MANY_M_CODES_ON_LINE);
         return RS274NGC_OK;
@@ -1373,7 +1373,7 @@ static const int _gees[] =
     static int check_other_codes(                 /* ARGUMENTS                               */
     block_pointer block)                          /* pointer to a block of RS274/NGC instructions */
     {
-        static char name[] = "check_other_codes";
+        static const char name[] = "check_other_codes";
         int motion;
 
         motion = block->motion_to_be;
@@ -1502,7 +1502,7 @@ static const int _gees[] =
     static int close_and_downcase(                /* ARGUMENTS                   */
     char * line)                                  /* string: one line of NC code */
     {
-        static char name[] = "close_and_downcase";
+        static const char name[] = "close_and_downcase";
         int m;
         int n;
         int comment;
@@ -1604,7 +1604,7 @@ static const int _gees[] =
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] = "convert_arc";
+        static const char name[] = "convert_arc";
         int status;
         int first;                                /* flag set ON if this is first move after comp ON */
         int ijk_flag;                             /* flag set ON if any of i,j,k present in NC code  */
@@ -1861,7 +1861,7 @@ static const int _gees[] =
     double offset1,                               /* offset of center from current1           */
     double offset2)                               /* offset of center from current2           */
     {
-        static char name[] = "convert_arc2";
+        static const char name[] = "convert_arc2";
         double center1;
         double center2;
         int status;                               /* status returned from CHP function call     */
@@ -1970,7 +1970,7 @@ static const int _gees[] =
 #endif
     )
     {
-        static char name[] = "convert_arc_comp1";
+        static const char name[] = "convert_arc_comp1";
         double center_x;
         double center_y;
         double gamma;                             /* direction of perpendicular to arc at end */
@@ -2118,7 +2118,7 @@ static const int _gees[] =
 #endif
     )
     {
-        static char name[] = "convert_arc_comp2";
+        static const char name[] = "convert_arc_comp2";
         double alpha;                             /* direction of tangent to start of arc */
         double arc_radius;
         double beta;                              /* angle between two tangents above */
@@ -2365,7 +2365,7 @@ static const int _gees[] =
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions   */
     setup_pointer settings)                       /* pointer to machine settings                    */
     {
-        static char name[] = "convert_axis_offsets";
+        static const char name[] = "convert_axis_offsets";
         double * pars;                            /* short name for settings->parameters            */
 
         CHK((settings->cutter_comp_side != OFF),/* not "IS ON" */
@@ -2739,7 +2739,7 @@ static const int _gees[] =
     int g_code,                                   /* g_code being executed (G_61, G61_1, or G_64) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_control_mode";
+        static const char name[] = "convert_control_mode";
         if (g_code == G_61)
         {
             SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
@@ -2835,7 +2835,7 @@ static const int _gees[] =
     int g_code,                                   /* g_code called (must be one listed above)      */
     setup_pointer settings)                       /* pointer to machine settings                   */
     {
-        static char name[] = "convert_coordinate_system";
+        static const char name[] = "convert_coordinate_system";
         int origin;
         double x;
         double y;
@@ -3027,7 +3027,7 @@ static const int _gees[] =
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] = "convert_cutter_compensation";
+        static const char name[] = "convert_cutter_compensation";
         int status;
 
         if (g_code == G_40)
@@ -3133,7 +3133,7 @@ static const int _gees[] =
     block_pointer block,                          /* pointer to a block of RS274 instructions  */
     setup_pointer settings)                       /* pointer to machine settings               */
     {
-        static char name[] = "convert_cutter_compensation_on";
+        static const char name[] = "convert_cutter_compensation_on";
         double radius;
         int index;
 
@@ -3202,7 +3202,7 @@ static const int _gees[] =
     block_pointer block,                          /* pointer to a block of RS274 instructions       */
     setup_pointer settings)                       /* pointer to machine settings                    */
     {
-        static char name[] = "convert_cycle";
+        static const char name[] = "convert_cycle";
         CANON_PLANE plane;
         int status;
 
@@ -3273,7 +3273,7 @@ static const int _gees[] =
     double clear_z,                               /* z-value of clearance plane       */
     double bottom_z)                              /* value of z at bottom of cycle    */
     {
-        static char name[] = "convert_cycle_g81";
+        static const char name[] = "convert_cycle_g81";
 
         cycle_feed(plane, x, y, bottom_z);
         cycle_traverse(plane, x, y, clear_z);
@@ -3314,7 +3314,7 @@ static const int _gees[] =
     double bottom_z,                              /* value of z at bottom of cycle    */
     double dwell)                                 /* dwell time                       */
     {
-        static char name[] = "convert_cycle_g82";
+        static const char name[] = "convert_cycle_g82";
 
         cycle_feed(plane, x, y, bottom_z);
         DWELL(dwell);
@@ -3368,7 +3368,7 @@ static const int _gees[] =
     double bottom_z,                              /* value of z at bottom of cycle    */
     double delta)                                 /* size of z-axis feed increment    */
     {
-        static char name[] = "convert_cycle_g83";
+        static const char name[] = "convert_cycle_g83";
         double current_depth;
         double rapid_delta;
 
@@ -3433,7 +3433,7 @@ static const int _gees[] =
     CANON_DIRECTION direction,                    /* direction spindle turning at outset */
     CANON_SPEED_FEED_MODE mode)                   /* the speed-feed mode at outset       */
     {
-        static char name[] = "convert_cycle_g84";
+        static const char name[] = "convert_cycle_g84";
 
         CHK((direction != CANON_CLOCKWISE),
             NCE_SPINDLE_NOT_TURNING_CLOCKWISE_IN_G84);
@@ -3482,7 +3482,7 @@ static const int _gees[] =
     double clear_z,                               /* z-value of clearance plane       */
     double bottom_z)                              /* value of z at bottom of cycle    */
     {
-        static char name[] = "convert_cycle_g85";
+        static const char name[] = "convert_cycle_g85";
 
         cycle_feed(plane, x, y, bottom_z);
         cycle_feed(plane, x, y, clear_z);
@@ -3530,7 +3530,7 @@ static const int _gees[] =
     double dwell,                                 /* dwell time                          */
     CANON_DIRECTION direction)                    /* direction spindle turning at outset */
     {
-        static char name[] = "convert_cycle_g86";
+        static const char name[] = "convert_cycle_g86";
 
         CHK(((direction != CANON_CLOCKWISE) and
             (direction != CANON_COUNTERCLOCKWISE)),
@@ -3619,7 +3619,7 @@ static const int _gees[] =
     double bottom_z,                              /* value of z at bottom of cycle       */
     CANON_DIRECTION direction)                    /* direction spindle turning at outset */
     {
-        static char name[] = "convert_cycle_g87";
+        static const char name[] = "convert_cycle_g87";
 
         CHK(((direction != CANON_CLOCKWISE) and
             (direction != CANON_COUNTERCLOCKWISE)),
@@ -3687,7 +3687,7 @@ static const int _gees[] =
     double dwell,                                 /* dwell time                          */
     CANON_DIRECTION direction)                    /* direction spindle turning at outset */
     {
-        static char name[] = "convert_cycle_g88";
+        static const char name[] = "convert_cycle_g88";
 
         CHK(((direction != CANON_CLOCKWISE) and
             (direction != CANON_COUNTERCLOCKWISE)),
@@ -3737,7 +3737,7 @@ static const int _gees[] =
     double bottom_z,                              /* value of z at bottom of cycle    */
     double dwell)                                 /* dwell time                       */
     {
-        static char name[] = "convert_cycle_g89";
+        static const char name[] = "convert_cycle_g89";
 
         cycle_feed(plane, x, y, bottom_z);
         DWELL(dwell);
@@ -3868,7 +3868,7 @@ repeat--) \
         block_pointer block,                      /* pointer to a block of RS274 instructions       */
         setup_pointer settings)                   /* pointer to machine settings                    */
     {
-        static char name[] = "convert_cycle_xy";
+        static const char name[] = "convert_cycle_xy";
         double aa;
         double aa_increment;
         double bb;
@@ -4095,7 +4095,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions   */
     setup_pointer settings)                       /* pointer to machine settings                    */
     {
-        static char name[] = "convert_cycle_yz";
+        static const char name[] = "convert_cycle_yz";
         double aa;
         double aa_increment;
         double bb;
@@ -4330,7 +4330,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions       */
     setup_pointer settings)                       /* pointer to machine settings                    */
     {
-        static char name[] = "convert_cycle_zx";
+        static const char name[] = "convert_cycle_zx";
         double aa;
         double aa_increment;
         double bb;
@@ -4529,7 +4529,7 @@ repeat--) \
     int g_code,                                   /* g_code being executed (must be G_90 or G_91) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_distance_mode";
+        static const char name[] = "convert_distance_mode";
         if (g_code == G_90)
         {
             if (settings->distance_mode != MODE_ABSOLUTE)
@@ -4601,7 +4601,7 @@ repeat--) \
     int g_code,                                   /* g_code being executed (must be G_93 or G_94) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_feed_mode";
+        static const char name[] = "convert_feed_mode";
         if (g_code == G_93)
         {
 #ifdef DEBUG_EMC
@@ -4707,7 +4707,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_g";
+        static const char name[] = "convert_g";
         int status;
 
         if (block->g_modes[0] == G_4)
@@ -4792,7 +4792,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] = "convert_home";
+        static const char name[] = "convert_home";
         double end_x;
         double end_y;
         double end_z;
@@ -4997,7 +4997,7 @@ repeat--) \
     int g_code,                                   /* g_code being executed (must be G_20 or G_21) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_length_units";
+        static const char name[] = "convert_length_units";
         CHK((settings->cutter_comp_side != OFF),
             NCE_CANNOT_CHANGE_UNITS_WITH_CUTTER_RADIUS_COMP);
         if (g_code == G_20)
@@ -5083,7 +5083,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_m";
+        static const char name[] = "convert_m";
         int status;
 
         if (block->m_modes[6] != -1)
@@ -5190,7 +5190,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_modal_0";
+        static const char name[] = "convert_modal_0";
         int status;
 
         if (code == G_10)
@@ -5240,7 +5240,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions  */
     setup_pointer settings)                       /* pointer to machine settings               */
     {
-        static char name[] = "convert_motion";
+        static const char name[] = "convert_motion";
         int status;
 
         if ((motion == G_0) or (motion == G_1))
@@ -5313,7 +5313,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] = "convert_probe";
+        static const char name[] = "convert_probe";
         double distance;
         double end_x;
         double end_y;
@@ -5421,7 +5421,7 @@ repeat--) \
     int g_code,                                   /* g_code being executed (must be G_98 or G_99) */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_retract_mode";
+        static const char name[] = "convert_retract_mode";
         if (g_code == G_98)
         {
 #ifdef DEBUG_EMC
@@ -5473,7 +5473,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_setup";
+        static const char name[] = "convert_setup";
         double x;
         double y;
         double z;
@@ -5664,7 +5664,7 @@ repeat--) \
     int g_code,                                   /* must be G_17, G_18, or G_19  */
     setup_pointer settings)                       /* pointer to machine settings  */
     {
-        static char name[] = "convert_set_plane";
+        static const char name[] = "convert_set_plane";
         if (g_code == G_17)
         {
             SELECT_PLANE(CANON_PLANE_XY);
@@ -5780,7 +5780,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_stop";
+        static const char name[] = "convert_stop";
         int index;
         char * line;
         int length;
@@ -6043,7 +6043,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] = "convert_straight";
+        static const char name[] = "convert_straight";
         double end_x;
         double end_y;
         double end_z;
@@ -6273,7 +6273,7 @@ repeat--) \
 #endif
     )
     {
-        static char name[] = "convert_straight_comp1";
+        static const char name[] = "convert_straight_comp1";
         double alpha;
         double cx;                                /* first current point x then end point x */
         double cy;                                /* first current point y then end point y */
@@ -6463,7 +6463,7 @@ repeat--) \
 #endif
     )
     {
-        static char name[] = "convert_straight_comp2";
+        static const char name[] = "convert_straight_comp2";
         double alpha;
         double beta;
         double end_x;                             /* x-coordinate of actual end point */
@@ -6792,7 +6792,7 @@ repeat--) \
     static int convert_tool_change(               /* ARGUMENTS                   */
     setup_pointer settings)                       /* pointer to machine settings */
     {
-        static char name[] = "convert_tool_change";
+        static const char name[] = "convert_tool_change";
 
         CHANGE_TOOL(settings->selected_tool_slot);
         settings->current_slot = settings->selected_tool_slot;
@@ -6837,7 +6837,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "convert_tool_length_offset";
+        static const char name[] = "convert_tool_length_offset";
         int index;
         double offset;
 
@@ -6895,7 +6895,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions */
     setup_pointer settings)                       /* pointer to machine settings              */
     {
-        static char name[] = "convert_tool_select";
+        static const char name[] = "convert_tool_select";
 
         CHK((block->t_number > settings->tool_max),
             NCE_SELECTED_TOOL_SLOT_NUMBER_TOO_LARGE);
@@ -6935,7 +6935,7 @@ repeat--) \
     double end2,                                  /* second coordinate value    */
     double end3)                                  /* third coordinate value     */
     {
-        static char name[] = "cycle_feed";
+        static const char name[] = "cycle_feed";
 
         if (plane == CANON_PLANE_XY)
             STRAIGHT_FEED(end1, end2, end3
@@ -7044,7 +7044,7 @@ repeat--) \
     double end2,                                  /* second coordinate value   */
     double end3)                                  /* third coordinate value    */
     {
-        static char name[] = "cycle_traverse";
+        static const char name[] = "cycle_traverse";
         if (plane == CANON_PLANE_XY)
             STRAIGHT_TRAVERSE(end1, end2, end3
         #ifdef AA
@@ -7160,7 +7160,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block to be checked  */
     setup_pointer settings)                       /* pointer to machine settings       */
     {
-        static char name[] = "enhance_block";
+        static const char name[] = "enhance_block";
         int axis_flag;
         int mode_zero_covets_axes;
 
@@ -7235,7 +7235,7 @@ repeat--) \
     int operation,
     double * right)
     {
-        static char name[] = "execute_binary";
+        static const char name[] = "execute_binary";
         int status;
 
         if (operation < AND2)
@@ -7271,7 +7271,7 @@ repeat--) \
     int operation,                                /* integer code for the operation  */
     double * right)                               /* pointer to the right operand    */
     {
-        static char name[] = "execute_binary1";
+        static const char name[] = "execute_binary1";
         switch (operation)
         {
             case DIVIDED_BY:
@@ -7327,7 +7327,7 @@ repeat--) \
     int operation,                                /* integer code for the operation  */
     double * right)                               /* pointer to the right operand    */
     {
-        static char name[] = "execute_binary2";
+        static const char name[] = "execute_binary2";
         switch (operation)
         {
             case AND2:
@@ -7404,7 +7404,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274/NGC instructions */
     setup_pointer settings)                       /* pointer to machine settings                  */
     {
-        static char name[] = "execute_block";
+        static const char name[] = "execute_block";
         int status;
 
         if (block->comment[0] != 0)
@@ -7479,7 +7479,7 @@ repeat--) \
     double * double_ptr,                          /* pointer to the operand          */
     int operation)                                /* integer code for the operation  */
     {
-        static char name[] = "execute_unary";
+        static const char name[] = "execute_unary";
         switch (operation)
         {
             case ABS:
@@ -8285,7 +8285,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block of RS274 instructions   */
     setup_pointer settings)                       /* pointer to machine settings                */
     {
-        static char name[] = "inverse_time_rate_straight";
+        static const char name[] = "inverse_time_rate_straight";
         double length;
         double rate;
 
@@ -8350,7 +8350,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block to be filled      */
     setup_pointer settings)                       /* pointer to machine settings          */
     {
-        static char name[] = "parse_line";
+        static const char name[] = "parse_line";
         int status;
 
         CHP(init_block (block));
@@ -8433,7 +8433,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_a";
+        static const char name[] = "read_a";
         double value;
         int status;
 
@@ -8496,7 +8496,7 @@ repeat--) \
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_atan";
+        static const char name[] = "read_atan";
         double argument2;
         int status;
 
@@ -8557,7 +8557,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_b";
+        static const char name[] = "read_b";
         double value;
         int status;
 
@@ -8624,7 +8624,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_c";
+        static const char name[] = "read_c";
         double value;
         int status;
 
@@ -8686,7 +8686,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] = "read_comment";
+        static const char name[] = "read_comment";
         int n;
 
         CHK((line[*counter] != '('), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
@@ -8739,7 +8739,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] = "read_d";
+        static const char name[] = "read_d";
         int value;
         int status;
 
@@ -8791,7 +8791,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] = "read_f";
+        static const char name[] = "read_f";
         double value;
         int status;
 
@@ -8859,7 +8859,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_g";
+        static const char name[] = "read_g";
         double value_read;
         int value;
         int mode;
@@ -8922,7 +8922,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_h";
+        static const char name[] = "read_h";
         int value;
         int status;
 
@@ -8975,7 +8975,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_i";
+        static const char name[] = "read_i";
         double value;
         int status;
 
@@ -9016,7 +9016,7 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line */
     int * integer_ptr)                            /* pointer to the value being read               */
     {
-        static char name[] = "read_integer_unsigned";
+        static const char name[] = "read_integer_unsigned";
         int n;
         char c;
 
@@ -9073,7 +9073,7 @@ repeat--) \
     int * integer_ptr,                            /* pointer to the value being read                */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_integer_value";
+        static const char name[] = "read_integer_value";
         double float_value;
         int status;
 
@@ -9111,7 +9111,7 @@ repeat--) \
     char * line,                                  /* string: line of RS274/NGC code being processed */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_items";
+        static const char name[] = "read_items";
         int counter;
         int length;
         int status;
@@ -9171,7 +9171,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_j";
+        static const char name[] = "read_j";
         double value;
         int status;
 
@@ -9223,7 +9223,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_k";
+        static const char name[] = "read_k";
         double value;
         int status;
 
@@ -9273,7 +9273,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_l";
+        static const char name[] = "read_l";
         int value;
         int status;
 
@@ -9320,7 +9320,7 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     block_pointer block)                          /* pointer to a block being filled from the line  */
     {
-        static char name[] = "read_line_number";
+        static const char name[] = "read_line_number";
         int value;
         int status;
 
@@ -9372,7 +9372,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] = "read_m";
+        static const char name[] = "read_m";
         int value;
         int mode;
         int status;
@@ -9442,7 +9442,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_one_item";
+        static const char name[] = "read_one_item";
         int status;
         read_function_pointer function_pointer;
         char letter;
@@ -9489,7 +9489,7 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     int * operation)                              /* pointer to operation to be read                */
     {
-        static char name[] = "read_operation";
+        static const char name[] = "read_operation";
         char c;
 
         c = line[*counter];
@@ -9599,7 +9599,7 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     int * operation)                              /* pointer to operation to be read                */
     {
-        static char name[] = "read_operation_unary";
+        static const char name[] = "read_operation_unary";
         char c;
 
         c = line[*counter];
@@ -9747,7 +9747,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_p";
+        static const char name[] = "read_p";
         double value;
         int status;
 
@@ -9803,7 +9803,7 @@ repeat--) \
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_parameter";
+        static const char name[] = "read_parameter";
         int index;
         int status;
 
@@ -9889,7 +9889,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_parameter_setting";
+        static const char name[] = "read_parameter_setting";
         int index;
         double value;
         int status;
@@ -9945,7 +9945,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_q";
+        static const char name[] = "read_q";
         double value;
         int status;
 
@@ -9999,7 +9999,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] = "read_r";
+        static const char name[] = "read_r";
         double value;
         int status;
 
@@ -10215,7 +10215,7 @@ repeat--) \
     double * value,                               /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_real_expression";
+        static const char name[] = "read_real_expression";
         int next_operation;
         int status;
 
@@ -10265,7 +10265,7 @@ repeat--) \
     double * value,                               /* pointer to double to be computed               */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_real_expression";
+        static const char name[] = "read_real_expression";
         double values[MAX_STACK];
         int operators[MAX_STACK];
         int stack_index;
@@ -10347,7 +10347,7 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr)                          /* pointer to double to be read                   */
     {
-        static char name[] = "read_real_number";
+        static const char name[] = "read_real_number";
         char c;                                   /* for character being processed    */
         int flag_digit;                           /* set to ON if digit found         */
         int flag_point;                           /* set to ON if decimal point found */
@@ -10459,7 +10459,7 @@ repeat--) \
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_real_value";
+        static const char name[] = "read_real_value";
         char c;
         int status;
 
@@ -10517,7 +10517,7 @@ repeat--) \
     int * last_operation,                         /* last operation read, reset to next operation   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_rest_bop1";
+        static const char name[] = "read_rest_bop1";
         double next_value;
         int next_operation;
         int status;
@@ -10574,7 +10574,7 @@ repeat--) \
     int last_operation,                           /* last operation read                            */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_rest_bop2";
+        static const char name[] = "read_rest_bop2";
         double next_value;
         int next_operation;
         int status;
@@ -10633,7 +10633,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
     {
-        static char name[] = "read_s";
+        static const char name[] = "read_s";
         double value;
         int status;
 
@@ -10683,7 +10683,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_t";
+        static const char name[] = "read_t";
         int value;
         int status;
 
@@ -10768,7 +10768,7 @@ repeat--) \
     char * line,                                  /* array for input line to be processed in     */
     int * length)                                 /* a pointer to an integer to be set           */
     {
-        static char name[] = "read_text";
+        static const char name[] = "read_text";
         int status;                               /* used in CHP */
         int index;
 
@@ -10852,7 +10852,7 @@ repeat--) \
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_unary";
+        static const char name[] = "read_unary";
         int operation;
         int status;
 
@@ -10907,7 +10907,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_x";
+        static const char name[] = "read_x";
         double value;
         int status;
 
@@ -10959,7 +10959,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_y";
+        static const char name[] = "read_y";
         double value;
         int status;
 
@@ -11011,7 +11011,7 @@ repeat--) \
     block_pointer block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        static char name[] = "read_z";
+        static const char name[] = "read_z";
         double value;
         int status;
 
@@ -11041,7 +11041,7 @@ repeat--) \
     static int set_probe_data(                    /* ARGUMENTS                   */
     setup_pointer settings)                       /* pointer to machine settings */
     {
-        static char name[] = "set_probe_data";
+        static const char name[] = "set_probe_data";
 
         settings->current_x = GET_EXTERNAL_POSITION_X();
         settings->current_y = GET_EXTERNAL_POSITION_Y();
@@ -11292,7 +11292,7 @@ repeat--) \
 
     int rs274ngc_execute()                        /* NO ARGUMENTS */
     {
-        static char name[] = "rs274ngc_execute";
+        static const char name[] = "rs274ngc_execute";
         int status;
         int n;
 
@@ -11376,7 +11376,7 @@ repeat--) \
 
     int rs274ngc_init()                           /* NO ARGUMENTS */
     {
-        static char name[] = "rs274ngc_init";
+        static const char name[] = "rs274ngc_init";
         int k;                                    // starting index in parameters of origin offsets
         int status;
         char filename[RS274NGC_TEXT_SIZE];
@@ -11535,7 +11535,7 @@ repeat--) \
 
     int rs274ngc_load_tool_table()                /* NO ARGUMENTS */
     {
-        static char name[] = "rs274ngc_load_tool_table";
+        static const char name[] = "rs274ngc_load_tool_table";
         int n;
 
         CHK((_setup.tool_max > CANON_TOOL_MAX), NCE_TOOL_MAX_TOO_LARGE);
@@ -11602,7 +11602,7 @@ repeat--) \
     int rs274ngc_open(                            /* ARGUMENTS                                     */
     const char * filename)                        /* string: the name of the input NC-program file */
     {
-        static char name[] = "rs274ngc_open";
+        static const char name[] = "rs274ngc_open";
         char * line;
         int index;
         int length;
@@ -11683,7 +11683,7 @@ repeat--) \
     int rs274ngc_read(                            /* ARGUMENTS                       */
     const char * command)                         /* may be NULL or a string to read */
     {
-        static char name[] = "rs274ngc_read";
+        static const char name[] = "rs274ngc_read";
         int status;
         int read_status;
 
@@ -11792,7 +11792,7 @@ repeat--) \
     int rs274ngc_restore_parameters(              /* ARGUMENTS                        */
     const char * filename)                        /* name of parameter file to read   */
     {
-        static char name[] = "rs274ngc_restore_parameters";
+        static const char name[] = "rs274ngc_restore_parameters";
         FILE * infile;
         char line[256];
         int variable;
@@ -11891,7 +11891,7 @@ repeat--) \
     const char * filename,                        /* name of file to write */
     const double parameters[])                    /* parameters to save    */
     {
-        static char name[] = "rs274ngc_save_parameters";
+        static const char name[] = "rs274ngc_save_parameters";
         FILE * infile;
         FILE * outfile;
         char line[256];
