@@ -4,6 +4,6 @@ ENDIF()
 
 #INCLUDE_DIRECTORIES()
 
-ADD_EXECUTABLE(${PROJECT_NAME} postp.cpp parser.cpp)
+ADD_EXECUTABLE(${PROJECT_NAME} postp.cpp parser.cpp interpreter.cpp)
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} v8)

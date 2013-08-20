@@ -76,6 +76,8 @@ int main()
 	access to current program state (active codes etc.)
 	*/
 	
+	// this feels off...
+	
 	std::istream* is = &std::cin;
 
 	std::noskipws(*is);
