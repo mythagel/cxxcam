@@ -75,46 +75,6 @@
    suppression can produce more concise output. Future versions might
    include an option for suppressing superfluous commands.
 
-   This file has been arranged typographically so that it may be used
-   for compiling fifteen different executables. The file may be compiled
-   as is for a six-axis interpreter. The file may be pre-preprocessed
-   into "pre.cc" by "prepre" (a lex-based pre-processor). All
-   fifteen executables may be compiled from the pre.cc file. The special
-   typography items are:
-
-   1. Any line with the comment /^AA^/, /^BB^/, or /^CC^/ at the end
-   (where ^ is replaced by *).
-
-   2. Calls to the canonical functions STRAIGHT_FEED, STRAIGHT_TRAVERSE,
-   STRAIGHT_PROBE, and ARC_FEED. These are always set on two lines
-   with the rotary axes on the second line:
-
-   3. Calls to the canonical function SET_ORIGIN_OFFSETS.  These are
-   always set on six lines, with one argument per line.
-
-   4. Anywhere else AA, BB, or CC appears followed by an underscore.
-
-   The pre-preprocessor looks for these items of typography and, in the output
-   file (pre.cc), resets them appropriately marked with #ifdef and #endif.
-   The rest of the text is put into the output file unchanged.
-
-   The compiler flags are:
-
-   1. -DAA to have an A-axis
-
-   2. -DBB to have a B-axis
-
-   3. -DCC to have a C-axis
-
-   4. -DALL_AXES to have a 3-, 4-, or 5-axis interpreter use all three
-   rotary axes in canonical function calls. In those calls, the value
-   for a rotary axis not compiled into an interpreter is always zero.
-
-   5. -DAXIS_ERROR to have a 3-, 4-, or 5-axis interpreter signal an error
-   if the input RS274 code has a value for an axis not compiled in. If
-   this flag is not used, the interpreter will read and ignore values for
-   axes not compiled in.
-
    */
 
    /****************************************************************************/
@@ -150,6 +110,94 @@ static const double PI2 =     1.5707963267948966;
    // English - Metric conversion (long number keeps error buildup down)
 static const double MM_PER_INCH = 25.4;
 static const double INCH_PER_MM = 0.039370078740157477;
+
+   // G Codes are symbolic to be dialect-independent in source code
+enum
+{
+	G_0 =       0,
+	G_1 =      10,
+	G_2 =      20,
+	G_3 =      30,
+	G_4 =      40,
+	G_10 =    100,
+	G_17 =    170,
+	G_18 =    180,
+	G_19 =    190,
+	G_20 =    200,
+	G_21 =    210,
+	G_28 =    280,
+	G_30 =    300,
+	G_38_2 =  382,
+	G_40 =    400,
+	G_41 =    410,
+	G_42 =    420,
+	G_43 =    430,
+	G_49 =    490,
+	G_53 =    530,
+	G_54 =    540,
+	G_55 =    550,
+	G_56 =    560,
+	G_57 =    570,
+	G_58 =    580,
+	G_59 =    590,
+	G_59_1 =  591,
+	G_59_2 =  592,
+	G_59_3 =  593,
+	G_61 =    610,
+	G_61_1 =  611,
+	G_64 =    640,
+	G_80 =    800,
+	G_81 =    810,
+	G_82 =    820,
+	G_83 =    830,
+	G_84 =    840,
+	G_85 =    850,
+	G_86 =    860,
+	G_87 =    870,
+	G_88 =    880,
+	G_89 =    890,
+	G_90 =    900,
+	G_91 =    910,
+	G_92 =    920,
+	G_92_1 =  921,
+	G_92_2 =  922,
+	G_92_3 =  923,
+	G_93 =    930,
+	G_94 =    940,
+	G_98 =    980,
+	G_99 =    990
+};
+
+   // unary operations
+   // These are not enums because the "&" operator is used in
+   // reading the operation names and is illegal with an enum
+
+#define ABS 1
+#define ACOS 2
+#define ASIN 3
+#define ATAN 4
+#define COS 5
+#define EXP 6
+#define FIX 7
+#define FUP 8
+#define LN 9
+#define ROUND 10
+#define SIN 11
+#define SQRT 12
+#define TAN 13
+
+   // binary operations
+#define NO_OPERATION 0
+#define DIVIDED_BY 1
+#define MODULO 2
+#define POWER 3
+#define TIMES 4
+#define AND2 5
+#define EXCLUSIVE_OR 6
+#define MINUS 7
+#define NON_EXCLUSIVE_OR 8
+#define PLUS 9
+#define RIGHT_BRACKET 10
 
 #define DEBUG_EMC
 
@@ -208,86 +256,39 @@ if ((status = (try_this)) != RS274NGC_OK) \
 
    */
 
-            static int arc_data_comp_ijk(int move, int side, double tool_radius,
-            double current_x, double current_y, double end_x, double end_y,
-            double i_number, double j_number, double * center_x, double * center_y,
-            int * turn, double tolerance);
-static int arc_data_comp_r(int move, int side, double tool_radius,
-double current_x, double current_y, double end_x, double end_y,
-double big_radius, double * center_x, double * center_y, int * turn);
-static int arc_data_ijk(int move, double current_x, double current_y,
-double end_x, double end_y, double i_number, double j_number,
-double * center_x, double * center_y, int * turn, double tolerance);
-static int arc_data_r(int move, double current_x, double current_y,
-double end_x, double end_y, double radius, double * center_x,
-double * center_y, int * turn);
+static int arc_data_comp_ijk(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
+static int arc_data_comp_r(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
+static int arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
+static int arc_data_r(int move, double current_x, double current_y, double end_x, double end_y, double radius, double * center_x, double * center_y, int * turn);
 static int check_g_codes(block_pointer block, setup_pointer settings);
 static int check_items(block_pointer block, setup_pointer settings);
 static int check_m_codes(block_pointer block);
 static int check_other_codes(block_pointer block);
 static int close_and_downcase(char * line);
 static int convert_arc(int move, block_pointer block, setup_pointer settings);
-static int convert_arc2(int move, block_pointer block,
-setup_pointer settings, double * current1, double * current2,
-double * current3, double end1, double end2,
-double end3
-, double AA_end
-, double BB_end
-, double CC_end
-, double offset1,
-double offset2);
-static int convert_arc_comp1(int move, block_pointer block,
-setup_pointer settings, double end_x, double end_y,
-double end_z
-, double AA_end
-, double BB_end
-, double CC_end
-);
-static int convert_arc_comp2(int move, block_pointer block,
-setup_pointer settings, double end_x, double end_y,
-double end_z
-, double AA_end
-, double BB_end
-, double CC_end
-);
-static int convert_axis_offsets(int g_code, block_pointer block,
-setup_pointer settings);
+static int convert_arc2(int move, block_pointer block, setup_pointer settings, double * current1, double * current2, double * current3, double end1, double end2, double end3, double AA_end, double BB_end, double CC_end, double offset1, double offset2);
+static int convert_arc_comp1(int move, block_pointer block, setup_pointer settings, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end);
+static int convert_arc_comp2(int move, block_pointer block, setup_pointer settings, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end);
+static int convert_axis_offsets(int g_code, block_pointer block, setup_pointer settings);
 static int convert_comment(char * comment);
 static int convert_control_mode(int g_code, setup_pointer settings);
 static int convert_coordinate_system(int g_code, setup_pointer settings);
-static int convert_cutter_compensation(int g_code, block_pointer block,
-setup_pointer settings);
+static int convert_cutter_compensation(int g_code, block_pointer block, setup_pointer settings);
 static int convert_cutter_compensation_off(setup_pointer settings);
-static int convert_cutter_compensation_on(int side, block_pointer block,
-setup_pointer settings);
-static int convert_cycle(int motion, block_pointer block,
-setup_pointer settings);
-static int convert_cycle_g81(CANON_PLANE plane, double x, double y,
-double clear_z, double bottom_z);
-static int convert_cycle_g82(CANON_PLANE plane, double x, double y,
-double clear_z, double bottom_z, double dwell);
-static int convert_cycle_g83(CANON_PLANE plane, double x, double y,
-double r, double clear_z, double bottom_z, double delta);
-static int convert_cycle_g84(CANON_PLANE plane, double x, double y,
-double clear_z, double bottom_z, CANON_DIRECTION direction,
-CANON_SPEED_FEED_MODE mode);
-static int convert_cycle_g85(CANON_PLANE plane, double x, double y,
-double clear_z, double bottom_z);
-static int convert_cycle_g86(CANON_PLANE plane, double x, double y,
-double clear_z, double bottom_z, double dwell, CANON_DIRECTION direction);
-static int convert_cycle_g87(CANON_PLANE plane, double x, double offset_x,
-double y, double offset_y, double r, double clear_z, double middle_z,
-double bottom_z, CANON_DIRECTION direction);
-static int convert_cycle_g88(CANON_PLANE plane, double x, double y,
-double bottom_z, double dwell, CANON_DIRECTION direction);
-static int convert_cycle_g89(CANON_PLANE plane, double x, double y,
-double clear_z, double bottom_z, double dwell);
-static int convert_cycle_xy(int motion, block_pointer block,
-setup_pointer settings);
-static int convert_cycle_yz(int motion, block_pointer block,
-setup_pointer settings);
-static int convert_cycle_zx(int motion, block_pointer block,
-setup_pointer settings);
+static int convert_cutter_compensation_on(int side, block_pointer block, setup_pointer settings);
+static int convert_cycle(int motion, block_pointer block, setup_pointer settings);
+static int convert_cycle_g81(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z);
+static int convert_cycle_g82(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, double dwell);
+static int convert_cycle_g83(CANON_PLANE plane, double x, double y, double r, double clear_z, double bottom_z, double delta);
+static int convert_cycle_g84(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, CANON_DIRECTION direction, CANON_SPEED_FEED_MODE mode);
+static int convert_cycle_g85(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z);
+static int convert_cycle_g86(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, double dwell, CANON_DIRECTION direction);
+static int convert_cycle_g87(CANON_PLANE plane, double x, double offset_x, double y, double offset_y, double r, double clear_z, double middle_z, double bottom_z, CANON_DIRECTION direction);
+static int convert_cycle_g88(CANON_PLANE plane, double x, double y, double bottom_z, double dwell, CANON_DIRECTION direction);
+static int convert_cycle_g89(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, double dwell);
+static int convert_cycle_xy(int motion, block_pointer block, setup_pointer settings);
+static int convert_cycle_yz(int motion, block_pointer block, setup_pointer settings);
+static int convert_cycle_zx(int motion, block_pointer block, setup_pointer settings);
 static int convert_distance_mode(int g_code, setup_pointer settings);
 static int convert_dwell(double time);
 static int convert_feed_mode(int g_code, setup_pointer settings);
@@ -296,170 +297,76 @@ static int convert_g(block_pointer block, setup_pointer settings);
 static int convert_home(int move, block_pointer block, setup_pointer settings);
 static int convert_length_units(int g_code, setup_pointer settings);
 static int convert_m(block_pointer block, setup_pointer settings);
-static int convert_modal_0(int code, block_pointer block,
-setup_pointer settings);
-static int convert_motion(int motion, block_pointer block,
-setup_pointer settings);
+static int convert_modal_0(int code, block_pointer block, setup_pointer settings);
+static int convert_motion(int motion, block_pointer block, setup_pointer settings);
 static int convert_probe(block_pointer block, setup_pointer settings);
 static int convert_retract_mode(int g_code, setup_pointer settings);
 static int convert_setup(block_pointer block, setup_pointer settings);
 static int convert_set_plane(int g_code, setup_pointer settings);
 static int convert_speed(block_pointer block, setup_pointer settings);
 static int convert_stop(block_pointer block, setup_pointer settings);
-static int convert_straight(int move, block_pointer block,
-setup_pointer settings);
-static int convert_straight_comp1(int move, block_pointer block,
-setup_pointer settings, double px, double py,
-double end_z
-, double AA_end
-, double BB_end
-, double CC_end
-);
-static int convert_straight_comp2(int move, block_pointer block,
-setup_pointer settings, double px, double py,
-double end_z
-, double AA_end
-, double BB_end
-, double CC_end
-);
+static int convert_straight(int move, block_pointer block, setup_pointer settings);
+static int convert_straight_comp1(int move, block_pointer block, setup_pointer settings, double px, double py, double end_z, double AA_end, double BB_end, double CC_end);
+static int convert_straight_comp2(int move, block_pointer block, setup_pointer settings, double px, double py, double end_z, double AA_end, double BB_end, double CC_end);
 static int convert_tool_change(setup_pointer settings);
-static int convert_tool_length_offset(int g_code, block_pointer block,
-setup_pointer settings);
+static int convert_tool_length_offset(int g_code, block_pointer block, setup_pointer settings);
 static int convert_tool_select(block_pointer block, setup_pointer settings);
-static int cycle_feed(CANON_PLANE plane, double end1,
-double end2, double end3);
-static int cycle_traverse(CANON_PLANE plane, double end1, double end2,
-double end3);
+static int cycle_feed(CANON_PLANE plane, double end1, double end2, double end3);
+static int cycle_traverse(CANON_PLANE plane, double end1, double end2, double end3);
 static int enhance_block(block_pointer block, setup_pointer settings);
 static int execute_binary(double * left, int operation, double * right);
 static int execute_binary1(double * left, int operation, double * right);
 static int execute_binary2(double * left, int operation, double * right);
 static int execute_block(block_pointer block, setup_pointer settings);
 static int execute_unary(double * double_ptr, int operation);
-static double find_arc_length(double x1, double y1, double z1,
-double center_x, double center_y, int turn, double x2, double y2, double z2);
-static int find_ends(block_pointer block, setup_pointer settings, double * px,
-double * py, double * pz
-, double * AA_p
-, double * BB_p
-, double * CC_p
-);
-static int find_relative(double x1, double y1,
-double z1
-, double AA_1
-, double BB_1
-, double CC_1
-, double * x2, double * y2,
-double * z2
-, double * AA_2
-, double * BB_2
-, double * CC_2
-,
-setup_pointer settings);
-static double find_straight_length(double x2, double y2,
-double z2
-, double AA_2
-, double BB_2
-, double CC_2
-, double x1, double y1,
-double z1
-, double AA_1
-, double BB_1
-, double CC_1
-);
-static double find_turn(double x1, double y1, double center_x, double center_y,
-int turn, double x2, double y2);
+static double find_arc_length(double x1, double y1, double z1, double center_x, double center_y, int turn, double x2, double y2, double z2);
+static int find_ends(block_pointer block, setup_pointer settings, double * px, double * py, double * pz, double * AA_p, double * BB_p, double * CC_p);
+static int find_relative(double x1, double y1, double z1, double AA_1, double BB_1, double CC_1, double * x2, double * y2, double * z2, double * AA_2, double * BB_2, double * CC_2,setup_pointer settings);
+static double find_straight_length(double x2, double y2, double z2, double AA_2, double BB_2, double CC_2, double x1, double y1, double z1, double AA_1, double BB_1, double CC_1);
+static double find_turn(double x1, double y1, double center_x, double center_y, int turn, double x2, double y2);
 static int init_block(block_pointer block);
-static int inverse_time_rate_arc(double x1, double y1, double z1,
-double cx, double cy, int turn, double x2, double y2, double z2,
-block_pointer block, setup_pointer settings);
-static int inverse_time_rate_arc2(double start_x, double start_y, int turn1,
-double mid_x, double mid_y, double cx, double cy, int turn2, double end_x,
-double end_y, double end_z, block_pointer block, setup_pointer settings);
-static int inverse_time_rate_as(double start_x, double start_y, int turn,
-double mid_x, double mid_y, double end_x, double end_y,
-double end_z
-, double AA_end
-, double BB_end
-, double CC_end
-,
-block_pointer block, setup_pointer settings);
-static int inverse_time_rate_straight(double end_x, double end_y,
-double end_z
-, double AA_end
-, double BB_end
-, double CC_end
-,
-block_pointer block, setup_pointer settings);
+static int inverse_time_rate_arc(double x1, double y1, double z1, double cx, double cy, int turn, double x2, double y2, double z2, block_pointer block, setup_pointer settings);
+static int inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_pointer block, setup_pointer settings);
+static int inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_pointer block, setup_pointer settings);
+static int inverse_time_rate_straight(double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_pointer block, setup_pointer settings);
 static int parse_line(char * line, block_pointer block,setup_pointer settings);
 static int precedence(int an_operator);
-static int read_a(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_atan(char * line, int * counter, double * double_ptr,
-double * parameters);
-static int read_b(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_c(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_comment(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_d(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_f(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_g(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_h(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_i(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_integer_unsigned(char * line, int * counter,
-int * integer_ptr);
-static int read_integer_value(char * line, int * counter, int * integer_ptr,
-double * parameters);
+static int read_a(char * line, int * counter, block_pointer block, double * parameters);
+static int read_atan(char * line, int * counter, double * double_ptr, double * parameters);
+static int read_b(char * line, int * counter, block_pointer block, double * parameters);
+static int read_c(char * line, int * counter, block_pointer block, double * parameters);
+static int read_comment(char * line, int * counter, block_pointer block, double * parameters);
+static int read_d(char * line, int * counter, block_pointer block, double * parameters);
+static int read_f(char * line, int * counter, block_pointer block, double * parameters);
+static int read_g(char * line, int * counter, block_pointer block, double * parameters);
+static int read_h(char * line, int * counter, block_pointer block, double * parameters);
+static int read_i(char * line, int * counter, block_pointer block, double * parameters);
+static int read_integer_unsigned(char * line, int * counter, int * integer_ptr);
+static int read_integer_value(char * line, int * counter, int * integer_ptr, double * parameters);
 static int read_items(block_pointer block, char * line, double * parameters);
-static int read_j(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_k(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_l(char * line, int * counter, block_pointer block,
-double * parameters);
+static int read_j(char * line, int * counter, block_pointer block, double * parameters);
+static int read_k(char * line, int * counter, block_pointer block, double * parameters);
+static int read_l(char * line, int * counter, block_pointer block, double * parameters);
 static int read_line_number(char * line, int * counter, block_pointer block);
-static int read_m(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_one_item(char * line, int * counter, block_pointer block,
-double * parameters);
+static int read_m(char * line, int * counter, block_pointer block, double * parameters);
+static int read_one_item(char * line, int * counter, block_pointer block, double * parameters);
 static int read_operation(char * line, int * counter, int * operation);
 static int read_operation_unary(char * line, int * counter, int * operation);
-static int read_p(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_parameter(char * line, int * counter, double * double_ptr,
-double * parameters);
-static int read_parameter_setting(char * line, int * counter,
-block_pointer block, double * parameters);
-static int read_q(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_r(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_real_expression(char * line, int * counter,
-double * hold2, double * parameters);
+static int read_p(char * line, int * counter, block_pointer block, double * parameters);
+static int read_parameter(char * line, int * counter, double * double_ptr, double * parameters);
+static int read_parameter_setting(char * line, int * counter, block_pointer block, double * parameters);
+static int read_q(char * line, int * counter, block_pointer block, double * parameters);
+static int read_r(char * line, int * counter, block_pointer block, double * parameters);
+static int read_real_expression(char * line, int * counter, double * hold2, double * parameters);
 static int read_real_number(char * line, int * counter, double * double_ptr);
-static int read_real_value(char * line, int * counter, double * double_ptr,
-double * parameters);
-static int read_s(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_t(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_text(const char * command, FILE * inport, char * raw_line,
-char * line, int * length);
-static int read_unary(char * line, int * counter, double * double_ptr,
-double * parameters);
-static int read_x(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_y(char * line, int * counter, block_pointer block,
-double * parameters);
-static int read_z(char * line, int * counter, block_pointer block,
-double * parameters);
+static int read_real_value(char * line, int * counter, double * double_ptr, double * parameters);
+static int read_s(char * line, int * counter, block_pointer block, double * parameters);
+static int read_t(char * line, int * counter, block_pointer block, double * parameters);
+static int read_text(const char * command, FILE * inport, char * raw_line, char * line, int * length);
+static int read_unary(char * line, int * counter, double * double_ptr, double * parameters);
+static int read_x(char * line, int * counter, block_pointer block, double * parameters);
+static int read_y(char * line, int * counter, block_pointer block, double * parameters);
+static int read_z(char * line, int * counter, block_pointer block, double * parameters);
 static int set_probe_data(setup_pointer settings);
 static int write_g_codes(block_pointer block, setup_pointer settings);
 static int write_m_codes(block_pointer block, setup_pointer settings);
@@ -513,55 +420,56 @@ static int write_settings(setup_pointer settings);
 static const int _gees[] =
 {
     /*   0 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /*  20 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /*  40 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /*  60 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /*  80 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 100 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 120 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 140 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 160 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 180 */   2,-1,-1,-1,-1,-1,-1,-1,-1,-1, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 200 */   6,-1,-1,-1,-1,-1,-1,-1,-1,-1, 6,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 220 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 240 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 260 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 280 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 300 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 320 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 340 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 360 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 380 */  -1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 400 */   7,-1,-1,-1,-1,-1,-1,-1,-1,-1, 7,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 420 */   7,-1,-1,-1,-1,-1,-1,-1,-1,-1, 8,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 440 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 460 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 480 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 8,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 500 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 520 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 540 */  12,-1,-1,-1,-1,-1,-1,-1,-1,-1,12,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 560 */  12,-1,-1,-1,-1,-1,-1,-1,-1,-1,12,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 580 */  12,-1,-1,-1,-1,-1,-1,-1,-1,-1,12,12,12,12,-1,-1,-1,-1,-1,-1,
-        /* 600 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,13,13,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 620 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 640 */  13,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 660 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 680 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 700 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 720 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 740 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 760 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 780 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 800 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 820 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 840 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 860 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 880 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 900 */   3,-1,-1,-1,-1,-1,-1,-1,-1,-1, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 920 */   0, 0, 0, 0,-1,-1,-1,-1,-1,-1, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 940 */   5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 960 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-        /* 980 */  10,-1,-1,-1,-1,-1,-1,-1,-1,-1,10,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    /*  20 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /*  40 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /*  60 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /*  80 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 100 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 120 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 140 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 160 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 180 */   2,-1,-1,-1,-1,-1,-1,-1,-1,-1, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 200 */   6,-1,-1,-1,-1,-1,-1,-1,-1,-1, 6,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 220 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 240 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 260 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 280 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 300 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 320 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 340 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 360 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 380 */  -1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 400 */   7,-1,-1,-1,-1,-1,-1,-1,-1,-1, 7,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 420 */   7,-1,-1,-1,-1,-1,-1,-1,-1,-1, 8,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 440 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 460 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 480 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 8,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 500 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 520 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 540 */  12,-1,-1,-1,-1,-1,-1,-1,-1,-1,12,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 560 */  12,-1,-1,-1,-1,-1,-1,-1,-1,-1,12,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 580 */  12,-1,-1,-1,-1,-1,-1,-1,-1,-1,12,12,12,12,-1,-1,-1,-1,-1,-1,
+    /* 600 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,13,13,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 620 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 640 */  13,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 660 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 680 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 700 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 720 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 740 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 760 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 780 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 800 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 820 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 840 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 860 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 880 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 900 */   3,-1,-1,-1,-1,-1,-1,-1,-1,-1, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 920 */   0, 0, 0, 0,-1,-1,-1,-1,-1,-1, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 940 */   5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 960 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 980 */  10,-1,-1,-1,-1,-1,-1,-1,-1,-1,10,-1,-1,-1,-1,-1,-1,-1,-1,-1
+};
 
    /*
 
@@ -579,19 +487,19 @@ static const int _gees[] =
 
    */
 
-    static const int _ems[] =
-    {
-        4,  4,  4,  7,  7,  7,  6,  8,  8,  8,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            4, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1,  9,  9,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            4, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
-    };
+static const int _ems[] =
+{
+    4,  4,  4,  7,  7,  7,  6,  8,  8,  8,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    4, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,  9,  9,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    4, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+};
 
    /* 
 

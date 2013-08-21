@@ -80,93 +80,6 @@ Plan to reuse gcode parsing and interpreter individually.
    // number of parameters in parameter table
 #define RS274NGC_MAX_PARAMETERS 5400
 
-   // unary operations
-   // These are not enums because the "&" operator is used in
-   // reading the operation names and is illegal with an enum
-
-#define ABS 1
-#define ACOS 2
-#define ASIN 3
-#define ATAN 4
-#define COS 5
-#define EXP 6
-#define FIX 7
-#define FUP 8
-#define LN 9
-#define ROUND 10
-#define SIN 11
-#define SQRT 12
-#define TAN 13
-
-   // binary operations
-#define NO_OPERATION 0
-#define DIVIDED_BY 1
-#define MODULO 2
-#define POWER 3
-#define TIMES 4
-#define AND2 5
-#define EXCLUSIVE_OR 6
-#define MINUS 7
-#define NON_EXCLUSIVE_OR 8
-#define PLUS 9
-#define RIGHT_BRACKET 10
-
-   // G Codes are symbolic to be dialect-independent in source code
-enum
-{
-	G_0 =       0,
-	G_1 =      10,
-	G_2 =      20,
-	G_3 =      30,
-	G_4 =      40,
-	G_10 =    100,
-	G_17 =    170,
-	G_18 =    180,
-	G_19 =    190,
-	G_20 =    200,
-	G_21 =    210,
-	G_28 =    280,
-	G_30 =    300,
-	G_38_2 =  382,
-	G_40 =    400,
-	G_41 =    410,
-	G_42 =    420,
-	G_43 =    430,
-	G_49 =    490,
-	G_53 =    530,
-	G_54 =    540,
-	G_55 =    550,
-	G_56 =    560,
-	G_57 =    570,
-	G_58 =    580,
-	G_59 =    590,
-	G_59_1 =  591,
-	G_59_2 =  592,
-	G_59_3 =  593,
-	G_61 =    610,
-	G_61_1 =  611,
-	G_64 =    640,
-	G_80 =    800,
-	G_81 =    810,
-	G_82 =    820,
-	G_83 =    830,
-	G_84 =    840,
-	G_85 =    850,
-	G_86 =    860,
-	G_87 =    870,
-	G_88 =    880,
-	G_89 =    890,
-	G_90 =    900,
-	G_91 =    910,
-	G_92 =    920,
-	G_92_1 =  921,
-	G_92_2 =  922,
-	G_92_3 =  923,
-	G_93 =    930,
-	G_94 =    940,
-	G_98 =    980,
-	G_99 =    990
-};
    /**********************/
    /*      TYPEDEFS      */
    /**********************/
@@ -178,11 +91,7 @@ enum DISTANCE_MODE {MODE_ABSOLUTE, MODE_INCREMENTAL};
 enum RETRACT_MODE {R_PLANE, OLD_Z};
 
    // on-off switch settings
-enum ON_OFF
-{
-	OFF,
-	ON
-};
+enum ON_OFF {OFF, ON};
 
 struct block
 {
@@ -192,17 +101,20 @@ struct block
     double   b_number;
     ON_OFF   c_flag;
     double   c_number;
+    
     char     comment[256];
     int      d_number;
     double   f_number;
     int      g_modes[14];
     int      h_number;
+    
     ON_OFF   i_flag;
     double   i_number;
     ON_OFF   j_flag;
     double   j_number;
     ON_OFF   k_flag;
     double   k_number;
+    
     int      l_number;
     int      line_number;
     int      motion_to_be;
@@ -214,6 +126,7 @@ struct block
     double   r_number;
     double   s_number;
     int      t_number;
+    
     ON_OFF   x_flag;
     double   x_number;
     ON_OFF   y_flag;
@@ -335,38 +248,37 @@ typedef int (*read_function_pointer) (char *, int *, block_pointer, double *);
    */
 
    // close the currently open NC code file
-extern int rs274ngc_close();
+int rs274ngc_close();
 
    // execute a line of NC code
-extern int rs274ngc_execute();
+int rs274ngc_execute();
 
    // stop running
-extern int rs274ngc_exit();
+int rs274ngc_exit();
 
    // get ready to run
-extern int rs274ngc_init();
+int rs274ngc_init();
 
    // load a tool table
-extern int rs274ngc_load_tool_table();
+int rs274ngc_load_tool_table();
 
    // open a file of NC code
-extern int rs274ngc_open(const char *filename);
+int rs274ngc_open(const char *filename);
 
    // read the mdi or the next line of the open NC code file
-extern int rs274ngc_read(const char * mdi = 0);
+int rs274ngc_read(const char * mdi = 0);
 
    // reset yourself
-extern int rs274ngc_reset();
+int rs274ngc_reset();
 
    // restore interpreter variables from a file
-extern int rs274ngc_restore_parameters(const char * filename);
+int rs274ngc_restore_parameters(const char * filename);
 
    // save interpreter variables to file
-extern int rs274ngc_save_parameters(const char * filename,
-const double parameters[]);
+int rs274ngc_save_parameters(const char * filename, const double parameters[]);
 
    // synchronize your internal model with the external world
-extern int rs274ngc_synch();
+int rs274ngc_synch();
 
    /*************************************************************************/
    /* 
@@ -380,35 +292,35 @@ extern int rs274ngc_synch();
    */
 
    // copy active G codes into array [0]..[11]
-extern void rs274ngc_active_g_codes(int * codes);
+void rs274ngc_active_g_codes(int * codes);
 
    // copy active M codes into array [0]..[6]
-extern void rs274ngc_active_m_codes(int * codes);
+void rs274ngc_active_m_codes(int * codes);
 
    // copy active F, S settings into array [0]..[2]
-extern void rs274ngc_active_settings(double * settings);
+void rs274ngc_active_settings(double * settings);
 
    // copy the text of the error message whose number is error_code into the
    // error_text array, but stop at max_size if the text is longer.
-extern void rs274ngc_error_text(int error_code, char * error_text, size_t max_size);
+void rs274ngc_error_text(int error_code, char * error_text, size_t max_size);
 
    // copy the name of the currently open file into the file_name array,
    // but stop at max_size if the name is longer
-extern void rs274ngc_file_name(char * file_name, size_t max_size);
+void rs274ngc_file_name(char * file_name, size_t max_size);
 
    // return the length of the most recently read line
-extern int rs274ngc_line_length();
+int rs274ngc_line_length();
 
    // copy the text of the most recently read line into the line_text array,
    // but stop at max_size if the text is longer
-extern void rs274ngc_line_text(char * line_text, size_t max_size);
+void rs274ngc_line_text(char * line_text, size_t max_size);
 
    // return the current sequence number (how many lines read)
-extern int rs274ngc_sequence_number();
+int rs274ngc_sequence_number();
 
    // copy the function name from the stack_index'th position of the
    // function call stack at the time of the most recent error into
    // the function name string, but stop at max_size if the name is longer
-extern void rs274ngc_stack_name(int stack_index, char * function_name, int max_size);
+void rs274ngc_stack_name(int stack_index, char * function_name, int max_size);
 
 #endif
