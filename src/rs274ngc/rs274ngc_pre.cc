@@ -215,48 +215,24 @@ static int convert_arc2(int move, block_pointer block,
 setup_pointer settings, double * current1, double * current2,
 double * current3, double end1, double end2,
 double end3
-#ifdef AA
 , double AA_end
-#endif
-
-#ifdef BB
 , double BB_end
-#endif
-
-#ifdef CC
 , double CC_end
-#endif
 , double offset1,
 double offset2);
 static int convert_arc_comp1(int move, block_pointer block,
 setup_pointer settings, double end_x, double end_y,
 double end_z
-#ifdef AA
 , double AA_end
-#endif
-
-#ifdef BB
 , double BB_end
-#endif
-
-#ifdef CC
 , double CC_end
-#endif
 );
 static int convert_arc_comp2(int move, block_pointer block,
 setup_pointer settings, double end_x, double end_y,
 double end_z
-#ifdef AA
 , double AA_end
-#endif
-
-#ifdef BB
 , double BB_end
-#endif
-
-#ifdef CC
 , double CC_end
-#endif
 );
 static int convert_axis_offsets(int g_code, block_pointer block,
 setup_pointer settings);
@@ -319,32 +295,16 @@ setup_pointer settings);
 static int convert_straight_comp1(int move, block_pointer block,
 setup_pointer settings, double px, double py,
 double end_z
-#ifdef AA
 , double AA_end
-#endif
-
-#ifdef BB
 , double BB_end
-#endif
-
-#ifdef CC
 , double CC_end
-#endif
 );
 static int convert_straight_comp2(int move, block_pointer block,
 setup_pointer settings, double px, double py,
 double end_z
-#ifdef AA
 , double AA_end
-#endif
-
-#ifdef BB
 , double BB_end
-#endif
-
-#ifdef CC
 , double CC_end
-#endif
 );
 static int convert_tool_change(setup_pointer settings);
 static int convert_tool_length_offset(int g_code, block_pointer block,
@@ -364,72 +324,32 @@ static double find_arc_length(double x1, double y1, double z1,
 double center_x, double center_y, int turn, double x2, double y2, double z2);
 static int find_ends(block_pointer block, setup_pointer settings, double * px,
 double * py, double * pz
-#ifdef AA
 , double * AA_p
-#endif
-
-#ifdef BB
 , double * BB_p
-#endif
-
-#ifdef CC
 , double * CC_p
-#endif
 );
 static int find_relative(double x1, double y1,
 double z1
-#ifdef AA
 , double AA_1
-#endif
-
-#ifdef BB
 , double BB_1
-#endif
-
-#ifdef CC
 , double CC_1
-#endif
 , double * x2, double * y2,
 double * z2
-#ifdef AA
 , double * AA_2
-#endif
-
-#ifdef BB
 , double * BB_2
-#endif
-
-#ifdef CC
 , double * CC_2
-#endif
 ,
 setup_pointer settings);
 static double find_straight_length(double x2, double y2,
 double z2
-#ifdef AA
 , double AA_2
-#endif
-
-#ifdef BB
 , double BB_2
-#endif
-
-#ifdef CC
 , double CC_2
-#endif
 , double x1, double y1,
 double z1
-#ifdef AA
 , double AA_1
-#endif
-
-#ifdef BB
 , double BB_1
-#endif
-
-#ifdef CC
 , double CC_1
-#endif
 );
 static double find_turn(double x1, double y1, double center_x, double center_y,
 int turn, double x2, double y2);
@@ -443,32 +363,16 @@ double end_y, double end_z, block_pointer block, setup_pointer settings);
 static int inverse_time_rate_as(double start_x, double start_y, int turn,
 double mid_x, double mid_y, double end_x, double end_y,
 double end_z
-#ifdef AA
 , double AA_end
-#endif
-
-#ifdef BB
 , double BB_end
-#endif
-
-#ifdef CC
 , double CC_end
-#endif
 ,
 block_pointer block, setup_pointer settings);
 static int inverse_time_rate_straight(double end_x, double end_y,
 double end_z
-#ifdef AA
 , double AA_end
-#endif
-
-#ifdef BB
 , double BB_end
-#endif
-
-#ifdef CC
 , double CC_end
-#endif
 ,
 block_pointer block, setup_pointer settings);
 static int parse_line(char * line, block_pointer block,setup_pointer settings);
@@ -685,126 +589,54 @@ static const int _gees[] =
     static const int _required_parameters[] =
     {
         5161, 5162, 5163,                         /* G28 home */
-    #ifdef AA
             5164,                                 /*AA*/
-    #endif
-    #ifdef BB
             5165,                                 /*BB*/
-    #endif
-    #ifdef CC
             5166,                                 /*CC*/
-    #endif
             5181, 5182, 5183,                     /* G30 home */
-    #ifdef AA
             5184,                                 /*AA*/
-    #endif
-    #ifdef BB
             5185,                                 /*BB*/
-    #endif
-    #ifdef CC
             5186,                                 /*CC*/
-    #endif
             5211, 5212, 5213,                     /* G92 offsets */
-    #ifdef AA
             5214,                                 /*AA*/
-    #endif
-    #ifdef BB
             5215,                                 /*BB*/
-    #endif
-    #ifdef CC
             5216,                                 /*CC*/
-    #endif
             5220,                                 /* selected coordinate */
             5221, 5222, 5223,                     /* coordinate system 1 */
-    #ifdef AA
             5224,                                 /*AA*/
-    #endif
-    #ifdef BB
             5225,                                 /*BB*/
-    #endif
-    #ifdef CC
             5226,                                 /*CC*/
-    #endif
             5241, 5242, 5243,                     /* coordinate system 2 */
-    #ifdef AA
             5244,                                 /*AA*/
-    #endif
-    #ifdef BB
             5245,                                 /*BB*/
-    #endif
-    #ifdef CC
             5246,                                 /*CC*/
-    #endif
             5261, 5262, 5263,                     /* coordinate system 3 */
-    #ifdef AA
             5264,                                 /*AA*/
-    #endif
-    #ifdef BB
             5265,                                 /*BB*/
-    #endif
-    #ifdef CC
             5266,                                 /*CC*/
-    #endif
             5281, 5282, 5283,                     /* coordinate system 4 */
-    #ifdef AA
             5284,                                 /*AA*/
-    #endif
-    #ifdef BB
             5285,                                 /*BB*/
-    #endif
-    #ifdef CC
             5286,                                 /*CC*/
-    #endif
             5301, 5302, 5303,                     /* coordinate system 5 */
-    #ifdef AA
             5304,                                 /*AA*/
-    #endif
-    #ifdef BB
             5305,                                 /*BB*/
-    #endif
-    #ifdef CC
             5306,                                 /*CC*/
-    #endif
             5321, 5322, 5323,                     /* coordinate system 6 */
-    #ifdef AA
             5324,                                 /*AA*/
-    #endif
-    #ifdef BB
             5325,                                 /*BB*/
-    #endif
-    #ifdef CC
             5326,                                 /*CC*/
-    #endif
             5341, 5342, 5343,                     /* coordinate system 7 */
-    #ifdef AA
             5344,                                 /*AA*/
-    #endif
-    #ifdef BB
             5345,                                 /*BB*/
-    #endif
-    #ifdef CC
             5346,                                 /*CC*/
-    #endif
             5361, 5362, 5363,                     /* coordinate system 8 */
-    #ifdef AA
             5364,                                 /*AA*/
-    #endif
-    #ifdef BB
             5365,                                 /*BB*/
-    #endif
-    #ifdef CC
             5366,                                 /*CC*/
-    #endif
             5381, 5382, 5383,                     /* coordinate system 9 */
-    #ifdef AA
             5384,                                 /*AA*/
-    #endif
-    #ifdef BB
             5385,                                 /*BB*/
-    #endif
-    #ifdef CC
             5386,                                 /*CC*/
-    #endif
             RS274NGC_MAX_PARAMETERS
     };
 
@@ -1383,27 +1215,21 @@ static const int _gees[] =
         int motion;
 
         motion = block->motion_to_be;
-#ifdef AA
         if (block->a_flag != OFF)
         {
             CHK(((block->g_modes[1] > G_80) and (block->g_modes[1] < G_90)),
                 NCE_CANNOT_PUT_AN_A_IN_CANNED_CYCLE);
         }
-#endif
-#ifdef BB
         if (block->b_flag != OFF)
         {
             CHK(((block->g_modes[1] > G_80) and (block->g_modes[1] < G_90)),
                 NCE_CANNOT_PUT_A_B_IN_CANNED_CYCLE);
         }
-#endif
-#ifdef CC
         if (block->c_flag != OFF)
         {
             CHK(((block->g_modes[1] > G_80) and (block->g_modes[1] < G_90)),
                 NCE_CANNOT_PUT_A_C_IN_CANNED_CYCLE);
         }
-#endif
         if (block->d_number != -1)
         {
             CHK(((block->g_modes[7] != G_41) and (block->g_modes[7] != G_42)),
@@ -1617,15 +1443,9 @@ static const int _gees[] =
         double end_x;
         double end_y;
         double end_z;
-#ifdef AA
         double AA_end;                            /*AA*/
-#endif
-#ifdef BB
         double BB_end;                            /*BB*/
-#endif
-#ifdef CC
         double CC_end;                            /*CC*/
-#endif
 
         ijk_flag =
             ((block->i_flag or block->j_flag) or block->k_flag) ? ON : OFF;
@@ -1697,17 +1517,9 @@ static const int _gees[] =
 
         find_ends(block, settings, &end_x, &end_y,
             &end_z
-    #ifdef AA
             , &AA_end
-    #endif
-
-    #ifdef BB
             , &BB_end
-    #endif
-
-    #ifdef CC
             , &CC_end
-    #endif
             );
         settings->motion_mode = move;
 
@@ -1721,17 +1533,9 @@ static const int _gees[] =
                     &(settings->current_x), &(settings->current_y),
                     &(settings->current_z), end_x, end_y,
                     end_z
-    #ifdef AA
                     , AA_end
-    #endif
-
-    #ifdef BB
                     , BB_end
-    #endif
-
-    #ifdef CC
                     , CC_end
-    #endif
                     , block->i_number,
                     block->j_number);
                 CHP(status);
@@ -1741,17 +1545,9 @@ static const int _gees[] =
                 status =
                     convert_arc_comp1(move, block, settings, end_x, end_y,
                     end_z
-    #ifdef AA
                     , AA_end
-    #endif
-
-    #ifdef BB
                     , BB_end
-    #endif
-
-    #ifdef CC
                     , CC_end
-    #endif
                     );
                 CHP(status);
             }
@@ -1760,17 +1556,9 @@ static const int _gees[] =
                 status =
                     convert_arc_comp2(move, block, settings, end_x, end_y,
                     end_z
-    #ifdef AA
                     , AA_end
-    #endif
-
-    #ifdef BB
                     , BB_end
-    #endif
-
-    #ifdef CC
                     , CC_end
-    #endif
                     );
 
                 CHP(status);
@@ -1783,17 +1571,9 @@ static const int _gees[] =
                 &(settings->current_z), &(settings->current_x),
                 &(settings->current_y), end_z, end_x,
                 end_y
-    #ifdef AA
                 , AA_end
-    #endif
-
-    #ifdef BB
                 , BB_end
-    #endif
-
-    #ifdef CC
                 , CC_end
-    #endif
                 , block->k_number,
                 block->i_number);
             CHP(status);
@@ -1805,17 +1585,9 @@ static const int _gees[] =
                 &(settings->current_y), &(settings->current_z),
                 &(settings->current_x), end_y, end_z,
                 end_x
-    #ifdef AA
                 , AA_end
-    #endif
-
-    #ifdef BB
                 , BB_end
-    #endif
-
-    #ifdef CC
                 , CC_end
-    #endif
                 , block->j_number,
                 block->k_number);
             CHP(status);
@@ -1855,15 +1627,9 @@ static const int _gees[] =
     double end1,                                  /* coordinate 1 value at end of arc         */
     double end2,                                  /* coordinate 2 value at end of arc         */
     double end3,                                  /* coordinate 3 value at end of arc         */
-#ifdef AA
     double AA_end,                                /* a-value at end of arc                    *//*AA*/
-#endif
-#ifdef BB
     double BB_end,                                /* b-value at end of arc                    *//*BB*/
-#endif
-#ifdef CC
     double CC_end,                                /* c-value at end of arc                    *//*CC*/
-#endif
     double offset1,                               /* offset of center from current1           */
     double offset2)                               /* offset of center from current2           */
     {
@@ -1893,40 +1659,16 @@ static const int _gees[] =
                 turn, end1, end2, end3, block, settings);
         ARC_FEED(end1, end2, center1, center2, turn,
             end3
-    #ifdef AA
             , AA_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef BB
             , BB_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef CC
             , CC_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
             );
         *current1 = end1;
         *current2 = end2;
         *current3 = end3;
-#ifdef AA
         settings->AA_current = AA_end;       /*AA*/
-#endif
-#ifdef BB
         settings->BB_current = BB_end;       /*BB*/
-#endif
-#ifdef CC
         settings->CC_current = CC_end;       /*CC*/
-#endif
         return RS274NGC_OK;
     }
 
@@ -1965,15 +1707,9 @@ static const int _gees[] =
     double end_x,                                 /* x-value at end of programmed (then actual) arc   */
     double end_y,                                 /* y-value at end of programmed (then actual) arc   */
     double end_z                                  /* z-value at end of arc                            */
-#ifdef AA
     , double AA_end                               /* a-value at end of arc                      *//*AA*/
-#endif
-#ifdef BB
     , double BB_end                               /* b-value at end of arc                      *//*BB*/
-#endif
-#ifdef CC
     , double CC_end                               /* c-value at end of arc                      *//*CC*/
-#endif
     )
     {
         static const char name[] = "convert_arc_comp1";
@@ -2029,40 +1765,16 @@ static const int _gees[] =
                 end_x, end_y, end_z, block, settings);
         ARC_FEED(end_x, end_y, center_x, center_y, turn,
             end_z
-    #ifdef AA
             , AA_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef BB
             , BB_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef CC
             , CC_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
             );
         settings->current_x = end_x;
         settings->current_y = end_y;
         settings->current_z = end_z;
-#ifdef AA
         settings->AA_current = AA_end;       /*AA*/
-#endif
-#ifdef BB
         settings->BB_current = BB_end;       /*BB*/
-#endif
-#ifdef CC
         settings->CC_current = CC_end;       /*CC*/
-#endif
 
         return RS274NGC_OK;
     }
@@ -2113,15 +1825,9 @@ static const int _gees[] =
     double end_x,                                 /* x-value at end of programmed (then actual) arc */
     double end_y,                                 /* y-value at end of programmed (then actual) arc */
     double end_z                                  /* z-value at end of arc                          */
-#ifdef AA
     , double AA_end                               /* a-value at end of arc                    *//*AA*/
-#endif
-#ifdef BB
     , double BB_end                               /* b-value at end of arc                    *//*BB*/
-#endif
-#ifdef CC
     , double CC_end                               /* c-value at end of arc                    *//*CC*/
-#endif
     )
     {
         static const char name[] = "convert_arc_comp2";
@@ -2212,51 +1918,15 @@ static const int _gees[] =
                 end_x, end_y, end_z, block, settings);
             ARC_FEED(mid_x, mid_y, start_x, start_y, ((side == LEFT) ? -1 : 1),
                 settings->current_z
-    #ifdef AA
                 , AA_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 , BB_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 , CC_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
             ARC_FEED(end_x, end_y, center_x, center_y, turn,
                 end_z
-    #ifdef AA
                 , AA_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 , BB_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 , CC_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
         }
         else                                      /* one arc needed */
@@ -2267,42 +1937,18 @@ static const int _gees[] =
                     end_x, end_y, end_z, block, settings);
             ARC_FEED(end_x, end_y, center_x, center_y, turn,
                 end_z
-    #ifdef AA
                 , AA_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 , BB_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 , CC_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
         }
 
         settings->current_x = end_x;
         settings->current_y = end_y;
         settings->current_z = end_z;
-#ifdef AA
         settings->AA_current = AA_end;       /*AA*/
-#endif
-#ifdef BB
         settings->BB_current = BB_end;       /*BB*/
-#endif
-#ifdef CC
         settings->CC_current = CC_end;       /*CC*/
-#endif
 
         return RS274NGC_OK;
     }
@@ -2400,98 +2046,40 @@ static const int _gees[] =
                 settings->current_z = block->z_number;
             }
 
-#ifdef AA
             if (block->a_flag == ON)              /*AA*/
-#endif
-#ifdef AA
             {                                     /*AA*/
                 settings->AA_axis_offset = (settings->AA_current +
-    #endif
-    #ifdef AA
-   /*AA*/
                     settings->AA_axis_offset - block->a_number);
-#endif
-#ifdef AA
-   /*AA*/
                 settings->AA_current = block->a_number;
             }
-#endif
 
-#ifdef BB
             if (block->b_flag == ON)              /*BB*/
-#endif
-#ifdef BB
             {                                     /*BB*/
                 settings->BB_axis_offset = (settings->BB_current +
-    #endif
-    #ifdef BB
-   /*BB*/
                     settings->BB_axis_offset - block->b_number);
-#endif
-#ifdef BB
-   /*BB*/
                 settings->BB_current = block->b_number;
             }
-#endif
 
-#ifdef CC
             if (block->c_flag == ON)              /*CC*/
-#endif
-#ifdef CC
             {                                     /*CC*/
                 settings->CC_axis_offset = (settings->CC_current +
-    #endif
-    #ifdef CC
-   /*CC*/
                     settings->CC_axis_offset - block->c_number);
-#endif
-#ifdef CC
-   /*CC*/
                 settings->CC_current = block->c_number;
             }
-#endif
 
             SET_ORIGIN_OFFSETS(settings->origin_offset_x + settings->axis_offset_x,
                 settings->origin_offset_y + settings->axis_offset_y,
                 settings->origin_offset_z + settings->axis_offset_z
-    #ifdef AA
                 ,                      (settings->AA_origin_offset + settings->AA_axis_offset)
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,                      (settings->BB_origin_offset + settings->BB_axis_offset)
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,                      (settings->CC_origin_offset + settings->CC_axis_offset)
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
             pars[5211] = settings->axis_offset_x;
             pars[5212] = settings->axis_offset_y;
             pars[5213] = settings->axis_offset_z;
-#ifdef AA
-   /*AA*/
             pars[5214] = settings->AA_axis_offset;
-#endif
-#ifdef BB
-   /*BB*/
             pars[5215] = settings->BB_axis_offset;
-#endif
-#ifdef CC
-   /*CC*/
             pars[5216] = settings->CC_axis_offset;
-#endif
-
         }
         else if ((g_code == G_92_1) or (g_code == G_92_2))
         {
@@ -2501,78 +2089,33 @@ static const int _gees[] =
                 settings->current_y + settings->axis_offset_y;
             settings->current_z =
                 settings->current_z + settings->axis_offset_z;
-#ifdef AA
             settings->AA_current =           /*AA*/
-    #endif
-    #ifdef AA
-   /*AA*/
                 (settings->AA_current + settings->AA_axis_offset);
-#endif
-#ifdef BB
             settings->BB_current =           /*BB*/
-    #endif
-    #ifdef BB
-   /*BB*/
                 (settings->BB_current + settings->BB_axis_offset);
-#endif
-#ifdef CC
             settings->CC_current =           /*CC*/
-    #endif
-    #ifdef CC
-   /*CC*/
                 (settings->CC_current + settings->CC_axis_offset);
-#endif
             SET_ORIGIN_OFFSETS(settings->origin_offset_x,
                 settings->origin_offset_y,
                 settings->origin_offset_z
-    #ifdef AA
                 ,            settings->AA_origin_offset
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,            settings->BB_origin_offset
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,            settings->CC_origin_offset
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
             settings->axis_offset_x = 0.0;
             settings->axis_offset_y = 0.0;
             settings->axis_offset_z = 0.0;
-#ifdef AA
             settings->AA_axis_offset = 0.0;  /*AA*/
-#endif
-#ifdef BB
             settings->BB_axis_offset = 0.0;  /*BB*/
-#endif
-#ifdef CC
             settings->CC_axis_offset = 0.0;  /*CC*/
-#endif
             if (g_code == G_92_1)
             {
                 pars[5211] = 0.0;
                 pars[5212] = 0.0;
                 pars[5213] = 0.0;
-#ifdef AA
                 pars[5214] = 0.0;            /*AA*/
-#endif
-#ifdef BB
                 pars[5215] = 0.0;            /*BB*/
-#endif
-#ifdef CC
                 pars[5216] = 0.0;            /*CC*/
-#endif
             }
         }
         else if (g_code == G_92_3)
@@ -2583,66 +2126,24 @@ static const int _gees[] =
                 settings->current_y + settings->axis_offset_y - pars[5212];
             settings->current_z =
                 settings->current_z + settings->axis_offset_z - pars[5213];
-#ifdef AA
             settings->AA_current =           /*AA*/
-    #endif
-    #ifdef AA
-   /*AA*/
                 settings->AA_current + settings->AA_axis_offset - pars[5214];
-#endif
-#ifdef BB
             settings->BB_current =           /*BB*/
-    #endif
-    #ifdef BB
-   /*BB*/
                 settings->BB_current + settings->BB_axis_offset - pars[5215];
-#endif
-#ifdef CC
             settings->CC_current =           /*CC*/
-    #endif
-    #ifdef CC
-   /*CC*/
                 settings->CC_current + settings->CC_axis_offset - pars[5216];
-#endif
             settings->axis_offset_x = pars[5211];
             settings->axis_offset_y = pars[5212];
             settings->axis_offset_z = pars[5213];
-#ifdef AA
-   /*AA*/
             settings->AA_axis_offset = pars[5214];
-#endif
-#ifdef BB
-   /*BB*/
             settings->BB_axis_offset = pars[5215];
-#endif
-#ifdef CC
-   /*CC*/
             settings->CC_axis_offset = pars[5216];
-#endif
             SET_ORIGIN_OFFSETS(settings->origin_offset_x + settings->axis_offset_x,
                 settings->origin_offset_y + settings->axis_offset_y,
                 settings->origin_offset_z + settings->axis_offset_z
-    #ifdef AA
                 ,                      (settings->AA_origin_offset + settings->AA_axis_offset)
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,                      (settings->BB_origin_offset + settings->BB_axis_offset)
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,                      (settings->CC_origin_offset + settings->CC_axis_offset)
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
         }
         else
@@ -2846,15 +2347,9 @@ static const int _gees[] =
         double x;
         double y;
         double z;
-#ifdef AA
         double a;                                 /*AA*/
-#endif
-#ifdef BB
         double b;                                 /*BB*/
-#endif
-#ifdef CC
         double c;                                 /*CC*/
-#endif
         double * parameters;
 
         parameters = settings->parameters;
@@ -2911,94 +2406,40 @@ static const int _gees[] =
             (settings->current_y + settings->origin_offset_y);
         settings->current_z =
             (settings->current_z + settings->origin_offset_z);
-#ifdef AA
         settings->AA_current =               /*AA*/
-    #endif
-    #ifdef AA
-   /*AA*/
             (settings->AA_current + settings->AA_origin_offset);
-#endif
-#ifdef BB
         settings->BB_current =               /*BB*/
-    #endif
-    #ifdef BB
-   /*BB*/
             (settings->BB_current + settings->BB_origin_offset);
-#endif
-#ifdef CC
         settings->CC_current =               /*CC*/
-    #endif
-    #ifdef CC
-   /*CC*/
             (settings->CC_current + settings->CC_origin_offset);
-#endif
 
         x = parameters[5201 + (origin * 20)];
         y = parameters[5202 + (origin * 20)];
         z = parameters[5203 + (origin * 20)];
-#ifdef AA
         a = parameters[5204 + (origin * 20)];/*AA*/
-#endif
-#ifdef BB
         b = parameters[5205 + (origin * 20)];/*BB*/
-#endif
-#ifdef CC
         c = parameters[5206 + (origin * 20)];/*CC*/
-#endif
 
         settings->origin_offset_x = x;
         settings->origin_offset_y = y;
         settings->origin_offset_z = z;
-#ifdef AA
         settings->AA_origin_offset = a;      /*AA*/
-#endif
-#ifdef BB
         settings->BB_origin_offset = b;      /*BB*/
-#endif
-#ifdef CC
         settings->CC_origin_offset = c;      /*CC*/
-#endif
 
         settings->current_x = (settings->current_x - x);
         settings->current_y = (settings->current_y - y);
         settings->current_z = (settings->current_z - z);
-#ifdef AA
-   /*AA*/
         settings->AA_current = (settings->AA_current - a);
-#endif
-#ifdef BB
-   /*BB*/
         settings->BB_current = (settings->BB_current - b);
-#endif
-#ifdef CC
-   /*CC*/
         settings->CC_current = (settings->CC_current - c);
-#endif
 
         SET_ORIGIN_OFFSETS(x + settings->axis_offset_x,
             y + settings->axis_offset_y,
             z + settings->axis_offset_z
-    #ifdef AA
             ,            a + settings->AA_axis_offset
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef BB
             ,            b + settings->BB_axis_offset
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef CC
             ,            c + settings->CC_axis_offset
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
             );
         return RS274NGC_OK;
     }
@@ -3926,27 +3367,9 @@ repeat--) \
         if (old_cc < r)
         {
             STRAIGHT_TRAVERSE(settings->current_x, settings->current_y, r
-    #ifdef AA
                 ,     settings->AA_current
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,  settings->BB_current
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,  settings->CC_current
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
             old_cc = r;
         }
@@ -4153,27 +3576,9 @@ repeat--) \
         if (old_cc < r)
         {
             STRAIGHT_TRAVERSE(r, settings->current_y, settings->current_z
-    #ifdef AA
                 ,      settings->AA_current
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,  settings->BB_current
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,  settings->CC_current
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
             old_cc = r;
         }
@@ -4388,27 +3793,9 @@ repeat--) \
         if (old_cc < r)
         {
             STRAIGHT_TRAVERSE(settings->current_x, r, settings->current_z
-    #ifdef AA
                 ,           settings->AA_current
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,  settings->BB_current
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,  settings->CC_current
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
             old_cc = r;
         }
@@ -4802,158 +4189,68 @@ repeat--) \
         double end_x;
         double end_y;
         double end_z;
-#ifdef AA
         double AA_end;                            /*AA*/
-#endif
-#ifdef AA
         double AA_end2;                           /*AA*/
-#endif
-#ifdef BB
         double BB_end;                            /*BB*/
-#endif
-#ifdef BB
         double BB_end2;                           /*BB*/
-#endif
-#ifdef CC
         double CC_end;                            /*CC*/
-#endif
-#ifdef CC
         double CC_end2;                           /*CC*/
-#endif
         double * parameters;
 
         parameters = settings->parameters;
         find_ends(block, settings, &end_x, &end_y,
             &end_z
-    #ifdef AA
             , &AA_end
-    #endif
-
-    #ifdef BB
             , &BB_end
-    #endif
-
-    #ifdef CC
             , &CC_end
-    #endif
             );
 
         CHK((settings->cutter_comp_side != OFF),
             NCE_CANNOT_USE_G28_OR_G30_WITH_CUTTER_RADIUS_COMP);
         STRAIGHT_TRAVERSE(end_x, end_y, end_z
-    #ifdef AA
             ,           AA_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef BB
             ,  BB_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef CC
             ,  CC_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
             );
         if (move == G_28)
         {
             find_relative
                 (parameters[5161], parameters[5162], parameters[5163],
-    #ifdef AA
                 parameters[5164],                 /*AA*/
-    #endif
-    #ifdef BB
                 parameters[5165],                 /*BB*/
-    #endif
-    #ifdef CC
                 parameters[5166],                 /*CC*/
-    #endif
                 &end_x, &end_y, &end_z
-    #ifdef AA
                 , &AA_end2
-    #endif
-
-    #ifdef BB
                 , &BB_end2
-    #endif
-
-    #ifdef CC
                 , &CC_end2
-    #endif
                 , settings);
         }
         else if (move == G_30)
         {
             find_relative
                 (parameters[5181], parameters[5182], parameters[5183],
-    #ifdef AA
                 parameters[5184],                 /*AA*/
-    #endif
-    #ifdef BB
                 parameters[5185],                 /*BB*/
-    #endif
-    #ifdef CC
                 parameters[5186],                 /*CC*/
-    #endif
                 &end_x, &end_y, &end_z
-    #ifdef AA
                 , &AA_end2
-    #endif
-
-    #ifdef BB
                 , &BB_end2
-    #endif
-
-    #ifdef CC
                 , &CC_end2
-    #endif
                 , settings);
         }
         else
             ERM(NCE_BUG_CODE_NOT_G28_OR_G30);
         STRAIGHT_TRAVERSE(end_x, end_y, end_z
-    #ifdef AA
             ,           AA_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef BB
             ,  BB_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef CC
             ,  CC_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
             );
         settings->current_x = end_x;
         settings->current_y = end_y;
         settings->current_z = end_z;
-#ifdef AA
         settings->AA_current = AA_end2;      /*AA*/
-#endif
-#ifdef BB
         settings->BB_current = BB_end2;      /*BB*/
-#endif
-#ifdef CC
         settings->CC_current = CC_end2;      /*CC*/
-#endif
         return RS274NGC_OK;
     }
 
@@ -5324,15 +4621,9 @@ repeat--) \
         double end_x;
         double end_y;
         double end_z;
-#ifdef AA
         double AA_end;                            /*AA*/
-#endif
-#ifdef BB
         double BB_end;                            /*BB*/
-#endif
-#ifdef CC
         double CC_end;                            /*CC*/
-#endif
 
         CHK((((block->x_flag == OFF) and (block->y_flag == OFF)) and
             (block->z_flag == OFF)), NCE_X_Y_AND_Z_WORDS_ALL_MISSING_WITH_G38_2);
@@ -5343,28 +4634,14 @@ repeat--) \
         CHK((settings->feed_rate == 0.0), NCE_CANNOT_PROBE_WITH_ZERO_FEED_RATE);
         find_ends(block, settings, &end_x, &end_y,
             &end_z
-    #ifdef AA
             , &AA_end
-    #endif
-
-    #ifdef BB
             , &BB_end
-    #endif
-
-    #ifdef CC
             , &CC_end
-    #endif
             );
         if (0
-    #ifdef AA
             or (AA_end != settings->AA_current) /*AA*/
-    #endif
-    #ifdef BB
             or (BB_end != settings->BB_current) /*BB*/
-    #endif
-    #ifdef CC
             or (CC_end != settings->CC_current) /*CC*/
-    #endif
             )
             ERM(NCE_CANNOT_MOVE_ROTARY_AXES_DURING_PROBING);
         distance = sqrt(pow((settings->current_x - end_x), 2) +
@@ -5374,27 +4651,9 @@ repeat--) \
             NCE_START_POINT_TOO_CLOSE_TO_PROBE_POINT);
         TURN_PROBE_ON();
         STRAIGHT_PROBE(end_x, end_y, end_z
-    #ifdef AA
             ,        AA_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef BB
             ,  BB_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef CC
             ,  CC_end
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
             );
         TURN_PROBE_OFF();
         settings->motion_mode = G_38_2;
@@ -5483,15 +4742,9 @@ repeat--) \
         double x;
         double y;
         double z;
-#ifdef AA
         double a;                                 /*AA*/
-#endif
-#ifdef BB
         double b;                                 /*BB*/
-#endif
-#ifdef CC
         double c;                                 /*CC*/
-#endif
         double * parameters;
         int p_int;
 
@@ -5521,7 +4774,6 @@ repeat--) \
         else
             z = parameters[5203 + (p_int * 20)];
 
-#ifdef AA
         if (block->a_flag == ON)
         {
             a = block->a_number;
@@ -5529,9 +4781,7 @@ repeat--) \
         }
         else
             a = parameters[5204 + (p_int * 20)];
-#endif
 
-#ifdef BB
         if (block->b_flag == ON)
         {
             b = block->b_number;
@@ -5539,9 +4789,7 @@ repeat--) \
         }
         else
             b = parameters[5205 + (p_int * 20)];
-#endif
 
-#ifdef CC
         if (block->c_flag == ON)
         {
             c = block->c_number;
@@ -5549,7 +4797,6 @@ repeat--) \
         }
         else
             c = parameters[5206 + (p_int * 20)];
-#endif
 
    /* axis offsets could be included in the two sets of calculations for
       current_x, current_y, etc., but do not need to be because the results
@@ -5562,81 +4809,33 @@ repeat--) \
                 (settings->current_y + settings->origin_offset_y);
             settings->current_z =
                 (settings->current_z + settings->origin_offset_z);
-#ifdef AA
             settings->AA_current =           /*AA*/
-    #endif
-    #ifdef AA
-   /*AA*/
                 (settings->AA_current + settings->AA_origin_offset);
-#endif
-#ifdef BB
             settings->BB_current =           /*BB*/
-    #endif
-    #ifdef BB
-   /*BB*/
                 (settings->BB_current + settings->BB_origin_offset);
-#endif
-#ifdef CC
             settings->CC_current =           /*CC*/
-    #endif
-    #ifdef CC
-   /*CC*/
                 (settings->CC_current + settings->CC_origin_offset);
-#endif
 
             settings->origin_offset_x = x;
             settings->origin_offset_y = y;
             settings->origin_offset_z = z;
-#ifdef AA
             settings->AA_origin_offset = a;  /*AA*/
-#endif
-#ifdef BB
             settings->BB_origin_offset = b;  /*BB*/
-#endif
-#ifdef CC
             settings->CC_origin_offset = c;  /*CC*/
-#endif
 
             settings->current_x = (settings->current_x - x);
             settings->current_y = (settings->current_y - y);
             settings->current_z = (settings->current_z - z);
-#ifdef AA
-   /*AA*/
             settings->AA_current = (settings->AA_current - a);
-#endif
-#ifdef BB
-   /*BB*/
             settings->BB_current = (settings->BB_current - b);
-#endif
-#ifdef CC
-   /*CC*/
             settings->CC_current = (settings->CC_current - c);
-#endif
 
             SET_ORIGIN_OFFSETS(x + settings->axis_offset_x,
                 y + settings->axis_offset_y,
                 z + settings->axis_offset_z
-    #ifdef AA
                 ,            a + settings->AA_axis_offset
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,            b + settings->BB_axis_offset
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,            c + settings->CC_axis_offset
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
         }
 #ifdef DEBUG_EMC
@@ -5813,61 +5012,28 @@ repeat--) \
                 + settings->origin_offset_y + settings->axis_offset_y;
             settings->current_z = settings->current_z
                 + settings->origin_offset_z + settings->axis_offset_z;
-#ifdef AA
-   /*AA*/
             settings->AA_current = settings->AA_current
-    #endif
-    #ifdef AA
-   /*AA*/
                 + settings->AA_origin_offset + settings->AA_axis_offset;
-#endif
-#ifdef BB
-   /*BB*/
             settings->BB_current = settings->BB_current
-    #endif
-    #ifdef BB
-   /*BB*/
                 + settings->BB_origin_offset + settings->BB_axis_offset;
-#endif
-#ifdef CC
-   /*CC*/
             settings->CC_current = settings->CC_current
-    #endif
-    #ifdef CC
-   /*CC*/
                 + settings->CC_origin_offset + settings->CC_axis_offset;
-#endif
 
             settings->origin_index = 1;
             settings->parameters[5220] = 1.0;
             settings->origin_offset_x = settings->parameters[5221];
             settings->origin_offset_y = settings->parameters[5222];
             settings->origin_offset_z = settings->parameters[5223];
-#ifdef AA
-   /*AA*/
             settings->AA_origin_offset = settings->parameters[5224];
-#endif
-#ifdef BB
-   /*BB*/
             settings->BB_origin_offset = settings->parameters[5225];
-#endif
-#ifdef CC
-   /*CC*/
             settings->CC_origin_offset = settings->parameters[5226];
-#endif
 
             settings->axis_offset_x = 0;
             settings->axis_offset_x = 0;
             settings->axis_offset_x = 0;
-#ifdef AA
             settings->AA_axis_offset = 0;    /*AA*/
-#endif
-#ifdef BB
             settings->BB_axis_offset = 0;    /*BB*/
-#endif
-#ifdef CC
             settings->CC_axis_offset = 0;    /*CC*/
-#endif
 
             settings->current_x = settings->current_x -
                 settings->origin_offset_x;
@@ -5875,52 +5041,19 @@ repeat--) \
                 settings->origin_offset_y;
             settings->current_z = settings->current_z -
                 settings->origin_offset_z;
-#ifdef AA
-   /*AA*/
             settings->AA_current = settings->AA_current -
-    #endif
-    #ifdef AA
                 settings->AA_origin_offset;       /*AA*/
-#endif
-#ifdef BB
-   /*BB*/
             settings->BB_current = settings->BB_current -
-    #endif
-    #ifdef BB
                 settings->BB_origin_offset;       /*BB*/
-#endif
-#ifdef CC
-   /*CC*/
             settings->CC_current = settings->CC_current -
-    #endif
-    #ifdef CC
                 settings->CC_origin_offset;       /*CC*/
-#endif
 
             SET_ORIGIN_OFFSETS(settings->origin_offset_x,
                 settings->origin_offset_y,
                 settings->origin_offset_z
-    #ifdef AA
                 ,            settings->AA_origin_offset
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,            settings->BB_origin_offset
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,            settings->CC_origin_offset
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
 
             /*2*/ if (settings->plane != CANON_PLANE_XY)
@@ -6053,15 +5186,9 @@ repeat--) \
         double end_x;
         double end_y;
         double end_z;
-#ifdef AA
         double AA_end;                            /*AA*/
-#endif
-#ifdef BB
         double BB_end;                            /*BB*/
-#endif
-#ifdef CC
         double CC_end;                            /*CC*/
-#endif
         int status;
 
         if (move == G_1)
@@ -6081,17 +5208,9 @@ repeat--) \
         settings->motion_mode = move;
         find_ends(block, settings, &end_x, &end_y,
             &end_z
-    #ifdef AA
             , &AA_end
-    #endif
-
-    #ifdef BB
             , &BB_end
-    #endif
-
-    #ifdef CC
             , &CC_end
-    #endif
             );
    /* not "IS ON" */
         if ((settings->cutter_comp_side != OFF) and
@@ -6104,17 +5223,9 @@ repeat--) \
                 status =
                     convert_straight_comp1(move, block, settings, end_x, end_y,
                     end_z
-    #ifdef AA
                     , AA_end
-    #endif
-
-    #ifdef BB
                     , BB_end
-    #endif
-
-    #ifdef CC
                     , CC_end
-    #endif
                     );
                 CHP(status);
             }
@@ -6123,17 +5234,9 @@ repeat--) \
                 status =
                     convert_straight_comp2 (move, block, settings, end_x, end_y,
                     end_z
-    #ifdef AA
                     , AA_end
-    #endif
-
-    #ifdef BB
                     , BB_end
-    #endif
-
-    #ifdef CC
                     , CC_end
-    #endif
                     );
                 CHP(status);
             }
@@ -6141,27 +5244,9 @@ repeat--) \
         else if (move == G_0)
         {
             STRAIGHT_TRAVERSE(end_x, end_y, end_z
-    #ifdef AA
                 ,           AA_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,  BB_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,  CC_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
             settings->current_x = end_x;
             settings->current_y = end_y;
@@ -6171,40 +5256,14 @@ repeat--) \
             if (settings->feed_mode == INVERSE_TIME)
                 inverse_time_rate_straight
                     (end_x, end_y, end_z
-        #ifdef AA
                     , AA_end
-        #endif
-
-        #ifdef BB
                     , BB_end
-        #endif
-
-        #ifdef CC
                     , CC_end
-        #endif
                     , block, settings);
             STRAIGHT_FEED(end_x, end_y, end_z
-    #ifdef AA
                 ,           AA_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,  BB_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,  CC_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
             settings->current_x = end_x;
             settings->current_y = end_y;
@@ -6213,15 +5272,9 @@ repeat--) \
             ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
 
         settings->current_z = end_z;
-#ifdef AA
         settings->AA_current = AA_end;       /*AA*/
-#endif
-#ifdef BB
         settings->BB_current = BB_end;       /*BB*/
-#endif
-#ifdef CC
         settings->CC_current = CC_end;       /*CC*/
-#endif
         return RS274NGC_OK;
     }
 
@@ -6268,15 +5321,9 @@ repeat--) \
     double px,                                    /* X coordinate of end point                 */
     double py,                                    /* Y coordinate of end point                 */
     double end_z                                  /* Z coordinate of end point                 */
-#ifdef AA
     , double AA_end                               /* A coordinate of end point           *//*AA*/
-#endif
-#ifdef BB
     , double BB_end                               /* B coordinate of end point           *//*BB*/
-#endif
-#ifdef CC
     , double CC_end                               /* C coordinate of end point           *//*CC*/
-#endif
     )
     {
         static const char name[] = "convert_straight_comp1";
@@ -6306,67 +5353,23 @@ repeat--) \
         cy = (py + (radius * sin(alpha)));
         if (move == G_0)
             STRAIGHT_TRAVERSE(cx, cy, end_z
-        #ifdef AA
                 ,             AA_end
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef BB
                 ,  BB_end
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef CC
                 ,  CC_end
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
                 );
         else if (move == G_1)
         {
             if (settings->feed_mode == INVERSE_TIME)
                 inverse_time_rate_straight
                     (cx, cy, end_z
-        #ifdef AA
                     , AA_end
-        #endif
-
-        #ifdef BB
                     , BB_end
-        #endif
-
-        #ifdef CC
                     , CC_end
-        #endif
                     , block, settings);
             STRAIGHT_FEED(cx, cy, end_z
-    #ifdef AA
                 ,           AA_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef BB
                 ,  BB_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
-    #ifdef CC
                 ,  CC_end
-    #else
-    #ifdef ALL_AXES
-                , 0
-    #endif
-    #endif
                 );
         }
         else
@@ -6458,15 +5461,9 @@ repeat--) \
     double px,                                    /* X coordinate of programmed end point      */
     double py,                                    /* Y coordinate of programmed end point      */
     double end_z                                  /* Z coordinate of end point                 */
-#ifdef AA
     , double AA_end                               /* A coordinate of end point           *//*AA*/
-#endif
-#ifdef BB
     , double BB_end                               /* B coordinate of end point           *//*BB*/
-#endif
-#ifdef CC
     , double CC_end                               /* C coordinate of end point           *//*CC*/
-#endif
     )
     {
         static const char name[] = "convert_straight_comp2";
@@ -6492,67 +5489,23 @@ repeat--) \
             end_y = settings->current_y;
             if (move == G_0)
                 STRAIGHT_TRAVERSE(end_x, end_y, end_z
-        #ifdef AA
                     ,             AA_end
-        #else
-        #ifdef ALL_AXES
-                    , 0
-        #endif
-        #endif
-        #ifdef BB
                     ,  BB_end
-        #else
-        #ifdef ALL_AXES
-                    , 0
-        #endif
-        #endif
-        #ifdef CC
                     ,  CC_end
-        #else
-        #ifdef ALL_AXES
-                    , 0
-        #endif
-        #endif
                     );
             else if (move == G_1)
             {
                 if (settings->feed_mode == INVERSE_TIME)
                     inverse_time_rate_straight
                         (end_x, end_y, end_z
-        #ifdef AA
                         , AA_end
-        #endif
-
-        #ifdef BB
                         , BB_end
-        #endif
-
-        #ifdef CC
                         , CC_end
-        #endif
                         , block, settings);
                 STRAIGHT_FEED(end_x, end_y, end_z
-    #ifdef AA
                     ,           AA_end
-    #else
-    #ifdef ALL_AXES
-                    , 0
-    #endif
-    #endif
-    #ifdef BB
                     ,  BB_end
-    #else
-    #ifdef ALL_AXES
-                    , 0
-    #endif
-    #endif
-    #ifdef CC
                     ,  CC_end
-    #else
-    #ifdef ALL_AXES
-                    , 0
-    #endif
-    #endif
                     );
             }
             else
@@ -6592,27 +5545,9 @@ repeat--) \
                 NCE_CONCAVE_CORNER_WITH_CUTTER_RADIUS_COMP);
             if (move == G_0)
                 STRAIGHT_TRAVERSE(end_x, end_y, end_z
-        #ifdef AA
                     ,             AA_end
-        #else
-        #ifdef ALL_AXES
-                    , 0
-        #endif
-        #endif
-        #ifdef BB
                     ,  BB_end
-        #else
-        #ifdef ALL_AXES
-                    , 0
-        #endif
-        #endif
-        #ifdef CC
                     ,  CC_end
-        #else
-        #ifdef ALL_AXES
-                    , 0
-        #endif
-        #endif
                     );
             else if (move == G_1)
             {
@@ -6622,65 +5557,21 @@ repeat--) \
                         inverse_time_rate_as(start_x, start_y, (side == LEFT) ? -1 : 1,
                         mid_x, mid_y, end_x, end_y,
                         end_z
-    #ifdef AA
                         , AA_end
-    #endif
-
-    #ifdef BB
                         , BB_end
-    #endif
-
-    #ifdef CC
                         , CC_end
-    #endif
                         ,
                         block, settings);
                     ARC_FEED(mid_x,mid_y,start_x, start_y,((side == LEFT) ? -1 : 1),
                         settings->current_z
-    #ifdef AA
                         , AA_end
-    #else
-    #ifdef ALL_AXES
-                        , 0
-    #endif
-    #endif
-    #ifdef BB
                         , BB_end
-    #else
-    #ifdef ALL_AXES
-                        , 0
-    #endif
-    #endif
-    #ifdef CC
                         , CC_end
-    #else
-    #ifdef ALL_AXES
-                        , 0
-    #endif
-    #endif
                         );
                     STRAIGHT_FEED(end_x, end_y, end_z
-    #ifdef AA
                         ,               AA_end
-    #else
-    #ifdef ALL_AXES
-                        , 0
-    #endif
-    #endif
-    #ifdef BB
                         ,  BB_end
-    #else
-    #ifdef ALL_AXES
-                        , 0
-    #endif
-    #endif
-    #ifdef CC
                         ,  CC_end
-    #else
-    #ifdef ALL_AXES
-                        , 0
-    #endif
-    #endif
                         );
                 }
                 else
@@ -6688,40 +5579,14 @@ repeat--) \
                     if (settings->feed_mode == INVERSE_TIME)
                         inverse_time_rate_straight
                             (end_x,end_y,end_z
-        #ifdef AA
                             , AA_end
-        #endif
-
-        #ifdef BB
                             , BB_end
-        #endif
-
-        #ifdef CC
                             , CC_end
-        #endif
                             , block, settings);
                     STRAIGHT_FEED(end_x, end_y, end_z
-    #ifdef AA
                         ,               AA_end
-    #else
-    #ifdef ALL_AXES
-                        , 0
-    #endif
-    #endif
-    #ifdef BB
                         ,  BB_end
-    #else
-    #ifdef ALL_AXES
-                        , 0
-    #endif
-    #endif
-    #ifdef CC
                         ,  CC_end
-    #else
-    #ifdef ALL_AXES
-                        , 0
-    #endif
-    #endif
                         );
                 }
             }
@@ -6945,75 +5810,21 @@ repeat--) \
 
         if (plane == CANON_PLANE_XY)
             STRAIGHT_FEED(end1, end2, end3
-        #ifdef AA
                 ,         _setup.AA_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef BB
                 ,  _setup.BB_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef CC
                 ,  _setup.CC_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
                 );
         else if (plane == CANON_PLANE_YZ)
             STRAIGHT_FEED(end3, end1, end2
-            #ifdef AA
                     ,         _setup.AA_current
-            #else
-            #ifdef ALL_AXES
-                    , 0
-            #endif
-            #endif
-            #ifdef BB
                     ,  _setup.BB_current
-            #else
-            #ifdef ALL_AXES
-                    , 0
-            #endif
-            #endif
-            #ifdef CC
                     ,  _setup.CC_current
-            #else
-            #ifdef ALL_AXES
-                    , 0
-            #endif
-            #endif
                     );
         else                                      /* if (plane == CANON_PLANE_XZ) */
             STRAIGHT_FEED(end2, end3, end1
-        #ifdef AA
                 ,         _setup.AA_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef BB
                 ,  _setup.BB_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef CC
                 ,  _setup.CC_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
                 );
 
         return RS274NGC_OK;
@@ -7053,75 +5864,21 @@ repeat--) \
         static const char name[] = "cycle_traverse";
         if (plane == CANON_PLANE_XY)
             STRAIGHT_TRAVERSE(end1, end2, end3
-        #ifdef AA
                 ,             _setup.AA_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef BB
                 ,  _setup.BB_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef CC
                 ,  _setup.CC_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
                 );
         else if (plane == CANON_PLANE_YZ)
             STRAIGHT_TRAVERSE(end3, end1, end2
-            #ifdef AA
                     ,             _setup.AA_current
-            #else
-            #ifdef ALL_AXES
-                    , 0
-            #endif
-            #endif
-            #ifdef BB
                     ,  _setup.BB_current
-            #else
-            #ifdef ALL_AXES
-                    , 0
-            #endif
-            #endif
-            #ifdef CC
                     ,  _setup.CC_current
-            #else
-            #ifdef ALL_AXES
-                    , 0
-            #endif
-            #endif
                     );
         else                                      /* if (plane == CANON_PLANE_XZ) */
             STRAIGHT_TRAVERSE(end2, end3, end1
-        #ifdef AA
                 ,             _setup.AA_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef BB
                 ,  _setup.BB_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
-        #ifdef CC
                 ,  _setup.CC_current
-        #else
-        #ifdef ALL_AXES
-                , 0
-        #endif
-        #endif
                 );
         return RS274NGC_OK;
     }
@@ -7172,15 +5929,9 @@ repeat--) \
 
         axis_flag = ((block->x_flag == ON) or
             (block->y_flag == ON) or
-    #ifdef AA
             (block->a_flag == ON) or              /*AA*/
-    #endif
-    #ifdef BB
             (block->b_flag == ON) or              /*BB*/
-    #endif
-    #ifdef CC
             (block->c_flag == ON) or              /*CC*/
-    #endif
             (block->z_flag == ON));
         mode_zero_covets_axes = ((block->g_modes[0] == G_10) or
             (block->g_modes[0] == G_28) or
@@ -7643,15 +6394,9 @@ repeat--) \
     double * px,                                  /* pointer to end_x                             */
     double * py,                                  /* pointer to end_y                             */
     double * pz                                   /* pointer to end_z                             */
-#ifdef AA
     , double * AA_p                               /* pointer to end_a                       *//*AA*/
-#endif
-#ifdef BB
     , double * BB_p                               /* pointer to end_b                       *//*BB*/
-#endif
-#ifdef CC
     , double * CC_p                               /* pointer to end_c                       *//*CC*/
-#endif
     )
     {
         int mode;
@@ -7676,40 +6421,15 @@ repeat--) \
             *pz = (block->z_flag == ON) ? (block->z_number -
                 (settings->tool_length_offset + settings->origin_offset_z
                 + settings->axis_offset_z)) : settings->current_z;
-#ifdef AA
-   /*AA*/
             *AA_p = (block->a_flag == ON) ? (block->a_number -
-    #endif
-    #ifdef AA
-   /*AA*/
                 (settings->AA_origin_offset + settings->AA_axis_offset)) :
-#endif
-#ifdef AA
             settings->AA_current;                 /*AA*/
-#endif
-#ifdef BB
-   /*BB*/
             *BB_p = (block->b_flag == ON) ? (block->b_number -
-    #endif
-    #ifdef BB
-   /*BB*/
                 (settings->BB_origin_offset + settings->BB_axis_offset)) :
-#endif
-#ifdef BB
             settings->BB_current;                 /*BB*/
-#endif
-#ifdef CC
-   /*CC*/
             *CC_p = (block->c_flag == ON) ? (block->c_number -
-    #endif
-    #ifdef CC
-   /*CC*/
                 (settings->tool_length_offset + settings->CC_origin_offset
-    #endif
-    #ifdef CC
-   /*CC*/
                 + settings->CC_axis_offset)) : settings->CC_current;
-#endif
         }
         else if (mode == MODE_ABSOLUTE)
         {
@@ -7723,27 +6443,12 @@ repeat--) \
 
             *pz = (block->z_flag == ON) ? block->z_number     :
             settings->current_z ;
-#ifdef AA
-   /*AA*/
             *AA_p = (block->a_flag == ON) ? block->a_number     :
-#endif
-#ifdef AA
             settings->AA_current ;                /*AA*/
-#endif
-#ifdef BB
-   /*BB*/
             *BB_p = (block->b_flag == ON) ? block->b_number     :
-#endif
-#ifdef BB
             settings->BB_current ;                /*BB*/
-#endif
-#ifdef CC
-   /*CC*/
             *CC_p = (block->c_flag == ON) ? block->c_number     :
-#endif
-#ifdef CC
             settings->CC_current ;                /*CC*/
-#endif
         }
         else                                      /* mode is MODE_INCREMENTAL */
         {
@@ -7761,27 +6466,12 @@ repeat--) \
 
             *pz = (block->z_flag == ON) ?
                 (settings->current_z + block->z_number) : settings->current_z;
-#ifdef AA
             *AA_p = (block->a_flag == ON) ?  /*AA*/
-    #endif
-    #ifdef AA
-   /*AA*/
                 (settings->AA_current + block->a_number) : settings->AA_current;
-#endif
-#ifdef BB
             *BB_p = (block->b_flag == ON) ?  /*BB*/
-    #endif
-    #ifdef BB
-   /*BB*/
                 (settings->BB_current + block->b_number) : settings->BB_current;
-#endif
-#ifdef CC
             *CC_p = (block->c_flag == ON) ?  /*CC*/
-    #endif
-    #ifdef CC
-   /*CC*/
                 (settings->CC_current + block->c_number) : settings->CC_current;
-#endif
         }
         return RS274NGC_OK;
     }
@@ -7812,54 +6502,27 @@ repeat--) \
     double x1,                                    /* absolute x position         */
     double y1,                                    /* absolute y position         */
     double z1,                                    /* absolute z position         */
-#ifdef AA
     double AA_1,             /* absolute a position         */ /*AA*/
-#endif
-#ifdef BB
     double BB_1,             /* absolute b position         */ /*BB*/
-#endif
-#ifdef CC
     double CC_1,             /* absolute c position         */ /*CC*/
-#endif
     double * x2,                                  /* pointer to relative x       */
     double * y2,                                  /* pointer to relative y       */
     double * z2,                                  /* pointer to relative z       */
-#ifdef AA
     double * AA_2,           /* pointer to relative a       */ /*AA*/
-#endif
-#ifdef BB
     double * BB_2,           /* pointer to relative b       */ /*BB*/
-#endif
-#ifdef CC
     double * CC_2,           /* pointer to relative c       */ /*CC*/
-#endif
     setup_pointer settings)                       /* pointer to machine settings */
     {
         *x2 = (x1 - (settings->origin_offset_x + settings->axis_offset_x));
         *y2 = (y1 - (settings->origin_offset_y + settings->axis_offset_y));
         *z2 = (z1 - (settings->tool_length_offset +
             settings->origin_offset_z + settings->axis_offset_z));
-#ifdef AA
-   /*AA*/
         *AA_2 = (AA_1 - (settings->AA_origin_offset +
-    #endif
-    #ifdef AA
             settings->AA_axis_offset));           /*AA*/
-#endif
-#ifdef BB
-   /*BB*/
         *BB_2 = (BB_1 - (settings->BB_origin_offset +
-    #endif
-    #ifdef BB
             settings->BB_axis_offset));           /*BB*/
-#endif
-#ifdef CC
-   /*CC*/
         *CC_2 = (CC_1 - (settings->CC_origin_offset +
-    #endif
-    #ifdef CC
             settings->CC_axis_offset));           /*CC*/
-#endif
         return RS274NGC_OK;
     }
 
@@ -7900,53 +6563,29 @@ repeat--) \
     double x2,                                    /* X-coordinate of end point    */
     double y2,                                    /* Y-coordinate of end point    */
     double z2,                                    /* Z-coordinate of end point    */
-#ifdef AA
     double AA_2,      /* A-coordinate of end point    */ /*AA*/
-#endif
-#ifdef BB
     double BB_2,      /* B-coordinate of end point    */ /*BB*/
-#endif
-#ifdef CC
     double CC_2,      /* C-coordinate of end point    */ /*CC*/
-#endif
     double x1,                                    /* X-coordinate of start point  */
     double y1,                                    /* Y-coordinate of start point  */
     double z1                                     /* Z-coordinate of start point  */
-#ifdef AA
     , double AA_1     /* A-coordinate of start point  */ /*AA*/
-#endif
-#ifdef BB
     , double BB_1     /* B-coordinate of start point  */ /*BB*/
-#endif
-#ifdef CC
     , double CC_1     /* C-coordinate of start point  */ /*CC*/
-#endif
     )
     {
         if ((x1 != x2) or (y1 != y2) or (z1 != z2) or
             (1
-    #ifdef AA
             and (AA_2 == AA_1)                    /*AA*/
-    #endif
-    #ifdef BB
             and (BB_2 == BB_1)                    /*BB*/
-    #endif
-    #ifdef CC
             and (CC_2 == CC_1)                    /*CC*/
-    #endif
             ))                                    /* straight line */
             return sqrt(pow((x2 - x1),2) + pow((y2 - y1),2) + pow((z2 - z1),2));
         else
             return sqrt(0 +
-        #ifdef AA
                 pow((AA_2 - AA_1), 2) +           /*AA*/
-        #endif
-        #ifdef BB
                 pow((BB_2 - BB_1), 2) +           /*BB*/
-        #endif
-        #ifdef CC
                 pow((CC_2 - CC_1), 2) +           /*CC*/
-        #endif
                 0);
     }
 
@@ -8038,15 +6677,9 @@ repeat--) \
     block_pointer block)                          /* pointer to a block to be initialized or reset */
     {
         int n;
-#ifdef AA
         block->a_flag = OFF;                 /*AA*/
-#endif
-#ifdef BB
         block->b_flag = OFF;                 /*BB*/
-#endif
-#ifdef CC
         block->c_flag = OFF;                 /*CC*/
-#endif
         block->comment[0] = 0;
         block->d_number = -1;
         block->f_number = -1.0;
@@ -8205,15 +6838,9 @@ repeat--) \
     double end_x,                                 /* x coord of end point of straight line             */
     double end_y,                                 /* y coord of end point of straight line             */
     double end_z,                                 /* z coord of end point of straight line             */
-#ifdef AA
     double AA_end,                                /* A coord of end point of straight line       *//*AA*/
-#endif
-#ifdef BB
     double BB_end,                                /* B coord of end point of straight line       *//*BB*/
-#endif
-#ifdef CC
     double CC_end,                                /* C coord of end point of straight line       *//*CC*/
-#endif
     block_pointer block,                          /* pointer to a block of RS274 instructions          */
     setup_pointer settings)                       /* pointer to machine settings                       */
     {
@@ -8225,30 +6852,14 @@ repeat--) \
             turn, mid_x, mid_y, settings->current_z) +
             find_straight_length(end_x, end_y,
             end_z
-    #ifdef AA
             , AA_end
-    #endif
-
-    #ifdef BB
             , BB_end
-    #endif
-
-    #ifdef CC
             , CC_end
-    #endif
             , mid_x, mid_y,
             settings->current_z
-    #ifdef AA
             , AA_end
-    #endif
-
-    #ifdef BB
             , BB_end
-    #endif
-
-    #ifdef CC
             , CC_end
-    #endif
             ));
         rate = std::max(0.1, (length * block->f_number));
         SET_FEED_RATE (rate);
@@ -8279,15 +6890,9 @@ repeat--) \
     double end_x,                                 /* x coordinate of end point of straight line */
     double end_y,                                 /* y coordinate of end point of straight line */
     double end_z,                                 /* z coordinate of end point of straight line */
-#ifdef AA
     double AA_end,                                /* A coordinate of end point of straight line *//*AA*/
-#endif
-#ifdef BB
     double BB_end,                                /* B coordinate of end point of straight line *//*BB*/
-#endif
-#ifdef CC
     double CC_end,                                /* C coordinate of end point of straight line *//*CC*/
-#endif
     block_pointer block,                          /* pointer to a block of RS274 instructions   */
     setup_pointer settings)                       /* pointer to machine settings                */
     {
@@ -8297,31 +6902,15 @@ repeat--) \
 
         length = find_straight_length
             (end_x, end_y, end_z
-    #ifdef AA
             , AA_end
-    #endif
-
-    #ifdef BB
             , BB_end
-    #endif
-
-    #ifdef CC
             , CC_end
-    #endif
             , settings->current_x,
             settings->current_y, settings->current_z
 
-    #ifdef AA
             , settings->AA_current
-    #endif
-
-    #ifdef BB
             , settings->BB_current
-    #endif
-
-    #ifdef CC
             , settings->CC_current
-    #endif
             );
         rate = std::max(0.1, (length * block->f_number));
         SET_FEED_RATE (rate);
@@ -8445,19 +7034,10 @@ repeat--) \
 
         CHK((line[*counter] != 'a'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-#ifdef AA
-   /*AA*/
         CHK((block->a_flag != OFF), NCE_MULTIPLE_A_WORDS_ON_ONE_LINE);
-#endif
         CHP(read_real_value(line, counter, &value, parameters));
-#ifdef AA
         block->a_flag = ON;
         block->a_number = value;
-#else
-#ifdef AXIS_ERROR
-        ERM(NCE_CANNOT_USE_A_WORD);
-#endif                                    /* ifdef AXIS_ERROR */
-#endif                                    /* ifdef AA */
         return RS274NGC_OK;
     }
 
@@ -8569,19 +7149,10 @@ repeat--) \
 
         CHK((line[*counter] != 'b'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-#ifdef BB
-   /*BB*/
         CHK((block->b_flag != OFF), NCE_MULTIPLE_B_WORDS_ON_ONE_LINE);
-#endif
         CHP(read_real_value(line, counter, &value, parameters));
-#ifdef BB
         block->b_flag = ON;
         block->b_number = value;
-#else
-#ifdef AXIS_ERROR
-        ERM(NCE_CANNOT_USE_B_WORD);
-#endif                                    /* ifdef AXIS_ERROR */
-#endif                                    /* ifdef BB */
         return RS274NGC_OK;
     }
 
@@ -8636,19 +7207,10 @@ repeat--) \
 
         CHK((line[*counter] != 'c'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-#ifdef CC
-   /*CC*/
         CHK((block->c_flag != OFF), NCE_MULTIPLE_C_WORDS_ON_ONE_LINE);
-#endif
         CHP(read_real_value(line, counter, &value, parameters));
-#ifdef CC
         block->c_flag = ON;
         block->c_number = value;
-#else
-#ifdef AXIS_ERROR
-        ERM(NCE_CANNOT_USE_C_WORD);
-#endif                                    /* ifdef AXIS_ERROR */
-#endif                                    /* ifdef CC */
         return RS274NGC_OK;
     }
 
@@ -11052,33 +9614,15 @@ repeat--) \
         settings->current_x = GET_EXTERNAL_POSITION_X();
         settings->current_y = GET_EXTERNAL_POSITION_Y();
         settings->current_z = GET_EXTERNAL_POSITION_Z();
-#ifdef AA
-   /*AA*/
         settings->AA_current = GET_EXTERNAL_POSITION_A();
-#endif
-#ifdef BB
-   /*BB*/
         settings->BB_current = GET_EXTERNAL_POSITION_B();
-#endif
-#ifdef CC
-   /*CC*/
         settings->CC_current = GET_EXTERNAL_POSITION_C();
-#endif
         settings->parameters[5061] = GET_EXTERNAL_PROBE_POSITION_X();
         settings->parameters[5062] = GET_EXTERNAL_PROBE_POSITION_Y();
         settings->parameters[5063] = GET_EXTERNAL_PROBE_POSITION_Z();
-#ifdef AA
-   /*AA*/
         settings->parameters[5064] = GET_EXTERNAL_PROBE_POSITION_A();
-#endif
-#ifdef BB
-   /*BB*/
         settings->parameters[5065] = GET_EXTERNAL_PROBE_POSITION_B();
-#endif
-#ifdef CC
-   /*CC*/
         settings->parameters[5066] = GET_EXTERNAL_PROBE_POSITION_C();
-#endif
         settings->parameters[5067] = GET_EXTERNAL_PROBE_VALUE();
         return RS274NGC_OK;
     }
@@ -11403,61 +9947,28 @@ repeat--) \
         SET_ORIGIN_OFFSETS((pars[k + 1] + pars[5211]),
             (pars[k + 2] + pars[5212]),
             (pars[k + 3] + pars[5213])
-    #ifdef AA
             ,            (pars[k + 4] + pars[5214])
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef BB
             ,            (pars[k + 5] + pars[5215])
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
-    #ifdef CC
             ,            (pars[k + 6] + pars[5216])
-    #else
-    #ifdef ALL_AXES
-            , 0
-    #endif
-    #endif
             );
         SET_FEED_REFERENCE(CANON_XYZ);
-#ifdef AA
         _setup.AA_axis_offset = pars[5214];  /*AA*/
-#endif
    //_setup.Aa_current set in rs274ngc_synch
-#ifdef AA
-   /*AA*/
         _setup.AA_origin_offset = pars[k + 4];
-#endif
    //_setup.active_g_codes initialized below
    //_setup.active_m_codes initialized below
    //_setup.active_settings initialized below
         _setup.axis_offset_x = pars[5211];
         _setup.axis_offset_y = pars[5212];
         _setup.axis_offset_z = pars[5213];
-#ifdef BB
         _setup.BB_axis_offset = pars[5215];  /*BB*/
-#endif
    //_setup.Bb_current set in rs274ngc_synch
-#ifdef BB
-   /*BB*/
         _setup.BB_origin_offset = pars[k + 5];
-#endif
    //_setup.block1 does not need initialization
         _setup.blocktext[0] = 0;
-#ifdef CC
         _setup.CC_axis_offset = pars[5216];  /*CC*/
-#endif
    //_setup.Cc_current set in rs274ngc_synch
-#ifdef CC
-   /*CC*/
         _setup.CC_origin_offset = pars[k + 6];
-#endif
    //_setup.current_slot set in rs274ngc_synch
    //_setup.current_x set in rs274ngc_synch
    //_setup.current_y set in rs274ngc_synch
@@ -11993,18 +10504,9 @@ repeat--) \
     int rs274ngc_synch()                          /* NO ARGUMENTS */
     {
         _setup.control_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
-#ifdef AA
-   /*AA*/
         _setup.AA_current = GET_EXTERNAL_POSITION_A();
-#endif
-#ifdef BB
-   /*BB*/
         _setup.BB_current = GET_EXTERNAL_POSITION_B();
-#endif
-#ifdef CC
-   /*CC*/
         _setup.CC_current = GET_EXTERNAL_POSITION_C();
-#endif
         _setup.current_slot = GET_EXTERNAL_TOOL_SLOT();
         _setup.current_x = GET_EXTERNAL_POSITION_X();
         _setup.current_y = GET_EXTERNAL_POSITION_Y();

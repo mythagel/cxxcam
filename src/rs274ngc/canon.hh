@@ -120,38 +120,20 @@ struct CANON_POSITION
 {
     CANON_POSITION() {}
     CANON_POSITION(double _x, double _y, double _z
-    #ifdef AA
         , double _a
-    #endif
-    #ifdef BB
         , double _b
-    #endif
-    #ifdef CC
         , double _c
-    #endif
         )
     {
         x = _x; y = _y; z = _z;
-#ifdef AA
         a = _a;
-#endif
-#ifdef BB
         b = _b;
-#endif
-#ifdef CC
         c = _c;
-#endif
     }
     double x, y, z
-    #ifdef AA
         , a
-    #endif
-    #ifdef BB
         , b
-    #endif
-    #ifdef CC
         , c
-    #endif
         ;
 };
 
@@ -175,27 +157,9 @@ extern void INIT_CANON();
 
 extern void SET_ORIGIN_OFFSETS(
 double x, double y, double z
-#ifdef AA
 , double a
-#else
-#ifdef ALL_AXES
-, double a
-#endif
-#endif
-#ifdef BB
 , double b
-#else
-#ifdef ALL_AXES
-, double b
-#endif
-#endif
-#ifdef CC
 , double c
-#else
-#ifdef ALL_AXES
-, double c
-#endif
-#endif
 );
 
    /* Offset the origin to the point with absolute coordinates x, y, z,
@@ -224,27 +188,9 @@ extern void SET_TRAVERSE_RATE(double rate);
 
 extern void STRAIGHT_TRAVERSE(
 double x, double y, double z
-#ifdef AA
 , double a_position
-#else
-#ifdef ALL_AXES
-, double a_position
-#endif
-#endif
-#ifdef BB
 , double b_position
-#else
-#ifdef ALL_AXES
-, double b_position
-#endif
-#endif
-#ifdef CC
 , double c_position
-#else
-#ifdef ALL_AXES
-, double c_position
-#endif
-#endif
 );
    /*
 
@@ -387,27 +333,9 @@ double first_axis,
 double second_axis,
 int rotation,
 double axis_end_point
-#ifdef AA
 , double a_position
-#else
-#ifdef ALL_AXES
-, double a_position
-#endif
-#endif
-#ifdef BB
 , double b_position
-#else
-#ifdef ALL_AXES
-, double b_position
-#endif
-#endif
-#ifdef CC
 , double c_position
-#else
-#ifdef ALL_AXES
-, double c_position
-#endif
-#endif
 );
 
    /* Move in a helical arc from the current location at the existing feed
@@ -463,27 +391,9 @@ double axis_end_point
 
 extern void STRAIGHT_FEED(
 double x, double y, double z
-#ifdef AA
 , double a_position
-#else
-#ifdef ALL_AXES
-, double a_position
-#endif
-#endif
-#ifdef BB
 , double b_position
-#else
-#ifdef ALL_AXES
-, double b_position
-#endif
-#endif
-#ifdef CC
 , double c_position
-#else
-#ifdef ALL_AXES
-, double c_position
-#endif
-#endif
 );
 
    /* Move at existing feed rate so that at any time during the move,
@@ -492,27 +402,9 @@ double x, double y, double z
 
 extern void STRAIGHT_PROBE (
 double x, double y, double z
-#ifdef AA
 , double a_position
-#else
-#ifdef ALL_AXES
-, double a_position
-#endif
-#endif
-#ifdef BB
 , double b_position
-#else
-#ifdef ALL_AXES
-, double b_position
-#endif
-#endif
-#ifdef CC
 , double c_position
-#else
-#ifdef ALL_AXES
-, double c_position
-#endif
-#endif
 );
 
    /* Perform a probing operation. This is a temporary addition to the
@@ -719,20 +611,14 @@ extern CANON_MOTION_MODE GET_EXTERNAL_MOTION_CONTROL_MODE();
 
    /* The interpreter is not using these six GET_EXTERNAL_ORIGIN functions
 
-   #ifdef AA
    // returns the current a-axis origin offset
    extern double GET_EXTERNAL_ORIGIN_A();
-   #endif
 
-   #ifdef BB
    // returns the current b-axis origin offset
    extern double GET_EXTERNAL_ORIGIN_B();
-   #endif
 
-   #ifdef CC
    // returns the current c-axis origin offset
    extern double GET_EXTERNAL_ORIGIN_C();
-   #endif
 
    // returns the current x-axis origin offset
    extern double GET_EXTERNAL_ORIGIN_X();
@@ -753,20 +639,14 @@ extern void GET_EXTERNAL_PARAMETER_FILE_NAME(char * filename, int max_size);
    // returns the currently active plane
 extern CANON_PLANE GET_EXTERNAL_PLANE();
 
-#ifdef AA
    // returns the current a-axis position
 extern double GET_EXTERNAL_POSITION_A();
-#endif
 
-#ifdef BB
    // returns the current b-axis position
 extern double GET_EXTERNAL_POSITION_B();
-#endif
 
-#ifdef CC
    // returns the current c-axis position
 extern double GET_EXTERNAL_POSITION_C();
-#endif
 
    // returns the current x-axis position
 extern double GET_EXTERNAL_POSITION_X();
@@ -777,20 +657,14 @@ extern double GET_EXTERNAL_POSITION_Y();
    // returns the current z-axis position
 extern double GET_EXTERNAL_POSITION_Z();
 
-#ifdef AA
    // Returns the machine A-axis position at the last probe trip.
 extern double GET_EXTERNAL_PROBE_POSITION_A();
-#endif
 
-#ifdef BB
    // Returns the machine B-axis position at the last probe trip.
 extern double GET_EXTERNAL_PROBE_POSITION_B();
-#endif
 
-#ifdef CC
    // Returns the machine C-axis position at the last probe trip.
 extern double GET_EXTERNAL_PROBE_POSITION_C();
-#endif
 
    // Returns the machine X-axis position at the last probe trip.
 extern double GET_EXTERNAL_PROBE_POSITION_X();

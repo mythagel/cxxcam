@@ -207,18 +207,12 @@ typedef int ON_OFF;
 
 struct block
 {
-#ifdef AA
     ON_OFF   a_flag;
     double   a_number;
-#endif
-#ifdef BB
     ON_OFF   b_flag;
     double   b_number;
-#endif
-#ifdef CC
     ON_OFF   c_flag;
     double   c_number;
-#endif
     char     comment[256];
     int      d_number;
     double   f_number;
@@ -268,21 +262,15 @@ typedef block * block_pointer;
 
 struct setup
 {
-#ifdef AA
     double AA_axis_offset;                        // A-axis g92 offset
     double AA_current;                            // current A-axis position
     double AA_origin_offset;                      // A-axis origin offset
-#endif
-#ifdef BB
     double BB_axis_offset;                        // B-axis g92offset
     double BB_current;                            // current B-axis position
     double BB_origin_offset;                      // B-axis origin offset
-#endif
-#ifdef CC
     double CC_axis_offset;                        // C-axis g92offset
     double CC_current;                            // current C-axis position
     double CC_origin_offset;                      // C-axis origin offset
-#endif
     int active_g_codes
         [RS274NGC_ACTIVE_G_CODES];                // array of active G codes
     int active_m_codes
