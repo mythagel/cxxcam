@@ -103,35 +103,6 @@ enum CANON_AXIS
 	CANON_AXIS_C
 };
 
-struct CANON_VECTOR
-{
-    CANON_VECTOR()
-     : x(), y(), z()
-    {}
-    CANON_VECTOR(double x, double y, double z)
-     : x(x), y(y), z(z)
-    {}
-    double x;
-    double y;
-    double z;
-};
-
-struct CANON_POSITION
-{
-    CANON_POSITION()
-     : x(), y(), z(), a(), b(), c()
-    {}
-    CANON_POSITION(double x, double y, double z, double a, double b, double c)
-     : x(x), y(y), z(z), a(a), b(b), c(c)
-    {}
-    double x;
-    double y;
-    double z;
-    double a;
-    double b;
-    double c;
-};
-
    /* Tools are numbered 1..CANON_TOOL_MAX, with tool 0 meaning no tool. */
 #define CANON_TOOL_MAX 128                        // max size of carousel handled
 #define CANON_TOOL_ENTRY_LEN 256                  // how long each file line can be
@@ -692,4 +663,5 @@ extern CANON_TOOL_TABLE GET_EXTERNAL_TOOL_TABLE(int pocket);
 
    // Returns the system traverse rate
 extern double GET_EXTERNAL_TRAVERSE_RATE();
+
 #endif                                            /* ifndef CANON_HH */

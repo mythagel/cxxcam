@@ -200,6 +200,22 @@ enum
 #define PLUS 9
 #define RIGHT_BRACKET 10
 
+   // name of parameter file for saving/restoring interpreter variables
+#define RS274NGC_PARAMETER_FILE_NAME_DEFAULT "rs274ngc.var"
+#define RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX ".bak"
+
+   // max number of m codes on one line
+#define MAX_EMS  4
+
+   // feed_mode
+#define UNITS_PER_MINUTE 0
+#define INVERSE_TIME 1
+
+   // cutter radius compensation mode, OFF already defined to 0
+   // not using CANON_SIDE since interpreter handles cutter radius comp
+#define RIGHT 1
+#define LEFT 2
+
 #define DEBUG_EMC
 
    /*

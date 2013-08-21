@@ -1,4 +1,4 @@
-/* postp - gcode utilities
+/* cxxcam - C++ CAD/CAM driver library.
  * Copyright (C) 2013  Nicholas Gill
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -18,14 +18,8 @@
 /*
  * interpreter.cpp
  *
- *  Created on: 2013-08-20
+ *  Created on: 2013-08-21
  *      Author: nicholas
  */
 
 #include "interpreter.h"
-
-namespace gcode
-{
-
-}
-
