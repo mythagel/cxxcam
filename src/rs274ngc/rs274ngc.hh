@@ -56,24 +56,6 @@ Plan to reuse gcode parsing and interpreter individually.
 
 #define RS274NGC_TEXT_SIZE 256
 
-   /* numerical constants */
-#define TOLERANCE_INCH 0.0002
-#define TOLERANCE_MM 0.002
-#define TOLERANCE_CONCAVE_CORNER 0.01
-   /* angle threshold for concavity for
-                        cutter compensation, in radians */
-#define TINY 1e-12                                /* for arc_data_r */
-#define UNKNOWN 1e-20
-#define TWO_PI  6.2831853071795864
-
-#ifndef PI
-#define PI      3.1415926535897932
-#endif
-
-#ifndef PI2
-#define PI2     1.5707963267948966
-#endif
-
    // array sizes
 #define RS274NGC_ACTIVE_G_CODES 12
 #define RS274NGC_ACTIVE_M_CODES 7
@@ -85,14 +67,6 @@ Plan to reuse gcode parsing and interpreter individually.
 
    // max number of m codes on one line
 #define MAX_EMS  4
-
-   // English - Metric conversion (long number keeps error buildup down)
-#define MM_PER_INCH 25.4
-#define INCH_PER_MM 0.039370078740157477
-
-   // on-off switch settings
-#define OFF 0
-#define ON 1
 
    // feed_mode
 #define UNITS_PER_MINUTE 0
@@ -203,7 +177,12 @@ enum DISTANCE_MODE {MODE_ABSOLUTE, MODE_INCREMENTAL};
    /* retract_mode for cycles */
 enum RETRACT_MODE {R_PLANE, OLD_Z};
 
-typedef int ON_OFF;
+   // on-off switch settings
+enum ON_OFF
+{
+	OFF,
+	ON
+};
 
 struct block
 {

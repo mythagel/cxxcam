@@ -135,6 +135,22 @@ Significant modifications by Nicholas Gill.
 #include "rs274ngc_return.hh"
 #include "rs274ngc_errors.cc"
 
+   /* numerical constants */
+static const double TOLERANCE_INCH = 0.0002;
+static const double TOLERANCE_MM  = 0.002;
+static const double TOLERANCE_CONCAVE_CORNER = 0.01;
+   /* angle threshold for concavity for
+                        cutter compensation, in radians */
+static const double TINY = 1e-12;                                /* for arc_data_r */
+static const double UNKNOWN = 1e-20;
+static const double TWO_PI =  6.2831853071795864;
+static const double PI =      3.1415926535897932;
+static const double PI2 =     1.5707963267948966;
+
+   // English - Metric conversion (long number keeps error buildup down)
+static const double MM_PER_INCH = 25.4;
+static const double INCH_PER_MM = 0.039370078740157477;
+
 #define DEBUG_EMC
 
    /*
