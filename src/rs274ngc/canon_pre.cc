@@ -41,9 +41,11 @@
    /************************************************************************/
 
 #include "canon.hh"
+#include "rs274ngc.hh"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+
 #define SET_TO =
 #define IS ==
 #define AND &&
@@ -123,8 +125,6 @@ static double            _traverse_rate;
    stdout to a file.
 
    */
-
-extern void rs274ngc_line_text(char * line_text, int max_size);
 
 void print_nc_line_number()
 {
@@ -738,7 +738,7 @@ void CLAMP_AXIS(CANON_AXIS axis)
 }
 
 
-void COMMENT(char *s)
+void COMMENT(const char *s)
 {PRINT1("COMMENT(\"%s\")\n", s);}
 
 void DISABLE_FEED_OVERRIDE()

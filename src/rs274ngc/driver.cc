@@ -28,6 +28,14 @@
 #include <stdlib.h>                               /* exit       */
 #include <string.h>                               /* strcpy     */
 
+#define AND              &&
+#define IS               ==
+#define ISNT             !=
+#define MAX(x, y)        ((x) > (y) ? (x) : (y))
+#define NOT              !
+#define OR               ||
+#define SET_TO           =
+
 extern CANON_TOOL_TABLE _tools[];                 /* in canon.cc */
 extern int _tool_max;                             /* in canon.cc */
 extern char _parameter_file_name[];               /* in canon.cc */

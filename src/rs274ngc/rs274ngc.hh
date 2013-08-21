@@ -248,37 +248,37 @@ typedef int (*read_function_pointer) (char *, int *, block_pointer, double *);
    */
 
    // close the currently open NC code file
-int rs274ngc_close();
+extern int rs274ngc_close();
 
    // execute a line of NC code
-int rs274ngc_execute();
+extern int rs274ngc_execute();
 
    // stop running
-int rs274ngc_exit();
+extern int rs274ngc_exit();
 
    // get ready to run
-int rs274ngc_init();
+extern int rs274ngc_init();
 
    // load a tool table
-int rs274ngc_load_tool_table();
+extern int rs274ngc_load_tool_table();
 
    // open a file of NC code
-int rs274ngc_open(const char *filename);
+extern int rs274ngc_open(const char *filename);
 
    // read the mdi or the next line of the open NC code file
-int rs274ngc_read(const char * mdi = 0);
+extern int rs274ngc_read(const char * mdi = 0);
 
    // reset yourself
-int rs274ngc_reset();
+extern int rs274ngc_reset();
 
    // restore interpreter variables from a file
-int rs274ngc_restore_parameters(const char * filename);
+extern int rs274ngc_restore_parameters(const char * filename);
 
    // save interpreter variables to file
-int rs274ngc_save_parameters(const char * filename, const double parameters[]);
+extern int rs274ngc_save_parameters(const char * filename, const double parameters[]);
 
    // synchronize your internal model with the external world
-int rs274ngc_synch();
+extern int rs274ngc_synch();
 
    /*************************************************************************/
    /* 

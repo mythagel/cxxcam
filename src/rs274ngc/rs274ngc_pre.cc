@@ -93,7 +93,8 @@ Significant modifications by Nicholas Gill.
 #include <algorithm>
 #include "rs274ngc.hh"
 #include "rs274ngc_return.hh"
-#include "rs274ngc_errors.cc"
+
+extern const char * _rs274ngc_errors[];
 
    /* numerical constants */
 static const double TOLERANCE_INCH = 0.0002;
@@ -5023,13 +5024,13 @@ repeat--) \
             if (block->m_modes[4] == 30)
                 PALLET_SHUTTLE();
             PROGRAM_END();
-            if (_setup.percent_flag == ON)
+            if (settings->percent_flag == ON)
             {
-                CHK((_setup.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
-                line = _setup.linetext;
+                CHK((settings->file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
+                line = settings->linetext;
                 for(; ;)                          /* check for ending percent sign and comment if missing */
                 {
-                    if (fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) == NULL)
+                    if (fgets(line, RS274NGC_TEXT_SIZE, settings->file_pointer) == NULL)
                     {
                         COMMENT
                             ("interpreter: percent sign missing from end of file");
@@ -5038,7 +5039,7 @@ repeat--) \
                     length = strlen(line);
                     if (length == (RS274NGC_TEXT_SIZE - 1))
                     {                             // line is too long. need to finish reading the line
-                        for(;fgetc(_setup.file_pointer) != '\n';);
+                        for(;fgetc(settings->file_pointer) != '\n';);
                         continue;
                     }
                     for(index = (length -1); // index set on last char

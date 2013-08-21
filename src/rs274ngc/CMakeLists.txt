@@ -6,3 +6,7 @@ ENDIF()
 #INCLUDE_DIRECTORIES( )
 ADD_LIBRARY(rs274ngc STATIC rs274ngc_errors.cc rs274ngc_pre.cc)
 TARGET_LINK_LIBRARIES(rs274ngc m)
+
+ADD_DEFINITIONS(-DAA -DBB -DCC)
+ADD_EXECUTABLE(driver driver.cc canon_pre.cc)
+TARGET_LINK_LIBRARIES(driver rs274ngc)
