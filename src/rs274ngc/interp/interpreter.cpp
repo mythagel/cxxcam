@@ -23,3 +23,13 @@
  */
 
 #include "interpreter.h"
+
+namespace gcode
+{
+
+interpreter::~interpreter()
+{
+}
+
+}
+
