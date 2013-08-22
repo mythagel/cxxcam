@@ -218,24 +218,6 @@ enum
 
 #define DEBUG_EMC
 
-   /*
-
-   The _setup model includes a stack array for the names of function
-   calls. This stack is written into if an error occurs. Just before each
-   function returns an error code, it writes its name in the next
-   available string, initializes the following string, and increments
-   the array index. The following four macros do the work.
-
-   The size of the stack array is 50. An error in the middle of a very
-   complex expression would cause the ERP and CHP macros to write past the
-   bounds of the array if a check were not provided. No real program
-   would contain such a thing, but the check is included to make the
-   macros totally crash-proof. If the function call stack is deeper than
-   49, the top of the stack will be missing.
-
-   */
-
-#define ERM(error_code) return error_code
 #define ERP(error_code) return error_code
 
 #define CHK(bad, error_code) do{ if (bad) { \
@@ -446,6 +428,21 @@ static const int _ems[] =
 
    */
 
+rs274ngc::error::error(int code)
+ : code(code)
+{
+}
+const char* rs274ngc::error::what() const noexcept
+{
+	if (((code >= RS274NGC_MIN_ERROR) and (code <= RS274NGC_MAX_ERROR)) )
+		return _rs274ngc_errors[code];
+	else
+		return "Unknown error";
+}
+rs274ngc::error::~error() noexcept
+{
+}
+
 rs274ngc::rs274ngc()
 :	_readers
     {
@@ -533,7 +530,7 @@ rs274ngc::rs274ngc()
         else if (move == G_3)
             *turn = 1;
         else
-            ERM(NCE_BUG_CODE_NOT_G2_OR_G3);
+            throw error(NCE_BUG_CODE_NOT_G2_OR_G3);
         return RS274NGC_OK;
     }
 
@@ -702,7 +699,7 @@ rs274ngc::rs274ngc()
         else if (move == G_3)
             *turn = 1;
         else
-            ERM(NCE_BUG_CODE_NOT_G2_OR_G3);
+            throw error(NCE_BUG_CODE_NOT_G2_OR_G3);
         return RS274NGC_OK;
     }
 
@@ -879,7 +876,7 @@ rs274ngc::rs274ngc()
             else if ((mode0 == G_92_1) or (mode0 == G_92_2) or (mode0 == G_92_3))
                 {}
                 else
-                    ERM(NCE_BUG_BAD_G_CODE_MODAL_GROUP_0);
+                    throw error(NCE_BUG_BAD_G_CODE_MODAL_GROUP_0);
         return RS274NGC_OK;
     }
 
@@ -1135,7 +1132,7 @@ rs274ngc::rs274ngc()
                     comment = 0;
                 }
                 else if (item == '(')
-                    ERM(NCE_NESTED_COMMENT_FOUND);
+                    throw error(NCE_NESTED_COMMENT_FOUND);
             }
             else if ((item == ' ') or (item == '\t') or (item == '\r'));
    /* don't copy blank or tab or CR */
@@ -1276,7 +1273,7 @@ rs274ngc::rs274ngc()
                     block.k_number = 0.0;
             }
             else
-                ERM(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
+                throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
         }
         else
         {
@@ -1377,7 +1374,7 @@ rs274ngc::rs274ngc()
             CHP(status);
         }
         else
-            ERM(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
+            throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
         return RS274NGC_OK;
     }
 
@@ -1927,7 +1924,7 @@ rs274ngc::rs274ngc()
                 );
         }
         else
-            ERM(NCE_BUG_CODE_NOT_IN_G92_SERIES);
+            throw error(NCE_BUG_CODE_NOT_IN_G92_SERIES);
 
         return RS274NGC_OK;
     }
@@ -2042,7 +2039,7 @@ rs274ngc::rs274ngc()
             settings.control_mode = CANON_CONTINUOUS;
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G61_G61_1_OR_G64);
+            throw error(NCE_BUG_CODE_NOT_G61_G61_1_OR_G64);
         return RS274NGC_OK;
     }
 
@@ -2161,7 +2158,7 @@ rs274ngc::rs274ngc()
                 origin = 9;
                 break;
             default:
-                ERM(NCE_BUG_CODE_NOT_IN_RANGE_G54_TO_G593);
+                throw error(NCE_BUG_CODE_NOT_IN_RANGE_G54_TO_G593);
         }
 
         if (origin == settings.origin_index)     /* already using this origin */
@@ -2267,7 +2264,7 @@ rs274ngc::rs274ngc()
             CHP(convert_cutter_compensation_on(RIGHT, block, settings));
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G40_G41_OR_G42);
+            throw error(NCE_BUG_CODE_NOT_G40_G41_OR_G42);
 
         return RS274NGC_OK;
     }
@@ -2434,7 +2431,7 @@ rs274ngc::rs274ngc()
             if (settings.motion_mode == motion)
                 block.r_number = settings.cycle.r;
             else
-                ERM(NCE_R_CLEARANCE_PLANE_UNSPECIFIED_IN_CYCLE);
+                throw error(NCE_R_CLEARANCE_PLANE_UNSPECIFIED_IN_CYCLE);
         }
 
         CHK((block.l_number == 0), NCE_CANNOT_DO_ZERO_REPEATS_OF_CYCLE);
@@ -2454,7 +2451,7 @@ rs274ngc::rs274ngc()
             CHP(convert_cycle_zx(motion, block, settings));
         }
         else
-            ERM(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
+            throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
 
         settings.cycle.l = block.l_number;
         settings.cycle.r = block.r_number;
@@ -3118,7 +3115,7 @@ repeat--) \
             bb = settings.current.y;
         }
         else
-            ERM(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
+            throw error(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
         CHK((r < cc), NCE_R_LESS_THAN_Z_IN_CYCLE_IN_XY_PLANE);
 
         if (old_cc < r)
@@ -3214,7 +3211,7 @@ repeat--) \
                     settings.cycle.p = block.p_number;
                 break;
             default:
-                ERM(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+                throw error(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         }
         settings.current.x = aa;            /* CYCLE_MACRO updates aa and bb */
         settings.current.y = bb;
@@ -3326,7 +3323,7 @@ repeat--) \
             bb = settings.current.z;
         }
         else
-            ERM(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
+            throw error(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
         CHK((r < cc), NCE_R_LESS_THAN_X_IN_CYCLE_IN_YZ_PLANE);
 
         if (old_cc < r)
@@ -3422,7 +3419,7 @@ repeat--) \
                     settings.cycle.p = block.p_number;
                 break;
             default:
-                ERM(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+                throw error(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         }
         settings.current.y = aa;            /* CYCLE_MACRO updates aa and bb */
         settings.current.z = bb;
@@ -3542,7 +3539,7 @@ repeat--) \
             bb = settings.current.x;
         }
         else
-            ERM(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
+            throw error(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
         CHK((r < cc), NCE_R_LESS_THAN_Y_IN_CYCLE_IN_XZ_PLANE);
 
         if (old_cc < r)
@@ -3638,7 +3635,7 @@ repeat--) \
                     settings.cycle.p = block.p_number;
                 break;
             default:
-                ERM(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+                throw error(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         }
         settings.current.z = aa;            /* CYCLE_MACRO updates aa and bb */
         settings.current.x = bb;
@@ -3698,7 +3695,7 @@ repeat--) \
             }
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G90_OR_G91);
+            throw error(NCE_BUG_CODE_NOT_G90_OR_G91);
         return RS274NGC_OK;
     }
 
@@ -3763,7 +3760,7 @@ repeat--) \
             settings.feed_mode = UNITS_PER_MINUTE;
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G93_OR_G94);
+            throw error(NCE_BUG_CODE_NOT_G93_OR_G94);
         return RS274NGC_OK;
     }
 
@@ -3990,7 +3987,7 @@ repeat--) \
                 , settings);
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G28_OR_G30);
+            throw error(NCE_BUG_CODE_NOT_G28_OR_G30);
         STRAIGHT_TRAVERSE(end_x, end_y, end_z
             ,           AA_end
             ,  BB_end
@@ -4100,7 +4097,7 @@ repeat--) \
             }
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G20_OR_G21);
+            throw error(NCE_BUG_CODE_NOT_G20_OR_G21);
         return RS274NGC_OK;
     }
 
@@ -4259,7 +4256,7 @@ repeat--) \
         }
         else if ((code == G_4) or (code == G_53));/* handled elsewhere */
         else
-            ERM(NCE_BUG_CODE_NOT_G4_G10_G28_G30_G53_OR_G92_SERIES);
+            throw error(NCE_BUG_CODE_NOT_G4_G10_G28_G30_G53_OR_G92_SERIES);
         return RS274NGC_OK;
     }
 
@@ -4317,7 +4314,7 @@ repeat--) \
             CHP(convert_cycle(motion, block, settings));
         }
         else
-            ERM(NCE_BUG_UNKNOWN_MOTION_CODE);
+            throw error(NCE_BUG_UNKNOWN_MOTION_CODE);
 
         return RS274NGC_OK;
     }
@@ -4389,7 +4386,7 @@ repeat--) \
             or (BB_end != settings.current.b) /*BB*/
             or (CC_end != settings.current.c) /*CC*/
             )
-            ERM(NCE_CANNOT_MOVE_ROTARY_AXES_DURING_PROBING);
+            throw error(NCE_CANNOT_MOVE_ROTARY_AXES_DURING_PROBING);
         distance = sqrt(pow((settings.current.x - end_x), 2) +
             pow((settings.current.y - end_y), 2) +
             pow((settings.current.z - end_z), 2));
@@ -4447,7 +4444,7 @@ repeat--) \
             settings.retract_mode = R_PLANE;
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G98_OR_G99);
+            throw error(NCE_BUG_CODE_NOT_G98_OR_G99);
         return RS274NGC_OK;
     }
 
@@ -4633,7 +4630,7 @@ repeat--) \
             settings.plane = CANON_PLANE_YZ;
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G17_G18_OR_G19);
+            throw error(NCE_BUG_CODE_NOT_G17_G18_OR_G19);
         return RS274NGC_OK;
     }
 
@@ -4840,7 +4837,7 @@ repeat--) \
             return RS274NGC_EXIT;
         }
         else
-            ERM(NCE_BUG_CODE_NOT_M0_M1_M2_M30_M60);
+            throw error(NCE_BUG_CODE_NOT_M0_M1_M2_M30_M60);
         return RS274NGC_OK;
     }
 
@@ -4977,7 +4974,7 @@ repeat--) \
             settings.current.y = end_y;
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
+            throw error(NCE_BUG_CODE_NOT_G0_OR_G1);
 
         settings.current.z = end_z;
         settings.current.a = AA_end;       /*AA*/
@@ -5080,7 +5077,7 @@ repeat--) \
                 );
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
+            throw error(NCE_BUG_CODE_NOT_G0_OR_G1);
 
         settings.current.x = cx;
         settings.current.y = cy;
@@ -5215,7 +5212,7 @@ repeat--) \
                     );
             }
             else
-                ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
+                throw error(NCE_BUG_CODE_NOT_G0_OR_G1);
         }
         else
         {
@@ -5241,7 +5238,7 @@ repeat--) \
                 gamma = -PI2;
             }
             else
-                ERM(NCE_BUG_SIDE_NOT_RIGHT_OR_LEFT);
+                throw error(NCE_BUG_SIDE_NOT_RIGHT_OR_LEFT);
             end_x = (px + (radius * cos(alpha + gamma)));
             end_y = (py + (radius * sin(alpha + gamma)));
             mid_x = (start_x + (radius * cos(alpha + gamma)));
@@ -5297,7 +5294,7 @@ repeat--) \
                 }
             }
             else
-                ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
+                throw error(NCE_BUG_CODE_NOT_G0_OR_G1);
         }
 
         settings.current.x = end_x;
@@ -5435,7 +5432,7 @@ repeat--) \
             settings.length_offset_index = index;
         }
         else
-            ERM(NCE_BUG_CODE_NOT_G43_OR_G49);
+            throw error(NCE_BUG_CODE_NOT_G43_OR_G49);
         return RS274NGC_OK;
     }
 
@@ -5746,7 +5743,7 @@ repeat--) \
                 *left = (*left * *right);
                 break;
             default:
-                ERM(NCE_BUG_UNKNOWN_OPERATION);
+                throw error(NCE_BUG_UNKNOWN_OPERATION);
         }
         return RS274NGC_OK;
     }
@@ -5798,7 +5795,7 @@ repeat--) \
                 *left = (*left + *right);
                 break;
             default:
-                ERM(NCE_BUG_UNKNOWN_OPERATION);
+                throw error(NCE_BUG_UNKNOWN_OPERATION);
         }
         return RS274NGC_OK;
     }
@@ -5978,7 +5975,7 @@ repeat--) \
                 *double_ptr = tan((*double_ptr * PI)/180.0);
                 break;
             default:
-                ERM(NCE_BUG_UNKNOWN_OPERATION);
+                throw error(NCE_BUG_UNKNOWN_OPERATION);
         }
         return RS274NGC_OK;
     }
@@ -7123,7 +7120,7 @@ repeat--) \
         if ((value_read - value) > 0.999)
             value = (int)ceil(value_read);
         else if ((value_read - value) > 0.001)
-            ERM(NCE_G_CODE_OUT_OF_RANGE);
+            throw error(NCE_G_CODE_OUT_OF_RANGE);
 
         CHK((value > 999), NCE_G_CODE_OUT_OF_RANGE);
         CHK((value < 0), NCE_NEGATIVE_G_CODE_USED);
@@ -7274,7 +7271,7 @@ repeat--) \
         }
         CHK((n == *counter), NCE_BAD_FORMAT_UNSIGNED_INTEGER);
         if (sscanf(line + *counter, "%d", integer_ptr) == 0)
-            ERM(NCE_SSCANF_FAILED);
+            throw error(NCE_SSCANF_FAILED);
         *counter = n;
         return RS274NGC_OK;
     }
@@ -7329,7 +7326,7 @@ repeat--) \
             *integer_ptr = (int)ceil(float_value);
         }
         else if ((float_value - *integer_ptr) > 0.0001)
-            ERM(NCE_NON_INTEGER_VALUE_FOR_INTEGER);
+            throw error(NCE_NON_INTEGER_VALUE_FOR_INTEGER);
         return RS274NGC_OK;
     }
 
@@ -7761,7 +7758,7 @@ repeat--) \
                     *counter = (*counter + 2);
                 }
                 else
-                    ERM(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_A);
+                    throw error(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_A);
                 break;
             case 'm':
                 if((line[*counter] == 'o') and (line[(*counter)+1] == 'd'))
@@ -7770,7 +7767,7 @@ repeat--) \
                     *counter = (*counter + 2);
                 }
                 else
-                    ERM(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_M);
+                    throw error(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_M);
                 break;
             case 'o':
                 if(line[*counter] == 'r')
@@ -7779,7 +7776,7 @@ repeat--) \
                     *counter = (*counter + 1);
                 }
                 else
-                    ERM(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_O);
+                    throw error(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_O);
                 break;
             case 'x':
                 if((line[*counter] == 'o') and (line[(*counter)+1] == 'r'))
@@ -7788,12 +7785,12 @@ repeat--) \
                     *counter = (*counter + 2);
                 }
                 else
-                    ERM(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_X);
+                    throw error(NCE_UNKNOWN_OPERATION_NAME_STARTING_WITH_X);
                 break;
             case 0:
-                ERM(NCE_UNCLOSED_EXPRESSION);
+                throw error(NCE_UNCLOSED_EXPRESSION);
             default:
-                ERM(NCE_UNKNOWN_OPERATION);
+                throw error(NCE_UNKNOWN_OPERATION);
         }
         return RS274NGC_OK;
     }
@@ -7864,7 +7861,7 @@ repeat--) \
                     *counter = (*counter + 3);
                 }
                 else
-                    ERM(NCE_UNKNOWN_WORD_STARTING_WITH_A);
+                    throw error(NCE_UNKNOWN_WORD_STARTING_WITH_A);
                 break;
             case 'c':
                 if((line[*counter] == 'o') and (line[(*counter)+1] == 's'))
@@ -7873,7 +7870,7 @@ repeat--) \
                     *counter = (*counter + 2);
                 }
                 else
-                    ERM(NCE_UNKNOWN_WORD_STARTING_WITH_C);
+                    throw error(NCE_UNKNOWN_WORD_STARTING_WITH_C);
                 break;
             case 'e':
                 if((line[*counter] == 'x') and (line[(*counter)+1] == 'p'))
@@ -7882,7 +7879,7 @@ repeat--) \
                     *counter = (*counter + 2);
                 }
                 else
-                    ERM(NCE_UNKNOWN_WORD_STARTING_WITH_E);
+                    throw error(NCE_UNKNOWN_WORD_STARTING_WITH_E);
                 break;
             case 'f':
                 if((line[*counter] == 'i') and (line[(*counter)+1] == 'x'))
@@ -7896,7 +7893,7 @@ repeat--) \
                     *counter = (*counter + 2);
                 }
                 else
-                    ERM(NCE_UNKNOWN_WORD_STARTING_WITH_F);
+                    throw error(NCE_UNKNOWN_WORD_STARTING_WITH_F);
                 break;
             case 'l':
                 if(line[*counter] == 'n')
@@ -7905,7 +7902,7 @@ repeat--) \
                     *counter = (*counter + 1);
                 }
                 else
-                    ERM(NCE_UNKNOWN_WORD_STARTING_WITH_L);
+                    throw error(NCE_UNKNOWN_WORD_STARTING_WITH_L);
                 break;
             case 'r':
                 if(strncmp((line + *counter), "ound", 4) == 0)
@@ -7914,7 +7911,7 @@ repeat--) \
                     *counter = (*counter + 4);
                 }
                 else
-                    ERM(NCE_UNKNOWN_WORD_STARTING_WITH_R);
+                    throw error(NCE_UNKNOWN_WORD_STARTING_WITH_R);
                 break;
             case 's':
                 if((line[*counter] == 'i') and (line[(*counter)+1] == 'n'))
@@ -7928,7 +7925,7 @@ repeat--) \
                     *counter = (*counter + 3);
                 }
                 else
-                    ERM(NCE_UNKNOWN_WORD_STARTING_WITH_S);
+                    throw error(NCE_UNKNOWN_WORD_STARTING_WITH_S);
                 break;
             case 't':
                 if((line[*counter] == 'a') and (line[(*counter)+1] == 'n'))
@@ -7937,10 +7934,10 @@ repeat--) \
                     *counter = (*counter + 2);
                 }
                 else
-                    ERM(NCE_UNKNOWN_WORD_STARTING_WITH_T);
+                    throw error(NCE_UNKNOWN_WORD_STARTING_WITH_T);
                 break;
             default:
-                ERM(NCE_UNKNOWN_WORD_WHERE_UNARY_OPERATION_COULD_BE);
+                throw error(NCE_UNKNOWN_WORD_WHERE_UNARY_OPERATION_COULD_BE);
         }
         return RS274NGC_OK;
     }
@@ -8597,7 +8594,7 @@ repeat--) \
             n++;
         }
         else if ((c != '.') and ((c < 48) or (c > 57)))
-            ERM(NCE_BAD_NUMBER_FORMAT);
+            throw error(NCE_BAD_NUMBER_FORMAT);
 
    /* check out rest of characters (must be digit or decimal point) */
         for (; (c = line[n]) != (char) NULL; n++)
@@ -8624,7 +8621,7 @@ repeat--) \
         if (sscanf(line + *counter, "%lf", double_ptr) == 0)
         {
             line[n] = c;
-            ERM(NCE_SSCANF_FAILED);
+            throw error(NCE_SSCANF_FAILED);
         }
         else
         {
@@ -9827,7 +9824,7 @@ repeat--) \
                 for (; k < RS274NGC_MAX_PARAMETERS; k++)
                 {
                     if (k > variable)
-                        ERM(NCE_PARAMETER_FILE_OUT_OF_ORDER);
+                        throw error(NCE_PARAMETER_FILE_OUT_OF_ORDER);
                     else if (k == variable)
                     {
                         pars[k] = value;
@@ -9839,7 +9836,7 @@ repeat--) \
                     else                          // if (k < variable)
                     {
                         if (k == required)
-                            ERM(NCE_REQUIRED_PARAMETER_MISSING);
+                            throw error(NCE_REQUIRED_PARAMETER_MISSING);
                         else
                             pars[k] = 0;
                     }
@@ -9932,7 +9929,7 @@ repeat--) \
                 for (; k < RS274NGC_MAX_PARAMETERS; k++)
                 {
                     if (k > variable)
-                        ERM(NCE_PARAMETER_FILE_OUT_OF_ORDER);
+                        throw error(NCE_PARAMETER_FILE_OUT_OF_ORDER);
                     else if (k == variable)
                     {
                         sprintf(line, "%d\t%f\n", k, parameters[k]);

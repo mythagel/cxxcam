@@ -49,6 +49,7 @@ Plan to reuse gcode parsing and interpreter individually.
 
 #include "canon.hh"
 #include <cstddef>
+#include <exception>
 
    /**********************/
    /*   COMPILER MACROS  */
@@ -221,8 +222,17 @@ struct setup_t
 
    */
 
+
 class rs274ngc
 {
+public:
+	struct error : std::exception
+	{
+		int code;
+		error(int code);
+		virtual const char* what() const noexcept;
+		virtual ~error() noexcept;
+	};
 private:
     setup_t _setup;
 
