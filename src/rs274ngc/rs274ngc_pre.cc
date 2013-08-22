@@ -218,8 +218,6 @@ enum
 
 #define DEBUG_EMC
 
-#define ERP(error_code) return error_code
-
 #define CHK(bad, error_code) do{ if (bad) { \
     return error_code; \
 } } while(0)
@@ -5887,7 +5885,7 @@ repeat--) \
             if (status == RS274NGC_EXIT)
                 return RS274NGC_EXIT;
             else if (status != RS274NGC_OK)
-                ERP(status);
+                throw error(status);
         }
         return ((settings.probe_flag == ON) ? RS274NGC_EXECUTE_FINISH: RS274NGC_OK);
     }
@@ -9446,7 +9444,7 @@ repeat--) \
             if ((status != RS274NGC_OK) and
                 (status != RS274NGC_EXECUTE_FINISH) and
                 (status != RS274NGC_EXIT))
-                ERP(status);
+                throw error(status);
         }
         else                                      /* blank line is OK */
             status = RS274NGC_OK;
@@ -9708,7 +9706,7 @@ repeat--) \
         }
         else if (read_status == RS274NGC_ENDFILE);
         else
-            ERP(read_status);
+            throw error(read_status);
         return read_status;
     }
 
