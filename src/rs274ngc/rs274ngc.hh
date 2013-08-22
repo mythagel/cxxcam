@@ -205,8 +205,6 @@ struct setup_t
     CANON_SPEED_FEED_MODE speed_feed_mode;        // independent or synched
     ON_OFF speed_override;                        // whether speed override is enabled
     CANON_DIRECTION spindle_turning;              // direction spindle is turning
-    char stack[50][80];                           // stack of calls for error reporting
-    int stack_index;                              // index into the stack
     double tool_length_offset;                    // current tool length offset
     int tool_max;                                 // highest number tool slot in carousel
     CANON_TOOL_TABLE tool_table [CANON_TOOL_MAX + 1];                     // index is slot number
@@ -230,7 +228,7 @@ private:
 
 	// pointer to function that reads
 	typedef int (rs274ngc::*read_function_pointer) (char *, int *, block_t&, double *);
-	read_function_pointer _readers[123];
+	read_function_pointer _readers[127];
 
 	int arc_data_comp_ijk(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
 	int arc_data_comp_r(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
@@ -412,11 +410,6 @@ public:
 
 	   // return the current sequence number (how many lines read)
 	int sequence_number();
-
-	   // copy the function name from the stack_index'th position of the
-	   // function call stack at the time of the most recent error into
-	   // the function name string, but stop at max_size if the name is longer
-	void stack_name(int stack_index, char * function_name, int max_size);
 
 };
 
