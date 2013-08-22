@@ -224,11 +224,6 @@ void error_if(bool bad, int error_code)
 		throw error(error_code);
 }
 
-//#define CHP(try_this) do {\
-//if ((status = (try_this)) != RS274NGC_OK) \
-//return status; } while(0)
-#define CHP(try_this) try_this
-
    /* Interpreter global arrays for g_codes and m_codes. The nth entry
    in each array is the modal group number corresponding to the nth
    code. Entries which are -1 represent illegal codes. Remember g_codes
@@ -903,11 +898,9 @@ rs274ngc::rs274ngc()
     block_t& block,                          /* pointer to a block to be checked */
     setup_t& settings)                       /* pointer to machine settings      */
     {
-        int status;
-
-        CHP(check_g_codes(block, settings));
-        CHP(check_m_codes(block));
-        CHP(check_other_codes(block));
+        check_g_codes(block, settings);
+        check_m_codes(block);
+        check_other_codes(block);
     }
 
    /****************************************************************************/
@@ -1196,7 +1189,6 @@ rs274ngc::rs274ngc()
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        int status;
         int first;                                /* flag set ON if this is first move after comp ON */
         int ijk_flag;                             /* flag set ON if any of i,j,k present in NC code  */
         double end_x;
@@ -1375,7 +1367,6 @@ rs274ngc::rs274ngc()
     {
         double center1;
         double center2;
-        int status;                               /* status returned from CHP function call     */
         double tolerance;                         /* tolerance for difference of radii          */
         int turn;                                 /* number of full or partial turns CCW in arc */
 
@@ -1384,13 +1375,11 @@ rs274ngc::rs274ngc()
 
         if (block.r_flag)
         {
-            CHP(arc_data_r(move, *current1, *current2, end1, end2,
-                block.r_number, &center1, &center2, &turn));
+            arc_data_r(move, *current1, *current2, end1, end2, block.r_number, &center1, &center2, &turn);
         }
         else
         {
-            CHP(arc_data_ijk(move, *current1, *current2, end1, end2, offset1,
-                offset2, &center1, &center2, &turn, tolerance));
+            arc_data_ijk(move, *current1, *current2, end1, end2, offset1, offset2, &center1, &center2, &turn, tolerance);
         }
 
         if (settings.feed_mode == INVERSE_TIME)
@@ -1454,7 +1443,6 @@ rs274ngc::rs274ngc()
         double center_y;
         double gamma;                             /* direction of perpendicular to arc at end */
         int side;                                 /* offset side - right or left              */
-        int status;                               /* status returned from CHP function call   */
         double tolerance;                         /* tolerance for difference of radii        */
         double tool_radius;
         int turn;                                 /* 1 for counterclockwise, -1 for clockwise */
@@ -1471,16 +1459,11 @@ rs274ngc::rs274ngc()
 
         if (block.r_flag)
         {
-            CHP(arc_data_comp_r(move, side, tool_radius, settings.current.x,
-                settings.current.y, end_x, end_y, block.r_number,
-                &center_x, &center_y, &turn));
+            arc_data_comp_r(move, side, tool_radius, settings.current.x, settings.current.y, end_x, end_y, block.r_number, &center_x, &center_y, &turn);
         }
         else
         {
-            CHP(arc_data_comp_ijk(move, side, tool_radius, settings.current.x,
-                settings.current.y, end_x, end_y,
-                block.i_number, block.j_number,
-                &center_x, &center_y, &turn, tolerance));
+            arc_data_comp_ijk(move, side, tool_radius, settings.current.x, settings.current.y, end_x, end_y, block.i_number, block.j_number, &center_x, &center_y, &turn, tolerance);
         }
 
         gamma =
@@ -1579,7 +1562,6 @@ rs274ngc::rs274ngc()
         double small = TOLERANCE_CONCAVE_CORNER;
         double start_x;
         double start_y;
-        int status;                               /* status returned from CHP function call     */
         double theta;                             /* direction of tangent to last cut */
         double tolerance;
         double tool_radius;
@@ -1589,19 +1571,15 @@ rs274ngc::rs274ngc()
 
         start_x = settings.program_x;
         start_y = settings.program_y;
-        tolerance = (settings.length_units == CANON_UNITS_INCHES) ?
-            TOLERANCE_INCH : TOLERANCE_MM;
+        tolerance = (settings.length_units == CANON_UNITS_INCHES) ? TOLERANCE_INCH : TOLERANCE_MM;
 
         if (block.r_flag)
         {
-            CHP(arc_data_r(move, start_x, start_y, end_x, end_y,
-                block.r_number, &center_x, &center_y, &turn));
+            arc_data_r(move, start_x, start_y, end_x, end_y, block.r_number, &center_x, &center_y, &turn);
         }
         else
         {
-            CHP(arc_data_ijk(move, start_x, start_y, end_x, end_y,
-                block.i_number, block.j_number,
-                &center_x, &center_y, &turn, tolerance));
+            arc_data_ijk(move, start_x, start_y, end_x, end_y, block.i_number, block.j_number, &center_x, &center_y, &turn, tolerance);
         }
 
    /* compute other data */
@@ -2196,19 +2174,17 @@ rs274ngc::rs274ngc()
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        int status;
-
         if (g_code == G_40)
         {
-            CHP(convert_cutter_compensation_off(settings));
+            convert_cutter_compensation_off(settings);
         }
         else if (g_code == G_41)
         {
-            CHP(convert_cutter_compensation_on(LEFT, block, settings));
+            convert_cutter_compensation_on(LEFT, block, settings);
         }
         else if (g_code == G_42)
         {
-            CHP(convert_cutter_compensation_on(RIGHT, block, settings));
+            convert_cutter_compensation_on(RIGHT, block, settings);
         }
         else
             throw error(NCE_BUG_CODE_NOT_G40_G41_OR_G42);
@@ -2364,7 +2340,6 @@ rs274ngc::rs274ngc()
     setup_t& settings)                       /* pointer to machine settings                    */
     {
         CANON_PLANE plane;
-        int status;
 
         plane = settings.plane;
         if (block.r_flag == OFF)
@@ -2381,15 +2356,15 @@ rs274ngc::rs274ngc()
 
         if (plane == CANON_PLANE_XY)
         {
-            CHP(convert_cycle_xy(motion, block, settings));
+            convert_cycle_xy(motion, block, settings);
         }
         else if (plane == CANON_PLANE_YZ)
         {
-            CHP(convert_cycle_yz(motion, block, settings));
+            convert_cycle_yz(motion, block, settings);
         }
         else if (plane == CANON_PLANE_XZ)
         {
-            CHP(convert_cycle_zx(motion, block, settings));
+            convert_cycle_zx(motion, block, settings);
         }
         else
             throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
@@ -2982,7 +2957,7 @@ repeat--) \
     cycle_traverse(plane, aa, bb, old_cc); \
     if (old_cc != r) \
     cycle_traverse(plane, aa, bb, r); \
-    CHP(call); \
+    call; \
     old_cc = clear_cc; \
 }
 
@@ -3005,7 +2980,6 @@ repeat--) \
         double r;
         int repeat;
         CANON_MOTION_MODE save_mode;
-        int status;
 
         plane = CANON_PLANE_XY;
         if (settings.motion_mode != motion)
@@ -3205,7 +3179,6 @@ repeat--) \
         double r;
         int repeat;
         CANON_MOTION_MODE save_mode;
-        int status;
 
         plane = CANON_PLANE_YZ;
         if (settings.motion_mode != motion)
@@ -3413,7 +3386,6 @@ repeat--) \
         double r;
         int repeat;
         CANON_MOTION_MODE save_mode;
-        int status;
 
         plane = CANON_PLANE_XZ;
         if (settings.motion_mode != motion)
@@ -3743,51 +3715,49 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
-        int status;
-
         if (block.g_modes[0] == G_4)
         {
-            CHP(convert_dwell(block.p_number));
+            convert_dwell(block.p_number);
         }
         if (block.g_modes[2] != -1)
         {
-            CHP(convert_set_plane(block.g_modes[2], settings));
+            convert_set_plane(block.g_modes[2], settings);
         }
         if (block.g_modes[6] != -1)
         {
-            CHP(convert_length_units(block.g_modes[6], settings));
+            convert_length_units(block.g_modes[6], settings);
         }
         if (block.g_modes[7] != -1)
         {
-            CHP(convert_cutter_compensation(block.g_modes[7], block, settings));
+            convert_cutter_compensation(block.g_modes[7], block, settings);
         }
         if (block.g_modes[8] != -1)
         {
-            CHP(convert_tool_length_offset(block.g_modes[8], block, settings));
+            convert_tool_length_offset(block.g_modes[8], block, settings);
         }
         if (block.g_modes[12] != -1)
         {
-            CHP(convert_coordinate_system(block.g_modes[12], settings));
+            convert_coordinate_system(block.g_modes[12], settings);
         }
         if (block.g_modes[13] != -1)
         {
-            CHP(convert_control_mode(block.g_modes[13], settings));
+            convert_control_mode(block.g_modes[13], settings);
         }
         if (block.g_modes[3] != -1)
         {
-            CHP(convert_distance_mode(block.g_modes[3], settings));
+            convert_distance_mode(block.g_modes[3], settings);
         }
         if (block.g_modes[10] != -1)
         {
-            CHP(convert_retract_mode(block.g_modes[10], settings));
+            convert_retract_mode(block.g_modes[10], settings);
         }
         if (block.g_modes[0] != -1)
         {
-            CHP(convert_modal_0(block.g_modes[0], block, settings));
+            convert_modal_0(block.g_modes[0], block, settings);
         }
         if (block.motion_to_be != -1)
         {
-            CHP(convert_motion(block.motion_to_be, block, settings));
+            convert_motion(block.motion_to_be, block, settings);
         }
     }
 
@@ -4021,11 +3991,9 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
-        int status;
-
         if (block.m_modes[6] != -1)
         {
-            CHP(convert_tool_change(settings));
+            convert_tool_change(settings);
         }
 
         if (block.m_modes[7] == 3)
@@ -4125,20 +4093,18 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
-        int status;
-
         if (code == G_10)
         {
-            CHP(convert_setup(block, settings));
+            convert_setup(block, settings);
         }
         else if ((code == G_28) or (code == G_30))
         {
-            CHP(convert_home(code, block, settings));
+            convert_home(code, block, settings);
         }
         else if ((code == G_92)   or (code == G_92_1) or
             (code == G_92_2) or (code == G_92_3))
         {
-            CHP(convert_axis_offsets(code, block, settings));
+            convert_axis_offsets(code, block, settings);
         }
         else if ((code == G_4) or (code == G_53));/* handled elsewhere */
         else
@@ -4173,19 +4139,17 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274 instructions  */
     setup_t& settings)                       /* pointer to machine settings               */
     {
-        int status;
-
         if ((motion == G_0) or (motion == G_1))
         {
-            CHP(convert_straight(motion, block, settings));
+            convert_straight(motion, block, settings);
         }
         else if ((motion == G_3) or (motion == G_2))
         {
-            CHP(convert_arc(motion, block, settings));
+            convert_arc(motion, block, settings);
         }
         else if (motion == G_38_2)
         {
-            CHP(convert_probe(block, settings));
+            convert_probe(block, settings);
         }
         else if (motion == G_80)
         {
@@ -4196,7 +4160,7 @@ repeat--) \
         }
         else if ((motion > G_80) and (motion < G_90))
         {
-            CHP(convert_cycle(motion, block, settings));
+            convert_cycle(motion, block, settings);
         }
         else
             throw error(NCE_BUG_UNKNOWN_MOTION_CODE);
@@ -4711,6 +4675,8 @@ repeat--) \
         }
         else
             throw error(NCE_BUG_CODE_NOT_M0_M1_M2_M30_M60);
+        
+        return RS274NGC_OK;
     }
 
    /****************************************************************************/
@@ -4766,7 +4732,6 @@ repeat--) \
         double AA_end;                            /*AA*/
         double BB_end;                            /*BB*/
         double CC_end;                            /*CC*/
-        int status;
 
         if (move == G_1)
         {
@@ -5534,12 +5499,10 @@ repeat--) \
     int operation,
     double * right)
     {
-        int status;
-
         if (operation < AND2)
-            CHP(execute_binary1(left, operation, right));
+            execute_binary1(left, operation, right);
         else
-            CHP(execute_binary2(left, operation, right));
+            execute_binary2(left, operation, right);
     }
 
    /****************************************************************************/
@@ -5700,11 +5663,11 @@ repeat--) \
 
         if (block.comment[0] != 0)
         {
-            CHP(convert_comment(block.comment));
+            convert_comment(block.comment);
         }
         if (block.g_modes[5] != -1)
         {
-            CHP(convert_feed_mode(block.g_modes[5], settings));
+            convert_feed_mode(block.g_modes[5], settings);
         }
         if (block.f_number > -1.0)
         {
@@ -5712,19 +5675,19 @@ repeat--) \
             if (settings.feed_mode == INVERSE_TIME);
             else
             {
-                CHP(convert_feed_rate(block, settings));
+                convert_feed_rate(block, settings);
             }
         }
         if (block.s_number > -1.0)
         {
-            CHP(convert_speed(block, settings));
+            convert_speed(block, settings);
         }
         if (block.t_number != -1)
         {
-            CHP(convert_tool_select(block, settings));
+            convert_tool_select(block, settings);
         }
-        CHP(convert_m(block, settings));
-        CHP(convert_g(block, settings));
+        convert_m(block, settings);
+        convert_g(block, settings);
         if (block.m_modes[4] != -1)            /* converts m0, m1, m2, m30, or m60 */
         {
             status = convert_stop(block, settings);
@@ -6461,12 +6424,10 @@ repeat--) \
     block_t& block,                          /* pointer to a block to be filled      */
     setup_t& settings)                       /* pointer to machine settings          */
     {
-        int status;
-
-        CHP(init_block (block));
-        CHP(read_items(block, line, settings.parameters));
-        CHP(enhance_block(block, settings));
-        CHP(check_items (block, settings));
+        init_block (block);
+        read_items(block, line, settings.parameters);
+        enhance_block(block, settings);
+        check_items (block, settings);
     }
 
    /****************************************************************************/
@@ -6543,12 +6504,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'a'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.a_flag != OFF), NCE_MULTIPLE_A_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.a_flag = ON;
         block.a_number = value;
     }
@@ -6595,12 +6555,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double argument2;
-        int status;
 
         error_if((line [*counter] != '/'), NCE_SLASH_MISSING_AFTER_FIRST_ATAN_ARGUMENT);
         *counter = (*counter + 1);
         error_if((line[*counter] != '['), NCE_LEFT_BRACKET_MISSING_AFTER_SLASH_WITH_ATAN);
-        CHP(read_real_expression (line, counter, &argument2, parameters));
+        read_real_expression (line, counter, &argument2, parameters);
    /* value in radians */
         *double_ptr = atan2(*double_ptr, argument2);
    /* convert to degrees */
@@ -6653,12 +6612,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'b'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.b_flag != OFF), NCE_MULTIPLE_B_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.b_flag = ON;
         block.b_number = value;
     }
@@ -6709,12 +6667,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'c'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.c_flag != OFF), NCE_MULTIPLE_C_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.c_flag = ON;
         block.c_number = value;
     }
@@ -6811,12 +6768,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                    */
     {
         int value;
-        int status;
 
         error_if((line[*counter] != 'd'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.d_number > -1), NCE_MULTIPLE_D_WORDS_ON_ONE_LINE);
-        CHP(read_integer_value(line, counter, &value, parameters));
+        read_integer_value(line, counter, &value, parameters);
         error_if((value < 0), NCE_NEGATIVE_D_WORD_TOOL_RADIUS_INDEX_USED);
         error_if((value > _setup.tool_max), NCE_TOOL_RADIUS_INDEX_TOO_BIG);
         block.d_number = value;
@@ -6861,12 +6817,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                    */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'f'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.f_number > -1.0), NCE_MULTIPLE_F_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         error_if((value < 0.0), NCE_NEGATIVE_F_WORD_USED);
         block.f_number = value;
     }
@@ -6929,11 +6884,10 @@ repeat--) \
         double value_read;
         int value;
         int mode;
-        int status;
 
         error_if((line[*counter] != 'g'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        CHP(read_real_value(line, counter, &value_read, parameters));
+        read_real_value(line, counter, &value_read, parameters);
         value_read = (10.0 * value_read);
         value = (int)floor(value_read);
 
@@ -6987,12 +6941,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         int value;
-        int status;
 
         error_if((line[*counter] != 'h'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.h_number > -1), NCE_MULTIPLE_H_WORDS_ON_ONE_LINE);
-        CHP(read_integer_value(line, counter, &value, parameters));
+        read_integer_value(line, counter, &value, parameters);
         error_if((value < 0), NCE_NEGATIVE_H_WORD_TOOL_LENGTH_OFFSET_INDEX_USED);
         error_if((value > _setup.tool_max), NCE_TOOL_LENGTH_OFFSET_INDEX_TOO_BIG);
         block.h_number = value;
@@ -7038,12 +6991,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'i'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.i_flag != OFF), NCE_MULTIPLE_I_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.i_flag = ON;
         block.i_number = value;
     }
@@ -7132,9 +7084,8 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double float_value;
-        int status;
 
-        CHP(read_real_value(line, counter, &float_value, parameters));
+        read_real_value(line, counter, &float_value, parameters);
         *integer_ptr = (int)floor(float_value);
         if ((float_value - *integer_ptr) > 0.9999)
         {
@@ -7169,7 +7120,6 @@ repeat--) \
     {
         int counter;
         int length;
-        int status;
 
         length = strlen(line);
         counter = 0;
@@ -7178,11 +7128,11 @@ repeat--) \
             counter++;
         if (line[counter] == 'n')
         {
-            CHP(read_line_number(line, &counter, block));
+            read_line_number(line, &counter, block);
         }
         for ( ; counter < length; )
         {
-            CHP(read_one_item (line, &counter, block, parameters));
+            read_one_item (line, &counter, block, parameters);
         }
     }
 
@@ -7226,12 +7176,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'j'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.j_flag != OFF), NCE_MULTIPLE_J_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.j_flag = ON;
         block.j_number = value;
     }
@@ -7276,12 +7225,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'k'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.k_flag != OFF), NCE_MULTIPLE_K_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.k_flag = ON;
         block.k_number = value;
     }
@@ -7324,12 +7272,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         int value;
-        int status;
 
         error_if((line[*counter] != 'l'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.l_number > -1), NCE_MULTIPLE_L_WORDS_ON_ONE_LINE);
-        CHP(read_integer_value(line, counter, &value, parameters));
+        read_integer_value(line, counter, &value, parameters);
         error_if((value < 0), NCE_NEGATIVE_L_WORD_USED);
         block.l_number = value;
     }
@@ -7369,11 +7316,10 @@ repeat--) \
     block_t& block)                          /* pointer to a block being filled from the line  */
     {
         int value;
-        int status;
 
         error_if((line[*counter] != 'n'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        CHP(read_integer_unsigned(line, counter, &value));
+        read_integer_unsigned(line, counter, &value);
         error_if((value > 99999), NCE_LINE_NUMBER_GREATER_THAN_99999);
         block.line_number = value;
     }
@@ -7420,11 +7366,10 @@ repeat--) \
     {
         int value;
         int mode;
-        int status;
 
         error_if((line[*counter] != 'm'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        CHP(read_integer_value(line, counter, &value, parameters));
+        read_integer_value(line, counter, &value, parameters);
         error_if((value < 0), NCE_NEGATIVE_M_CODE_USED);
         error_if((value > 99), NCE_M_CODE_GREATER_THAN_99);
         mode = _ems[value];
@@ -7485,7 +7430,6 @@ repeat--) \
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
     {
-        int status;
         read_function_pointer function_pointer;
         char letter;
 
@@ -7493,7 +7437,7 @@ repeat--) \
         error_if(((letter < 0) or (letter > 'z')), NCE_BAD_CHARACTER_USED);
         function_pointer = _readers[static_cast<unsigned int>(letter)];
         error_if((function_pointer == 0), NCE_BAD_CHARACTER_USED);
-        CHP((this->*function_pointer)(line, counter, block, parameters));
+        (this->*function_pointer)(line, counter, block, parameters);
     }
 
    /****************************************************************************/
@@ -7785,12 +7729,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'p'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.p_number > -1.0), NCE_MULTIPLE_P_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         error_if((value < 0.0), NCE_NEGATIVE_P_WORD_USED);
         block.p_number = value;
     }
@@ -7839,11 +7782,10 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         int index;
-        int status;
 
         error_if((line[*counter] != '#'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        CHP(read_integer_value(line, counter, &index, parameters));
+        read_integer_value(line, counter, &index, parameters);
         error_if(((index < 1) or (index >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
         *double_ptr = parameters[index];
     }
@@ -7923,15 +7865,14 @@ repeat--) \
     {
         int index;
         double value;
-        int status;
 
         error_if((line[*counter] != '#'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        CHP(read_integer_value(line, counter, &index, parameters));
+        read_integer_value(line, counter, &index, parameters);
         error_if(((index < 1) or (index >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
         error_if((line[*counter] != '='), NCE_EQUAL_SIGN_MISSING_IN_PARAMETER_SETTING);
         *counter = (*counter + 1);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         _setup.parameter_numbers[_setup.parameter_occurrence] = index;
         _setup.parameter_values[_setup.parameter_occurrence] = value;
         _setup.parameter_occurrence++;
@@ -7975,12 +7916,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'q'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.q_number > -1.0), NCE_MULTIPLE_Q_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         error_if((value <= 0.0), NCE_NEGATIVE_OR_ZERO_Q_VALUE_USED);
         block.q_number = value;
     }
@@ -8027,12 +7967,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                    */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'r'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.r_flag != OFF), NCE_MULTIPLE_R_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.r_flag = ON;
         block.r_number = value;
     }
@@ -8245,18 +8184,18 @@ repeat--) \
 
         error_if((line[*counter] != '['), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        CHP(read_real_value(line, counter, value, parameters));
-        CHP(read_operation(line, counter, &next_operation));
+        read_real_value(line, counter, value, parameters);
+        read_operation(line, counter, &next_operation);
         if (next_operation == RIGHT_BRACKET);     /* nothing to do */
         else if (next_operation < AND2)           /* next operation is a bop1, times-like */
         {
-            CHP(read_rest_bop1(line, counter, value, &next_operation, parameters));
+            read_rest_bop1(line, counter, value, &next_operation, parameters);
             if (next_operation == RIGHT_BRACKET); /* next_operation has been reset */
             else                                  /* next_operation is now a bop2, plus-like */
-                CHP(read_rest_bop2(line, counter, value, next_operation, parameters));
+                read_rest_bop2(line, counter, value, next_operation, parameters);
         }
         else                                      /* next operation is a bop2, plus-like */
-            CHP(read_rest_bop2(line, counter, value, next_operation, parameters));
+            read_rest_bop2(line, counter, value, next_operation, parameters);
     }
 #endif
 
@@ -8291,17 +8230,16 @@ repeat--) \
         double values[MAX_STACK];
         int operators[MAX_STACK];
         int stack_index;
-        int status;
 
         error_if((line[*counter] != '['), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        CHP(read_real_value(line, counter, values, parameters));
-        CHP(read_operation(line, counter, operators));
+        read_real_value(line, counter, values, parameters);
+        read_operation(line, counter, operators);
         stack_index = 1;
         for(; operators[0] != RIGHT_BRACKET ;)
         {
-            CHP(read_real_value(line, counter, values+stack_index, parameters));
-            CHP(read_operation(line, counter, operators+stack_index));
+            read_real_value(line, counter, values+stack_index, parameters);
+            read_operation(line, counter, operators+stack_index);
             if (precedence(operators[stack_index]) >
                 precedence(operators[stack_index - 1]))
                 stack_index++;
@@ -8310,9 +8248,7 @@ repeat--) \
                 for (;precedence(operators[stack_index]) <=
                     precedence(operators[stack_index - 1]); )
                 {
-                    CHP(execute_binary((values + stack_index - 1),
-                        operators[stack_index -1],
-                        (values + stack_index)));
+                    execute_binary((values + stack_index - 1), operators[stack_index -1], (values + stack_index));
                     operators[stack_index - 1] = operators[stack_index];
                     if ((stack_index > 1) and
                         (precedence(operators[stack_index - 1]) <=
@@ -8479,18 +8415,17 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         char c;
-        int status;
 
         c = line[*counter];
         error_if((c == 0), NCE_NO_CHARACTERS_FOUND_IN_READING_REAL_VALUE);
         if (c == '[')
-            CHP(read_real_expression (line, counter, double_ptr, parameters));
+            read_real_expression (line, counter, double_ptr, parameters);
         else if (c == '#')
-            CHP(read_parameter(line, counter, double_ptr, parameters));
+            read_parameter(line, counter, double_ptr, parameters);
         else if ((c >= 'a') and (c <= 'z'))
-            CHP(read_unary(line, counter, double_ptr, parameters));
+            read_unary(line, counter, double_ptr, parameters);
         else
-            CHP(read_real_number(line, counter, double_ptr));
+            read_real_number(line, counter, double_ptr);
     }
 
    /****************************************************************************/
@@ -8539,9 +8474,9 @@ repeat--) \
 
         for(; ; )
         {
-            CHP(read_real_value(line, counter, &next_value, parameters));
-            CHP(read_operation(line, counter, &next_operation));
-            CHP(execute_binary1(value, *last_operation, &next_value));
+            read_real_value(line, counter, &next_value, parameters);
+            read_operation(line, counter, &next_operation);
+            execute_binary1(value, *last_operation, &next_value);
             *last_operation = next_operation;
             if (next_operation >= AND2)           /* next op is a bop2 or right bracket */
                 break;
@@ -8594,14 +8529,13 @@ repeat--) \
 
         for(; ; last_operation = next_operation)
         {
-            CHP(read_real_value(line, counter, &next_value, parameters));
-            CHP(read_operation(line, counter, &next_operation));
+            read_real_value(line, counter, &next_value, parameters);
+            read_operation(line, counter, &next_operation);
             if (next_operation < AND2)            /* next operation is a bop1 */
             {
-                CHP(read_rest_bop1(line, counter, &next_value,
-                    &next_operation, parameters));
+                read_rest_bop1(line, counter, &next_value, &next_operation, parameters);
             }
-            CHP(execute_binary2(value, last_operation, &next_value));
+            execute_binary2(value, last_operation, &next_value);
             if (next_operation == RIGHT_BRACKET)
                 break;
         }
@@ -8646,12 +8580,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                    */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 's'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.s_number > -1.0), NCE_MULTIPLE_S_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         error_if((value < 0.0), NCE_NEGATIVE_SPINDLE_SPEED_USED);
         block.s_number = value;
     }
@@ -8694,12 +8627,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         int value;
-        int status;
 
         error_if((line[*counter] != 't'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.t_number > -1), NCE_MULTIPLE_T_WORDS_ON_ONE_LINE);
-        CHP(read_integer_value(line, counter, &value, parameters));
+        read_integer_value(line, counter, &value, parameters);
         error_if((value < 0), NCE_NEGATIVE_TOOL_ID_USED);
         block.t_number = value;
     }
@@ -8775,12 +8707,10 @@ repeat--) \
     char * line,                                  /* array for input line to be processed in     */
     int * length)                                 /* a pointer to an integer to be set           */
     {
-        int status;                               /* used in CHP */
-
         error_if((strlen(command) >= RS274NGC_TEXT_SIZE), NCE_COMMAND_TOO_LONG);
         strcpy(raw_line, command);
         strcpy(line, command);
-        CHP(close_and_downcase(line));
+        close_and_downcase(line);
         
         _setup.sequence_number++;
         _setup.parameter_occurrence = 0;     /* initialize parameter buffer */
@@ -8828,16 +8758,15 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         int operation;
-        int status;
 
-        CHP(read_operation_unary (line, counter, &operation));
+        read_operation_unary (line, counter, &operation);
         error_if((line[*counter] != '['), NCE_LEFT_BRACKET_MISSING_AFTER_UNARY_OPERATION_NAME);
-        CHP(read_real_expression (line, counter, double_ptr, parameters));
+        read_real_expression (line, counter, double_ptr, parameters);
 
         if (operation == ATAN)
-            CHP(read_atan(line, counter, double_ptr, parameters));
+            read_atan(line, counter, double_ptr, parameters);
         else
-            CHP(execute_unary(double_ptr, operation));
+            execute_unary(double_ptr, operation);
     }
 
    /****************************************************************************/
@@ -8880,12 +8809,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'x'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.x_flag != OFF), NCE_MULTIPLE_X_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.x_flag = ON;
         block.x_number = value;
     }
@@ -8930,12 +8858,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'y'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.y_flag != OFF), NCE_MULTIPLE_Y_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.y_flag = ON;
         block.y_number = value;
     }
@@ -8980,12 +8907,11 @@ repeat--) \
     double * parameters)                          /* array of system parameters                     */
     {
         double value;
-        int status;
 
         error_if((line[*counter] != 'z'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if((block.z_flag != OFF), NCE_MULTIPLE_Z_WORDS_ON_ONE_LINE);
-        CHP(read_real_value(line, counter, &value, parameters));
+        read_real_value(line, counter, &value, parameters);
         block.z_flag = ON;
         block.z_number = value;
     }
@@ -9287,7 +9213,6 @@ repeat--) \
     void rs274ngc::init()                           /* NO ARGUMENTS */
     {
         int k;                                    // starting index in parameters of origin offsets
-        int status;
         char filename[RS274NGC_TEXT_SIZE];
         double * pars;                            // short name for _setup.parameters
 
@@ -9297,7 +9222,7 @@ repeat--) \
         GET_EXTERNAL_PARAMETER_FILE_NAME(filename, RS274NGC_TEXT_SIZE);
         if (filename[0] == 0)
             strcpy(filename, RS274NGC_PARAMETER_FILE_NAME_DEFAULT);
-        CHP(restore_parameters(filename));
+        restore_parameters(filename);
         pars = _setup.parameters;
         _setup.origin_index = (int)(pars[5220] + 0.0001);
         error_if(((_setup.origin_index < 1) or (_setup.origin_index > 9)),
@@ -9456,7 +9381,6 @@ repeat--) \
     int rs274ngc::read(                            /* ARGUMENTS                       */
     const char * command)                         /* a string to read */
     {
-        int status;
         int read_status;
 
         if (_setup.probe_flag == ON)
@@ -9472,7 +9396,7 @@ repeat--) \
         {
             if (_setup.line_length != 0)
             {
-                CHP(parse_line(_setup.blocktext, _setup.block1, _setup));
+                parse_line(_setup.blocktext, _setup.block1, _setup);
             }
         }
         else if (read_status == RS274NGC_ENDFILE);
