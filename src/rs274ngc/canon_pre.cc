@@ -53,6 +53,7 @@
 
    /* where to print */
 extern FILE * _outfile;
+extern rs274ngc interp;
 
    /* Dummy world model */
 
@@ -132,7 +133,7 @@ void print_nc_line_number()
     int k;
     int m;
 
-    rs274ngc_line_text(text, 256);
+    interp.line_text(text, 256);
     for (k SET_TO 0;
         ((k < 256) AND
         ((text[k] IS '\t') OR (text[k] IS ' ') OR (text[k] IS '/')));

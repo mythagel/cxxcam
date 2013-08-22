@@ -267,127 +267,6 @@ if ((status = (try_this)) != RS274NGC_OK) \
     else {return status;} \
 } } while(0)
 
-   /*
-
-   Function prototypes for all static functions
-
-   */
-
-static int arc_data_comp_ijk(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
-static int arc_data_comp_r(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
-static int arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
-static int arc_data_r(int move, double current_x, double current_y, double end_x, double end_y, double radius, double * center_x, double * center_y, int * turn);
-static int check_g_codes(block_t& block, setup_t& settings);
-static int check_items(block_t& block, setup_t& settings);
-static int check_m_codes(block_t& block);
-static int check_other_codes(block_t& block);
-static int close_and_downcase(char * line);
-static int convert_arc(int move, block_t& block, setup_t& settings);
-static int convert_arc2(int move, block_t& block, setup_t& settings, double * current1, double * current2, double * current3, double end1, double end2, double end3, double AA_end, double BB_end, double CC_end, double offset1, double offset2);
-static int convert_arc_comp1(int move, block_t& block, setup_t& settings, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end);
-static int convert_arc_comp2(int move, block_t& block, setup_t& settings, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end);
-static int convert_axis_offsets(int g_code, block_t& block, setup_t& settings);
-static int convert_comment(char * comment);
-static int convert_control_mode(int g_code, setup_t& settings);
-static int convert_coordinate_system(int g_code, setup_t& settings);
-static int convert_cutter_compensation(int g_code, block_t& block, setup_t& settings);
-static int convert_cutter_compensation_off(setup_t& settings);
-static int convert_cutter_compensation_on(int side, block_t& block, setup_t& settings);
-static int convert_cycle(int motion, block_t& block, setup_t& settings);
-static int convert_cycle_g81(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z);
-static int convert_cycle_g82(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, double dwell);
-static int convert_cycle_g83(CANON_PLANE plane, double x, double y, double r, double clear_z, double bottom_z, double delta);
-static int convert_cycle_g84(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, CANON_DIRECTION direction, CANON_SPEED_FEED_MODE mode);
-static int convert_cycle_g85(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z);
-static int convert_cycle_g86(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, double dwell, CANON_DIRECTION direction);
-static int convert_cycle_g87(CANON_PLANE plane, double x, double offset_x, double y, double offset_y, double r, double clear_z, double middle_z, double bottom_z, CANON_DIRECTION direction);
-static int convert_cycle_g88(CANON_PLANE plane, double x, double y, double bottom_z, double dwell, CANON_DIRECTION direction);
-static int convert_cycle_g89(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, double dwell);
-static int convert_cycle_xy(int motion, block_t& block, setup_t& settings);
-static int convert_cycle_yz(int motion, block_t& block, setup_t& settings);
-static int convert_cycle_zx(int motion, block_t& block, setup_t& settings);
-static int convert_distance_mode(int g_code, setup_t& settings);
-static int convert_dwell(double time);
-static int convert_feed_mode(int g_code, setup_t& settings);
-static int convert_feed_rate(block_t& block, setup_t& settings);
-static int convert_g(block_t& block, setup_t& settings);
-static int convert_home(int move, block_t& block, setup_t& settings);
-static int convert_length_units(int g_code, setup_t& settings);
-static int convert_m(block_t& block, setup_t& settings);
-static int convert_modal_0(int code, block_t& block, setup_t& settings);
-static int convert_motion(int motion, block_t& block, setup_t& settings);
-static int convert_probe(block_t& block, setup_t& settings);
-static int convert_retract_mode(int g_code, setup_t& settings);
-static int convert_setup(block_t& block, setup_t& settings);
-static int convert_set_plane(int g_code, setup_t& settings);
-static int convert_speed(block_t& block, setup_t& settings);
-static int convert_stop(block_t& block, setup_t& settings);
-static int convert_straight(int move, block_t& block, setup_t& settings);
-static int convert_straight_comp1(int move, block_t& block, setup_t& settings, double px, double py, double end_z, double AA_end, double BB_end, double CC_end);
-static int convert_straight_comp2(int move, block_t& block, setup_t& settings, double px, double py, double end_z, double AA_end, double BB_end, double CC_end);
-static int convert_tool_change(setup_t& settings);
-static int convert_tool_length_offset(int g_code, block_t& block, setup_t& settings);
-static int convert_tool_select(block_t& block, setup_t& settings);
-static int cycle_feed(CANON_PLANE plane, double end1, double end2, double end3);
-static int cycle_traverse(CANON_PLANE plane, double end1, double end2, double end3);
-static int enhance_block(block_t& block, setup_t& settings);
-static int execute_binary(double * left, int operation, double * right);
-static int execute_binary1(double * left, int operation, double * right);
-static int execute_binary2(double * left, int operation, double * right);
-static int execute_block(block_t& block, setup_t& settings);
-static int execute_unary(double * double_ptr, int operation);
-static double find_arc_length(double x1, double y1, double z1, double center_x, double center_y, int turn, double x2, double y2, double z2);
-static int find_ends(block_t& block, setup_t& settings, double * px, double * py, double * pz, double * AA_p, double * BB_p, double * CC_p);
-static int find_relative(double x1, double y1, double z1, double AA_1, double BB_1, double CC_1, double * x2, double * y2, double * z2, double * AA_2, double * BB_2, double * CC_2,setup_t& settings);
-static double find_straight_length(double x2, double y2, double z2, double AA_2, double BB_2, double CC_2, double x1, double y1, double z1, double AA_1, double BB_1, double CC_1);
-static double find_turn(double x1, double y1, double center_x, double center_y, int turn, double x2, double y2);
-static int init_block(block_t& block);
-static int inverse_time_rate_arc(double x1, double y1, double z1, double cx, double cy, int turn, double x2, double y2, double z2, block_t& block, setup_t& settings);
-static int inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_t& block, setup_t& settings);
-static int inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
-static int inverse_time_rate_straight(double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
-static int parse_line(char * line, block_t& block,setup_t& settings);
-static int precedence(int an_operator);
-static int read_a(char * line, int * counter, block_t& block, double * parameters);
-static int read_atan(char * line, int * counter, double * double_ptr, double * parameters);
-static int read_b(char * line, int * counter, block_t& block, double * parameters);
-static int read_c(char * line, int * counter, block_t& block, double * parameters);
-static int read_comment(char * line, int * counter, block_t& block, double * parameters);
-static int read_d(char * line, int * counter, block_t& block, double * parameters);
-static int read_f(char * line, int * counter, block_t& block, double * parameters);
-static int read_g(char * line, int * counter, block_t& block, double * parameters);
-static int read_h(char * line, int * counter, block_t& block, double * parameters);
-static int read_i(char * line, int * counter, block_t& block, double * parameters);
-static int read_integer_unsigned(char * line, int * counter, int * integer_ptr);
-static int read_integer_value(char * line, int * counter, int * integer_ptr, double * parameters);
-static int read_items(block_t& block, char * line, double * parameters);
-static int read_j(char * line, int * counter, block_t& block, double * parameters);
-static int read_k(char * line, int * counter, block_t& block, double * parameters);
-static int read_l(char * line, int * counter, block_t& block, double * parameters);
-static int read_line_number(char * line, int * counter, block_t& block);
-static int read_m(char * line, int * counter, block_t& block, double * parameters);
-static int read_one_item(char * line, int * counter, block_t& block, double * parameters);
-static int read_operation(char * line, int * counter, int * operation);
-static int read_operation_unary(char * line, int * counter, int * operation);
-static int read_p(char * line, int * counter, block_t& block, double * parameters);
-static int read_parameter(char * line, int * counter, double * double_ptr, double * parameters);
-static int read_parameter_setting(char * line, int * counter, block_t& block, double * parameters);
-static int read_q(char * line, int * counter, block_t& block, double * parameters);
-static int read_r(char * line, int * counter, block_t& block, double * parameters);
-static int read_real_expression(char * line, int * counter, double * hold2, double * parameters);
-static int read_real_number(char * line, int * counter, double * double_ptr);
-static int read_real_value(char * line, int * counter, double * double_ptr, double * parameters);
-static int read_s(char * line, int * counter, block_t& block, double * parameters);
-static int read_t(char * line, int * counter, block_t& block, double * parameters);
-static int read_text(const char * command, char * raw_line, char * line, int * length);
-static int read_unary(char * line, int * counter, double * double_ptr, double * parameters);
-static int read_x(char * line, int * counter, block_t& block, double * parameters);
-static int read_y(char * line, int * counter, block_t& block, double * parameters);
-static int read_z(char * line, int * counter, block_t& block, double * parameters);
-static int set_probe_data(setup_t& settings);
-static int write_g_codes(const block_t* block, setup_t& settings);
-static int write_m_codes(const block_t* block, setup_t& settings);
-static int write_settings(setup_t& settings);
 
    /* Interpreter global arrays for g_codes and m_codes. The nth entry
    in each array is the modal group number corresponding to the nth
@@ -588,29 +467,25 @@ static const int _ems[] =
 
    */
 
-    static const read_function_pointer _readers[] =
+rs274ngc::rs274ngc()
+:	_readers
     {
         0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-            0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-            0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-            0,      0,      0, 0, 0, read_parameter_setting,0,      0,      0,      0,
-            read_comment, 0, 0,     0,      0,      0,      0,      0,      0,      0,
-            0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-            0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-            0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-            0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-            0,      0,      0,      0,      0,      0,      0,      read_a, read_b, read_c,
-            read_d, 0,      read_f, read_g, read_h, read_i, read_j, read_k, read_l, read_m,
-            0,      0,      read_p, read_q, read_r, read_s, read_t, 0     , 0,      0,
-            read_x, read_y, read_z
-    };
-
-   /****************************************************************************/
-
-   /* There are four global variables. The first three are _gees, _ems,
-   and _readers. The last one, declared here, is for interpreter settings */
-
-    static setup_t _setup;
+        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
+        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
+        0,      0,      0, 0, 0, &rs274ngc::read_parameter_setting,0,      0,      0,      0,
+        &rs274ngc::read_comment, 0, 0,     0,      0,      0,      0,      0,      0,      0,
+        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
+        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
+        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
+        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
+        0,      0,      0,      0,      0,      0,      0,      &rs274ngc::read_a, &rs274ngc::read_b, &rs274ngc::read_c,
+        &rs274ngc::read_d, 0,      &rs274ngc::read_f, &rs274ngc::read_g, &rs274ngc::read_h, &rs274ngc::read_i, &rs274ngc::read_j, &rs274ngc::read_k, &rs274ngc::read_l, &rs274ngc::read_m,
+        0,      0,      &rs274ngc::read_p, &rs274ngc::read_q, &rs274ngc::read_r, &rs274ngc::read_s, &rs274ngc::read_t, 0     , 0,      0,
+        &rs274ngc::read_x, &rs274ngc::read_y, &rs274ngc::read_z
+    }
+{
+}
 
    /****************************************************************************/
    /****************************************************************************/
@@ -645,7 +520,7 @@ static const int _ems[] =
 
    */
 
-    static int arc_data_comp_ijk(                 /* ARGUMENTS                               */
+    int rs274ngc::arc_data_comp_ijk(                 /* ARGUMENTS                               */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)             */
     int side,                                     /* either RIGHT or LEFT                             */
     double tool_radius,                           /* radius of the tool                               */
@@ -741,7 +616,7 @@ static const int _ems[] =
 
    */
 
-    static int arc_data_comp_r(                   /* ARGUMENTS                                 */
+    int rs274ngc::arc_data_comp_r(                   /* ARGUMENTS                                 */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)             */
     int side,                                     /* either RIGHT or LEFT                             */
     double tool_radius,                           /* radius of the tool                               */
@@ -823,7 +698,7 @@ static const int _ems[] =
 
    */
 
-    static int arc_data_ijk(                      /* ARGUMENTS                                       */
+    int rs274ngc::arc_data_ijk(                      /* ARGUMENTS                                       */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)            */
     double current_x,                             /* first coordinate of current point               */
     double current_y,                             /* second coordinate of current point              */
@@ -891,7 +766,7 @@ static const int _ems[] =
 
    */
 
-    static int arc_data_r(                        /* ARGUMENTS                                     */
+    int rs274ngc::arc_data_r(                        /* ARGUMENTS                                     */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)          */
     double current_x,                             /* first coordinate of current point             */
     double current_y,                             /* second coordinate of current point            */
@@ -988,7 +863,7 @@ static const int _ems[] =
 
    */
 
-    static int check_g_codes(                     /* ARGUMENTS                        */
+    int rs274ngc::check_g_codes(                     /* ARGUMENTS                        */
     block_t& block,                          /* pointer to a block to be checked */
     setup_t& settings)                       /* pointer to machine settings      */
     {
@@ -1063,7 +938,7 @@ static const int _ems[] =
 
    */
 
-    static int check_items(                       /* ARGUMENTS                        */
+    int rs274ngc::check_items(                       /* ARGUMENTS                        */
     block_t& block,                          /* pointer to a block to be checked */
     setup_t& settings)                       /* pointer to machine settings      */
     {
@@ -1096,7 +971,7 @@ static const int _ems[] =
 
    */
 
-    static int check_m_codes(                     /* ARGUMENTS                        */
+    int rs274ngc::check_m_codes(                     /* ARGUMENTS                        */
     block_t& block)                          /* pointer to a block to be checked */
     {
         static const char name[] = "check_m_codes";
@@ -1149,7 +1024,7 @@ static const int _ems[] =
 
    */
 
-    static int check_other_codes(                 /* ARGUMENTS                               */
+    int rs274ngc::check_other_codes(                 /* ARGUMENTS                               */
     block_t& block)                          /* pointer to a block of RS274/NGC instructions */
     {
         static const char name[] = "check_other_codes";
@@ -1272,7 +1147,7 @@ static const int _ems[] =
 
    */
 
-    static int close_and_downcase(                /* ARGUMENTS                   */
+    int rs274ngc::close_and_downcase(                /* ARGUMENTS                   */
     char * line)                                  /* string: one line of NC code */
     {
         static const char name[] = "close_and_downcase";
@@ -1372,7 +1247,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_arc(                       /* ARGUMENTS                                */
+    int rs274ngc::convert_arc(                       /* ARGUMENTS                                */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)     */
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
@@ -1558,7 +1433,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_arc2(                      /* ARGUMENTS                                */
+    int rs274ngc::convert_arc2(                      /* ARGUMENTS                                */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)     */
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings,                       /* pointer to machine settings              */
@@ -1641,7 +1516,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_arc_comp1(                 /* ARGUMENTS                                   */
+    int rs274ngc::convert_arc_comp1(                 /* ARGUMENTS                                   */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)             */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions     */
     setup_t& settings,                       /* pointer to machine settings                      */
@@ -1759,7 +1634,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_arc_comp2(                 /* ARGUMENTS                                 */
+    int rs274ngc::convert_arc_comp2(                 /* ARGUMENTS                                 */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)           */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions   */
     setup_t& settings,                       /* pointer to machine settings                    */
@@ -1953,7 +1828,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_axis_offsets(              /* ARGUMENTS                               */
+    int rs274ngc::convert_axis_offsets(              /* ARGUMENTS                               */
     int g_code,                                   /* g_code being executed (must be in G_92 series) */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions   */
     setup_t& settings)                       /* pointer to machine settings                    */
@@ -2116,7 +1991,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_comment(                   /*ARGUMENTS            */
+    int rs274ngc::convert_comment(                   /*ARGUMENTS            */
     char * comment)                               /* string with comment */
     {
         int m;
@@ -2183,7 +2058,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_control_mode(              /* ARGUMENTS                             */
+    int rs274ngc::convert_control_mode(              /* ARGUMENTS                             */
     int g_code,                                   /* g_code being executed (G_61, G61_1, or G_64) */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -2279,7 +2154,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_coordinate_system(         /* ARGUMENTS                         */
+    int rs274ngc::convert_coordinate_system(         /* ARGUMENTS                         */
     int g_code,                                   /* g_code called (must be one listed above)      */
     setup_t& settings)                       /* pointer to machine settings                   */
     {
@@ -2410,7 +2285,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cutter_compensation(       /* ARGUMENTS                  */
+    int rs274ngc::convert_cutter_compensation(       /* ARGUMENTS                  */
     int g_code,                                   /* must be G_40, G_41, or G_42              */
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
@@ -2453,7 +2328,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cutter_compensation_off(   /* ARGUMENTS                   */
+    int rs274ngc::convert_cutter_compensation_off(   /* ARGUMENTS                   */
     setup_t& settings)                       /* pointer to machine settings */
     {
 #ifdef DEBUG_EMC
@@ -2516,7 +2391,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cutter_compensation_on(    /* ARGUMENTS               */
+    int rs274ngc::convert_cutter_compensation_on(    /* ARGUMENTS               */
     int side,                                     /* side of path cutter is on (LEFT or RIGHT) */
     block_t& block,                          /* pointer to a block of RS274 instructions  */
     setup_t& settings)                       /* pointer to machine settings               */
@@ -2585,7 +2460,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cycle(                     /* ARGUMENTS                                      */
+    int rs274ngc::convert_cycle(                     /* ARGUMENTS                                      */
     int motion,                                   /* a g-code between G_81 and G_89, a canned cycle */
     block_t& block,                          /* pointer to a block of RS274 instructions       */
     setup_t& settings)                       /* pointer to machine settings                    */
@@ -2654,7 +2529,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cycle_g81(                 /* ARGUMENTS                        */
+    int rs274ngc::convert_cycle_g81(                 /* ARGUMENTS                        */
     CANON_PLANE plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
@@ -2694,7 +2569,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cycle_g82(                 /* ARGUMENTS                        */
+    int rs274ngc::convert_cycle_g82(                 /* ARGUMENTS                        */
     CANON_PLANE plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
@@ -2747,7 +2622,7 @@ static const int _ems[] =
    /* how far above hole bottom for rapid
                       return, in inches */
 
-    static int convert_cycle_g83(                 /* ARGUMENTS                        */
+    int rs274ngc::convert_cycle_g83(                 /* ARGUMENTS                        */
     CANON_PLANE plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
@@ -2812,7 +2687,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cycle_g84(                 /* ARGUMENTS                           */
+    int rs274ngc::convert_cycle_g84(                 /* ARGUMENTS                           */
     CANON_PLANE plane,                            /* selected plane                      */
     double x,                                     /* x-value where cycle is executed     */
     double y,                                     /* y-value where cycle is executed     */
@@ -2863,7 +2738,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cycle_g85(                 /* ARGUMENTS                        */
+    int rs274ngc::convert_cycle_g85(                 /* ARGUMENTS                        */
     CANON_PLANE plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
@@ -2909,7 +2784,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cycle_g86(                 /* ARGUMENTS                           */
+    int rs274ngc::convert_cycle_g86(                 /* ARGUMENTS                           */
     CANON_PLANE plane,                            /* selected plane                      */
     double x,                                     /* x-value where cycle is executed     */
     double y,                                     /* y-value where cycle is executed     */
@@ -2995,7 +2870,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cycle_g87(                 /* ARGUMENTS                           */
+    int rs274ngc::convert_cycle_g87(                 /* ARGUMENTS                           */
     CANON_PLANE plane,                            /* selected plane                      */
     double x,                                     /* x-value where cycle is executed     */
     double offset_x,                              /* x-axis offset position              */
@@ -3067,7 +2942,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cycle_g88(                 /* ARGUMENTS                           */
+    int rs274ngc::convert_cycle_g88(                 /* ARGUMENTS                           */
     CANON_PLANE plane,                            /* selected plane                      */
     double x,                                     /* x-value where cycle is executed     */
     double y,                                     /* y-value where cycle is executed     */
@@ -3117,7 +2992,7 @@ static const int _ems[] =
 
    */
 
-    static int convert_cycle_g89(                 /* ARGUMENTS                        */
+    int rs274ngc::convert_cycle_g89(                 /* ARGUMENTS                        */
     CANON_PLANE plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
@@ -3251,10 +3126,10 @@ repeat--) \
     old_cc = clear_cc; \
 }
 
-        static int convert_cycle_xy(              /* ARGUMENTS                                 */
-        int motion,                               /* a g-code between G_81 and G_89, a canned cycle */
-        block_t& block,                      /* pointer to a block of RS274 instructions       */
-        setup_t& settings)                   /* pointer to machine settings                    */
+    int rs274ngc::convert_cycle_xy(              /* ARGUMENTS                                 */
+    int motion,                               /* a g-code between G_81 and G_89, a canned cycle */
+    block_t& block,                      /* pointer to a block of RS274 instructions       */
+    setup_t& settings)                   /* pointer to machine settings                    */
     {
         static const char name[] = "convert_cycle_xy";
         double aa;
@@ -3460,7 +3335,7 @@ repeat--) \
 
    */
 
-    static int convert_cycle_yz(                  /* ARGUMENTS                                 */
+    int rs274ngc::convert_cycle_yz(                  /* ARGUMENTS                                 */
     int motion,                                   /* a g-code between G_81 and G_89, a canned cycle */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions   */
     setup_t& settings)                       /* pointer to machine settings                    */
@@ -3677,7 +3552,7 @@ repeat--) \
 
    */
 
-    static int convert_cycle_zx(                  /* ARGUMENTS                                 */
+    int rs274ngc::convert_cycle_zx(                  /* ARGUMENTS                                 */
     int motion,                                   /* a g-code between G_81 and G_89, a canned cycle */
     block_t& block,                          /* pointer to a block of RS274 instructions       */
     setup_t& settings)                       /* pointer to machine settings                    */
@@ -3859,7 +3734,7 @@ repeat--) \
 
    */
 
-    static int convert_distance_mode(             /* ARGUMENTS                             */
+    int rs274ngc::convert_distance_mode(             /* ARGUMENTS                             */
     int g_code,                                   /* g_code being executed (must be G_90 or G_91) */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -3902,7 +3777,7 @@ repeat--) \
 
    */
 
-    static int convert_dwell(                     /* ARGUMENTS                 */
+    int rs274ngc::convert_dwell(                     /* ARGUMENTS                 */
     double time)                                  /* time in seconds to dwell  */
     {
         DWELL(time);
@@ -3931,7 +3806,7 @@ repeat--) \
 
    */
 
-    static int convert_feed_mode(                 /* ARGUMENTS                                 */
+    int rs274ngc::convert_feed_mode(                 /* ARGUMENTS                                 */
     int g_code,                                   /* g_code being executed (must be G_93 or G_94) */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -3972,7 +3847,7 @@ repeat--) \
 
    */
 
-    static int convert_feed_rate(                 /* ARGUMENTS                                */
+    int rs274ngc::convert_feed_rate(                 /* ARGUMENTS                                */
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
@@ -4037,7 +3912,7 @@ repeat--) \
 
    */
 
-    static int convert_g(                         /* ARGUMENTS                                    */
+    int rs274ngc::convert_g(                         /* ARGUMENTS                                    */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -4121,7 +3996,7 @@ repeat--) \
 
    */
 
-    static int convert_home(                      /* ARGUMENTS                                */
+    int rs274ngc::convert_home(                      /* ARGUMENTS                                */
     int move,                                     /* G code, must be G_28 or G_30             */
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
@@ -4237,7 +4112,7 @@ repeat--) \
 
    */
 
-    static int convert_length_units(              /* ARGUMENTS                             */
+    int rs274ngc::convert_length_units(              /* ARGUMENTS                             */
     int g_code,                                   /* g_code being executed (must be G_20 or G_21) */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -4323,7 +4198,7 @@ repeat--) \
 
    */
 
-    static int convert_m(                         /* ARGUMENTS                                    */
+    int rs274ngc::convert_m(                         /* ARGUMENTS                                    */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -4429,7 +4304,7 @@ repeat--) \
 
    */
 
-    static int convert_modal_0(                   /* ARGUMENTS                                    */
+    int rs274ngc::convert_modal_0(                   /* ARGUMENTS                                    */
     int code,                                     /* G code, must be from group 0                 */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
@@ -4479,7 +4354,7 @@ repeat--) \
 
    */
 
-    static int convert_motion(                    /* ARGUMENTS                                 */
+    int rs274ngc::convert_motion(                    /* ARGUMENTS                                 */
     int motion,                                   /* g_code for a line, arc, canned cycle      */
     block_t& block,                          /* pointer to a block of RS274 instructions  */
     setup_t& settings)                       /* pointer to machine settings               */
@@ -4553,7 +4428,7 @@ repeat--) \
 
    */
 
-    static int convert_probe(                     /* ARGUMENTS                                */
+    int rs274ngc::convert_probe(                     /* ARGUMENTS                                */
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
@@ -4623,7 +4498,7 @@ repeat--) \
 
    */
 
-    static int convert_retract_mode(              /* ARGUMENTS                             */
+    int rs274ngc::convert_retract_mode(              /* ARGUMENTS                             */
     int g_code,                                   /* g_code being executed (must be G_98 or G_99) */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -4675,7 +4550,7 @@ repeat--) \
 
    */
 
-    static int convert_setup(                     /* ARGUMENTS                                    */
+    int rs274ngc::convert_setup(                     /* ARGUMENTS                                    */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -4806,7 +4681,7 @@ repeat--) \
 
    */
 
-    static int convert_set_plane(                 /* ARGUMENTS                    */
+    int rs274ngc::convert_set_plane(                 /* ARGUMENTS                    */
     int g_code,                                   /* must be G_17, G_18, or G_19  */
     setup_t& settings)                       /* pointer to machine settings  */
     {
@@ -4850,7 +4725,7 @@ repeat--) \
 
    */
 
-    static int convert_speed(                     /* ARGUMENTS                                */
+    int rs274ngc::convert_speed(                     /* ARGUMENTS                                */
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
@@ -4922,7 +4797,7 @@ repeat--) \
 
    */
 
-    static int convert_stop(                      /* ARGUMENTS                                    */
+    int rs274ngc::convert_stop(                      /* ARGUMENTS                                    */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -5089,7 +4964,7 @@ repeat--) \
 
    */
 
-    static int convert_straight(                  /* ARGUMENTS                                */
+    int rs274ngc::convert_straight(                  /* ARGUMENTS                                */
     int move,                                     /* either G_0 or G_1                        */
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
@@ -5226,7 +5101,7 @@ repeat--) \
 
    */
 
-    static int convert_straight_comp1(            /* ARGUMENTS                       */
+    int rs274ngc::convert_straight_comp1(            /* ARGUMENTS                       */
     int move,                                     /* either G_0 or G_1                         */
     block_t& block,                          /* pointer to a block of RS274 instructions  */
     setup_t& settings,                       /* pointer to machine settings               */
@@ -5366,7 +5241,7 @@ repeat--) \
 
    */
 
-    static int convert_straight_comp2(            /* ARGUMENTS                       */
+    int rs274ngc::convert_straight_comp2(            /* ARGUMENTS                       */
     int move,                                     /* either G_0 or G_1                         */
     block_t& block,                          /* pointer to a block of RS274 instructions  */
     setup_t& settings,                       /* pointer to machine settings               */
@@ -5572,7 +5447,7 @@ repeat--) \
 
    */
 
-    static int convert_tool_change(               /* ARGUMENTS                   */
+    int rs274ngc::convert_tool_change(               /* ARGUMENTS                   */
     setup_t& settings)                       /* pointer to machine settings */
     {
         static const char name[] = "convert_tool_change";
@@ -5615,7 +5490,7 @@ repeat--) \
 
    */
 
-    static int convert_tool_length_offset(        /* ARGUMENTS                      */
+    int rs274ngc::convert_tool_length_offset(        /* ARGUMENTS                      */
     int g_code,                                   /* g_code being executed (must be G_43 or G_49) */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
@@ -5674,7 +5549,7 @@ repeat--) \
 
    */
 
-    static int convert_tool_select(               /* ARGUMENTS                                */
+    int rs274ngc::convert_tool_select(               /* ARGUMENTS                                */
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
@@ -5712,7 +5587,7 @@ repeat--) \
 
    */
 
-    static int cycle_feed(                        /* ARGUMENTS                  */
+    int rs274ngc::cycle_feed(                        /* ARGUMENTS                  */
     CANON_PLANE plane,                            /* currently selected plane   */
     double end1,                                  /* first coordinate value     */
     double end2,                                  /* second coordinate value    */
@@ -5767,7 +5642,7 @@ repeat--) \
 
    */
 
-    static int cycle_traverse(                    /* ARGUMENTS                 */
+    int rs274ngc::cycle_traverse(                    /* ARGUMENTS                 */
     CANON_PLANE plane,                            /* currently selected plane  */
     double end1,                                  /* first coordinate value    */
     double end2,                                  /* second coordinate value   */
@@ -5831,7 +5706,7 @@ repeat--) \
 
    */
 
-    static int enhance_block(                     /* ARGUMENTS                         */
+    int rs274ngc::enhance_block(                     /* ARGUMENTS                         */
     block_t& block,                          /* pointer to a block to be checked  */
     setup_t& settings)                       /* pointer to machine settings       */
     {
@@ -5899,7 +5774,7 @@ repeat--) \
 
    */
 
-    static int execute_binary(
+    int rs274ngc::execute_binary(
     double * left,
     int operation,
     double * right)
@@ -5935,7 +5810,7 @@ repeat--) \
 
    */
 
-    static int execute_binary1(                   /* ARGUMENTS                       */
+    int rs274ngc::execute_binary1(                   /* ARGUMENTS                       */
     double * left,                                /* pointer to the left operand     */
     int operation,                                /* integer code for the operation  */
     double * right)                               /* pointer to the right operand    */
@@ -5991,7 +5866,7 @@ repeat--) \
 
    */
 
-    static int execute_binary2(                   /* ARGUMENTS                       */
+    int rs274ngc::execute_binary2(                   /* ARGUMENTS                       */
     double * left,                                /* pointer to the left operand     */
     int operation,                                /* integer code for the operation  */
     double * right)                               /* pointer to the right operand    */
@@ -6069,7 +5944,7 @@ repeat--) \
 
    */
 
-    static int execute_block(                     /* ARGUMENTS                                    */
+    int rs274ngc::execute_block(                     /* ARGUMENTS                                    */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -6144,7 +6019,7 @@ repeat--) \
 
    */
 
-    static int execute_unary(                     /* ARGUMENTS                       */
+    int rs274ngc::execute_unary(                     /* ARGUMENTS                       */
     double * double_ptr,                          /* pointer to the operand          */
     int operation)                                /* integer code for the operation  */
     {
@@ -6238,7 +6113,7 @@ repeat--) \
 
    */
 
-    static double find_arc_length(                /* ARGUMENTS                          */
+    double rs274ngc::find_arc_length(                /* ARGUMENTS                          */
     double x1,                                    /* X-coordinate of start point        */
     double y1,                                    /* Y-coordinate of start point        */
     double z1,                                    /* Z-coordinate of start point        */
@@ -6300,7 +6175,7 @@ repeat--) \
 
    */
 
-    static int find_ends(                         /* ARGUMENTS                                    */
+    int rs274ngc::find_ends(                         /* ARGUMENTS                                    */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings,                       /* pointer to machine settings                  */
     double * px,                                  /* pointer to end_x                             */
@@ -6410,7 +6285,7 @@ repeat--) \
 
    */
 
-    static int find_relative(                     /* ARGUMENTS                   */
+    int rs274ngc::find_relative(                     /* ARGUMENTS                   */
     double x1,                                    /* absolute x position         */
     double y1,                                    /* absolute y position         */
     double z1,                                    /* absolute z position         */
@@ -6471,7 +6346,7 @@ repeat--) \
 
    */
 
-    static double find_straight_length(           /* ARGUMENTS   */
+    double rs274ngc::find_straight_length(           /* ARGUMENTS   */
     double x2,                                    /* X-coordinate of end point    */
     double y2,                                    /* Y-coordinate of end point    */
     double z2,                                    /* Z-coordinate of end point    */
@@ -6515,7 +6390,7 @@ repeat--) \
 
    */
 
-    static double find_turn(                      /* ARGUMENTS                          */
+    double rs274ngc::find_turn(                      /* ARGUMENTS                          */
     double x1,                                    /* X-coordinate of start point        */
     double y1,                                    /* Y-coordinate of start point        */
     double center_x,                              /* X-coordinate of arc center         */
@@ -6585,7 +6460,7 @@ repeat--) \
 
    */
 
-    static int init_block(                        /* ARGUMENTS                                     */
+    int rs274ngc::init_block(                        /* ARGUMENTS                                     */
     block_t& block)                          /* pointer to a block to be initialized or reset */
     {
         block.a_flag = OFF;                 /*AA*/
@@ -6641,7 +6516,7 @@ repeat--) \
 
    */
 
-    static int inverse_time_rate_arc(             /* ARGUMENTS                       */
+    int rs274ngc::inverse_time_rate_arc(             /* ARGUMENTS                       */
     double x1,                                    /* x coord of start point of arc            */
     double y1,                                    /* y coord of start point of arc            */
     double z1,                                    /* z coord of start point of arc            */
@@ -6687,7 +6562,7 @@ repeat--) \
 
    */
 
-    static int inverse_time_rate_arc2(            /* ARGUMENTS */
+    int rs274ngc::inverse_time_rate_arc2(            /* ARGUMENTS */
     double start_x,                               /* x coord of last program point, extra arc center x */
     double start_y,                               /* y coord of last program point, extra arc center y */
     int turn1,                                    /* turn of extra arc                                 */
@@ -6740,7 +6615,7 @@ repeat--) \
 
    */
 
-    static int inverse_time_rate_as(              /* ARGUMENTS */
+    int rs274ngc::inverse_time_rate_as(              /* ARGUMENTS */
     double start_x,                               /* x coord of last program point, extra arc center x */
     double start_y,                               /* y coord of last program point, extra arc center y */
     int turn,                                     /* turn of extra arc                                 */
@@ -6797,7 +6672,7 @@ repeat--) \
 
    */
 
-    static int inverse_time_rate_straight(        /* ARGUMENTS                    */
+    int rs274ngc::inverse_time_rate_straight(        /* ARGUMENTS                    */
     double end_x,                                 /* x coordinate of end point of straight line */
     double end_y,                                 /* y coordinate of end point of straight line */
     double end_z,                                 /* z coordinate of end point of straight line */
@@ -6851,7 +6726,7 @@ repeat--) \
 
    */
 
-    static int parse_line(                        /* ARGUMENTS                            */
+    int rs274ngc::parse_line(                        /* ARGUMENTS                            */
     char * line,                                  /* array holding a line of RS274 code   */
     block_t& block,                          /* pointer to a block to be filled      */
     setup_t& settings)                       /* pointer to machine settings          */
@@ -6881,7 +6756,7 @@ repeat--) \
 
    */
 
-    static int precedence(                        /* ARGUMENTS  */
+    int rs274ngc::precedence(                        /* ARGUMENTS  */
     int an_operator)
     {
         if (an_operator == RIGHT_BRACKET)
@@ -6933,7 +6808,7 @@ repeat--) \
 
    */
 
-    static int read_a(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_a(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -6987,7 +6862,7 @@ repeat--) \
 
    */
 
-    static int read_atan(                         /* ARGUMENTS                                      */
+    int rs274ngc::read_atan(                         /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on line      */
     double * double_ptr,                          /* pointer to double to be read                   */
@@ -7048,7 +6923,7 @@ repeat--) \
 
    */
 
-    static int read_b(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_b(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -7106,7 +6981,7 @@ repeat--) \
 
    */
 
-    static int read_c(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_c(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -7159,7 +7034,7 @@ repeat--) \
 
    */
 
-    static int read_comment(                      /* ARGUMENTS                                     */
+    int rs274ngc::read_comment(                      /* ARGUMENTS                                     */
     char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
@@ -7212,7 +7087,7 @@ repeat--) \
 
    */
 
-    static int read_d(                            /* ARGUMENTS                                     */
+    int rs274ngc::read_d(                            /* ARGUMENTS                                     */
     char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
@@ -7264,7 +7139,7 @@ repeat--) \
 
    */
 
-    static int read_f(                            /* ARGUMENTS                                     */
+    int rs274ngc::read_f(                            /* ARGUMENTS                                     */
     char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
@@ -7332,7 +7207,7 @@ repeat--) \
 
    */
 
-    static int read_g(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_g(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -7395,7 +7270,7 @@ repeat--) \
 
    */
 
-    static int read_h(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_h(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -7448,7 +7323,7 @@ repeat--) \
 
    */
 
-    static int read_i(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_i(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -7490,7 +7365,7 @@ repeat--) \
 
    */
 
-    static int read_integer_unsigned(             /* ARGUMENTS                       */
+    int rs274ngc::read_integer_unsigned(             /* ARGUMENTS                       */
     char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     int * integer_ptr)                            /* pointer to the value being read               */
@@ -7546,7 +7421,7 @@ repeat--) \
 
    */
 
-    static int read_integer_value(                /* ARGUMENTS                                 */
+    int rs274ngc::read_integer_value(                /* ARGUMENTS                                 */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     int * integer_ptr,                            /* pointer to the value being read                */
@@ -7585,7 +7460,7 @@ repeat--) \
 
    */
 
-    static int read_items(                        /* ARGUMENTS                                      */
+    int rs274ngc::read_items(                        /* ARGUMENTS                                      */
     block_t& block,                          /* pointer to a block being filled from the line  */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     double * parameters)                          /* array of system parameters                     */
@@ -7644,7 +7519,7 @@ repeat--) \
 
    */
 
-    static int read_j(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_j(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -7696,7 +7571,7 @@ repeat--) \
 
    */
 
-    static int read_k(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_k(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -7746,7 +7621,7 @@ repeat--) \
 
    */
 
-    static int read_l(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_l(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -7794,7 +7669,7 @@ repeat--) \
 
    */
 
-    static int read_line_number(                  /* ARGUMENTS                               */
+    int rs274ngc::read_line_number(                  /* ARGUMENTS                               */
     char * line,                                  /* string: line of RS274    code being processed  */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block)                          /* pointer to a block being filled from the line  */
@@ -7845,7 +7720,7 @@ repeat--) \
 
    */
 
-    static int read_m(                            /* ARGUMENTS                                     */
+    int rs274ngc::read_m(                            /* ARGUMENTS                                     */
     char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
@@ -7915,7 +7790,7 @@ repeat--) \
 
    */
 
-    static int read_one_item(                     /* ARGUMENTS                                      */
+    int rs274ngc::read_one_item(                     /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -7930,7 +7805,7 @@ repeat--) \
         CHK(((letter < 0) or (letter > 'z')), NCE_BAD_CHARACTER_USED);
         function_pointer = _readers[static_cast<unsigned int>(letter)];
         CHK((function_pointer == 0), NCE_BAD_CHARACTER_USED);
-        CHP(function_pointer(line, counter, block, parameters));
+        CHP((this->*function_pointer)(line, counter, block, parameters));
         return RS274NGC_OK;
     }
 
@@ -7963,7 +7838,7 @@ repeat--) \
 
    */
 
-    static int read_operation(                    /* ARGUMENTS                                      */
+    int rs274ngc::read_operation(                    /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     int * operation)                              /* pointer to operation to be read                */
@@ -8073,7 +7948,7 @@ repeat--) \
 
    */
 
-    static int read_operation_unary(              /* ARGUMENTS                               */
+    int rs274ngc::read_operation_unary(              /* ARGUMENTS                               */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     int * operation)                              /* pointer to operation to be read                */
@@ -8220,7 +8095,7 @@ repeat--) \
 
    */
 
-    static int read_p(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_p(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -8276,7 +8151,7 @@ repeat--) \
 
    */
 
-    static int read_parameter(                    /* ARGUMENTS                                      */
+    int rs274ngc::read_parameter(                    /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr,                          /* pointer to double to be read                   */
@@ -8362,7 +8237,7 @@ repeat--) \
 
    */
 
-    static int read_parameter_setting(            /* ARGUMENTS                        */
+    int rs274ngc::read_parameter_setting(            /* ARGUMENTS                        */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -8418,7 +8293,7 @@ repeat--) \
 
    */
 
-    static int read_q(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_q(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -8472,7 +8347,7 @@ repeat--) \
 
    */
 
-    static int read_r(                            /* ARGUMENTS                                     */
+    int rs274ngc::read_r(                            /* ARGUMENTS                                     */
     char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
@@ -8738,7 +8613,7 @@ repeat--) \
 
 #define MAX_STACK 5
 
-    static int read_real_expression(              /* ARGUMENTS                               */
+    int rs274ngc::read_real_expression(              /* ARGUMENTS                               */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * value,                               /* pointer to double to be computed               */
@@ -8821,7 +8696,7 @@ repeat--) \
 
    */
 
-    static int read_real_number(                  /* ARGUMENTS                               */
+    int rs274ngc::read_real_number(                  /* ARGUMENTS                               */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr)                          /* pointer to double to be read                   */
@@ -8932,7 +8807,7 @@ repeat--) \
 
    */
 
-    static int read_real_value(                   /* ARGUMENTS                               */
+    int rs274ngc::read_real_value(                   /* ARGUMENTS                               */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr,                          /* pointer to double to be read                   */
@@ -9106,7 +8981,7 @@ repeat--) \
 
    */
 
-    static int read_s(                            /* ARGUMENTS                                     */
+    int rs274ngc::read_s(                            /* ARGUMENTS                                     */
     char * line,                                  /* string: line of RS274NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
@@ -9156,7 +9031,7 @@ repeat--) \
 
    */
 
-    static int read_t(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_t(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -9240,7 +9115,7 @@ repeat--) \
 
    */
 
-    static int read_text(                         /* ARGUMENTS                                   */
+    int rs274ngc::read_text(                         /* ARGUMENTS                                   */
     const char * command,                         /* a string which has input text */
     char * raw_line,                              /* array to write raw input line into          */
     char * line,                                  /* array for input line to be processed in     */
@@ -9293,7 +9168,7 @@ repeat--) \
 
    */
 
-    static int read_unary(                        /* ARGUMENTS                                      */
+    int rs274ngc::read_unary(                        /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr,                          /* pointer to double to be read                   */
@@ -9348,7 +9223,7 @@ repeat--) \
 
    */
 
-    static int read_x(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_x(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -9400,7 +9275,7 @@ repeat--) \
 
    */
 
-    static int read_y(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_y(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -9452,7 +9327,7 @@ repeat--) \
 
    */
 
-    static int read_z(                            /* ARGUMENTS                                      */
+    int rs274ngc::read_z(                            /* ARGUMENTS                                      */
     char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
@@ -9485,7 +9360,7 @@ repeat--) \
 
    */
 
-    static int set_probe_data(                    /* ARGUMENTS                   */
+    int rs274ngc::set_probe_data(                    /* ARGUMENTS                   */
     setup_t& settings)                       /* pointer to machine settings */
     {
         static const char name[] = "set_probe_data";
@@ -9550,7 +9425,7 @@ repeat--) \
 
    */
 
-    static int write_g_codes(                     /* ARGUMENTS                                    */
+    int rs274ngc::write_g_codes(                     /* ARGUMENTS                                    */
     const block_t* block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -9604,7 +9479,7 @@ repeat--) \
 
    */
 
-    static int write_m_codes(                     /* ARGUMENTS                                    */
+    int rs274ngc::write_m_codes(                     /* ARGUMENTS                                    */
     const block_t* block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
@@ -9647,7 +9522,7 @@ repeat--) \
 
    */
 
-    static int write_settings(                    /* ARGUMENTS                   */
+    int rs274ngc::write_settings(                    /* ARGUMENTS                   */
     setup_t& settings)                       /* pointer to machine settings */
     {
         double * vals;
@@ -9693,7 +9568,7 @@ repeat--) \
 
    */
 
-    int rs274ngc_execute()                        /* NO ARGUMENTS */
+    int rs274ngc::execute()                        /* NO ARGUMENTS */
     {
         static const char name[] = "rs274ngc_execute";
         int status;
@@ -9737,15 +9612,15 @@ repeat--) \
 
    */
 
-    int rs274ngc_exit()                           /* NO ARGUMENTS */
+    int rs274ngc::exit()                           /* NO ARGUMENTS */
     {
         char file_name[RS274NGC_TEXT_SIZE];
 
         GET_EXTERNAL_PARAMETER_FILE_NAME(file_name, (RS274NGC_TEXT_SIZE - 1));
-        rs274ngc_save_parameters
+        save_parameters
             (((file_name[0] == 0) ? RS274NGC_PARAMETER_FILE_NAME_DEFAULT : file_name),
             _setup.parameters);
-        rs274ngc_reset();
+        reset();
 
         return RS274NGC_OK;
     }
@@ -9777,7 +9652,7 @@ repeat--) \
 
    */
 
-    int rs274ngc_init()                           /* NO ARGUMENTS */
+    int rs274ngc::init()                           /* NO ARGUMENTS */
     {
         static const char name[] = "rs274ngc_init";
         int k;                                    // starting index in parameters of origin offsets
@@ -9791,7 +9666,7 @@ repeat--) \
         GET_EXTERNAL_PARAMETER_FILE_NAME(filename, RS274NGC_TEXT_SIZE);
         if (filename[0] == 0)
             strcpy(filename, RS274NGC_PARAMETER_FILE_NAME_DEFAULT);
-        CHP(rs274ngc_restore_parameters(filename));
+        CHP(restore_parameters(filename));
         pars = _setup.parameters;
         _setup.origin_index = (int)(pars[5220] + 0.0001);
         CHK(((_setup.origin_index < 1) or (_setup.origin_index > 9)),
@@ -9872,7 +9747,7 @@ repeat--) \
         write_settings(_setup);
 
    // Synch rest of settings to external world
-        rs274ngc_synch();
+        synch();
 
         return RS274NGC_OK;
     }
@@ -9901,7 +9776,7 @@ repeat--) \
 
    */
 
-    int rs274ngc_load_tool_table()                /* NO ARGUMENTS */
+    int rs274ngc::load_tool_table()                /* NO ARGUMENTS */
     {
         static const char name[] = "rs274ngc_load_tool_table";
         int n;
@@ -9952,7 +9827,7 @@ repeat--) \
 
    */
 
-    int rs274ngc_read(                            /* ARGUMENTS                       */
+    int rs274ngc::read(                            /* ARGUMENTS                       */
     const char * command)                         /* a string to read */
     {
         static const char name[] = "rs274ngc_read";
@@ -10013,7 +9888,7 @@ repeat--) \
 
    */
 
-    int rs274ngc_reset()
+    int rs274ngc::reset()
     {
         _setup.linetext[0] = 0;
         _setup.blocktext[0] = 0;
@@ -10059,7 +9934,7 @@ repeat--) \
    has its value set to zero.
 
    */
-    int rs274ngc_restore_parameters(              /* ARGUMENTS                        */
+    int rs274ngc::restore_parameters(              /* ARGUMENTS                        */
     const char * filename)                        /* name of parameter file to read   */
     {
         static const char name[] = "rs274ngc_restore_parameters";
@@ -10157,7 +10032,7 @@ repeat--) \
    complain, but does write it in the output file.
 
    */
-    int rs274ngc_save_parameters(                 /* ARGUMENTS             */
+    int rs274ngc::save_parameters(                 /* ARGUMENTS             */
     const char * filename,                        /* name of file to write */
     const double parameters[])                    /* parameters to save    */
     {
@@ -10254,7 +10129,7 @@ repeat--) \
 
    */
 
-    int rs274ngc_synch()                          /* NO ARGUMENTS */
+    int rs274ngc::synch()                          /* NO ARGUMENTS */
     {
         _setup.control_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
         _setup.current.a = GET_EXTERNAL_POSITION_A();
@@ -10275,7 +10150,7 @@ repeat--) \
         _setup.tool_max = GET_EXTERNAL_TOOL_MAX();
         _setup.traverse_rate = GET_EXTERNAL_TRAVERSE_RATE();
 
-        rs274ngc_load_tool_table();               /*  must set  _setup.tool_max first */
+        load_tool_table();               /*  must set  _setup.tool_max first */
 
         return RS274NGC_OK;
     }
@@ -10304,7 +10179,7 @@ repeat--) \
 
    */
 
-    void rs274ngc_active_g_codes(                 /* ARGUMENTS                   */
+    void rs274ngc::active_g_codes(                 /* ARGUMENTS                   */
     int * codes)                                  /* array of codes to copy into */
     {
         int n;
@@ -10329,7 +10204,7 @@ repeat--) \
 
    */
 
-    void rs274ngc_active_m_codes(                 /* ARGUMENTS                   */
+    void rs274ngc::active_m_codes(                 /* ARGUMENTS                   */
     int * codes)                                  /* array of codes to copy into */
     {
         int n;
@@ -10354,7 +10229,7 @@ repeat--) \
 
    */
 
-    void rs274ngc_active_settings(                /* ARGUMENTS                      */
+    void rs274ngc::active_settings(                /* ARGUMENTS                      */
     double * settings)                            /* array of settings to copy into */
     {
         int n;
@@ -10384,7 +10259,7 @@ repeat--) \
 
    */
 
-    void rs274ngc_error_text(                     /* ARGUMENTS                            */
+    void rs274ngc::error_text(                     /* ARGUMENTS                            */
     int error_code,                               /* code number of error                 */
     char * error_text,                            /* char array to copy error text into   */
     size_t max_size)                                 /* maximum number of characters to copy */
@@ -10411,7 +10286,7 @@ repeat--) \
 
    */
 
-    int rs274ngc_line_length()
+    int rs274ngc::line_length()
     {
         return _setup.line_length;
     }
@@ -10432,7 +10307,7 @@ repeat--) \
 
    */
 
-    void rs274ngc_line_text(                      /* ARGUMENTS                            */
+    void rs274ngc::line_text(                      /* ARGUMENTS                            */
     char * line_text,                             /* string: to copy line into            */
     size_t max_size)                                 /* maximum number of characters to copy */
     {
@@ -10464,7 +10339,7 @@ repeat--) \
 
    */
 
-    int rs274ngc_sequence_number()
+    int rs274ngc::sequence_number()
     {
         return _setup.sequence_number;
     }
@@ -10493,7 +10368,7 @@ repeat--) \
 
    */
 
-    void rs274ngc_stack_name(                     /* ARGUMENTS                            */
+    void rs274ngc::stack_name(                     /* ARGUMENTS                            */
     int stack_index,                              /* index into stack of function names   */
     char * function_name,                         /* string: to copy function name into   */
     int max_size)                                 /* maximum number of characters to copy */

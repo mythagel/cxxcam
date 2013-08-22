@@ -5,12 +5,14 @@
 
 // for canon_pre
 FILE * _outfile;
+rs274ngc interp;
 
 int main()
 {
 	_outfile = stdout;
 	
-	if(rs274ngc_init() != RS274NGC_OK)
+	
+	if(interp.init() != RS274NGC_OK)
 		return 1;
 
 	std::string line;
@@ -18,7 +20,7 @@ int main()
 	{
 		int status;
 		
-		status = rs274ngc_read(line.c_str());
+		status = interp.read(line.c_str());
 		if(status != RS274NGC_OK)
 		{
 			if(status != RS274NGC_EXECUTE_FINISH)
@@ -29,12 +31,12 @@ int main()
 			}
 		}
 		
-		status = rs274ngc_execute();
+		status = interp.execute();
 		if(status != RS274NGC_OK)
 			return status;
 	}
 
-    rs274ngc_exit();
+    interp.exit();
     return 0;
 }
 
