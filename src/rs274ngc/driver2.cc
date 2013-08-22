@@ -12,8 +12,7 @@ int main()
 	_outfile = stdout;
 	
 	
-	if(interp.init() != RS274NGC_OK)
-		return 1;
+	interp.init();
 
 	std::string line;
 	while(std::getline(std::cin, line))
