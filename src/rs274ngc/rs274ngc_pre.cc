@@ -235,12 +235,12 @@ enum
 
    */
 
-#define ERM(error_code) do{ if (1) { \
+#define ERM(error_code) do{ \
     _setup.stack_index = 0; \
     strcpy(_setup.stack[_setup.stack_index++], name); \
     _setup.stack[_setup.stack_index][0] = 0; \
     return error_code; \
-} } while(0)
+} while(0)
 
 #define ERP(error_code) do{ if (_setup.stack_index < 49) { \
     strcpy(_setup.stack[_setup.stack_index++], name); \
@@ -379,7 +379,7 @@ static int read_real_number(char * line, int * counter, double * double_ptr);
 static int read_real_value(char * line, int * counter, double * double_ptr, double * parameters);
 static int read_s(char * line, int * counter, block_t& block, double * parameters);
 static int read_t(char * line, int * counter, block_t& block, double * parameters);
-static int read_text(const char * command, FILE * inport, char * raw_line, char * line, int * length);
+static int read_text(const char * command, char * raw_line, char * line, int * length);
 static int read_unary(char * line, int * counter, double * double_ptr, double * parameters);
 static int read_x(char * line, int * counter, block_t& block, double * parameters);
 static int read_y(char * line, int * counter, block_t& block, double * parameters);
@@ -5040,35 +5040,6 @@ repeat--) \
             if (block.m_modes[4] == 30)
                 PALLET_SHUTTLE();
             PROGRAM_END();
-            if (settings.percent_flag == ON)
-            {
-                CHK((settings.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
-                line = settings.linetext;
-                for(; ;)                          /* check for ending percent sign and comment if missing */
-                {
-                    if (fgets(line, RS274NGC_TEXT_SIZE, settings.file_pointer) == NULL)
-                    {
-                        COMMENT
-                            ("interpreter: percent sign missing from end of file");
-                        break;
-                    }
-                    length = strlen(line);
-                    if (length == (RS274NGC_TEXT_SIZE - 1))
-                    {                             // line is too long. need to finish reading the line
-                        for(;fgetc(settings.file_pointer) != '\n';);
-                        continue;
-                    }
-                    for(index = (length -1); // index set on last char
-                        (index >= 0) and (isspace(line[index]));
-                        index--);
-                    if (line[index] == '%')       // found line with % at end
-                    {
-                        for(index--; (index >= 0) and (isspace(line[index])); index--);
-                        if (index == -1)          // found line with only percent sign
-                            break;
-                    }
-                }
-            }
             return RS274NGC_EXIT;
         }
         else
@@ -6617,14 +6588,13 @@ repeat--) \
     static int init_block(                        /* ARGUMENTS                                     */
     block_t& block)                          /* pointer to a block to be initialized or reset */
     {
-        int n;
         block.a_flag = OFF;                 /*AA*/
         block.b_flag = OFF;                 /*BB*/
         block.c_flag = OFF;                 /*CC*/
         block.comment[0] = 0;
         block.d_number = -1;
         block.f_number = -1.0;
-        for (n = 0; n < 14; n++)
+        for (int n = 0; n < 14; n++)
         {
             block.g_modes[n] = -1;
         }
@@ -6636,7 +6606,7 @@ repeat--) \
         block.line_number = -1;
         block.motion_to_be = -1;
         block.m_count = 0;
-        for (n = 0; n < 10; n++)
+        for (int n = 0; n < 10; n++)
         {
             block.m_modes[n] = -1;
         }
@@ -9271,51 +9241,19 @@ repeat--) \
    */
 
     static int read_text(                         /* ARGUMENTS                                   */
-    const char * command,                         /* a string which may have input text, or null */
-    FILE * inport,                                /* a file pointer for an input file, or null   */
+    const char * command,                         /* a string which has input text */
     char * raw_line,                              /* array to write raw input line into          */
     char * line,                                  /* array for input line to be processed in     */
     int * length)                                 /* a pointer to an integer to be set           */
     {
         static const char name[] = "read_text";
         int status;                               /* used in CHP */
-        int index;
 
-        if (command == NULL)
-        {
-            if(fgets(raw_line, RS274NGC_TEXT_SIZE, inport) == NULL)
-            {
-                if (_setup.percent_flag == ON)
-                    ERM(NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN);
-                else
-                    ERM(NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN_OR_PROGRAM_END);
-            }
-            if (strlen(raw_line) == (RS274NGC_TEXT_SIZE - 1))
-            {                                     // line is too long. need to finish reading the line to recover
-                for(;fgetc(inport) != '\n';)    // could also look for EOF
-                {
-                }
-                ERM(NCE_COMMAND_TOO_LONG);
-            }
-   // index set on last char
-            for(index = (strlen(raw_line) -1);
-                (index >= 0) and (isspace(raw_line[index]));
-                index--)
-            {                                     // remove space at end of raw_line, especially CR & LF
-                raw_line[index] = 0;
-            }
-            strcpy(line, raw_line);
-            CHP(close_and_downcase(line));
-            if ((line[0] == '%') and (line[1] == 0) and (_setup.percent_flag == ON))
-                return RS274NGC_ENDFILE;
-        }
-        else
-        {
-            CHK((strlen(command) >= RS274NGC_TEXT_SIZE), NCE_COMMAND_TOO_LONG);
-            strcpy(raw_line, command);
-            strcpy(line, command);
-            CHP(close_and_downcase(line));
-        }
+        CHK((strlen(command) >= RS274NGC_TEXT_SIZE), NCE_COMMAND_TOO_LONG);
+        strcpy(raw_line, command);
+        strcpy(line, command);
+        CHP(close_and_downcase(line));
+        
         _setup.sequence_number++;
         _setup.parameter_occurrence = 0;     /* initialize parameter buffer */
         if ((line[0] == 0) or ((line[0] == '/') and (line[1] == 0)))
@@ -9735,32 +9673,6 @@ repeat--) \
 
    /***********************************************************************/
 
-   /* rs274ngc_close
-
-   Returned Value: int (RS274NGC_OK)
-
-   Side Effects:
-   The NC-code file is closed if open.
-   The _setup world model is reset.
-
-   Called By: external programs
-
-   */
-
-    int rs274ngc_close()
-    {
-        if (_setup.file_pointer != NULL)
-        {
-            fclose(_setup.file_pointer);
-            _setup.file_pointer = NULL;
-        }
-        rs274ngc_reset();
-
-        return RS274NGC_OK;
-    }
-
-   /***********************************************************************/
-
    /* rs274ngc_execute
 
    Returned Value: int)
@@ -9920,8 +9832,6 @@ repeat--) \
         _setup.feed_mode = UNITS_PER_MINUTE;
         _setup.feed_override = ON;
    //_setup.feed_rate set in rs274ngc_synch
-        _setup.filename[0] = 0;
-        _setup.file_pointer = NULL;
    //_setup.flood set in rs274ngc_synch
         _setup.length_offset_index = 1;
    //_setup.length_units set in rs274ngc_synch
@@ -10013,102 +9923,6 @@ repeat--) \
 
    /***********************************************************************/
 
-   /* rs274ngc_open
-
-   Returned Value: int
-   If any of the following errors occur, this returns the error code shown.
-   Otherwise it returns RS274NGC_OK.
-   1. A file is already open: NCE_A_FILE_IS_ALREADY_OPEN
-   2. The name of the file is too long: NCE_FILE_NAME_TOO_LONG
-   3. The file cannot be opened: NCE_UNABLE_TO_OPEN_FILE
-
-   Side Effects: See below
-
-   Called By: external programs
-
-   The file is opened for reading and _setup.file_pointer is set.
-   The file name is copied into _setup.filename.
-   The _setup.sequence_number, is set to zero.
-   rs274ngc_reset() is called, changing several more _setup attributes.
-
-   The manual [NCMS, page 3] discusses the use of the "%" character at the
-   beginning of a "tape". It is not clear whether it is intended that
-   every NC-code file should begin with that character.
-
-   In the following, "uses percents" means the first non-blank line
-   of the file must consist of nothing but the percent sign, with optional
-   leading and trailing white space, and there must be a second line
-   of the same sort later on in the file. If a file uses percents,
-   execution stops at the second percent line. Any lines after the
-   second percent line are ignored.
-
-   In this interpreter (recalling that M2 and M30 always ends execution):
-   1. If execution of a file is ended by M2 or M30 (not necessarily on
-   the last line of the file), then it is optional that the file
-   uses percents.
-   2. If execution of a file is not ended by M2 or M30, then it is
-   required that the file uses percents.
-
-   If the file being opened uses percents, this function turns on the
-   _setup.percent flag, reads any initial blank lines, and reads the
-   first line with the "%". If not, after reading enough to determine
-   that, this function puts the file pointer back at the beginning of the
-   file.
-
-   */
-
-    int rs274ngc_open(                            /* ARGUMENTS                                     */
-    const char * filename)                        /* string: the name of the input NC-program file */
-    {
-        static const char name[] = "rs274ngc_open";
-        char * line;
-        int index;
-        int length;
-
-        CHK((_setup.file_pointer != NULL), NCE_A_FILE_IS_ALREADY_OPEN);
-        CHK((strlen(filename) > (RS274NGC_TEXT_SIZE - 1)), NCE_FILE_NAME_TOO_LONG);
-        _setup.file_pointer = fopen(filename, "r");
-        CHK((_setup.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
-        line = _setup.linetext;
-        for(index = -1; index == -1;)        /* skip blank lines */
-        {
-            CHK((fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) == NULL),
-                NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN);
-            length = strlen(line);
-            if (length == (RS274NGC_TEXT_SIZE - 1))
-            {                                     // line is too long. need to finish reading the line to recover
-   // could look for EOF
-                for(;fgetc(_setup.file_pointer) != '\n';);
-                ERM(NCE_COMMAND_TOO_LONG);
-            }
-            for(index = (length -1);         // index set on last char
-                (index >= 0) and (isspace(line[index]));
-                index--);
-        }
-        if(line[index] == '%')
-        {
-            for(index--; (index >= 0) and (isspace(line[index])); index--);
-            if (index == -1)
-                _setup.percent_flag = ON;
-            else
-            {
-                fseek(_setup.file_pointer, 0, SEEK_SET);
-                _setup.percent_flag = OFF;
-            }
-        }
-        else
-        {
-            fseek(_setup.file_pointer, 0, SEEK_SET);
-            _setup.percent_flag = OFF;
-        }
-        strcpy(_setup.filename, filename);
-        _setup.sequence_number = 0;
-        rs274ngc_reset();
-        return RS274NGC_OK;
-    }
-
-   /***********************************************************************/
-
    /* rs274ngc_read
 
    Returned Value: int
@@ -10139,7 +9953,7 @@ repeat--) \
    */
 
     int rs274ngc_read(                            /* ARGUMENTS                       */
-    const char * command)                         /* may be NULL or a string to read */
+    const char * command)                         /* a string to read */
     {
         static const char name[] = "rs274ngc_read";
         int status;
@@ -10152,10 +9966,8 @@ repeat--) \
             set_probe_data(_setup);
             _setup.probe_flag = OFF;
         }
-        CHK(((command == NULL) and (_setup.file_pointer == NULL)),
-            NCE_FILE_NOT_OPEN);
-        read_status = read_text(command, _setup.file_pointer, _setup.linetext,
-            _setup.blocktext, &_setup.line_length);
+        CHK(((command == NULL)), NCE_FILE_NOT_OPEN);
+        read_status = read_text(command, _setup.linetext, _setup.blocktext, &_setup.line_length);
         if ((read_status == RS274NGC_EXECUTE_FINISH) or
             (read_status == RS274NGC_OK))
         {
@@ -10585,32 +10397,6 @@ repeat--) \
         }
         else
             error_text[0] = 0;
-    }
-
-   /***********************************************************************/
-
-   /* rs274ngc_file_name
-
-   Returned Value: none
-
-   Side Effects: see below
-
-   Called By: external programs
-
-   This copies the _setup.filename (the name of the currently open
-   file) into the file_name array -- unless the name is not shorter than
-   max_size, in which case a null string is put in the file_name array.
-
-   */
-
-    void rs274ngc_file_name(                      /* ARGUMENTS                            */
-    char * file_name,                             /* string: to copy file name into       */
-    size_t max_size)                                 /* maximum number of characters to copy */
-    {
-        if (strlen(_setup.filename) < max_size)
-            strcpy(file_name, _setup.filename);
-        else
-            file_name[0] = 0;
     }
 
    /***********************************************************************/

@@ -47,8 +47,8 @@ Plan to reuse gcode parsing and interpreter individually.
    /* INCLUDE DIRECTIVES */
    /**********************/
 
-#include <cstdio>
 #include "canon.hh"
+#include <cstddef>
 
    /**********************/
    /*   COMPILER MACROS  */
@@ -194,8 +194,6 @@ struct setup_t
     int feed_mode;                                // G_93 (inverse time) or G_94 units/min
     ON_OFF feed_override;                         // whether feed override is enabled
     double feed_rate;                             // feed rate in current units/min
-    char filename[RS274NGC_TEXT_SIZE];            // name of currently open NC code file
-    FILE * file_pointer;                          // file pointer for open NC code file
     ON_OFF flood;                                 // whether flood coolant is on
     int length_offset_index;                      // for use with tool length offsets
     CANON_UNITS length_units;                     // millimeters or inches
@@ -208,7 +206,6 @@ struct setup_t
     int parameter_occurrence;                     // parameter buffer index
     int parameter_numbers[50];                    // parameter number buffer
     double parameter_values[50];                  // parameter value buffer
-    ON_OFF percent_flag;                          // ON means first line was percent sign
     CANON_PLANE plane;                            // active plane, XY-, YZ-, or XZ-plane
     ON_OFF probe_flag;                            // flag indicating probing done
     double program_x;                             // program x, used when cutter comp on
@@ -241,9 +238,6 @@ typedef int (*read_function_pointer) (char *, int *, block_t&, double *);
 
    */
 
-   // close the currently open NC code file
-int rs274ngc_close();
-
    // execute a line of NC code
 int rs274ngc_execute();
 
@@ -256,11 +250,8 @@ int rs274ngc_init();
    // load a tool table
 int rs274ngc_load_tool_table();
 
-   // open a file of NC code
-int rs274ngc_open(const char *filename);
-
-   // read the mdi or the next line of the open NC code file
-int rs274ngc_read(const char * mdi = 0);
+   // read the command
+int rs274ngc_read(const char * command);
 
    // reset yourself
 int rs274ngc_reset();
@@ -297,10 +288,6 @@ void rs274ngc_active_settings(double * settings);
    // copy the text of the error message whose number is error_code into the
    // error_text array, but stop at max_size if the text is longer.
 void rs274ngc_error_text(int error_code, char * error_text, size_t max_size);
-
-   // copy the name of the currently open file into the file_name array,
-   // but stop at max_size if the name is longer
-void rs274ngc_file_name(char * file_name, size_t max_size);
 
    // return the length of the most recently read line
 int rs274ngc_line_length();
