@@ -6420,7 +6420,7 @@ repeat--) \
    */
 
     void rs274ngc::parse_line(                        /* ARGUMENTS                            */
-    char * line,                                  /* array holding a line of RS274 code   */
+    const char * line,                                  /* array holding a line of RS274 code   */
     block_t& block,                          /* pointer to a block to be filled      */
     setup_t& settings)                       /* pointer to machine settings          */
     {
@@ -6498,7 +6498,7 @@ repeat--) \
    */
 
     void rs274ngc::read_a(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -6549,7 +6549,7 @@ repeat--) \
    */
 
     void rs274ngc::read_atan(                         /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on line      */
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
@@ -6606,7 +6606,7 @@ repeat--) \
    */
 
     void rs274ngc::read_b(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -6661,7 +6661,7 @@ repeat--) \
    */
 
     void rs274ngc::read_c(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -6711,7 +6711,7 @@ repeat--) \
    */
 
     void rs274ngc::read_comment(                      /* ARGUMENTS                                     */
-    char * line,                                  /* string: line of RS274 code being processed    */
+    const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
     double * /*parameters*/)                          /* array of system parameters                    */
@@ -6762,7 +6762,7 @@ repeat--) \
    */
 
     void rs274ngc::read_d(                            /* ARGUMENTS                                     */
-    char * line,                                  /* string: line of RS274 code being processed    */
+    const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
@@ -6811,7 +6811,7 @@ repeat--) \
    */
 
     void rs274ngc::read_f(                            /* ARGUMENTS                                     */
-    char * line,                                  /* string: line of RS274 code being processed    */
+    const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
@@ -6876,7 +6876,7 @@ repeat--) \
    */
 
     void rs274ngc::read_g(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -6935,7 +6935,7 @@ repeat--) \
    */
 
     void rs274ngc::read_h(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -6985,7 +6985,7 @@ repeat--) \
    */
 
     void rs274ngc::read_i(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274 code being processed     */
+    const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -7024,7 +7024,7 @@ repeat--) \
    */
 
     void rs274ngc::read_integer_unsigned(             /* ARGUMENTS                       */
-    char * line,                                  /* string: line of RS274 code being processed    */
+    const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     int * integer_ptr)                            /* pointer to the value being read               */
     {
@@ -7078,7 +7078,7 @@ repeat--) \
    */
 
     void rs274ngc::read_integer_value(                /* ARGUMENTS                                 */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     int * integer_ptr,                            /* pointer to the value being read                */
     double * parameters)                          /* array of system parameters                     */
@@ -7115,7 +7115,7 @@ repeat--) \
 
     void rs274ngc::read_items(                        /* ARGUMENTS                                      */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     double * parameters)                          /* array of system parameters                     */
     {
         int counter;
@@ -7170,7 +7170,7 @@ repeat--) \
    */
 
     void rs274ngc::read_j(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274 code being processed     */
+    const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -7219,7 +7219,7 @@ repeat--) \
    */
 
     void rs274ngc::read_k(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274 code being processed     */
+    const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -7266,7 +7266,7 @@ repeat--) \
    */
 
     void rs274ngc::read_l(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -7311,7 +7311,7 @@ repeat--) \
    */
 
     void rs274ngc::read_line_number(                  /* ARGUMENTS                               */
-    char * line,                                  /* string: line of RS274    code being processed  */
+    const char * line,                                  /* string: line of RS274    code being processed  */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block)                          /* pointer to a block being filled from the line  */
     {
@@ -7359,7 +7359,7 @@ repeat--) \
    */
 
     void rs274ngc::read_m(                            /* ARGUMENTS                                     */
-    char * line,                                  /* string: line of RS274 code being processed    */
+    const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
@@ -7425,7 +7425,7 @@ repeat--) \
    */
 
     void rs274ngc::read_one_item(                     /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -7470,7 +7470,7 @@ repeat--) \
    */
 
     void rs274ngc::read_operation(                    /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     int * operation)                              /* pointer to operation to be read                */
     {
@@ -7578,7 +7578,7 @@ repeat--) \
    */
 
     void rs274ngc::read_operation_unary(              /* ARGUMENTS                               */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     int * operation)                              /* pointer to operation to be read                */
     {
@@ -7723,7 +7723,7 @@ repeat--) \
    */
 
     void rs274ngc::read_p(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -7776,7 +7776,7 @@ repeat--) \
    */
 
     void rs274ngc::read_parameter(                    /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
@@ -7858,7 +7858,7 @@ repeat--) \
    */
 
     void rs274ngc::read_parameter_setting(            /* ARGUMENTS                        */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& /*block*/,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -7910,7 +7910,7 @@ repeat--) \
    */
 
     void rs274ngc::read_q(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -7961,7 +7961,7 @@ repeat--) \
    */
 
     void rs274ngc::read_r(                            /* ARGUMENTS                                     */
-    char * line,                                  /* string: line of RS274 code being processed    */
+    const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
@@ -8174,7 +8174,7 @@ repeat--) \
 
 #ifdef UNDEFINED
     static void read_real_expression(              /* ARGUMENTS                               */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * value,                               /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
@@ -8222,7 +8222,7 @@ repeat--) \
 #define MAX_STACK 5
 
     void rs274ngc::read_real_expression(              /* ARGUMENTS                               */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * value,                               /* pointer to double to be computed               */
     double * parameters)                          /* array of system parameters                     */
@@ -8300,7 +8300,7 @@ repeat--) \
    */
 
     void rs274ngc::read_real_number(                  /* ARGUMENTS                               */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr)                          /* pointer to double to be read                   */
     {
@@ -8347,16 +8347,18 @@ repeat--) \
                 break;
         }
 
-        error_if((flag_digit == OFF), NCE_NO_DIGITS_FOUND_WHERE_REAL_NUMBER_SHOULD_BE);
-        line[n] = (char) NULL;               /* temporary string termination for sscanf */
-        if (sscanf(line + *counter, "%lf", double_ptr) == 0)
+        error_if(flag_digit == OFF, NCE_NO_DIGITS_FOUND_WHERE_REAL_NUMBER_SHOULD_BE);
+        
+        char dbl_buf[RS274NGC_TEXT_SIZE];
+        strncpy(dbl_buf, line + *counter, n-*counter);
+        dbl_buf[n-*counter] = '\0';
+        
+        if (sscanf(dbl_buf, "%lf", double_ptr) == 0)
         {
-            line[n] = c;
             throw error(NCE_SSCANF_FAILED);
         }
         else
         {
-            line[n] = c;
             *counter = n;
         }
     }
@@ -8409,7 +8411,7 @@ repeat--) \
    */
 
     void rs274ngc::read_real_value(                   /* ARGUMENTS                               */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
@@ -8462,7 +8464,7 @@ repeat--) \
 
 #ifdef UNDEFINED
     static void read_rest_bop1(                    /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * value,                               /* pointer to double to be calculated             */
     int * last_operation,                         /* last operation read, reset to next operation   */
@@ -8517,7 +8519,7 @@ repeat--) \
 
 #ifdef UNDEFINED
     static void read_rest_bop2(                    /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * value,                               /* pointer to double to be calculated             */
     int last_operation,                           /* last operation read                            */
@@ -8574,7 +8576,7 @@ repeat--) \
    */
 
     void rs274ngc::read_s(                            /* ARGUMENTS                                     */
-    char * line,                                  /* string: line of RS274NGC code being processed */
+    const char * line,                                  /* string: line of RS274NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
     double * parameters)                          /* array of system parameters                    */
@@ -8621,7 +8623,7 @@ repeat--) \
    */
 
     void rs274ngc::read_t(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -8752,7 +8754,7 @@ repeat--) \
    */
 
     void rs274ngc::read_unary(                        /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274/NGC code being processed */
+    const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters)                          /* array of system parameters                     */
@@ -8803,7 +8805,7 @@ repeat--) \
    */
 
     void rs274ngc::read_x(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274 code being processed     */
+    const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -8852,7 +8854,7 @@ repeat--) \
    */
 
     void rs274ngc::read_y(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274 code being processed     */
+    const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
@@ -8901,7 +8903,7 @@ repeat--) \
    */
 
     void rs274ngc::read_z(                            /* ARGUMENTS                                      */
-    char * line,                                  /* string: line of RS274 code being processed     */
+    const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters)                          /* array of system parameters                     */
