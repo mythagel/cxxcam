@@ -241,10 +241,10 @@ private:
 	typedef void (rs274ngc::*read_function_pointer) (const char *, int *, block_t&, double *) const;
 	read_function_pointer _readers[127];
 
-	void arc_data_comp_ijk(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
-	void arc_data_comp_r(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
-	void arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
-	void arc_data_r(int move, double current_x, double current_y, double end_x, double end_y, double radius, double * center_x, double * center_y, int * turn);
+	static void arc_data_comp_ijk(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
+	static void arc_data_comp_r(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
+	static void arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
+	static void arc_data_r(int move, double current_x, double current_y, double end_x, double end_y, double radius, double * center_x, double * center_y, int * turn);
 	void check_g_codes(block_t& block, setup_t& settings);
 	void check_items(block_t& block, setup_t& settings);
 	void check_m_codes(block_t& block);
