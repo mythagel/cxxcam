@@ -6197,6 +6197,7 @@ repeat--) \
         block.x_flag = OFF;
         block.y_flag = OFF;
         block.z_flag = OFF;
+        block.parameter_occurrence = 0;     /* initialize parameter buffer */
     }
 
    /****************************************************************************/
@@ -6501,7 +6502,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -6552,7 +6553,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on line      */
     double * double_ptr,                          /* pointer to double to be read                   */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double argument2;
 
@@ -6609,7 +6610,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -6664,7 +6665,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -6714,7 +6715,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
-    double * /*parameters*/)                          /* array of system parameters                    */
+    double * /*parameters*/) const                          /* array of system parameters                    */
     {
         int n;
 
@@ -6765,7 +6766,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
-    double * parameters)                          /* array of system parameters                    */
+    double * parameters) const                          /* array of system parameters                    */
     {
         int value;
 
@@ -6814,7 +6815,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
-    double * parameters)                          /* array of system parameters                    */
+    double * parameters) const                          /* array of system parameters                    */
     {
         double value;
 
@@ -6879,7 +6880,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value_read;
         int value;
@@ -6938,7 +6939,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         int value;
 
@@ -6988,7 +6989,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -7026,7 +7027,7 @@ repeat--) \
     void rs274ngc::read_integer_unsigned(             /* ARGUMENTS                       */
     const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
-    int * integer_ptr)                            /* pointer to the value being read               */
+    int * integer_ptr) const                            /* pointer to the value being read               */
     {
         int n;
         char c;
@@ -7081,7 +7082,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     int * integer_ptr,                            /* pointer to the value being read                */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double float_value;
 
@@ -7116,7 +7117,7 @@ repeat--) \
     void rs274ngc::read_items(                        /* ARGUMENTS                                      */
     block_t& block,                          /* pointer to a block being filled from the line  */
     const char * line,                                  /* string: line of RS274/NGC code being processed */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         int counter;
         int length;
@@ -7173,7 +7174,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -7222,7 +7223,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -7269,7 +7270,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         int value;
 
@@ -7313,7 +7314,7 @@ repeat--) \
     void rs274ngc::read_line_number(                  /* ARGUMENTS                               */
     const char * line,                                  /* string: line of RS274    code being processed  */
     int * counter,                                /* pointer to a counter for position on the line  */
-    block_t& block)                          /* pointer to a block being filled from the line  */
+    block_t& block) const                          /* pointer to a block being filled from the line  */
     {
         int value;
 
@@ -7362,7 +7363,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
-    double * parameters)                          /* array of system parameters                    */
+    double * parameters) const                          /* array of system parameters                    */
     {
         int value;
         int mode;
@@ -7428,7 +7429,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         read_function_pointer function_pointer;
         char letter;
@@ -7472,7 +7473,7 @@ repeat--) \
     void rs274ngc::read_operation(                    /* ARGUMENTS                                      */
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
-    int * operation)                              /* pointer to operation to be read                */
+    int * operation) const                              /* pointer to operation to be read                */
     {
         char c;
 
@@ -7580,7 +7581,7 @@ repeat--) \
     void rs274ngc::read_operation_unary(              /* ARGUMENTS                               */
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
-    int * operation)                              /* pointer to operation to be read                */
+    int * operation) const                              /* pointer to operation to be read                */
     {
         char c;
 
@@ -7726,7 +7727,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -7779,7 +7780,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr,                          /* pointer to double to be read                   */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         int index;
 
@@ -7860,8 +7861,8 @@ repeat--) \
     void rs274ngc::read_parameter_setting(            /* ARGUMENTS                        */
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
-    block_t& /*block*/,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    block_t& block,                          /* pointer to a block being filled from the line  */
+    double * parameters) const                          /* array of system parameters                     */
     {
         int index;
         double value;
@@ -7873,9 +7874,9 @@ repeat--) \
         error_if((line[*counter] != '='), NCE_EQUAL_SIGN_MISSING_IN_PARAMETER_SETTING);
         *counter = (*counter + 1);
         read_real_value(line, counter, &value, parameters);
-        _setup.parameter_numbers[_setup.parameter_occurrence] = index;
-        _setup.parameter_values[_setup.parameter_occurrence] = value;
-        _setup.parameter_occurrence++;
+        block.parameter_numbers[block.parameter_occurrence] = index;
+        block.parameter_values[block.parameter_occurrence] = value;
+        block.parameter_occurrence++;
     }
 
    /****************************************************************************/
@@ -7913,7 +7914,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -7964,7 +7965,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
-    double * parameters)                          /* array of system parameters                    */
+    double * parameters) const                          /* array of system parameters                    */
     {
         double value;
 
@@ -8177,7 +8178,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * value,                               /* pointer to double to be read                   */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         int next_operation;
         int status;
@@ -8225,7 +8226,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * value,                               /* pointer to double to be computed               */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double values[MAX_STACK];
         int operators[MAX_STACK];
@@ -8302,7 +8303,7 @@ repeat--) \
     void rs274ngc::read_real_number(                  /* ARGUMENTS                               */
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
-    double * double_ptr)                          /* pointer to double to be read                   */
+    double * double_ptr) const                          /* pointer to double to be read                   */
     {
         char c;                                   /* for character being processed    */
         int flag_digit;                           /* set to ON if digit found         */
@@ -8414,7 +8415,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr,                          /* pointer to double to be read                   */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         char c;
 
@@ -8468,7 +8469,7 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     double * value,                               /* pointer to double to be calculated             */
     int * last_operation,                         /* last operation read, reset to next operation   */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double next_value;
         int next_operation;
@@ -8523,7 +8524,7 @@ repeat--) \
     int * counter,                                /* pointer to a counter for position on the line  */
     double * value,                               /* pointer to double to be calculated             */
     int last_operation,                           /* last operation read                            */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double next_value;
         int next_operation;
@@ -8579,7 +8580,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line */
     block_t& block,                          /* pointer to a block being filled from the line */
-    double * parameters)                          /* array of system parameters                    */
+    double * parameters) const                          /* array of system parameters                    */
     {
         double value;
 
@@ -8626,7 +8627,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         int value;
 
@@ -8715,7 +8716,6 @@ repeat--) \
         close_and_downcase(line);
         
         _setup.sequence_number++;
-        _setup.parameter_occurrence = 0;     /* initialize parameter buffer */
         if ((line[0] == 0) or ((line[0] == '/') and (line[1] == 0)))
             *length = 0;
         else
@@ -8757,7 +8757,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
     double * double_ptr,                          /* pointer to double to be read                   */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         int operation;
 
@@ -8808,7 +8808,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -8857,7 +8857,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -8906,7 +8906,7 @@ repeat--) \
     const char * line,                                  /* string: line of RS274 code being processed     */
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block,                          /* pointer to a block being filled from the line  */
-    double * parameters)                          /* array of system parameters                     */
+    double * parameters) const                          /* array of system parameters                     */
     {
         double value;
 
@@ -9134,15 +9134,13 @@ repeat--) \
     int rs274ngc::execute()                        /* NO ARGUMENTS */
     {
         int status;
-        int n;
 
-        for (n = 0; n < _setup.parameter_occurrence; n++)
-        {                                         // copy parameter settings from parameter buffer into parameter table
-            _setup.parameters[_setup.parameter_numbers[n]]
-                = _setup.parameter_values[n];
-        }
         if (_setup.line_length != 0)            /* line not blank */
         {
+		    for (size_t n = 0; n < _setup.block1.parameter_occurrence; ++n)
+		    {                                         // copy parameter settings from parameter buffer into parameter table
+		        _setup.parameters[_setup.block1.parameter_numbers[n]] = _setup.block1.parameter_values[n];
+		    }
             status = execute_block (_setup.block1, _setup);
             write_g_codes(&_setup.block1, _setup);
             write_m_codes(&_setup.block1, _setup);

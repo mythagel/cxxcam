@@ -122,6 +122,10 @@ struct block_t
     double   y_number;
     ON_OFF   z_flag;
     double   z_number;
+    
+    size_t parameter_occurrence;                     // parameter buffer index
+    int parameter_numbers[50];                    // parameter number buffer
+    double parameter_values[50];                  // parameter value buffer
 };
 
    /*
@@ -192,9 +196,6 @@ struct setup_t
     int motion_mode;                              // active G-code for motion
     int origin_index;                             // active origin (1=G54 to 9=G59.3)
     double parameters [RS274NGC_MAX_PARAMETERS];                // system parameters
-    int parameter_occurrence;                     // parameter buffer index
-    int parameter_numbers[50];                    // parameter number buffer
-    double parameter_values[50];                  // parameter value buffer
     CANON_PLANE plane;                            // active plane, XY-, YZ-, or XZ-plane
     ON_OFF probe_flag;                            // flag indicating probing done
     double program_x;                             // program x, used when cutter comp on
@@ -237,7 +238,7 @@ private:
     setup_t _setup;
 
 	// pointer to function that reads
-	typedef void (rs274ngc::*read_function_pointer) (const char *, int *, block_t&, double *);
+	typedef void (rs274ngc::*read_function_pointer) (const char *, int *, block_t&, double *) const;
 	read_function_pointer _readers[127];
 
 	void arc_data_comp_ijk(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
@@ -248,7 +249,7 @@ private:
 	void check_items(block_t& block, setup_t& settings);
 	void check_m_codes(block_t& block);
 	void check_other_codes(block_t& block);
-	void close_and_downcase(char * line);
+	static void close_and_downcase(char * line);
 	void convert_arc(int move, block_t& block, setup_t& settings);
 	void convert_arc2(int move, block_t& block, setup_t& settings, double * current1, double * current2, double * current3, double end1, double end2, double end3, double AA_end, double BB_end, double CC_end, double offset1, double offset2);
 	void convert_arc_comp1(int move, block_t& block, setup_t& settings, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end);
@@ -298,59 +299,59 @@ private:
 	void cycle_feed(CANON_PLANE plane, double end1, double end2, double end3);
 	void cycle_traverse(CANON_PLANE plane, double end1, double end2, double end3);
 	void enhance_block(block_t& block, setup_t& settings);
-	void execute_binary(double * left, int operation, double * right);
-	void execute_binary1(double * left, int operation, double * right);
-	void execute_binary2(double * left, int operation, double * right);
+	static void execute_binary(double * left, int operation, double * right);
+	static void execute_binary1(double * left, int operation, double * right);
+	static void execute_binary2(double * left, int operation, double * right);
 	int execute_block(block_t& block, setup_t& settings);
-	void execute_unary(double * double_ptr, int operation);
-	double find_arc_length(double x1, double y1, double z1, double center_x, double center_y, int turn, double x2, double y2, double z2);
-	void find_ends(block_t& block, setup_t& settings, double * px, double * py, double * pz, double * AA_p, double * BB_p, double * CC_p);
-	void find_relative(double x1, double y1, double z1, double AA_1, double BB_1, double CC_1, double * x2, double * y2, double * z2, double * AA_2, double * BB_2, double * CC_2,setup_t& settings);
-	double find_straight_length(double x2, double y2, double z2, double AA_2, double BB_2, double CC_2, double x1, double y1, double z1, double AA_1, double BB_1, double CC_1);
-	double find_turn(double x1, double y1, double center_x, double center_y, int turn, double x2, double y2);
-	void init_block(block_t& block);
-	void inverse_time_rate_arc(double x1, double y1, double z1, double cx, double cy, int turn, double x2, double y2, double z2, block_t& block, setup_t& settings);
-	void inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_t& block, setup_t& settings);
-	void inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
-	void inverse_time_rate_straight(double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
+	static void execute_unary(double * double_ptr, int operation);
+	static double find_arc_length(double x1, double y1, double z1, double center_x, double center_y, int turn, double x2, double y2, double z2);
+	static void find_ends(block_t& block, setup_t& settings, double * px, double * py, double * pz, double * AA_p, double * BB_p, double * CC_p);
+	static void find_relative(double x1, double y1, double z1, double AA_1, double BB_1, double CC_1, double * x2, double * y2, double * z2, double * AA_2, double * BB_2, double * CC_2,setup_t& settings);
+	static double find_straight_length(double x2, double y2, double z2, double AA_2, double BB_2, double CC_2, double x1, double y1, double z1, double AA_1, double BB_1, double CC_1);
+	static double find_turn(double x1, double y1, double center_x, double center_y, int turn, double x2, double y2);
+	static void init_block(block_t& block);
+	static void inverse_time_rate_arc(double x1, double y1, double z1, double cx, double cy, int turn, double x2, double y2, double z2, block_t& block, setup_t& settings);
+	static void inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_t& block, setup_t& settings);
+	static void inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
+	static void inverse_time_rate_straight(double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
 	void parse_line(const char * line, block_t& block,setup_t& settings);
-	int precedence(int an_operator);
-	void read_a(const char * line, int * counter, block_t& block, double * parameters);
-	void read_atan(const char * line, int * counter, double * double_ptr, double * parameters);
-	void read_b(const char * line, int * counter, block_t& block, double * parameters);
-	void read_c(const char * line, int * counter, block_t& block, double * parameters);
-	void read_comment(const char * line, int * counter, block_t& block, double * parameters);
-	void read_d(const char * line, int * counter, block_t& block, double * parameters);
-	void read_f(const char * line, int * counter, block_t& block, double * parameters);
-	void read_g(const char * line, int * counter, block_t& block, double * parameters);
-	void read_h(const char * line, int * counter, block_t& block, double * parameters);
-	void read_i(const char * line, int * counter, block_t& block, double * parameters);
-	void read_integer_unsigned(const char * line, int * counter, int * integer_ptr);
-	void read_integer_value(const char * line, int * counter, int * integer_ptr, double * parameters);
-	void read_items(block_t& block, const char * line, double * parameters);
-	void read_j(const char * line, int * counter, block_t& block, double * parameters);
-	void read_k(const char * line, int * counter, block_t& block, double * parameters);
-	void read_l(const char * line, int * counter, block_t& block, double * parameters);
-	void read_line_number(const char * line, int * counter, block_t& block);
-	void read_m(const char * line, int * counter, block_t& block, double * parameters);
-	void read_one_item(const char * line, int * counter, block_t& block, double * parameters);
-	void read_operation(const char * line, int * counter, int * operation);
-	void read_operation_unary(const char * line, int * counter, int * operation);
-	void read_p(const char * line, int * counter, block_t& block, double * parameters);
-	void read_parameter(const char * line, int * counter, double * double_ptr, double * parameters);
-	void read_parameter_setting(const char * line, int * counter, block_t& block, double * parameters);
-	void read_q(const char * line, int * counter, block_t& block, double * parameters);
-	void read_r(const char * line, int * counter, block_t& block, double * parameters);
-	void read_real_expression(const char * line, int * counter, double * hold2, double * parameters);
-	void read_real_number(const char * line, int * counter, double * double_ptr);
-	void read_real_value(const char * line, int * counter, double * double_ptr, double * parameters);
-	void read_s(const char * line, int * counter, block_t& block, double * parameters);
-	void read_t(const char * line, int * counter, block_t& block, double * parameters);
+	static int precedence(int an_operator);
+	void read_a(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_atan(const char * line, int * counter, double * double_ptr, double * parameters) const;
+	void read_b(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_c(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_comment(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_d(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_f(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_g(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_h(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_i(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_integer_unsigned(const char * line, int * counter, int * integer_ptr) const;
+	void read_integer_value(const char * line, int * counter, int * integer_ptr, double * parameters) const;
+	void read_items(block_t& block, const char * line, double * parameters) const;
+	void read_j(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_k(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_l(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_line_number(const char * line, int * counter, block_t& block) const;
+	void read_m(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_one_item(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_operation(const char * line, int * counter, int * operation) const;
+	void read_operation_unary(const char * line, int * counter, int * operation) const;
+	void read_p(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_parameter(const char * line, int * counter, double * double_ptr, double * parameters) const;
+	void read_parameter_setting(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_q(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_r(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_real_expression(const char * line, int * counter, double * hold2, double * parameters) const;
+	void read_real_number(const char * line, int * counter, double * double_ptr) const;
+	void read_real_value(const char * line, int * counter, double * double_ptr, double * parameters) const;
+	void read_s(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_t(const char * line, int * counter, block_t& block, double * parameters) const;
 	int read_text(const char * command, char * raw_line, char * line, int * length);
-	void read_unary(const char * line, int * counter, double * double_ptr, double * parameters);
-	void read_x(const char * line, int * counter, block_t& block, double * parameters);
-	void read_y(const char * line, int * counter, block_t& block, double * parameters);
-	void read_z(const char * line, int * counter, block_t& block, double * parameters);
+	void read_unary(const char * line, int * counter, double * double_ptr, double * parameters) const;
+	void read_x(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_y(const char * line, int * counter, block_t& block, double * parameters) const;
+	void read_z(const char * line, int * counter, block_t& block, double * parameters) const;
 	void set_probe_data(setup_t& settings);
 	void write_g_codes(const block_t* block, setup_t& settings);
 	void write_m_codes(const block_t* block, setup_t& settings);
