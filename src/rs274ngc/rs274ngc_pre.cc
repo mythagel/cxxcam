@@ -364,64 +364,46 @@ static const int _ems[] =
 
     static const int _required_parameters[] =
     {
-        5161, 5162, 5163,                         /* G28 home */
-            5164,                                 /*AA*/
-            5165,                                 /*BB*/
-            5166,                                 /*CC*/
-            5181, 5182, 5183,                     /* G30 home */
-            5184,                                 /*AA*/
-            5185,                                 /*BB*/
-            5186,                                 /*CC*/
-            5211, 5212, 5213,                     /* G92 offsets */
-            5214,                                 /*AA*/
-            5215,                                 /*BB*/
-            5216,                                 /*CC*/
-            5220,                                 /* selected coordinate */
-            5221, 5222, 5223,                     /* coordinate system 1 */
-            5224,                                 /*AA*/
-            5225,                                 /*BB*/
-            5226,                                 /*CC*/
-            5241, 5242, 5243,                     /* coordinate system 2 */
-            5244,                                 /*AA*/
-            5245,                                 /*BB*/
-            5246,                                 /*CC*/
-            5261, 5262, 5263,                     /* coordinate system 3 */
-            5264,                                 /*AA*/
-            5265,                                 /*BB*/
-            5266,                                 /*CC*/
-            5281, 5282, 5283,                     /* coordinate system 4 */
-            5284,                                 /*AA*/
-            5285,                                 /*BB*/
-            5286,                                 /*CC*/
-            5301, 5302, 5303,                     /* coordinate system 5 */
-            5304,                                 /*AA*/
-            5305,                                 /*BB*/
-            5306,                                 /*CC*/
-            5321, 5322, 5323,                     /* coordinate system 6 */
-            5324,                                 /*AA*/
-            5325,                                 /*BB*/
-            5326,                                 /*CC*/
-            5341, 5342, 5343,                     /* coordinate system 7 */
-            5344,                                 /*AA*/
-            5345,                                 /*BB*/
-            5346,                                 /*CC*/
-            5361, 5362, 5363,                     /* coordinate system 8 */
-            5364,                                 /*AA*/
-            5365,                                 /*BB*/
-            5366,                                 /*CC*/
-            5381, 5382, 5383,                     /* coordinate system 9 */
-            5384,                                 /*AA*/
-            5385,                                 /*BB*/
-            5386,                                 /*CC*/
-            RS274NGC_MAX_PARAMETERS
+        5161, 5162, 5163,                     /* G28 home */
+        5164, 5165, 5166,
+        
+        5181, 5182, 5183,                     /* G30 home */
+        5184, 5185, 5186,
+        
+        5211, 5212, 5213,                     /* G92 offsets */
+        5214, 5215, 5216,
+        
+        5220,                                 /* selected coordinate */
+        
+        5221, 5222, 5223,                     /* coordinate system 1 */
+        5224, 5225, 5226,
+        
+        5241, 5242, 5243,                     /* coordinate system 2 */
+        5244, 5245, 5246,
+        
+        5261, 5262, 5263,                     /* coordinate system 3 */
+        5264, 5265, 5266,
+        
+        5281, 5282, 5283,                     /* coordinate system 4 */
+        5284, 5285, 5286,
+        
+        5301, 5302, 5303,                     /* coordinate system 5 */
+        5304, 5305, 5306,
+        
+        5321, 5322, 5323,                     /* coordinate system 6 */
+        5324, 5325, 5326,
+        
+        5341, 5342, 5343,                     /* coordinate system 7 */
+        5344, 5345, 5346,
+        
+        5361, 5362, 5363,                     /* coordinate system 8 */
+        5364, 5365, 5366,
+        
+        5381, 5382, 5383,                     /* coordinate system 9 */
+        5384, 5385, 5386,
+        
+        RS274NGC_MAX_PARAMETERS
     };
-
-   /*
-
-   _readers is an array of pointers to functions that read.
-   It is used by read_one_item.
-
-   */
 
 error::error(int code)
  : code(code)
@@ -429,7 +411,7 @@ error::error(int code)
 }
 const char* error::what() const noexcept
 {
-	if (((code >= RS274NGC_MIN_ERROR) and (code <= RS274NGC_MAX_ERROR)) )
+	if ((code >= RS274NGC_MIN_ERROR) and (code <= RS274NGC_MAX_ERROR))
 		return _rs274ngc_errors[code];
 	else
 		return "Unknown error";
