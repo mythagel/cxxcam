@@ -499,7 +499,7 @@ rs274ngc::rs274ngc()
             (((side == LEFT ) and (move == 30)) or
             ((side == RIGHT) and (move == 20))) ?
             (radius2 - tool_radius): (radius2 + tool_radius);
-        error_if((fabs(arc_radius - radius2) > tolerance), NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
+        error_if(fabs(arc_radius - radius2) > tolerance, NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
    /* This catches an arc too small for the tool, also */
         if (move == G_2)
             *turn = -1;
@@ -590,8 +590,8 @@ rs274ngc::rs274ngc()
         double theta;                             /* direction of line from P to center    */
 
         abs_radius = fabs(big_radius);
-        error_if(((abs_radius <= tool_radius) and (((side == LEFT ) and (move == G_3)) or
-            ((side == RIGHT) and (move == G_2)))),
+        error_if((abs_radius <= tool_radius) and (((side == LEFT ) and (move == G_3)) or
+            ((side == RIGHT) and (move == G_2))),
             NCE_TOOL_RADIUS_NOT_LESS_THAN_ARC_RADIUS_WITH_COMP);
 
         distance = hypot((end_x - current_x), (end_y - current_y));
@@ -602,12 +602,12 @@ rs274ngc::rs274ngc()
         radius2 = (((side == LEFT ) and (move == G_3)) or
             ((side == RIGHT) and (move == G_2))) ?
             (abs_radius - tool_radius) : (abs_radius + tool_radius);
-        error_if((distance > (radius2 + abs_radius)), NCE_RADIUS_TOO_SMALL_TO_REACH_END_POINT);
+        error_if(distance > (radius2 + abs_radius), NCE_RADIUS_TOO_SMALL_TO_REACH_END_POINT);
         mid_length = (((radius2 * radius2) + (distance * distance) -
             (abs_radius * abs_radius)) / (2.0 * distance));
         mid_x = (current_x + (mid_length * cos(alpha)));
         mid_y = (current_y + (mid_length * sin(alpha)));
-        error_if(((radius2 * radius2) <= (mid_length * mid_length)), NCE_BUG_IN_TOOL_RADIUS_COMP);
+        error_if((radius2 * radius2) <= (mid_length * mid_length), NCE_BUG_IN_TOOL_RADIUS_COMP);
         offset = sqrt((radius2 * radius2) - (mid_length * mid_length));
         *center_x = mid_x + (offset * cos(theta));
         *center_y = mid_y + (offset * sin(theta));
@@ -662,9 +662,8 @@ rs274ngc::rs274ngc()
         *center_y = (current_y + j_number);
         radius = hypot((*center_x - current_x), (*center_y - current_y));
         radius2 = hypot((*center_x - end_x), (*center_y - end_y));
-        error_if(((radius == 0.0) or (radius2 == 0.0)), NCE_ZERO_RADIUS_ARC);
-        error_if((fabs(radius - radius2) > tolerance),
-            NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
+        error_if((radius == 0.0) or (radius2 == 0.0), NCE_ZERO_RADIUS_ARC);
+        error_if(fabs(radius - radius2) > tolerance, NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
         if (move == G_2)
             *turn = -1;
         else if (move == G_3)
@@ -728,14 +727,12 @@ rs274ngc::rs274ngc()
         double theta;                             /* angle of line from M to center */
         double turn2;                             /* absolute value of half of turn */
 
-        error_if(((end_x == current_x) and (end_y == current_y)),
-            NCE_CURRENT_POINT_SAME_AS_END_POINT_OF_ARC);
+        error_if((end_x == current_x) and (end_y == current_y), NCE_CURRENT_POINT_SAME_AS_END_POINT_OF_ARC);
         abs_radius = fabs(radius);
         mid_x = (end_x + current_x)/2.0;
         mid_y = (end_y + current_y)/2.0;
         half_length = hypot((mid_x - end_x), (mid_y - end_y));
-        error_if(((half_length/abs_radius) > (1+TINY)),
-            NCE_ARC_RADIUS_TOO_SMALL_TO_REACH_END_POINT);
+        error_if((half_length/abs_radius) > (1+TINY), NCE_ARC_RADIUS_TOO_SMALL_TO_REACH_END_POINT);
         if ((half_length/abs_radius) > (1-TINY))
             half_length = abs_radius;        /* allow a small error for semicircle */
    /* check needed before calling asin   */
@@ -816,15 +813,14 @@ rs274ngc::rs274ngc()
             {}
             else if (mode0 == G_4)
         {
-            error_if((block.p_number == -1.0), NCE_DWELL_TIME_MISSING_WITH_G4);
+            error_if(block.p_number == -1.0, NCE_DWELL_TIME_MISSING_WITH_G4);
         }
         else if (mode0 == G_10)
         {
             p_int = (int)(block.p_number + 0.0001);
-            error_if((block.l_number != 2), NCE_LINE_WITH_G10_DOES_NOT_HAVE_L2);
-            error_if((((block.p_number + 0.0001) - p_int) > 0.0002),
-                NCE_P_VALUE_NOT_AN_INTEGER_WITH_G10_L2);
-            error_if(((p_int < 1) or (p_int > 9)), NCE_P_VALUE_OUT_OF_RANGE_WITH_G10_L2);
+            error_if(block.l_number != 2, NCE_LINE_WITH_G10_DOES_NOT_HAVE_L2);
+            error_if(((block.p_number + 0.0001) - p_int) > 0.0002, NCE_P_VALUE_NOT_AN_INTEGER_WITH_G10_L2);
+            error_if((p_int < 1) or (p_int > 9), NCE_P_VALUE_OUT_OF_RANGE_WITH_G10_L2);
         }
         else if (mode0 == G_28)
             {}
@@ -832,8 +828,7 @@ rs274ngc::rs274ngc()
                 {}
                 else if (mode0 == G_53)
                 {
-                    error_if(((block.motion_to_be != G_0) and (block.motion_to_be != G_1)),
-                NCE_MUST_USE_G0_OR_G1_WITH_G53);
+                    error_if((block.motion_to_be != G_0) and (block.motion_to_be != G_1), NCE_MUST_USE_G0_OR_G1_WITH_G53);
             error_if(((block.g_modes[3] == G_91) or
                 ((block.g_modes[3] != G_90) and
                 (settings.distance_mode == MODE_INCREMENTAL))),
@@ -908,7 +903,7 @@ rs274ngc::rs274ngc()
     void rs274ngc::check_m_codes(                     /* ARGUMENTS                        */
     block_t& block)                          /* pointer to a block to be checked */
     {
-        error_if((block.m_count > MAX_EMS), NCE_TOO_MANY_M_CODES_ON_LINE);
+        error_if(block.m_count > MAX_EMS, NCE_TOO_MANY_M_CODES_ON_LINE);
     }
 
    /****************************************************************************/
@@ -961,40 +956,40 @@ rs274ngc::rs274ngc()
         int motion;
 
         motion = block.motion_to_be;
-        if (block.a_flag != OFF)
+        if (block.a)
         {
-            error_if(((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90)), NCE_CANNOT_PUT_AN_A_IN_CANNED_CYCLE);
+            error_if((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90), NCE_CANNOT_PUT_AN_A_IN_CANNED_CYCLE);
         }
-        if (block.b_flag != OFF)
+        if (block.b)
         {
-            error_if(((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90)), NCE_CANNOT_PUT_A_B_IN_CANNED_CYCLE);
+            error_if((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90), NCE_CANNOT_PUT_A_B_IN_CANNED_CYCLE);
         }
-        if (block.c_flag != OFF)
+        if (block.c)
         {
-            error_if(((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90)), NCE_CANNOT_PUT_A_C_IN_CANNED_CYCLE);
+            error_if((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90), NCE_CANNOT_PUT_A_C_IN_CANNED_CYCLE);
         }
         if (block.d_number != -1)
         {
-            error_if(((block.g_modes[7] != G_41) and (block.g_modes[7] != G_42)), NCE_D_WORD_WITH_NO_G41_OR_G42);
+            error_if((block.g_modes[7] != G_41) and (block.g_modes[7] != G_42), NCE_D_WORD_WITH_NO_G41_OR_G42);
         }
         if (block.h_number != -1)
         {
-            error_if((block.g_modes[8] != G_43), NCE_H_WORD_WITH_NO_G43);
+            error_if(block.g_modes[8] != G_43, NCE_H_WORD_WITH_NO_G43);
         }
 
-        if (block.i_flag == ON)                  /* could still be useless if yz_plane arc */
+        if (block.i)                  /* could still be useless if yz_plane arc */
         {
-            error_if(((motion != G_2) and (motion != G_3) and (motion != G_87)), NCE_I_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
+            error_if((motion != G_2) and (motion != G_3) and (motion != G_87), NCE_I_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
         }
 
-        if (block.j_flag == ON)                  /* could still be useless if xz_plane arc */
+        if (block.j)                  /* could still be useless if xz_plane arc */
         {
-            error_if(((motion != G_2) and (motion != G_3) and (motion != G_87)), NCE_J_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
+            error_if((motion != G_2) and (motion != G_3) and (motion != G_87), NCE_J_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
         }
 
-        if (block.k_flag == ON)                  /* could still be useless if xy_plane arc */
+        if (block.k)                  /* could still be useless if xy_plane arc */
         {
-            error_if(((motion != G_2) and (motion != G_3) and (motion != G_87)), NCE_K_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
+            error_if((motion != G_2) and (motion != G_3) and (motion != G_87), NCE_K_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
         }
 
         if (block.l_number != -1)
@@ -1018,7 +1013,7 @@ rs274ngc::rs274ngc()
             error_if(motion != G_83, NCE_Q_WORD_WITH_NO_G83);
         }
 
-        if (block.r_flag == ON)
+        if (block.r)
         {
             error_if((((motion != G_2) and (motion != G_3)) and
                 ((motion < G_81) or (motion > G_89))),
@@ -1180,45 +1175,44 @@ rs274ngc::rs274ngc()
         double BB_end;                            /*BB*/
         double CC_end;                            /*CC*/
 
-        ijk_flag =
-            ((block.i_flag or block.j_flag) or block.k_flag) ? ON : OFF;
+        ijk_flag = (block.i or block.j or block.k) ? ON : OFF;
         first = (settings.program_x == UNKNOWN);
 
-        error_if(((block.r_flag != ON) and (ijk_flag != ON)), NCE_R_I_J_K_WORDS_ALL_MISSING_FOR_ARC);
-        error_if(((block.r_flag == ON) and (ijk_flag == ON)), NCE_MIXED_RADIUS_IJK_FORMAT_FOR_ARC);
+        error_if(!block.r and (ijk_flag != ON), NCE_R_I_J_K_WORDS_ALL_MISSING_FOR_ARC);
+        error_if(block.r and (ijk_flag == ON), NCE_MIXED_RADIUS_IJK_FORMAT_FOR_ARC);
         if (settings.feed_mode == UNITS_PER_MINUTE)
         {
-            error_if((settings.feed_rate == 0.0), NCE_CANNOT_MAKE_ARC_WITH_ZERO_FEED_RATE);
+            error_if(settings.feed_rate == 0.0, NCE_CANNOT_MAKE_ARC_WITH_ZERO_FEED_RATE);
         }
         else if (settings.feed_mode == INVERSE_TIME)
         {
-            error_if((block.f_number == -1.0), NCE_F_WORD_MISSING_WITH_INVERSE_TIME_ARC_MOVE);
+            error_if(block.f_number == -1.0, NCE_F_WORD_MISSING_WITH_INVERSE_TIME_ARC_MOVE);
         }
         if (ijk_flag)
         {
             if (settings.plane == CANON_PLANE_XY)
             {
-                error_if((block.k_flag), NCE_K_WORD_GIVEN_FOR_ARC_IN_XY_PLANE);
-                if (block.i_flag == OFF)         /* i or j flag on to get here */
-                    block.i_number = 0.0;
-                else if (block.j_flag == OFF)
-                    block.j_number = 0.0;
+                error_if(!!block.k, NCE_K_WORD_GIVEN_FOR_ARC_IN_XY_PLANE);
+                if (!block.i)         /* i or j flag on to get here */
+                    block.i = 0.0;
+                else if (!block.j)
+                    block.j = 0.0;
             }
             else if (settings.plane == CANON_PLANE_YZ)
             {
-                error_if((block.i_flag), NCE_I_WORD_GIVEN_FOR_ARC_IN_YZ_PLANE);
-                if (block.j_flag == OFF)         /* j or k flag on to get here */
-                    block.j_number = 0.0;
-                else if (block.k_flag == OFF)
-                    block.k_number = 0.0;
+                error_if(!!block.i, NCE_I_WORD_GIVEN_FOR_ARC_IN_YZ_PLANE);
+                if (!block.j)         /* j or k flag on to get here */
+                    block.j = 0.0;
+                else if (!block.k)
+                    block.k = 0.0;
             }
             else if (settings.plane == CANON_PLANE_XZ)
             {
-                error_if((block.j_flag), NCE_J_WORD_GIVEN_FOR_ARC_IN_XZ_PLANE);
-                if (block.i_flag == OFF)         /* i or k flag on to get here */
-                    block.i_number = 0.0;
-                else if (block.k_flag == OFF)
-                    block.k_number = 0.0;
+                error_if(!!block.j, NCE_J_WORD_GIVEN_FOR_ARC_IN_XZ_PLANE);
+                if (!block.i)         /* i or k flag on to get here */
+                    block.i = 0.0;
+                else if (!block.k)
+                    block.k = 0.0;
             }
             else
                 throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
@@ -1230,23 +1224,18 @@ rs274ngc::rs274ngc()
 
         if (settings.plane == CANON_PLANE_XY)    /* checks for both formats */
         {
-            error_if(((block.x_flag == OFF) and (block.y_flag == OFF)), NCE_X_AND_Y_WORDS_MISSING_FOR_ARC_IN_XY_PLANE);
+            error_if(!block.x and !block.y, NCE_X_AND_Y_WORDS_MISSING_FOR_ARC_IN_XY_PLANE);
         }
         else if (settings.plane == CANON_PLANE_YZ)
         {
-            error_if(((block.y_flag == OFF) and (block.z_flag == OFF)), NCE_Y_AND_Z_WORDS_MISSING_FOR_ARC_IN_YZ_PLANE);
+            error_if(!block.y and !block.z, NCE_Y_AND_Z_WORDS_MISSING_FOR_ARC_IN_YZ_PLANE);
         }
         else if (settings.plane == CANON_PLANE_XZ)
         {
-            error_if(((block.x_flag == OFF) and (block.z_flag == OFF)), NCE_X_AND_Z_WORDS_MISSING_FOR_ARC_IN_XZ_PLANE);
+            error_if(!block.x and !block.z, NCE_X_AND_Z_WORDS_MISSING_FOR_ARC_IN_XZ_PLANE);
         }
 
-        find_ends(block, settings, &end_x, &end_y,
-            &end_z
-            , &AA_end
-            , &BB_end
-            , &CC_end
-            );
+        find_ends(block, settings, &end_x, &end_y, &end_z, &AA_end, &BB_end, &CC_end);
         settings.motion_mode = move;
 
         if (settings.plane == CANON_PLANE_XY)
@@ -1255,57 +1244,35 @@ rs274ngc::rs274ngc()
                 (settings.cutter_comp_radius == 0.0))
             {
                     convert_arc2(move, block, settings,
-                    &(settings.current.x), &(settings.current.y),
-                    &(settings.current.z), end_x, end_y,
-                    end_z
-                    , AA_end
-                    , BB_end
-                    , CC_end
-                    , block.i_number,
-                    block.j_number);
+                    &(settings.current.x), &(settings.current.y), &(settings.current.z), 
+                    end_x, end_y, end_z, 
+                    AA_end, BB_end, CC_end, 
+                    *block.i, *block.j);
             }
             else if (first)
             {
-                    convert_arc_comp1(move, block, settings, end_x, end_y,
-                    end_z
-                    , AA_end
-                    , BB_end
-                    , CC_end
-                    );
+                    convert_arc_comp1(move, block, settings, end_x, end_y, end_z, AA_end, BB_end, CC_end);
             }
             else
             {
-                    convert_arc_comp2(move, block, settings, end_x, end_y,
-                    end_z
-                    , AA_end
-                    , BB_end
-                    , CC_end
-                    );
+                    convert_arc_comp2(move, block, settings, end_x, end_y, end_z, AA_end, BB_end, CC_end);
             }
         }
         else if (settings.plane == CANON_PLANE_XZ)
         {
                 convert_arc2 (move, block, settings,
-                &(settings.current.z), &(settings.current.x),
-                &(settings.current.y), end_z, end_x,
-                end_y
-                , AA_end
-                , BB_end
-                , CC_end
-                , block.k_number,
-                block.i_number);
+                &(settings.current.z), &(settings.current.x), &(settings.current.y), 
+                end_z, end_x, end_y, 
+                AA_end, BB_end, CC_end, 
+                *block.k, *block.i);
         }
         else if (settings.plane == CANON_PLANE_YZ)
         {
                 convert_arc2 (move, block, settings,
-                &(settings.current.y), &(settings.current.z),
-                &(settings.current.x), end_y, end_z,
-                end_x
-                , AA_end
-                , BB_end
-                , CC_end
-                , block.j_number,
-                block.k_number);
+                &(settings.current.y), &(settings.current.z), &(settings.current.x), 
+                end_y, end_z, end_x, 
+                AA_end, BB_end, CC_end, 
+                *block.j, *block.k);
         }
         else
             throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
@@ -1355,9 +1322,9 @@ rs274ngc::rs274ngc()
         tolerance = (settings.length_units == CANON_UNITS_INCHES) ?
             TOLERANCE_INCH : TOLERANCE_MM;
 
-        if (block.r_flag)
+        if (block.r)
         {
-            arc_data_r(move, *current1, *current2, end1, end2, block.r_number, &center1, &center2, &turn);
+            arc_data_r(move, *current1, *current2, end1, end2, *block.r, &center1, &center2, &turn);
         }
         else
         {
@@ -1439,13 +1406,13 @@ rs274ngc::rs274ngc()
             (end_y - settings.current.y)) <= tool_radius),
             NCE_CUTTER_GOUGING_WITH_CUTTER_RADIUS_COMP);
 
-        if (block.r_flag)
+        if (block.r)
         {
-            arc_data_comp_r(move, side, tool_radius, settings.current.x, settings.current.y, end_x, end_y, block.r_number, &center_x, &center_y, &turn);
+            arc_data_comp_r(move, side, tool_radius, settings.current.x, settings.current.y, end_x, end_y, *block.r, &center_x, &center_y, &turn);
         }
         else
         {
-            arc_data_comp_ijk(move, side, tool_radius, settings.current.x, settings.current.y, end_x, end_y, block.i_number, block.j_number, &center_x, &center_y, &turn, tolerance);
+            arc_data_comp_ijk(move, side, tool_radius, settings.current.x, settings.current.y, end_x, end_y, *block.i, *block.j, &center_x, &center_y, &turn, tolerance);
         }
 
         gamma =
@@ -1555,13 +1522,13 @@ rs274ngc::rs274ngc()
         start_y = settings.program_y;
         tolerance = (settings.length_units == CANON_UNITS_INCHES) ? TOLERANCE_INCH : TOLERANCE_MM;
 
-        if (block.r_flag)
+        if (block.r)
         {
-            arc_data_r(move, start_x, start_y, end_x, end_y, block.r_number, &center_x, &center_y, &turn);
+            arc_data_r(move, start_x, start_y, end_x, end_y, *block.r, &center_x, &center_y, &turn);
         }
         else
         {
-            arc_data_ijk(move, start_x, start_y, end_x, end_y, block.i_number, block.j_number, &center_x, &center_y, &turn, tolerance);
+            arc_data_ijk(move, start_x, start_y, end_x, end_y, *block.i, *block.j, &center_x, &center_y, &turn, tolerance);
         }
 
    /* compute other data */
@@ -1582,7 +1549,7 @@ rs274ngc::rs274ngc()
             ((side == RIGHT) and (move == G_2)))
         {
             gamma = atan2 ((center_y - end_y), (center_x - end_x));
-            error_if((arc_radius <= tool_radius), NCE_TOOL_RADIUS_NOT_LESS_THAN_ARC_RADIUS_WITH_COMP);
+            error_if(arc_radius <= tool_radius, NCE_TOOL_RADIUS_NOT_LESS_THAN_ARC_RADIUS_WITH_COMP);
         }
         else
         {
@@ -1709,51 +1676,44 @@ rs274ngc::rs274ngc()
     {
         double * pars;                            /* short name for settings.parameters            */
 
-        error_if((settings.cutter_comp_side != OFF),/* not "IS ON" */
-            NCE_CANNOT_CHANGE_AXIS_OFFSETS_WITH_CUTTER_RADIUS_COMP);
+        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_CHANGE_AXIS_OFFSETS_WITH_CUTTER_RADIUS_COMP);
         pars = settings.parameters;
         if (g_code == G_92)
         {
-            if (block.x_flag == ON)
+            if (block.x)
             {
-                settings.axis_offset.x =
-                    (settings.current.x + settings.axis_offset.x - block.x_number);
-                settings.current.x = block.x_number;
+                settings.axis_offset.x = (settings.current.x + settings.axis_offset.x - *block.x);
+                settings.current.x = *block.x;
             }
 
-            if (block.y_flag == ON)
+            if (block.y)
             {
-                settings.axis_offset.y =
-                    (settings.current.y + settings.axis_offset.y - block.y_number);
-                settings.current.y = block.y_number;
+                settings.axis_offset.y = (settings.current.y + settings.axis_offset.y - *block.y);
+                settings.current.y = *block.y;
             }
 
-            if (block.z_flag == ON)
+            if (block.z)
             {
-                settings.axis_offset.z =
-                    (settings.current.z + settings.axis_offset.z - block.z_number);
-                settings.current.z = block.z_number;
+                settings.axis_offset.z = (settings.current.z + settings.axis_offset.z - *block.z);
+                settings.current.z = *block.z;
             }
 
-            if (block.a_flag == ON)              /*AA*/
+            if (block.a)              /*AA*/
             {                                     /*AA*/
-                settings.axis_offset.a = (settings.current.a +
-                    settings.axis_offset.a - block.a_number);
-                settings.current.a = block.a_number;
+                settings.axis_offset.a = (settings.current.a + settings.axis_offset.a - *block.a);
+                settings.current.a = *block.a;
             }
 
-            if (block.b_flag == ON)              /*BB*/
+            if (block.b)              /*BB*/
             {                                     /*BB*/
-                settings.axis_offset.b = (settings.current.b +
-                    settings.axis_offset.b - block.b_number);
-                settings.current.b = block.b_number;
+                settings.axis_offset.b = (settings.current.b + settings.axis_offset.b - *block.b);
+                settings.current.b = *block.b;
             }
 
-            if (block.c_flag == ON)              /*CC*/
+            if (block.c)              /*CC*/
             {                                     /*CC*/
-                settings.axis_offset.c = (settings.current.c +
-                    settings.axis_offset.c - block.c_number);
-                settings.current.c = block.c_number;
+                settings.axis_offset.c = (settings.current.c + settings.axis_offset.c - *block.c);
+                settings.current.c = *block.c;
             }
 
             SET_ORIGIN_OFFSETS(settings.origin_offset.x + settings.axis_offset.x,
@@ -2259,8 +2219,8 @@ rs274ngc::rs274ngc()
         double radius;
         int index;
 
-        error_if((settings.plane != CANON_PLANE_XY), NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_OUT_OF_XY_PLANE);
-        error_if((settings.cutter_comp_side != OFF), NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_WHEN_ON);
+        error_if(settings.plane != CANON_PLANE_XY, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_OUT_OF_XY_PLANE);
+        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_WHEN_ON);
         index =
             (block.d_number != -1) ? block.d_number : settings.current_slot;
         radius = ((settings.tool_table[index].diameter)/2.0);
@@ -2324,15 +2284,15 @@ rs274ngc::rs274ngc()
         CANON_PLANE plane;
 
         plane = settings.plane;
-        if (block.r_flag == OFF)
+        if (!block.r)
         {
             if (settings.motion_mode == motion)
-                block.r_number = settings.cycle.r;
+                block.r = settings.cycle.r;
             else
                 throw error(NCE_R_CLEARANCE_PLANE_UNSPECIFIED_IN_CYCLE);
         }
 
-        error_if((block.l_number == 0), NCE_CANNOT_DO_ZERO_REPEATS_OF_CYCLE);
+        error_if(block.l_number == 0, NCE_CANNOT_DO_ZERO_REPEATS_OF_CYCLE);
         if (block.l_number == -1)
             block.l_number = 1;
 
@@ -2352,7 +2312,7 @@ rs274ngc::rs274ngc()
             throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
 
         settings.cycle.l = block.l_number;
-        settings.cycle.r = block.r_number;
+        settings.cycle.r = *block.r;
         settings.motion_mode = motion;
     }
 
@@ -2538,7 +2498,7 @@ rs274ngc::rs274ngc()
     CANON_DIRECTION direction,                    /* direction spindle turning at outset */
     CANON_SPEED_FEED_MODE mode)                   /* the speed-feed mode at outset       */
     {
-        error_if((direction != CANON_CLOCKWISE), NCE_SPINDLE_NOT_TURNING_CLOCKWISE_IN_G84);
+        error_if(direction != CANON_CLOCKWISE, NCE_SPINDLE_NOT_TURNING_CLOCKWISE_IN_G84);
         START_SPEED_FEED_SYNCH();
         cycle_feed(plane, x, y, bottom_z);
         STOP_SPINDLE_TURNING();
@@ -2966,33 +2926,32 @@ repeat--) \
         plane = CANON_PLANE_XY;
         if (settings.motion_mode != motion)
         {
-            error_if((block.z_flag == OFF), NCE_Z_VALUE_UNSPECIFIED_IN_XY_PLANE_CANNED_CYCLE);
+            error_if(!block.z, NCE_Z_VALUE_UNSPECIFIED_IN_XY_PLANE_CANNED_CYCLE);
         }
-        block.z_number =
-            block.z_flag == ON ? block.z_number : settings.cycle.cc;
+        block.z = block.z ? *block.z : settings.cycle.cc;
         old_cc = settings.current.z;
 
         if (settings.distance_mode == MODE_ABSOLUTE)
         {
             aa_increment = 0.0;
             bb_increment = 0.0;
-            r = block.r_number;
-            cc = block.z_number;
-            aa = block.x_flag == ON ? block.x_number : settings.current.x;
-            bb = block.y_flag == ON ? block.y_number : settings.current.y;
+            r = *block.r;
+            cc = *block.z;
+            aa = block.x ? *block.x : settings.current.x;
+            bb = block.y ? *block.y : settings.current.y;
         }
         else if (settings.distance_mode == MODE_INCREMENTAL)
         {
-            aa_increment = block.x_number;
-            bb_increment = block.y_number;
-            r = (block.r_number + old_cc);
-            cc = (r + block.z_number);      /* [NCMS, page 98] */
+            aa_increment = *block.x;
+            bb_increment = *block.y;
+            r = (*block.r + old_cc);
+            cc = (r + *block.z);      /* [NCMS, page 98] */
             aa = settings.current.x;
             bb = settings.current.y;
         }
         else
             throw error(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
-        error_if((r < cc), NCE_R_LESS_THAN_Z_IN_CYCLE_IN_XY_PLANE);
+        error_if(r < cc, NCE_R_LESS_THAN_Z_IN_CYCLE_IN_XY_PLANE);
 
         if (old_cc < r)
         {
@@ -3015,7 +2974,7 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g81(CANON_PLANE_XY, aa, bb, clear_cc, cc))
                     break;
             case G_82:
-                error_if(((settings.motion_mode != G_82) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
+                error_if((settings.motion_mode != G_82) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
@@ -3023,7 +2982,7 @@ repeat--) \
                     settings.cycle.p = block.p_number;
                 break;
             case G_83:
-                error_if(((settings.motion_mode != G_83) and (block.q_number == -1.0)), NCE_Q_WORD_MISSING_WITH_G83);
+                error_if((settings.motion_mode != G_83) and (block.q_number == -1.0), NCE_Q_WORD_MISSING_WITH_G83);
                 block.q_number =
                     block.q_number == -1.0 ? settings.cycle.q : block.q_number;
                 CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_XY, aa, bb, r, clear_cc, cc,
@@ -3038,7 +2997,7 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g85 (CANON_PLANE_XY, aa, bb, clear_cc, cc))
                     break;
             case G_86:
-                error_if(((settings.motion_mode != G_86) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
+                error_if((settings.motion_mode != G_86) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g86 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
@@ -3048,13 +3007,13 @@ repeat--) \
             case G_87:
                 if (settings.motion_mode != G_87)
                 {
-                    error_if((block.i_flag == OFF), NCE_I_WORD_MISSING_WITH_G87);
-                    error_if((block.j_flag == OFF), NCE_J_WORD_MISSING_WITH_G87);
-                    error_if((block.k_flag == OFF), NCE_K_WORD_MISSING_WITH_G87);
+                    error_if(!block.i, NCE_I_WORD_MISSING_WITH_G87);
+                    error_if(!block.j, NCE_J_WORD_MISSING_WITH_G87);
+                    error_if(!block.k, NCE_K_WORD_MISSING_WITH_G87);
                 }
-                i = block.i_flag == ON ? block.i_number : settings.cycle.i;
-                j = block.j_flag == ON ? block.j_number : settings.cycle.j;
-                k = block.k_flag == ON ? block.k_number : settings.cycle.k;
+                i = block.i ? *block.i : settings.cycle.i;
+                j = block.j ? *block.j : settings.cycle.j;
+                k = block.k ? *block.k : settings.cycle.k;
                 settings.cycle.i = i;
                 settings.cycle.j = j;
                 settings.cycle.k = k;
@@ -3066,7 +3025,7 @@ repeat--) \
                     (bb + j), r, clear_cc, k, cc, settings.spindle_turning))
                     break;
             case G_88:
-                error_if(((settings.motion_mode != G_88) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
+                error_if((settings.motion_mode != G_88) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g88 (CANON_PLANE_XY, aa, bb, cc,
@@ -3074,7 +3033,7 @@ repeat--) \
                     settings.cycle.p = block.p_number;
                 break;
             case G_89:
-                error_if(((settings.motion_mode != G_89) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
+                error_if((settings.motion_mode != G_89) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g89 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
@@ -3087,7 +3046,7 @@ repeat--) \
         settings.current.x = aa;            /* CYCLE_MACRO updates aa and bb */
         settings.current.y = bb;
         settings.current.z = clear_cc;
-        settings.cycle.cc = block.z_number;
+        settings.cycle.cc = *block.z;
 
         if (save_mode != CANON_EXACT_PATH)
             SET_MOTION_CONTROL_MODE(save_mode);
@@ -3165,33 +3124,32 @@ repeat--) \
         plane = CANON_PLANE_YZ;
         if (settings.motion_mode != motion)
         {
-            error_if((block.x_flag == OFF), NCE_X_VALUE_UNSPECIFIED_IN_YZ_PLANE_CANNED_CYCLE);
+            error_if(!block.x, NCE_X_VALUE_UNSPECIFIED_IN_YZ_PLANE_CANNED_CYCLE);
         }
-        block.x_number =
-            block.x_flag == ON ? block.x_number : settings.cycle.cc;
+        block.x = block.x ? *block.x : settings.cycle.cc;
         old_cc = settings.current.x;
 
         if (settings.distance_mode == MODE_ABSOLUTE)
         {
             aa_increment = 0.0;
             bb_increment = 0.0;
-            r = block.r_number;
-            cc = block.x_number;
-            aa = block.y_flag == ON ? block.y_number : settings.current.y;
-            bb = block.z_flag == ON ? block.z_number : settings.current.z;
+            r = *block.r;
+            cc = *block.x;
+            aa = block.y ? *block.y : settings.current.y;
+            bb = block.z ? *block.z : settings.current.z;
         }
         else if (settings.distance_mode == MODE_INCREMENTAL)
         {
-            aa_increment = block.y_number;
-            bb_increment = block.z_number;
-            r = (block.r_number + old_cc);
-            cc = (r + block.x_number);      /* [NCMS, page 98] */
+            aa_increment = *block.y;
+            bb_increment = *block.z;
+            r = (*block.r + old_cc);
+            cc = (r + *block.x);      /* [NCMS, page 98] */
             aa = settings.current.y;
             bb = settings.current.z;
         }
         else
             throw error(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
-        error_if((r < cc), NCE_R_LESS_THAN_X_IN_CYCLE_IN_YZ_PLANE);
+        error_if(r < cc, NCE_R_LESS_THAN_X_IN_CYCLE_IN_YZ_PLANE);
 
         if (old_cc < r)
         {
@@ -3214,7 +3172,7 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g81(CANON_PLANE_YZ, aa, bb, clear_cc, cc))
                     break;
             case G_82:
-                error_if(((settings.motion_mode != G_82) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
+                error_if((settings.motion_mode != G_82) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
@@ -3222,7 +3180,7 @@ repeat--) \
                     settings.cycle.p = block.p_number;
                 break;
             case G_83:
-                error_if(((settings.motion_mode != G_83) and (block.q_number == -1.0)), NCE_Q_WORD_MISSING_WITH_G83);
+                error_if((settings.motion_mode != G_83) and (block.q_number == -1.0), NCE_Q_WORD_MISSING_WITH_G83);
                 block.q_number =
                     block.q_number == -1.0 ? settings.cycle.q : block.q_number;
                 CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_YZ, aa, bb, r, clear_cc, cc,
@@ -3237,7 +3195,7 @@ repeat--) \
                 CYCLE_MACRO(convert_cycle_g85 (CANON_PLANE_YZ, aa, bb, clear_cc, cc))
                     break;
             case G_86:
-                error_if(((settings.motion_mode != G_86) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
+                error_if((settings.motion_mode != G_86) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g86 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
@@ -3247,13 +3205,13 @@ repeat--) \
             case G_87:
                 if (settings.motion_mode != G_87)
                 {
-                    error_if((block.i_flag == OFF), NCE_I_WORD_MISSING_WITH_G87);
-                    error_if((block.j_flag == OFF), NCE_J_WORD_MISSING_WITH_G87);
-                    error_if((block.k_flag == OFF), NCE_K_WORD_MISSING_WITH_G87);
+                    error_if(!block.i, NCE_I_WORD_MISSING_WITH_G87);
+                    error_if(!block.j, NCE_J_WORD_MISSING_WITH_G87);
+                    error_if(!block.k, NCE_K_WORD_MISSING_WITH_G87);
                 }
-                i = block.i_flag == ON ? block.i_number : settings.cycle.i;
-                j = block.j_flag == ON ? block.j_number : settings.cycle.j;
-                k = block.k_flag == ON ? block.k_number : settings.cycle.k;
+                i = block.i ? *block.i : settings.cycle.i;
+                j = block.j ? *block.j : settings.cycle.j;
+                k = block.k ? *block.k : settings.cycle.k;
                 settings.cycle.i = i;
                 settings.cycle.j = j;
                 settings.cycle.k = k;
@@ -3265,7 +3223,7 @@ repeat--) \
                     (bb + k), r, clear_cc, i, cc, settings.spindle_turning))
                     break;
             case G_88:
-                error_if(((settings.motion_mode != G_88) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
+                error_if((settings.motion_mode != G_88) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g88 (CANON_PLANE_YZ, aa, bb, cc,
@@ -3273,7 +3231,7 @@ repeat--) \
                     settings.cycle.p = block.p_number;
                 break;
             case G_89:
-                error_if(((settings.motion_mode != G_89) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
+                error_if((settings.motion_mode != G_89) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g89 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
@@ -3286,7 +3244,7 @@ repeat--) \
         settings.current.y = aa;            /* CYCLE_MACRO updates aa and bb */
         settings.current.z = bb;
         settings.current.x = clear_cc;
-        settings.cycle.cc = block.x_number;
+        settings.cycle.cc = *block.x;
 
         if (save_mode != CANON_EXACT_PATH)
             SET_MOTION_CONTROL_MODE(save_mode);
@@ -3372,41 +3330,37 @@ repeat--) \
         plane = CANON_PLANE_XZ;
         if (settings.motion_mode != motion)
         {
-            error_if((block.y_flag == OFF), NCE_Y_VALUE_UNSPECIFIED_IN_XZ_PLANE_CANNED_CYCLE);
+            error_if(!block.y, NCE_Y_VALUE_UNSPECIFIED_IN_XZ_PLANE_CANNED_CYCLE);
         }
-        block.y_number =
-            block.y_flag == ON ? block.y_number : settings.cycle.cc;
+        block.y = block.y ? *block.y : settings.cycle.cc;
         old_cc = settings.current.y;
 
         if (settings.distance_mode == MODE_ABSOLUTE)
         {
             aa_increment = 0.0;
             bb_increment = 0.0;
-            r = block.r_number;
-            cc = block.y_number;
-            aa = block.z_flag == ON ? block.z_number : settings.current.z;
-            bb = block.x_flag == ON ? block.x_number : settings.current.x;
+            r = *block.r;
+            cc = *block.y;
+            aa = block.z ? *block.z : settings.current.z;
+            bb = block.x ? *block.x : settings.current.x;
         }
         else if (settings.distance_mode == MODE_INCREMENTAL)
         {
-            aa_increment = block.z_number;
-            bb_increment = block.x_number;
-            r = (block.r_number + old_cc);
-            cc = (r + block.y_number);      /* [NCMS, page 98] */
+            aa_increment = *block.z;
+            bb_increment = *block.x;
+            r = (*block.r + old_cc);
+            cc = (r + *block.y);      /* [NCMS, page 98] */
             aa = settings.current.z;
             bb = settings.current.x;
         }
         else
             throw error(NCE_BUG_DISTANCE_MODE_NOT_G90_OR_G91);
-        error_if((r < cc), NCE_R_LESS_THAN_Y_IN_CYCLE_IN_XZ_PLANE);
+        error_if(r < cc, NCE_R_LESS_THAN_Y_IN_CYCLE_IN_XZ_PLANE);
 
         if (old_cc < r)
         {
-            STRAIGHT_TRAVERSE(settings.current.x, r, settings.current.z
-                ,           settings.current.a
-                ,  settings.current.b
-                ,  settings.current.c
-                );
+            STRAIGHT_TRAVERSE(settings.current.x, r, settings.current.z, 
+                              settings.current.a, settings.current.b, settings.current.c);
             old_cc = r;
         }
         clear_cc = (settings.retract_mode == R_PLANE) ? r : old_cc;
@@ -3422,18 +3376,14 @@ repeat--) \
                     break;
             case G_82:
                 error_if(((settings.motion_mode != G_82) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_XZ, aa, bb, clear_cc, cc,
-                    block.p_number))
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_XZ, aa, bb, clear_cc, cc, block.p_number))
                     settings.cycle.p = block.p_number;
                 break;
             case G_83:
                 error_if(((settings.motion_mode != G_83) and (block.q_number == -1.0)), NCE_Q_WORD_MISSING_WITH_G83);
-                block.q_number =
-                    block.q_number == -1.0 ? settings.cycle.q : block.q_number;
-                CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_XZ, aa, bb, r, clear_cc, cc,
-                    block.q_number))
+                block.q_number = block.q_number == -1.0 ? settings.cycle.q : block.q_number;
+                CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_XZ, aa, bb, r, clear_cc, cc, block.q_number))
                     settings.cycle.q = block.q_number;
                 break;
             case G_84:
@@ -3445,8 +3395,7 @@ repeat--) \
                     break;
             case G_86:
                 error_if(((settings.motion_mode != G_86) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g86 (CANON_PLANE_XZ, aa, bb, clear_cc, cc,
                     block.p_number, settings.spindle_turning))
                     settings.cycle.p = block.p_number;
@@ -3454,13 +3403,13 @@ repeat--) \
             case G_87:
                 if (settings.motion_mode != G_87)
                 {
-                    error_if((block.i_flag == OFF), NCE_I_WORD_MISSING_WITH_G87);
-                    error_if((block.j_flag == OFF), NCE_J_WORD_MISSING_WITH_G87);
-                    error_if((block.k_flag == OFF), NCE_K_WORD_MISSING_WITH_G87);
+                    error_if(!block.i, NCE_I_WORD_MISSING_WITH_G87);
+                    error_if(!block.j, NCE_J_WORD_MISSING_WITH_G87);
+                    error_if(!block.k, NCE_K_WORD_MISSING_WITH_G87);
                 }
-                i = block.i_flag == ON ? block.i_number : settings.cycle.i;
-                j = block.j_flag == ON ? block.j_number : settings.cycle.j;
-                k = block.k_flag == ON ? block.k_number : settings.cycle.k;
+                i = block.i ? *block.i : settings.cycle.i;
+                j = block.j ? *block.j : settings.cycle.j;
+                k = block.k ? *block.k : settings.cycle.k;
                 settings.cycle.i = i;
                 settings.cycle.j = j;
                 settings.cycle.k = k;
@@ -3493,7 +3442,7 @@ repeat--) \
         settings.current.z = aa;            /* CYCLE_MACRO updates aa and bb */
         settings.current.x = bb;
         settings.current.y = clear_cc;
-        settings.cycle.cc = block.y_number;
+        settings.cycle.cc = *block.y;
 
         if (save_mode != CANON_EXACT_PATH)
             SET_MOTION_CONTROL_MODE(save_mode);
@@ -3797,7 +3746,7 @@ repeat--) \
             , &CC_end
             );
 
-        error_if((settings.cutter_comp_side != OFF), NCE_CANNOT_USE_G28_OR_G30_WITH_CUTTER_RADIUS_COMP);
+        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_G28_OR_G30_WITH_CUTTER_RADIUS_COMP);
         STRAIGHT_TRAVERSE(end_x, end_y, end_z
             ,           AA_end
             ,  BB_end
@@ -3890,7 +3839,7 @@ repeat--) \
     int g_code,                                   /* g_code being executed (must be G_20 or G_21) */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
-        error_if((settings.cutter_comp_side != OFF), NCE_CANNOT_CHANGE_UNITS_WITH_CUTTER_RADIUS_COMP);
+        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_CHANGE_UNITS_WITH_CUTTER_RADIUS_COMP);
         if (g_code == G_20)
         {
             USE_LENGTH_UNITS(CANON_UNITS_INCHES);
@@ -4197,17 +4146,11 @@ repeat--) \
         double BB_end;                            /*BB*/
         double CC_end;                            /*CC*/
 
-        error_if((((block.x_flag == OFF) and (block.y_flag == OFF)) and
-            (block.z_flag == OFF)), NCE_X_Y_AND_Z_WORDS_ALL_MISSING_WITH_G38_2);
-        error_if((settings.feed_mode == INVERSE_TIME), NCE_CANNOT_PROBE_IN_INVERSE_TIME_FEED_MODE);
-        error_if((settings.cutter_comp_side != OFF), NCE_CANNOT_PROBE_WITH_CUTTER_RADIUS_COMP_ON);
-        error_if((settings.feed_rate == 0.0), NCE_CANNOT_PROBE_WITH_ZERO_FEED_RATE);
-        find_ends(block, settings, &end_x, &end_y,
-            &end_z
-            , &AA_end
-            , &BB_end
-            , &CC_end
-            );
+        error_if(!block.x and !block.y and !block.z, NCE_X_Y_AND_Z_WORDS_ALL_MISSING_WITH_G38_2);
+        error_if(settings.feed_mode == INVERSE_TIME, NCE_CANNOT_PROBE_IN_INVERSE_TIME_FEED_MODE);
+        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_PROBE_WITH_CUTTER_RADIUS_COMP_ON);
+        error_if(settings.feed_rate == 0.0, NCE_CANNOT_PROBE_WITH_ZERO_FEED_RATE);
+        find_ends(block, settings, &end_x, &end_y, &end_z, &AA_end, &BB_end, &CC_end);
         if (0
             or (AA_end != settings.current.a) /*AA*/
             or (BB_end != settings.current.b) /*BB*/
@@ -4219,11 +4162,7 @@ repeat--) \
             pow((settings.current.z - end_z), 2));
         error_if((distance < ((settings.length_units == CANON_UNITS_MM) ? 0.254 : 0.01)), NCE_START_POINT_TOO_CLOSE_TO_PROBE_POINT);
         TURN_PROBE_ON();
-        STRAIGHT_PROBE(end_x, end_y, end_z
-            ,        AA_end
-            ,  BB_end
-            ,  CC_end
-            );
+        STRAIGHT_PROBE(end_x, end_y, end_z, AA_end, BB_end, CC_end);
         TURN_PROBE_OFF();
         settings.motion_mode = G_38_2;
         settings.probe_flag = ON;
@@ -4316,48 +4255,48 @@ repeat--) \
         parameters = settings.parameters;
         p_int = (int)(block.p_number + 0.0001);
 
-        if (block.x_flag == ON)
+        if (block.x)
         {
-            x = block.x_number;
+            x = *block.x;
             parameters[5201 + (p_int * 20)] = x;
         }
         else
             x = parameters[5201 + (p_int * 20)];
 
-        if (block.y_flag == ON)
+        if (block.y)
         {
-            y = block.y_number;
+            y = *block.y;
             parameters[5202 + (p_int * 20)] = y;
         }
         else
             y = parameters[5202 + (p_int * 20)];
-        if (block.z_flag == ON)
+        if (block.z)
         {
-            z = block.z_number;
+            z = *block.z;
             parameters[5203 + (p_int * 20)] = z;
         }
         else
             z = parameters[5203 + (p_int * 20)];
 
-        if (block.a_flag == ON)
+        if (block.a)
         {
-            a = block.a_number;
+            a = *block.a;
             parameters[5204 + (p_int * 20)] = a;
         }
         else
             a = parameters[5204 + (p_int * 20)];
 
-        if (block.b_flag == ON)
+        if (block.b)
         {
-            b = block.b_number;
+            b = *block.b;
             parameters[5205 + (p_int * 20)] = b;
         }
         else
             b = parameters[5205 + (p_int * 20)];
 
-        if (block.c_flag == ON)
+        if (block.c)
         {
-            c = block.c_number;
+            c = *block.c;
             parameters[5206 + (p_int * 20)] = c;
         }
         else
@@ -4368,18 +4307,12 @@ repeat--) \
       would be the same. They would be added in then subtracted out. */
         if (p_int == settings.origin_index)      /* system is currently used */
         {
-            settings.current.x =
-                (settings.current.x + settings.origin_offset.x);
-            settings.current.y =
-                (settings.current.y + settings.origin_offset.y);
-            settings.current.z =
-                (settings.current.z + settings.origin_offset.z);
-            settings.current.a =           /*AA*/
-                (settings.current.a + settings.origin_offset.a);
-            settings.current.b =           /*BB*/
-                (settings.current.b + settings.origin_offset.b);
-            settings.current.c =           /*CC*/
-                (settings.current.c + settings.origin_offset.c);
+            settings.current.x = (settings.current.x + settings.origin_offset.x);
+            settings.current.y = (settings.current.y + settings.origin_offset.y);
+            settings.current.z = (settings.current.z + settings.origin_offset.z);
+            settings.current.a = (settings.current.a + settings.origin_offset.a);
+            settings.current.b = (settings.current.b + settings.origin_offset.b);
+            settings.current.c = (settings.current.c + settings.origin_offset.c);
 
             settings.origin_offset.x = x;
             settings.origin_offset.y = y;
@@ -4440,13 +4373,13 @@ repeat--) \
         }
         else if (g_code == G_18)
         {
-            error_if((settings.cutter_comp_side != OFF), NCE_CANNOT_USE_XZ_PLANE_WITH_CUTTER_RADIUS_COMP);
+            error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_XZ_PLANE_WITH_CUTTER_RADIUS_COMP);
             SELECT_PLANE(CANON_PLANE_XZ);
             settings.plane = CANON_PLANE_XZ;
         }
         else if (g_code == G_19)
         {
-            error_if((settings.cutter_comp_side != OFF), NCE_CANNOT_USE_YZ_PLANE_WITH_CUTTER_RADIUS_COMP);
+            error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_YZ_PLANE_WITH_CUTTER_RADIUS_COMP);
             SELECT_PLANE(CANON_PLANE_YZ);
             settings.plane = CANON_PLANE_YZ;
         }
@@ -4719,11 +4652,11 @@ repeat--) \
         {
             if (settings.feed_mode == UNITS_PER_MINUTE)
             {
-                error_if((settings.feed_rate == 0.0), NCE_CANNOT_DO_G1_WITH_ZERO_FEED_RATE);
+                error_if(settings.feed_rate == 0.0, NCE_CANNOT_DO_G1_WITH_ZERO_FEED_RATE);
             }
             else if (settings.feed_mode == INVERSE_TIME)
             {
-                error_if((block.f_number == -1.0), NCE_F_WORD_MISSING_WITH_INVERSE_TIME_G1_MOVE);
+                error_if(block.f_number == -1.0, NCE_F_WORD_MISSING_WITH_INVERSE_TIME_G1_MOVE);
             }
         }
 
@@ -4738,7 +4671,7 @@ repeat--) \
         if ((settings.cutter_comp_side != OFF) and
             (settings.cutter_comp_radius > 0.0)) /* radius always is >= 0 */
         {
-            error_if((block.g_modes[0] == G_53), NCE_CANNOT_USE_G53_WITH_CUTTER_RADIUS_COMP);
+            error_if(block.g_modes[0] == G_53, NCE_CANNOT_USE_G53_WITH_CUTTER_RADIUS_COMP);
             if (settings.program_x == UNKNOWN)
             {
                     convert_straight_comp1(move, block, settings, end_x, end_y,
@@ -4858,8 +4791,8 @@ repeat--) \
         radius = settings.cutter_comp_radius;
         distance = hypot((px - cx), (py -cy));
 
-        error_if(((side != LEFT) and (side != RIGHT)), NCE_BUG_SIDE_NOT_RIGHT_OR_LEFT);
-        error_if((distance <= radius), NCE_CUTTER_GOUGING_WITH_CUTTER_RADIUS_COMP);
+        error_if((side != LEFT) and (side != RIGHT), NCE_BUG_SIDE_NOT_RIGHT_OR_LEFT);
+        error_if(distance <= radius, NCE_CUTTER_GOUGING_WITH_CUTTER_RADIUS_COMP);
 
         theta = acos(radius/distance);
         alpha = (side == LEFT) ? (atan2((cy - py), (cx - px)) - theta) :
@@ -5229,7 +5162,7 @@ repeat--) \
         else if (g_code == G_43)
         {
             index = block.h_number;
-            error_if((index == -1), NCE_OFFSET_INDEX_MISSING);
+            error_if(index == -1, NCE_OFFSET_INDEX_MISSING);
             offset = settings.tool_table[index].length;
             USE_TOOL_LENGTH_OFFSET(offset);
             settings.current.z =
@@ -5271,7 +5204,7 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        error_if((block.t_number > settings.tool_max), NCE_SELECTED_TOOL_SLOT_NUMBER_TOO_LARGE);
+        error_if(block.t_number > settings.tool_max, NCE_SELECTED_TOOL_SLOT_NUMBER_TOO_LARGE);
         SELECT_TOOL(block.t_number);
         settings.selected_tool_slot = block.t_number;
     }
@@ -5421,12 +5354,8 @@ repeat--) \
         int axis_flag;
         int mode_zero_covets_axes;
 
-        axis_flag = ((block.x_flag == ON) or
-            (block.y_flag == ON) or
-            (block.a_flag == ON) or              /*AA*/
-            (block.b_flag == ON) or              /*BB*/
-            (block.c_flag == ON) or              /*CC*/
-            (block.z_flag == ON));
+        axis_flag = (block.x or block.y or block.z or
+                     block.a or  block.b or block.c);
         mode_zero_covets_axes = ((block.g_modes[0] == G_10) or
             (block.g_modes[0] == G_28) or
             (block.g_modes[0] == G_30) or
@@ -5516,7 +5445,7 @@ repeat--) \
         switch (operation)
         {
             case DIVIDED_BY:
-                error_if((*right == 0.0), NCE_ATTEMPT_TO_DIVIDE_BY_ZERO);
+                error_if(*right == 0.0, NCE_ATTEMPT_TO_DIVIDE_BY_ZERO);
                 *left = (*left / *right);
                 break;
             case MODULO:                          /* always calculates a positive answer */
@@ -5887,66 +5816,39 @@ repeat--) \
 #ifdef DEBUG_EMC
             COMMENT("interpreter: offsets temporarily suspended");
 #endif
-            *px = (block.x_flag == ON) ? (block.x_number -
-                (settings.origin_offset.x + settings.axis_offset.x)) :
-            settings.current.x;
-            *py = (block.y_flag == ON) ? (block.y_number -
-                (settings.origin_offset.y + settings.axis_offset.y)) :
-            settings.current.y;
-            *pz = (block.z_flag == ON) ? (block.z_number -
-                (settings.tool_length_offset + settings.origin_offset.z
-                + settings.axis_offset.z)) : settings.current.z;
-            *AA_p = (block.a_flag == ON) ? (block.a_number -
-                (settings.origin_offset.a + settings.axis_offset.a)) :
-            settings.current.a;                 /*AA*/
-            *BB_p = (block.b_flag == ON) ? (block.b_number -
-                (settings.origin_offset.b + settings.axis_offset.b)) :
-            settings.current.b;                 /*BB*/
-            *CC_p = (block.c_flag == ON) ? (block.c_number -
-                (settings.tool_length_offset + settings.origin_offset.c
-                + settings.axis_offset.c)) : settings.current.c;
+            *px = block.x ? (*block.x - (settings.origin_offset.x + settings.axis_offset.x)) : settings.current.x;
+            *py = block.y ? (*block.y - (settings.origin_offset.y + settings.axis_offset.y)) : settings.current.y;
+            *pz = block.z ? (*block.z - (settings.tool_length_offset + settings.origin_offset.z + settings.axis_offset.z)) : settings.current.z;
+            
+            *AA_p = block.a ? (*block.a - (settings.origin_offset.a + settings.axis_offset.a)) : settings.current.a;
+            *BB_p = block.b ? (*block.b - (settings.origin_offset.b + settings.axis_offset.b)) : settings.current.b;
+            *CC_p = block.c ? (*block.c - (settings.tool_length_offset + settings.origin_offset.c + settings.axis_offset.c)) : settings.current.c;
         }
         else if (mode == MODE_ABSOLUTE)
         {
-            *px = (block.x_flag == ON) ? block.x_number     :
-            (comp and middle)     ? settings.program_x :
-            settings.current.x ;
-
-            *py = (block.y_flag == ON) ? block.y_number     :
-            (comp and middle)     ? settings.program_y :
-            settings.current.y ;
-
-            *pz = (block.z_flag == ON) ? block.z_number     :
-            settings.current.z ;
-            *AA_p = (block.a_flag == ON) ? block.a_number     :
-            settings.current.a ;                /*AA*/
-            *BB_p = (block.b_flag == ON) ? block.b_number     :
-            settings.current.b ;                /*BB*/
-            *CC_p = (block.c_flag == ON) ? block.c_number     :
-            settings.current.c ;                /*CC*/
+            *px = block.x ? *block.x : (comp and middle) ? settings.program_x : settings.current.x;
+            *py = block.y ? *block.y : (comp and middle) ? settings.program_y : settings.current.y;
+            *pz = block.z ? *block.z : settings.current.z;
+            
+            *AA_p = block.a ? *block.a : settings.current.a;
+            *BB_p = block.b ? *block.b : settings.current.b;
+            *CC_p = block.c ? *block.c : settings.current.c;
         }
         else                                      /* mode is MODE_INCREMENTAL */
         {
-            *px = (block.x_flag == ON)
-                ? ((comp and middle) ? (block.x_number + settings.program_x)
-                : (block.x_number + settings.current.x))
-                : ((comp and middle) ? settings.program_x
-                : settings.current.x);
+            *px = block.x
+                ? ((comp and middle) ? (*block.x + settings.program_x) : (*block.x + settings.current.x))
+                : ((comp and middle) ? settings.program_x : settings.current.x);
 
-            *py = (block.y_flag == ON)
-                ? ((comp and middle) ? (block.y_number + settings.program_y)
-                : (block.y_number + settings.current.y))
-                : ((comp and middle) ? settings.program_y
-                : settings.current.y);
+            *py = block.y
+                ? ((comp and middle) ? (*block.y + settings.program_y) : (*block.y + settings.current.y))
+                : ((comp and middle) ? settings.program_y : settings.current.y);
 
-            *pz = (block.z_flag == ON) ?
-                (settings.current.z + block.z_number) : settings.current.z;
-            *AA_p = (block.a_flag == ON) ?  /*AA*/
-                (settings.current.a + block.a_number) : settings.current.a;
-            *BB_p = (block.b_flag == ON) ?  /*BB*/
-                (settings.current.b + block.b_number) : settings.current.b;
-            *CC_p = (block.c_flag == ON) ?  /*CC*/
-                (settings.current.c + block.c_number) : settings.current.c;
+            *pz = block.z ? (settings.current.z + *block.z) : settings.current.z;
+            
+            *AA_p = block.a ? (settings.current.a + *block.a) : settings.current.a;
+            *BB_p = block.b ? (settings.current.b + *block.b) : settings.current.b;
+            *CC_p = block.c ? (settings.current.c + *block.c) : settings.current.c;
         }
     }
 
@@ -6106,80 +6008,6 @@ repeat--) \
             theta = ((beta - alpha) + ((turn + 1) * TWO_PI));
         }
         return (theta);
-    }
-
-   /****************************************************************************/
-
-   /* init_block
-
-   Returned Value: int (RS274NGC_OK)
-
-   Side effects:
-   Values in the block are reset as described below.
-
-   Called by: parse_line
-
-   This system reuses the same block over and over, rather than building
-   a new one for each line of NC code. The block is re-initialized before
-   each new line of NC code is read.
-
-   The block contains many slots for values which may or may not be present
-   on a line of NC code. For some of these slots, there is a flag which
-   is turned on (at the time time value of the slot is read) if the item
-   is present.  For slots whose values are to be read which do not have a
-   flag, there is always some excluded range of values. Setting the
-   initial value of these slot to some number in the excluded range
-   serves to show that a value for that slot has not been read.
-
-   The rules for the indicators for slots whose values may be read are:
-   1. If the value may be an arbitrary real number (which is always stored
-   internally as a double), a flag is needed to indicate if a value has
-   been read. All such flags are initialized to OFF.
-   Note that the value itself is not initialized; there is no point in it.
-   2. If the value must be a non-negative real number (which is always stored
-   internally as a double), a value of -1.0 indicates the item is not present.
-   3. If the value must be an unsigned integer (which is always stored
-   internally as an int), a value of -1 indicates the item is not present.
-   (RS274/NGC does not use any negative integers.)
-   4. If the value is a character string (only the comment slot is one), the
-   first character is set to 0 (NULL).
-
-   */
-
-    void rs274ngc::init_block(                        /* ARGUMENTS                                     */
-    block_t& block)                          /* pointer to a block to be initialized or reset */
-    {
-        block.a_flag = OFF;                 /*AA*/
-        block.b_flag = OFF;                 /*BB*/
-        block.c_flag = OFF;                 /*CC*/
-        block.comment[0] = 0;
-        block.d_number = -1;
-        block.f_number = -1.0;
-        for (int n = 0; n < 14; n++)
-        {
-            block.g_modes[n] = -1;
-        }
-        block.h_number = -1;
-        block.i_flag = OFF;
-        block.j_flag = OFF;
-        block.k_flag = OFF;
-        block.l_number = -1;
-        block.line_number = -1;
-        block.motion_to_be = -1;
-        block.m_count = 0;
-        for (int n = 0; n < 10; n++)
-        {
-            block.m_modes[n] = -1;
-        }
-        block.p_number = -1.0;
-        block.q_number = -1.0;
-        block.r_flag = OFF;
-        block.s_number = -1.0;
-        block.t_number = -1;
-        block.x_flag = OFF;
-        block.y_flag = OFF;
-        block.z_flag = OFF;
-        block.parameter_occurrence = 0;     /* initialize parameter buffer */
     }
 
    /****************************************************************************/
@@ -6407,7 +6235,7 @@ repeat--) \
     block_t& block,                          /* pointer to a block to be filled      */
     setup_t& settings)                       /* pointer to machine settings          */
     {
-        init_block (block);
+        block = block_t{};
         read_items(block, line, settings.parameters);
         enhance_block(block, settings);
         check_items (block, settings);
@@ -6488,12 +6316,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'a'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'a', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.a_flag != OFF), NCE_MULTIPLE_A_WORDS_ON_ONE_LINE);
+        error_if(!!block.a, NCE_MULTIPLE_A_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.a_flag = ON;
-        block.a_number = value;
+        block.a = value;
     }
 
    /****************************************************************************/
@@ -6539,9 +6366,9 @@ repeat--) \
     {
         double argument2;
 
-        error_if((line [*counter] != '/'), NCE_SLASH_MISSING_AFTER_FIRST_ATAN_ARGUMENT);
+        error_if(line [*counter] != '/', NCE_SLASH_MISSING_AFTER_FIRST_ATAN_ARGUMENT);
         *counter = (*counter + 1);
-        error_if((line[*counter] != '['), NCE_LEFT_BRACKET_MISSING_AFTER_SLASH_WITH_ATAN);
+        error_if(line[*counter] != '[', NCE_LEFT_BRACKET_MISSING_AFTER_SLASH_WITH_ATAN);
         read_real_expression (line, counter, &argument2, parameters);
    /* value in radians */
         *double_ptr = atan2(*double_ptr, argument2);
@@ -6596,12 +6423,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'b'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'b', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.b_flag != OFF), NCE_MULTIPLE_B_WORDS_ON_ONE_LINE);
+        error_if(!!block.b, NCE_MULTIPLE_B_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.b_flag = ON;
-        block.b_number = value;
+        block.b = value;
     }
 
    /****************************************************************************/
@@ -6651,12 +6477,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'c'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'c', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.c_flag != OFF), NCE_MULTIPLE_C_WORDS_ON_ONE_LINE);
+        error_if(!!block.c, NCE_MULTIPLE_C_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.c_flag = ON;
-        block.c_number = value;
+        block.c = value;
     }
 
    /****************************************************************************/
@@ -6701,7 +6526,7 @@ repeat--) \
     {
         int n;
 
-        error_if((line[*counter] != '('), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != '(', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         (*counter)++;
         for (n = 0; line[*counter] != ')' ; (*counter)++, n++)
         {
@@ -6752,12 +6577,12 @@ repeat--) \
     {
         int value;
 
-        error_if((line[*counter] != 'd'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'd', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.d_number > -1), NCE_MULTIPLE_D_WORDS_ON_ONE_LINE);
+        error_if(block.d_number > -1, NCE_MULTIPLE_D_WORDS_ON_ONE_LINE);
         read_integer_value(line, counter, &value, parameters);
-        error_if((value < 0), NCE_NEGATIVE_D_WORD_TOOL_RADIUS_INDEX_USED);
-        error_if((value > _setup.tool_max), NCE_TOOL_RADIUS_INDEX_TOO_BIG);
+        error_if(value < 0, NCE_NEGATIVE_D_WORD_TOOL_RADIUS_INDEX_USED);
+        error_if(value > _setup.tool_max, NCE_TOOL_RADIUS_INDEX_TOO_BIG);
         block.d_number = value;
     }
 
@@ -6801,11 +6626,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'f'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'f', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.f_number > -1.0), NCE_MULTIPLE_F_WORDS_ON_ONE_LINE);
+        error_if(block.f_number > -1.0, NCE_MULTIPLE_F_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        error_if((value < 0.0), NCE_NEGATIVE_F_WORD_USED);
+        error_if(value < 0.0, NCE_NEGATIVE_F_WORD_USED);
         block.f_number = value;
     }
 
@@ -6868,7 +6693,7 @@ repeat--) \
         int value;
         int mode;
 
-        error_if((line[*counter] != 'g'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'g', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         read_real_value(line, counter, &value_read, parameters);
         value_read = (10.0 * value_read);
@@ -6879,11 +6704,11 @@ repeat--) \
         else if ((value_read - value) > 0.001)
             throw error(NCE_G_CODE_OUT_OF_RANGE);
 
-        error_if((value > 999), NCE_G_CODE_OUT_OF_RANGE);
-        error_if((value < 0), NCE_NEGATIVE_G_CODE_USED);
+        error_if(value > 999, NCE_G_CODE_OUT_OF_RANGE);
+        error_if(value < 0, NCE_NEGATIVE_G_CODE_USED);
         mode = _gees[value];
-        error_if((mode == -1), NCE_UNKNOWN_G_CODE_USED);
-        error_if((block.g_modes[mode] != -1), NCE_TWO_G_CODES_USED_FROM_SAME_MODAL_GROUP);
+        error_if(mode == -1, NCE_UNKNOWN_G_CODE_USED);
+        error_if(block.g_modes[mode] != -1, NCE_TWO_G_CODES_USED_FROM_SAME_MODAL_GROUP);
         block.g_modes[mode] = value;
     }
 
@@ -6925,12 +6750,12 @@ repeat--) \
     {
         int value;
 
-        error_if((line[*counter] != 'h'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'h', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.h_number > -1), NCE_MULTIPLE_H_WORDS_ON_ONE_LINE);
+        error_if(block.h_number > -1, NCE_MULTIPLE_H_WORDS_ON_ONE_LINE);
         read_integer_value(line, counter, &value, parameters);
-        error_if((value < 0), NCE_NEGATIVE_H_WORD_TOOL_LENGTH_OFFSET_INDEX_USED);
-        error_if((value > _setup.tool_max), NCE_TOOL_LENGTH_OFFSET_INDEX_TOO_BIG);
+        error_if(value < 0, NCE_NEGATIVE_H_WORD_TOOL_LENGTH_OFFSET_INDEX_USED);
+        error_if(value > _setup.tool_max, NCE_TOOL_LENGTH_OFFSET_INDEX_TOO_BIG);
         block.h_number = value;
     }
 
@@ -6975,12 +6800,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'i'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'i', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.i_flag != OFF), NCE_MULTIPLE_I_WORDS_ON_ONE_LINE);
+        error_if(!!block.i, NCE_MULTIPLE_I_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.i_flag = ON;
-        block.i_number = value;
+        block.i = value;
     }
 
    /****************************************************************************/
@@ -7020,7 +6844,7 @@ repeat--) \
             if ((c < 48) or (c > 57))
                 break;
         }
-        error_if((n == *counter), NCE_BAD_FORMAT_UNSIGNED_INTEGER);
+        error_if(n == *counter, NCE_BAD_FORMAT_UNSIGNED_INTEGER);
         if (sscanf(line + *counter, "%d", integer_ptr) == 0)
             throw error(NCE_SSCANF_FAILED);
         *counter = n;
@@ -7160,12 +6984,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'j'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'j', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.j_flag != OFF), NCE_MULTIPLE_J_WORDS_ON_ONE_LINE);
+        error_if(!!block.j, NCE_MULTIPLE_J_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.j_flag = ON;
-        block.j_number = value;
+        block.j = value;
     }
 
    /****************************************************************************/
@@ -7209,12 +7032,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'k'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'k', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.k_flag != OFF), NCE_MULTIPLE_K_WORDS_ON_ONE_LINE);
+        error_if(!!block.k, NCE_MULTIPLE_K_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.k_flag = ON;
-        block.k_number = value;
+        block.k = value;
     }
 
    /****************************************************************************/
@@ -7256,11 +7078,11 @@ repeat--) \
     {
         int value;
 
-        error_if((line[*counter] != 'l'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'l', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.l_number > -1), NCE_MULTIPLE_L_WORDS_ON_ONE_LINE);
+        error_if(block.l_number > -1, NCE_MULTIPLE_L_WORDS_ON_ONE_LINE);
         read_integer_value(line, counter, &value, parameters);
-        error_if((value < 0), NCE_NEGATIVE_L_WORD_USED);
+        error_if(value < 0, NCE_NEGATIVE_L_WORD_USED);
         block.l_number = value;
     }
 
@@ -7300,10 +7122,10 @@ repeat--) \
     {
         int value;
 
-        error_if((line[*counter] != 'n'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'n', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         read_integer_unsigned(line, counter, &value);
-        error_if((value > 99999), NCE_LINE_NUMBER_GREATER_THAN_99999);
+        error_if(value > 99999, NCE_LINE_NUMBER_GREATER_THAN_99999);
         block.line_number = value;
     }
 
@@ -7350,14 +7172,14 @@ repeat--) \
         int value;
         int mode;
 
-        error_if((line[*counter] != 'm'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'm', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         read_integer_value(line, counter, &value, parameters);
-        error_if((value < 0), NCE_NEGATIVE_M_CODE_USED);
-        error_if((value > 99), NCE_M_CODE_GREATER_THAN_99);
+        error_if(value < 0, NCE_NEGATIVE_M_CODE_USED);
+        error_if(value > 99, NCE_M_CODE_GREATER_THAN_99);
         mode = _ems[value];
-        error_if((mode == -1), NCE_UNKNOWN_M_CODE_USED);
-        error_if((block.m_modes[mode] != -1), NCE_TWO_M_CODES_USED_FROM_SAME_MODAL_GROUP);
+        error_if(mode == -1, NCE_UNKNOWN_M_CODE_USED);
+        error_if(block.m_modes[mode] != -1, NCE_TWO_M_CODES_USED_FROM_SAME_MODAL_GROUP);
         block.m_modes[mode] = value;
         block.m_count++;
     }
@@ -7419,7 +7241,7 @@ repeat--) \
         letter = line[*counter];             /* check if in array range */
         error_if(((letter < 0) or (letter > 'z')), NCE_BAD_CHARACTER_USED);
         function_pointer = _readers[static_cast<unsigned int>(letter)];
-        error_if((function_pointer == 0), NCE_BAD_CHARACTER_USED);
+        error_if(function_pointer == 0, NCE_BAD_CHARACTER_USED);
         (this->*function_pointer)(line, counter, block, parameters);
     }
 
@@ -7713,11 +7535,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'p'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'p', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.p_number > -1.0), NCE_MULTIPLE_P_WORDS_ON_ONE_LINE);
+        error_if(block.p_number > -1.0, NCE_MULTIPLE_P_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        error_if((value < 0.0), NCE_NEGATIVE_P_WORD_USED);
+        error_if(value < 0.0, NCE_NEGATIVE_P_WORD_USED);
         block.p_number = value;
     }
 
@@ -7766,7 +7588,7 @@ repeat--) \
     {
         int index;
 
-        error_if((line[*counter] != '#'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != '#', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         read_integer_value(line, counter, &index, parameters);
         error_if(((index < 1) or (index >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
@@ -7849,11 +7671,11 @@ repeat--) \
         int index;
         double value;
 
-        error_if((line[*counter] != '#'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != '#', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         read_integer_value(line, counter, &index, parameters);
         error_if(((index < 1) or (index >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
-        error_if((line[*counter] != '='), NCE_EQUAL_SIGN_MISSING_IN_PARAMETER_SETTING);
+        error_if(line[*counter] != '=', NCE_EQUAL_SIGN_MISSING_IN_PARAMETER_SETTING);
         *counter = (*counter + 1);
         read_real_value(line, counter, &value, parameters);
         block.parameter_numbers[block.parameter_occurrence] = index;
@@ -7900,11 +7722,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'q'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'q', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.q_number > -1.0), NCE_MULTIPLE_Q_WORDS_ON_ONE_LINE);
+        error_if(block.q_number > -1.0, NCE_MULTIPLE_Q_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        error_if((value <= 0.0), NCE_NEGATIVE_OR_ZERO_Q_VALUE_USED);
+        error_if(value <= 0.0, NCE_NEGATIVE_OR_ZERO_Q_VALUE_USED);
         block.q_number = value;
     }
 
@@ -7951,12 +7773,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'r'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'r', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.r_flag != OFF), NCE_MULTIPLE_R_WORDS_ON_ONE_LINE);
+        error_if(!!block.r, NCE_MULTIPLE_R_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.r_flag = ON;
-        block.r_number = value;
+        block.r = value;
     }
 
    /****************************************************************************/
@@ -8165,7 +7986,7 @@ repeat--) \
         int next_operation;
         int status;
 
-        error_if((line[*counter] != '['), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != '[', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         read_real_value(line, counter, value, parameters);
         read_operation(line, counter, &next_operation);
@@ -8214,7 +8035,7 @@ repeat--) \
         int operators[MAX_STACK];
         int stack_index;
 
-        error_if((line[*counter] != '['), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != '[', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         read_real_value(line, counter, values, parameters);
         read_operation(line, counter, operators);
@@ -8402,7 +8223,7 @@ repeat--) \
         char c;
 
         c = line[*counter];
-        error_if((c == 0), NCE_NO_CHARACTERS_FOUND_IN_READING_REAL_VALUE);
+        error_if(c == 0, NCE_NO_CHARACTERS_FOUND_IN_READING_REAL_VALUE);
         if (c == '[')
             read_real_expression (line, counter, double_ptr, parameters);
         else if (c == '#')
@@ -8566,11 +8387,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 's'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 's', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.s_number > -1.0), NCE_MULTIPLE_S_WORDS_ON_ONE_LINE);
+        error_if(block.s_number > -1.0, NCE_MULTIPLE_S_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        error_if((value < 0.0), NCE_NEGATIVE_SPINDLE_SPEED_USED);
+        error_if(value < 0.0, NCE_NEGATIVE_SPINDLE_SPEED_USED);
         block.s_number = value;
     }
 
@@ -8613,11 +8434,11 @@ repeat--) \
     {
         int value;
 
-        error_if((line[*counter] != 't'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 't', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.t_number > -1), NCE_MULTIPLE_T_WORDS_ON_ONE_LINE);
+        error_if(block.t_number > -1, NCE_MULTIPLE_T_WORDS_ON_ONE_LINE);
         read_integer_value(line, counter, &value, parameters);
-        error_if((value < 0), NCE_NEGATIVE_TOOL_ID_USED);
+        error_if(value < 0, NCE_NEGATIVE_TOOL_ID_USED);
         block.t_number = value;
     }
 
@@ -8692,7 +8513,7 @@ repeat--) \
     char * line,                                  /* array for input line to be processed in     */
     int * length)                                 /* a pointer to an integer to be set           */
     {
-        error_if((strlen(command) >= RS274NGC_TEXT_SIZE), NCE_COMMAND_TOO_LONG);
+        error_if(strlen(command) >= RS274NGC_TEXT_SIZE, NCE_COMMAND_TOO_LONG);
         strcpy(raw_line, command);
         strcpy(line, command);
         close_and_downcase(line);
@@ -8744,7 +8565,7 @@ repeat--) \
         int operation;
 
         read_operation_unary (line, counter, &operation);
-        error_if((line[*counter] != '['), NCE_LEFT_BRACKET_MISSING_AFTER_UNARY_OPERATION_NAME);
+        error_if(line[*counter] != '[', NCE_LEFT_BRACKET_MISSING_AFTER_UNARY_OPERATION_NAME);
         read_real_expression (line, counter, double_ptr, parameters);
 
         if (operation == ATAN)
@@ -8794,12 +8615,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'x'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'x', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.x_flag != OFF), NCE_MULTIPLE_X_WORDS_ON_ONE_LINE);
+        error_if(!!block.x, NCE_MULTIPLE_X_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.x_flag = ON;
-        block.x_number = value;
+        block.x = value;
     }
 
    /****************************************************************************/
@@ -8843,12 +8663,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'y'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'y', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.y_flag != OFF), NCE_MULTIPLE_Y_WORDS_ON_ONE_LINE);
+        error_if(!!block.y, NCE_MULTIPLE_Y_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.y_flag = ON;
-        block.y_number = value;
+        block.y = value;
     }
 
    /****************************************************************************/
@@ -8892,12 +8711,11 @@ repeat--) \
     {
         double value;
 
-        error_if((line[*counter] != 'z'), NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
+        error_if(line[*counter] != 'z', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if((block.z_flag != OFF), NCE_MULTIPLE_Z_WORDS_ON_ONE_LINE);
+        error_if(!!block.z, NCE_MULTIPLE_Z_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
-        block.z_flag = ON;
-        block.z_number = value;
+        block.z = value;
     }
 
    /****************************************************************************/
@@ -9316,7 +9134,7 @@ repeat--) \
     {
         int n;
 
-        error_if((_setup.tool_max > CANON_TOOL_MAX), NCE_TOOL_MAX_TOO_LARGE);
+        error_if(_setup.tool_max > CANON_TOOL_MAX, NCE_TOOL_MAX_TOO_LARGE);
         for (n = 0; n <= _setup.tool_max; n++)
         {
             _setup.tool_table[n] = GET_EXTERNAL_TOOL_TABLE(n);
@@ -9367,11 +9185,11 @@ repeat--) \
 
         if (_setup.probe_flag == ON)
         {
-            error_if((GET_EXTERNAL_QUEUE_EMPTY() == 0), NCE_QUEUE_IS_NOT_EMPTY_AFTER_PROBING);
+            error_if(GET_EXTERNAL_QUEUE_EMPTY() == 0, NCE_QUEUE_IS_NOT_EMPTY_AFTER_PROBING);
             set_probe_data(_setup);
             _setup.probe_flag = OFF;
         }
-        error_if(((command == NULL)), NCE_FILE_NOT_OPEN);
+        error_if(command == NULL, NCE_FILE_NOT_OPEN);
         read_status = read_text(command, _setup.linetext, _setup.blocktext, &_setup.line_length);
         if ((read_status == RS274NGC_EXECUTE_FINISH) or
             (read_status == RS274NGC_OK))
@@ -9476,7 +9294,7 @@ repeat--) \
 
    // open original for reading
         infile = fopen(filename, "r");
-        error_if((infile == NULL), NCE_UNABLE_TO_OPEN_FILE);
+        error_if(infile == NULL, NCE_UNABLE_TO_OPEN_FILE);
 
         pars = _setup.parameters;
         k = 0;
@@ -9516,7 +9334,7 @@ repeat--) \
             }
         }
         fclose(infile);
-        error_if((required != RS274NGC_MAX_PARAMETERS), NCE_REQUIRED_PARAMETER_MISSING);
+        error_if(required != RS274NGC_MAX_PARAMETERS, NCE_REQUIRED_PARAMETER_MISSING);
         for (; k < RS274NGC_MAX_PARAMETERS; k++)
         {
             pars[k] = 0;
@@ -9573,15 +9391,15 @@ repeat--) \
    // rename as .bak
         strcpy(line, filename);
         strcat(line, RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX);
-        error_if((rename(filename, line) != 0), NCE_CANNOT_CREATE_BACKUP_FILE);
+        error_if(rename(filename, line) != 0, NCE_CANNOT_CREATE_BACKUP_FILE);
 
    // open backup for reading
         infile = fopen(line, "r");
-        error_if((infile == NULL), NCE_CANNOT_OPEN_BACKUP_FILE);
+        error_if(infile == NULL, NCE_CANNOT_OPEN_BACKUP_FILE);
 
    // open original for writing
         outfile = fopen(filename, "w");
-        error_if((outfile == NULL), NCE_CANNOT_OPEN_VARIABLE_FILE);
+        error_if(outfile == NULL, NCE_CANNOT_OPEN_VARIABLE_FILE);
 
         k = 0;
         index = 0;

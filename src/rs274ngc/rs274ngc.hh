@@ -35,6 +35,7 @@ Plan to reuse gcode parsing and interpreter individually.
 
 #ifndef RS274NGC_HH
 #define RS274NGC_HH
+#include "block.h"
 
    /*
      rs274ngc.hh
@@ -80,52 +81,6 @@ enum ON_OFF : bool
 {
 	OFF = false,
 	ON = true
-};
-
-struct block_t
-{
-    ON_OFF   a_flag;
-    double   a_number;
-    ON_OFF   b_flag;
-    double   b_number;
-    ON_OFF   c_flag;
-    double   c_number;
-    
-    char     comment[256];
-    int      d_number;
-    double   f_number;
-    int      g_modes[14];
-    int      h_number;
-    
-    ON_OFF   i_flag;
-    double   i_number;
-    ON_OFF   j_flag;
-    double   j_number;
-    ON_OFF   k_flag;
-    double   k_number;
-    
-    int      l_number;
-    int      line_number;
-    int      motion_to_be;
-    int      m_count;
-    int      m_modes[10];
-    double   p_number;
-    double   q_number;
-    ON_OFF   r_flag;
-    double   r_number;
-    double   s_number;
-    int      t_number;
-    
-    ON_OFF   x_flag;
-    double   x_number;
-    ON_OFF   y_flag;
-    double   y_number;
-    ON_OFF   z_flag;
-    double   z_number;
-    
-    size_t parameter_occurrence;                     // parameter buffer index
-    int parameter_numbers[50];                    // parameter number buffer
-    double parameter_values[50];                  // parameter value buffer
 };
 
    /*
@@ -309,7 +264,6 @@ private:
 	static void find_relative(double x1, double y1, double z1, double AA_1, double BB_1, double CC_1, double * x2, double * y2, double * z2, double * AA_2, double * BB_2, double * CC_2,setup_t& settings);
 	static double find_straight_length(double x2, double y2, double z2, double AA_2, double BB_2, double CC_2, double x1, double y1, double z1, double AA_1, double BB_1, double CC_1);
 	static double find_turn(double x1, double y1, double center_x, double center_y, int turn, double x2, double y2);
-	static void init_block(block_t& block);
 	static void inverse_time_rate_arc(double x1, double y1, double z1, double cx, double cy, int turn, double x2, double y2, double z2, block_t& block, setup_t& settings);
 	static void inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_t& block, setup_t& settings);
 	static void inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
