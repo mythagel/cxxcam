@@ -25,6 +25,7 @@
 #ifndef MAYBE_H_
 #define MAYBE_H_
 #include <type_traits>
+#include <stdexcept>
 
 template<typename T>
 struct maybe
@@ -55,6 +56,8 @@ struct maybe
 
 	T const& operator*() const
 	{
+		if(!value)
+			throw std::logic_error("Value not valid.");
 		return value;
 	}
 };

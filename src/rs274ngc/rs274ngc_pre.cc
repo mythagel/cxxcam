@@ -216,7 +216,7 @@ enum
 #define RIGHT 1
 #define LEFT 2
 
-#define DEBUG_EMC
+//#define DEBUG_EMC
 
 void error_if(bool bad, int error_code)
 {
@@ -1190,7 +1190,7 @@ rs274ngc::rs274ngc()
         }
         if (ijk_flag)
         {
-            if (settings.plane == CANON_PLANE_XY)
+            if (settings.plane == Plane::XY)
             {
                 error_if(!!block.k, NCE_K_WORD_GIVEN_FOR_ARC_IN_XY_PLANE);
                 if (!block.i)         /* i or j flag on to get here */
@@ -1198,7 +1198,7 @@ rs274ngc::rs274ngc()
                 else if (!block.j)
                     block.j = 0.0;
             }
-            else if (settings.plane == CANON_PLANE_YZ)
+            else if (settings.plane == Plane::YZ)
             {
                 error_if(!!block.i, NCE_I_WORD_GIVEN_FOR_ARC_IN_YZ_PLANE);
                 if (!block.j)         /* j or k flag on to get here */
@@ -1206,7 +1206,7 @@ rs274ngc::rs274ngc()
                 else if (!block.k)
                     block.k = 0.0;
             }
-            else if (settings.plane == CANON_PLANE_XZ)
+            else if (settings.plane == Plane::XZ)
             {
                 error_if(!!block.j, NCE_J_WORD_GIVEN_FOR_ARC_IN_XZ_PLANE);
                 if (!block.i)         /* i or k flag on to get here */
@@ -1222,15 +1222,15 @@ rs274ngc::rs274ngc()
              /* r format arc; no other checks needed specific to this format */
         }
 
-        if (settings.plane == CANON_PLANE_XY)    /* checks for both formats */
+        if (settings.plane == Plane::XY)    /* checks for both formats */
         {
             error_if(!block.x and !block.y, NCE_X_AND_Y_WORDS_MISSING_FOR_ARC_IN_XY_PLANE);
         }
-        else if (settings.plane == CANON_PLANE_YZ)
+        else if (settings.plane == Plane::YZ)
         {
             error_if(!block.y and !block.z, NCE_Y_AND_Z_WORDS_MISSING_FOR_ARC_IN_YZ_PLANE);
         }
-        else if (settings.plane == CANON_PLANE_XZ)
+        else if (settings.plane == Plane::XZ)
         {
             error_if(!block.x and !block.z, NCE_X_AND_Z_WORDS_MISSING_FOR_ARC_IN_XZ_PLANE);
         }
@@ -1238,7 +1238,7 @@ rs274ngc::rs274ngc()
         find_ends(block, settings, &end_x, &end_y, &end_z, &AA_end, &BB_end, &CC_end);
         settings.motion_mode = move;
 
-        if (settings.plane == CANON_PLANE_XY)
+        if (settings.plane == Plane::XY)
         {
             if ((settings.cutter_comp_side == OFF) or
                 (settings.cutter_comp_radius == 0.0))
@@ -1258,7 +1258,7 @@ rs274ngc::rs274ngc()
                     convert_arc_comp2(move, block, settings, end_x, end_y, end_z, AA_end, BB_end, CC_end);
             }
         }
-        else if (settings.plane == CANON_PLANE_XZ)
+        else if (settings.plane == Plane::XZ)
         {
                 convert_arc2 (move, block, settings,
                 &(settings.current.z), &(settings.current.x), &(settings.current.y), 
@@ -1266,7 +1266,7 @@ rs274ngc::rs274ngc()
                 AA_end, BB_end, CC_end, 
                 *block.k, *block.i);
         }
-        else if (settings.plane == CANON_PLANE_YZ)
+        else if (settings.plane == Plane::YZ)
         {
                 convert_arc2 (move, block, settings,
                 &(settings.current.y), &(settings.current.z), &(settings.current.x), 
@@ -1319,8 +1319,7 @@ rs274ngc::rs274ngc()
         double tolerance;                         /* tolerance for difference of radii          */
         int turn;                                 /* number of full or partial turns CCW in arc */
 
-        tolerance = (settings.length_units == CANON_UNITS_INCHES) ?
-            TOLERANCE_INCH : TOLERANCE_MM;
+        tolerance = (settings.length_units == Units::Imperial) ? TOLERANCE_INCH : TOLERANCE_MM;
 
         if (block.r)
         {
@@ -1334,12 +1333,7 @@ rs274ngc::rs274ngc()
         if (settings.feed_mode == INVERSE_TIME)
             inverse_time_rate_arc(*current1, *current2, *current3, center1, center2,
                 turn, end1, end2, end3, block, settings);
-        ARC_FEED(end1, end2, center1, center2, turn,
-            end3
-            , AA_end
-            , BB_end
-            , CC_end
-            );
+        arc(end1, end2, center1, center2, turn, end3, AA_end, BB_end, CC_end);
         *current1 = end1;
         *current2 = end2;
         *current3 = end3;
@@ -1399,8 +1393,7 @@ rs274ngc::rs274ngc()
         side = settings.cutter_comp_side;
    /* always is positive */
         tool_radius = settings.cutter_comp_radius;
-        tolerance = (settings.length_units == CANON_UNITS_INCHES) ?
-            TOLERANCE_INCH : TOLERANCE_MM;
+        tolerance = (settings.length_units == Units::Imperial) ? TOLERANCE_INCH : TOLERANCE_MM;
 
         error_if((hypot((end_x - settings.current.x),
             (end_y - settings.current.y)) <= tool_radius),
@@ -1432,12 +1425,7 @@ rs274ngc::rs274ngc()
             inverse_time_rate_arc(settings.current.x, settings.current.y,
                 settings.current.z, center_x, center_y, turn,
                 end_x, end_y, end_z, block, settings);
-        ARC_FEED(end_x, end_y, center_x, center_y, turn,
-            end_z
-            , AA_end
-            , BB_end
-            , CC_end
-            );
+        arc(end_x, end_y, center_x, center_y, turn, end_z, AA_end, BB_end, CC_end);
         settings.current.x = end_x;
         settings.current.y = end_y;
         settings.current.z = end_z;
@@ -1520,7 +1508,7 @@ rs274ngc::rs274ngc()
 
         start_x = settings.program_x;
         start_y = settings.program_y;
-        tolerance = (settings.length_units == CANON_UNITS_INCHES) ? TOLERANCE_INCH : TOLERANCE_MM;
+        tolerance = (settings.length_units == Units::Imperial) ? TOLERANCE_INCH : TOLERANCE_MM;
 
         if (block.r)
         {
@@ -1536,8 +1524,7 @@ rs274ngc::rs274ngc()
    /* always is positive */
         tool_radius = settings.cutter_comp_radius;
         arc_radius = hypot((center_x - end_x), (center_y - end_y));
-        theta =
-            atan2(settings.current.y - start_y, settings.current.x - start_x);
+        theta = atan2(settings.current.y - start_y, settings.current.x - start_x);
         theta = (side == LEFT) ? (theta - PI2) : (theta + PI2);
         delta = atan2(center_y - start_y, center_x - start_x);
         alpha = (move == G_3) ? (delta - PI2) : (delta + PI2);
@@ -1545,8 +1532,7 @@ rs274ngc::rs274ngc()
         beta = (beta > (1.5 * PI))  ? (beta - TWO_PI) :
         (beta < -PI2) ? (beta + TWO_PI) : beta;
 
-        if (((side == LEFT)  and (move == G_3)) or
-            ((side == RIGHT) and (move == G_2)))
+        if (((side == LEFT)  and (move == G_3)) or ((side == RIGHT) and (move == G_2)))
         {
             gamma = atan2 ((center_y - end_y), (center_x - end_x));
             error_if(arc_radius <= tool_radius, NCE_TOOL_RADIUS_NOT_LESS_THAN_ARC_RADIUS_WITH_COMP);
@@ -1575,18 +1561,8 @@ rs274ngc::rs274ngc()
                 inverse_time_rate_arc2(start_x, start_y, (side == LEFT) ? -1 : 1,
                 mid_x, mid_y, center_x, center_y, turn,
                 end_x, end_y, end_z, block, settings);
-            ARC_FEED(mid_x, mid_y, start_x, start_y, ((side == LEFT) ? -1 : 1),
-                settings.current.z
-                , AA_end
-                , BB_end
-                , CC_end
-                );
-            ARC_FEED(end_x, end_y, center_x, center_y, turn,
-                end_z
-                , AA_end
-                , BB_end
-                , CC_end
-                );
+            arc(mid_x, mid_y, start_x, start_y, ((side == LEFT) ? -1 : 1), settings.current.z, AA_end, BB_end, CC_end);
+            arc(end_x, end_y, center_x, center_y, turn, end_z, AA_end, BB_end, CC_end);
         }
         else                                      /* one arc needed */
         {
@@ -1594,12 +1570,7 @@ rs274ngc::rs274ngc()
                 inverse_time_rate_arc(settings.current.x, settings.current.y,
                     settings.current.z, center_x, center_y, turn,
                     end_x, end_y, end_z, block, settings);
-            ARC_FEED(end_x, end_y, center_x, center_y, turn,
-                end_z
-                , AA_end
-                , BB_end
-                , CC_end
-                );
+            arc(end_x, end_y, center_x, center_y, turn, end_z, AA_end, BB_end, CC_end);
         }
 
         settings.current.x = end_x;
@@ -1716,13 +1687,14 @@ rs274ngc::rs274ngc()
                 settings.current.c = *block.c;
             }
 
-            SET_ORIGIN_OFFSETS(settings.origin_offset.x + settings.axis_offset.x,
+            offset_origin({
+            	settings.origin_offset.x + settings.axis_offset.x,
                 settings.origin_offset.y + settings.axis_offset.y,
-                settings.origin_offset.z + settings.axis_offset.z
-                ,                      (settings.origin_offset.a + settings.axis_offset.a)
-                ,                      (settings.origin_offset.b + settings.axis_offset.b)
-                ,                      (settings.origin_offset.c + settings.axis_offset.c)
-                );
+                settings.origin_offset.z + settings.axis_offset.z,
+                settings.origin_offset.a + settings.axis_offset.a,
+                settings.origin_offset.b + settings.axis_offset.b,                      
+                settings.origin_offset.c + settings.axis_offset.c
+                });
             pars[5211] = settings.axis_offset.x;
             pars[5212] = settings.axis_offset.y;
             pars[5213] = settings.axis_offset.z;
@@ -1732,31 +1704,26 @@ rs274ngc::rs274ngc()
         }
         else if ((g_code == G_92_1) or (g_code == G_92_2))
         {
-            settings.current.x =
-                settings.current.x + settings.axis_offset.x;
-            settings.current.y =
-                settings.current.y + settings.axis_offset.y;
-            settings.current.z =
-                settings.current.z + settings.axis_offset.z;
-            settings.current.a =           /*AA*/
-                (settings.current.a + settings.axis_offset.a);
-            settings.current.b =           /*BB*/
-                (settings.current.b + settings.axis_offset.b);
-            settings.current.c =           /*CC*/
-                (settings.current.c + settings.axis_offset.c);
-            SET_ORIGIN_OFFSETS(settings.origin_offset.x,
+            settings.current.x = settings.current.x + settings.axis_offset.x;
+            settings.current.y = settings.current.y + settings.axis_offset.y;
+            settings.current.z = settings.current.z + settings.axis_offset.z;
+            settings.current.a = settings.current.a + settings.axis_offset.a;
+            settings.current.b = settings.current.b + settings.axis_offset.b;
+            settings.current.c = settings.current.c + settings.axis_offset.c;
+            offset_origin({
+            	settings.origin_offset.x,
                 settings.origin_offset.y,
-                settings.origin_offset.z
-                ,            settings.origin_offset.a
-                ,            settings.origin_offset.b
-                ,            settings.origin_offset.c
-                );
+                settings.origin_offset.z,
+                settings.origin_offset.a,            
+                settings.origin_offset.b,            
+                settings.origin_offset.c
+                });
             settings.axis_offset.x = 0.0;
             settings.axis_offset.y = 0.0;
             settings.axis_offset.z = 0.0;
-            settings.axis_offset.a = 0.0;  /*AA*/
-            settings.axis_offset.b = 0.0;  /*BB*/
-            settings.axis_offset.c = 0.0;  /*CC*/
+            settings.axis_offset.a = 0.0;
+            settings.axis_offset.b = 0.0;
+            settings.axis_offset.c = 0.0;
             if (g_code == G_92_1)
             {
                 pars[5211] = 0.0;
@@ -1769,31 +1736,26 @@ rs274ngc::rs274ngc()
         }
         else if (g_code == G_92_3)
         {
-            settings.current.x =
-                settings.current.x + settings.axis_offset.x - pars[5211];
-            settings.current.y =
-                settings.current.y + settings.axis_offset.y - pars[5212];
-            settings.current.z =
-                settings.current.z + settings.axis_offset.z - pars[5213];
-            settings.current.a =           /*AA*/
-                settings.current.a + settings.axis_offset.a - pars[5214];
-            settings.current.b =           /*BB*/
-                settings.current.b + settings.axis_offset.b - pars[5215];
-            settings.current.c =           /*CC*/
-                settings.current.c + settings.axis_offset.c - pars[5216];
+            settings.current.x = settings.current.x + settings.axis_offset.x - pars[5211];
+            settings.current.y = settings.current.y + settings.axis_offset.y - pars[5212];
+            settings.current.z = settings.current.z + settings.axis_offset.z - pars[5213];
+            settings.current.a = settings.current.a + settings.axis_offset.a - pars[5214];
+            settings.current.b = settings.current.b + settings.axis_offset.b - pars[5215];
+            settings.current.c = settings.current.c + settings.axis_offset.c - pars[5216];
             settings.axis_offset.x = pars[5211];
             settings.axis_offset.y = pars[5212];
             settings.axis_offset.z = pars[5213];
             settings.axis_offset.a = pars[5214];
             settings.axis_offset.b = pars[5215];
             settings.axis_offset.c = pars[5216];
-            SET_ORIGIN_OFFSETS(settings.origin_offset.x + settings.axis_offset.x,
+            offset_origin({
+            	settings.origin_offset.x + settings.axis_offset.x,
                 settings.origin_offset.y + settings.axis_offset.y,
-                settings.origin_offset.z + settings.axis_offset.z
-                ,                      (settings.origin_offset.a + settings.axis_offset.a)
-                ,                      (settings.origin_offset.b + settings.axis_offset.b)
-                ,                      (settings.origin_offset.c + settings.axis_offset.c)
-                );
+                settings.origin_offset.z + settings.axis_offset.z,
+                settings.origin_offset.a + settings.axis_offset.a,
+                settings.origin_offset.b + settings.axis_offset.b,
+                settings.origin_offset.c + settings.axis_offset.c
+                });
         }
         else
             throw error(NCE_BUG_CODE_NOT_IN_G92_SERIES);
@@ -1831,28 +1793,28 @@ rs274ngc::rs274ngc()
         for (m = 0; ((item = comment[m]) == ' ') or (item == '\t') ; m++);
         if ((item != 'M') and (item != 'm'))
         {
-            COMMENT(comment);
+            this->comment(comment);
             return;
         }
         for (m++; ((item = comment[m]) == ' ') or (item == '\t') ; m++);
         if ((item != 'S') and (item != 's'))
         {
-            COMMENT(comment);
+            this->comment(comment);
             return;
         }
         for (m++; ((item = comment[m]) == ' ') or (item == '\t') ; m++);
         if ((item != 'G') and (item != 'g'))
         {
-            COMMENT(comment);
+            this->comment(comment);
             return;
         }
         for (m++; ((item = comment[m]) == ' ') or (item == '\t') ; m++);
         if (item != ',')
         {
-            COMMENT(comment);
+            this->comment(comment);
             return;
         }
-        MESSAGE(comment + m + 1);
+        message(comment + m + 1);
     }
 
    /****************************************************************************/
@@ -1869,21 +1831,21 @@ rs274ngc::rs274ngc()
    Called by: convert_g.
 
    The interpreter switches the machine settings to indicate the
-   control mode (CANON_EXACT_STOP, CANON_EXACT_PATH or CANON_CONTINUOUS).
+   control mode (Motion::Exact_Stop, Motion::Exact_Path or CANON_CONTINUOUS).
 
-   A call is made to SET_MOTION_CONTROL_MODE(CANON_XXX), where CANON_XXX is
-   CANON_EXACT_PATH if g_code is G_61, CANON_EXACT_STOP if g_code is G_61_1,
+   A call is made to motion_mode(CANON_XXX), where CANON_XXX is
+   Motion::Exact_Path if g_code is G_61, Motion::Exact_Stop if g_code is G_61_1,
    and CANON_CONTINUOUS if g_code is G_64.
 
-   Setting the control mode to CANON_EXACT_STOP on G_61 would correspond
+   Setting the control mode to Motion::Exact_Stop on G_61 would correspond
    more closely to the meaning of G_61 as given in [NCMS, page 40], but
-   CANON_EXACT_PATH has the advantage that the tool does not stop if it
+   Motion::Exact_Path has the advantage that the tool does not stop if it
    does not have to, and no evident disadvantage compared to
-   CANON_EXACT_STOP, so it is being used for G_61. G_61_1 is not defined
+   Motion::Exact_Stop, so it is being used for G_61. G_61_1 is not defined
    in [NCMS], so it is available and is used here for setting the control
-   mode to CANON_EXACT_STOP.
+   mode to Motion::Exact_Stop.
 
-   It is OK to call SET_MOTION_CONTROL_MODE(CANON_XXX) when CANON_XXX is
+   It is OK to call motion_mode(CANON_XXX) when CANON_XXX is
    already in force.
 
    */
@@ -1894,18 +1856,18 @@ rs274ngc::rs274ngc()
     {
         if (g_code == G_61)
         {
-            SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
-            settings.control_mode = CANON_EXACT_PATH;
+            motion_mode(Motion::Exact_Path);
+            settings.control_mode = Motion::Exact_Path;
         }
         else if (g_code == G_61_1)
         {
-            SET_MOTION_CONTROL_MODE(CANON_EXACT_STOP);
-            settings.control_mode = CANON_EXACT_STOP;
+            motion_mode(Motion::Exact_Stop);
+            settings.control_mode = Motion::Exact_Stop;
         }
         else if (g_code == G_64)
         {
-            SET_MOTION_CONTROL_MODE(CANON_CONTINUOUS);
-            settings.control_mode = CANON_CONTINUOUS;
+            motion_mode(Motion::Continious);
+            settings.control_mode = Motion::Continious;
         }
         else
             throw error(NCE_BUG_CODE_NOT_G61_G61_1_OR_G64);
@@ -1957,12 +1919,12 @@ rs274ngc::rs274ngc()
    of coordinate systems as follows:
 
    During initialization, data from the parameters for the first NGC
-   coordinate system is used in a SET_ORIGIN_OFFSETS function call and
+   coordinate system is used in a offset_origin function call and
    origin_index in the machine model is set to 1.
 
    If a g_code in the range g54 - g59.3 is encountered in an NC program,
    the data from the appropriate NGC coordinate system is copied into the
-   origin offsets used by the interpreter, a SET_ORIGIN_OFFSETS function
+   origin offsets used by the interpreter, a offset_origin function
    call is made, and the current position is reset.
 
    If a g10 is encountered, the convert_setup function is called to reset
@@ -1971,7 +1933,7 @@ rs274ngc::rs274ngc()
 
    If a g53 is encountered, the axis values given in that block are used
    to calculate what the coordinates are of that point in the current
-   coordinate system, and a STRAIGHT_TRAVERSE or STRAIGHT_FEED function
+   coordinate system, and a rapid or linear function
    call to that point using the calculated values is made. No offset
    values are changed.
 
@@ -2032,7 +1994,7 @@ rs274ngc::rs274ngc()
         if (origin == settings.origin_index)     /* already using this origin */
         {
 #ifdef DEBUG_EMC
-            COMMENT("interpreter: continuing to use same coordinate system");
+            comment("interpreter: continuing to use same coordinate system");
 #endif
             return;
         }
@@ -2077,13 +2039,14 @@ rs274ngc::rs274ngc()
         settings.current.b = (settings.current.b - b);
         settings.current.c = (settings.current.c - c);
 
-        SET_ORIGIN_OFFSETS(x + settings.axis_offset.x,
+        offset_origin({
+        	x + settings.axis_offset.x,
             y + settings.axis_offset.y,
-            z + settings.axis_offset.z
-            ,            a + settings.axis_offset.a
-            ,            b + settings.axis_offset.b
-            ,            c + settings.axis_offset.c
-            );
+            z + settings.axis_offset.z,            
+            a + settings.axis_offset.a,            
+            b + settings.axis_offset.b,            
+            c + settings.axis_offset.c
+            });
     }
 
    /****************************************************************************/
@@ -2153,7 +2116,7 @@ rs274ngc::rs274ngc()
     setup_t& settings)                       /* pointer to machine settings */
     {
 #ifdef DEBUG_EMC
-        COMMENT("interpreter: cutter radius compensation off");
+        comment("interpreter: cutter radius compensation off");
 #endif
         settings.cutter_comp_side = OFF;
         settings.program_x = UNKNOWN;
@@ -2219,7 +2182,7 @@ rs274ngc::rs274ngc()
         double radius;
         int index;
 
-        error_if(settings.plane != CANON_PLANE_XY, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_OUT_OF_XY_PLANE);
+        error_if(settings.plane != Plane::XY, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_OUT_OF_XY_PLANE);
         error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_WHEN_ON);
         index =
             (block.d_number != -1) ? block.d_number : settings.current_slot;
@@ -2236,9 +2199,9 @@ rs274ngc::rs274ngc()
 
 #ifdef DEBUG_EMC
         if (side == RIGHT)
-            COMMENT("interpreter: cutter radius compensation on right");
+            comment("interpreter: cutter radius compensation on right");
         else
-            COMMENT("interpreter: cutter radius compensation on left");
+            comment("interpreter: cutter radius compensation on left");
 #endif
 
         settings.cutter_comp_radius = radius;
@@ -2281,7 +2244,7 @@ rs274ngc::rs274ngc()
     block_t& block,                          /* pointer to a block of RS274 instructions       */
     setup_t& settings)                       /* pointer to machine settings                    */
     {
-        CANON_PLANE plane;
+        Plane plane;
 
         plane = settings.plane;
         if (!block.r)
@@ -2296,15 +2259,15 @@ rs274ngc::rs274ngc()
         if (block.l_number == -1)
             block.l_number = 1;
 
-        if (plane == CANON_PLANE_XY)
+        if (plane == Plane::XY)
         {
             convert_cycle_xy(motion, block, settings);
         }
-        else if (plane == CANON_PLANE_YZ)
+        else if (plane == Plane::YZ)
         {
             convert_cycle_yz(motion, block, settings);
         }
-        else if (plane == CANON_PLANE_XZ)
+        else if (plane == Plane::XZ)
         {
             convert_cycle_zx(motion, block, settings);
         }
@@ -2343,7 +2306,7 @@ rs274ngc::rs274ngc()
    */
 
     void rs274ngc::convert_cycle_g81(                 /* ARGUMENTS                        */
-    CANON_PLANE plane,                            /* selected plane                   */
+    Plane plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
     double clear_z,                               /* z-value of clearance plane       */
@@ -2379,7 +2342,7 @@ rs274ngc::rs274ngc()
    */
 
     void rs274ngc::convert_cycle_g82(                 /* ARGUMENTS                        */
-    CANON_PLANE plane,                            /* selected plane                   */
+    Plane plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
     double clear_z,                               /* z-value of clearance plane       */
@@ -2387,7 +2350,7 @@ rs274ngc::rs274ngc()
     double dwell)                                 /* dwell time                       */
     {
         cycle_feed(plane, x, y, bottom_z);
-        DWELL(dwell);
+        this->dwell(dwell);
         cycle_traverse(plane, x, y, clear_z);
     }
 
@@ -2428,7 +2391,7 @@ rs274ngc::rs274ngc()
                       return, in inches */
 
     void rs274ngc::convert_cycle_g83(                 /* ARGUMENTS                        */
-    CANON_PLANE plane,                            /* selected plane                   */
+    Plane plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
     double r,                                     /* initial z-value                  */
@@ -2440,7 +2403,7 @@ rs274ngc::rs274ngc()
         double rapid_delta;
 
         rapid_delta = G83_RAPID_DELTA;
-        if (_setup.length_units == CANON_UNITS_MM)
+        if (_setup.length_units == Units::Metric)
             rapid_delta = (rapid_delta * 25.4);
 
         for (current_depth = (r - delta);
@@ -2490,24 +2453,24 @@ rs274ngc::rs274ngc()
    */
 
     void rs274ngc::convert_cycle_g84(                 /* ARGUMENTS                           */
-    CANON_PLANE plane,                            /* selected plane                      */
+    Plane plane,                            /* selected plane                      */
     double x,                                     /* x-value where cycle is executed     */
     double y,                                     /* y-value where cycle is executed     */
     double clear_z,                               /* z-value of clearance plane          */
     double bottom_z,                              /* value of z at bottom of cycle       */
-    CANON_DIRECTION direction,                    /* direction spindle turning at outset */
-    CANON_SPEED_FEED_MODE mode)                   /* the speed-feed mode at outset       */
+    Direction direction,                    /* direction spindle turning at outset */
+    SpeedFeedMode mode)                   /* the speed-feed mode at outset       */
     {
-        error_if(direction != CANON_CLOCKWISE, NCE_SPINDLE_NOT_TURNING_CLOCKWISE_IN_G84);
-        START_SPEED_FEED_SYNCH();
+        error_if(direction != Direction::Clockwise, NCE_SPINDLE_NOT_TURNING_CLOCKWISE_IN_G84);
+        speed_feed_sync_start();
         cycle_feed(plane, x, y, bottom_z);
-        STOP_SPINDLE_TURNING();
-        START_SPINDLE_COUNTERCLOCKWISE();
+        spindle_stop();
+        spindle_start_counterclockwise();
         cycle_feed(plane, x, y, clear_z);
-        if (mode != CANON_SYNCHED)
-            STOP_SPEED_FEED_SYNCH();
-        STOP_SPINDLE_TURNING();
-        START_SPINDLE_CLOCKWISE();
+        if (mode != SpeedFeedMode::Synched)
+            speed_feed_sync_stop();
+        spindle_stop();
+        spindle_start_clockwise();
     }
 
    /****************************************************************************/
@@ -2536,7 +2499,7 @@ rs274ngc::rs274ngc()
    */
 
     void rs274ngc::convert_cycle_g85(                 /* ARGUMENTS                        */
-    CANON_PLANE plane,                            /* selected plane                   */
+    Plane plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
     double clear_z,                               /* z-value of clearance plane       */
@@ -2578,26 +2541,26 @@ rs274ngc::rs274ngc()
    */
 
     void rs274ngc::convert_cycle_g86(                 /* ARGUMENTS                           */
-    CANON_PLANE plane,                            /* selected plane                      */
+    Plane plane,                            /* selected plane                      */
     double x,                                     /* x-value where cycle is executed     */
     double y,                                     /* y-value where cycle is executed     */
     double clear_z,                               /* z-value of clearance plane          */
     double bottom_z,                              /* value of z at bottom of cycle       */
     double dwell,                                 /* dwell time                          */
-    CANON_DIRECTION direction)                    /* direction spindle turning at outset */
+    Direction direction)                    /* direction spindle turning at outset */
     {
-        error_if(((direction != CANON_CLOCKWISE) and
-            (direction != CANON_COUNTERCLOCKWISE)),
+        error_if(((direction != Direction::Clockwise) and
+            (direction != Direction::CounterClockwise)),
             NCE_SPINDLE_NOT_TURNING_IN_G86);
 
         cycle_feed(plane, x, y, bottom_z);
-        DWELL(dwell);
-        STOP_SPINDLE_TURNING();
+        this->dwell(dwell);
+        spindle_stop();
         cycle_traverse(plane, x, y, clear_z);
-        if (direction == CANON_CLOCKWISE)
-            START_SPINDLE_CLOCKWISE();
+        if (direction == Direction::Clockwise)
+            spindle_start_clockwise();
         else
-            START_SPINDLE_COUNTERCLOCKWISE();
+            spindle_start_counterclockwise();
     }
 
    /****************************************************************************/
@@ -2660,7 +2623,7 @@ rs274ngc::rs274ngc()
    */
 
     void rs274ngc::convert_cycle_g87(                 /* ARGUMENTS                           */
-    CANON_PLANE plane,                            /* selected plane                      */
+    Plane plane,                            /* selected plane                      */
     double x,                                     /* x-value where cycle is executed     */
     double offset_x,                              /* x-axis offset position              */
     double y,                                     /* y-value where cycle is executed     */
@@ -2669,32 +2632,32 @@ rs274ngc::rs274ngc()
     double clear_z,                               /* z-value of clearance plane          */
     double middle_z,                              /* z-value of top of back bore         */
     double bottom_z,                              /* value of z at bottom of cycle       */
-    CANON_DIRECTION direction)                    /* direction spindle turning at outset */
+    Direction direction)                    /* direction spindle turning at outset */
     {
-        error_if(((direction != CANON_CLOCKWISE) and
-            (direction != CANON_COUNTERCLOCKWISE)),
+        error_if(((direction != Direction::Clockwise) and
+            (direction != Direction::CounterClockwise)),
             NCE_SPINDLE_NOT_TURNING_IN_G87);
 
         cycle_traverse(plane, offset_x, offset_y, r);
-        STOP_SPINDLE_TURNING();
-        ORIENT_SPINDLE(0.0, direction);
+        spindle_stop();
+        spindle_orient(0.0, direction);
         cycle_traverse(plane, offset_x, offset_y, bottom_z);
         cycle_traverse(plane, x, y, bottom_z);
-        if (direction == CANON_CLOCKWISE)
-            START_SPINDLE_CLOCKWISE();
+        if (direction == Direction::Clockwise)
+            spindle_start_clockwise();
         else
-            START_SPINDLE_COUNTERCLOCKWISE();
+            spindle_start_counterclockwise();
         cycle_feed(plane, x, y, middle_z);
         cycle_feed(plane, x, y, bottom_z);
-        STOP_SPINDLE_TURNING();
-        ORIENT_SPINDLE(0.0, direction);
+        spindle_stop();
+        spindle_orient(0.0, direction);
         cycle_traverse(plane, offset_x, offset_y, bottom_z);
         cycle_traverse(plane, offset_x, offset_y, clear_z);
         cycle_traverse(plane, x, y, clear_z);
-        if (direction == CANON_CLOCKWISE)
-            START_SPINDLE_CLOCKWISE();
+        if (direction == Direction::Clockwise)
+            spindle_start_clockwise();
         else
-            START_SPINDLE_COUNTERCLOCKWISE();
+            spindle_start_counterclockwise();
     }
 
    /****************************************************************************/
@@ -2728,25 +2691,25 @@ rs274ngc::rs274ngc()
    */
 
     void rs274ngc::convert_cycle_g88(                 /* ARGUMENTS                           */
-    CANON_PLANE plane,                            /* selected plane                      */
+    Plane plane,                            /* selected plane                      */
     double x,                                     /* x-value where cycle is executed     */
     double y,                                     /* y-value where cycle is executed     */
     double bottom_z,                              /* value of z at bottom of cycle       */
     double dwell,                                 /* dwell time                          */
-    CANON_DIRECTION direction)                    /* direction spindle turning at outset */
+    Direction direction)                    /* direction spindle turning at outset */
     {
-        error_if(((direction != CANON_CLOCKWISE) and
-            (direction != CANON_COUNTERCLOCKWISE)),
+        error_if(((direction != Direction::Clockwise) and
+            (direction != Direction::CounterClockwise)),
             NCE_SPINDLE_NOT_TURNING_IN_G88);
 
         cycle_feed(plane, x, y, bottom_z);
-        DWELL(dwell);
-        STOP_SPINDLE_TURNING();
-        PROGRAM_STOP();                           /* operator retracts the spindle here */
-        if (direction == CANON_CLOCKWISE)
-            START_SPINDLE_CLOCKWISE();
+        this->dwell(dwell);
+        spindle_stop();
+        program_stop();                           /* operator retracts the spindle here */
+        if (direction == Direction::Clockwise)
+            spindle_start_clockwise();
         else
-            START_SPINDLE_COUNTERCLOCKWISE();
+            spindle_start_counterclockwise();
     }
 
    /****************************************************************************/
@@ -2774,7 +2737,7 @@ rs274ngc::rs274ngc()
    */
 
     void rs274ngc::convert_cycle_g89(                 /* ARGUMENTS                        */
-    CANON_PLANE plane,                            /* selected plane                   */
+    Plane plane,                            /* selected plane                   */
     double x,                                     /* x-value where cycle is executed  */
     double y,                                     /* y-value where cycle is executed  */
     double clear_z,                               /* z-value of clearance plane       */
@@ -2782,7 +2745,7 @@ rs274ngc::rs274ngc()
     double dwell)                                 /* dwell time                       */
     {
         cycle_feed(plane, x, y, bottom_z);
-        DWELL(dwell);
+        this->dwell(dwell);
         cycle_feed(plane, x, y, clear_z);
     }
 
@@ -2918,12 +2881,12 @@ repeat--) \
         double j;
         double k;
         double old_cc;
-        CANON_PLANE plane;
+        Plane plane;
         double r;
         int repeat;
-        CANON_MOTION_MODE save_mode;
+        Motion save_mode;
 
-        plane = CANON_PLANE_XY;
+        plane = Plane::XY;
         if (settings.motion_mode != motion)
         {
             error_if(!block.z, NCE_Z_VALUE_UNSPECIFIED_IN_XY_PLANE_CANNED_CYCLE);
@@ -2955,29 +2918,25 @@ repeat--) \
 
         if (old_cc < r)
         {
-            STRAIGHT_TRAVERSE(settings.current.x, settings.current.y, r
-                ,     settings.current.a
-                ,  settings.current.b
-                ,  settings.current.c
-                );
+            rapid({settings.current.x, settings.current.y, r, settings.current.a, settings.current.b, settings.current.c});
             old_cc = r;
         }
         clear_cc = (settings.retract_mode == R_PLANE) ? r : old_cc;
 
-        save_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
-        if (save_mode != CANON_EXACT_PATH)
-            SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
+        save_mode = motion_mode();
+        if (save_mode != Motion::Exact_Path)
+            motion_mode(Motion::Exact_Path);
 
         switch(motion)
         {
             case G_81:
-                CYCLE_MACRO(convert_cycle_g81(CANON_PLANE_XY, aa, bb, clear_cc, cc))
+                CYCLE_MACRO(convert_cycle_g81(Plane::XY, aa, bb, clear_cc, cc))
                     break;
             case G_82:
                 error_if((settings.motion_mode != G_82) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g82 (Plane::XY, aa, bb, clear_cc, cc,
                     block.p_number))
                     settings.cycle.p = block.p_number;
                 break;
@@ -2985,22 +2944,22 @@ repeat--) \
                 error_if((settings.motion_mode != G_83) and (block.q_number == -1.0), NCE_Q_WORD_MISSING_WITH_G83);
                 block.q_number =
                     block.q_number == -1.0 ? settings.cycle.q : block.q_number;
-                CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_XY, aa, bb, r, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g83 (Plane::XY, aa, bb, r, clear_cc, cc,
                     block.q_number))
                     settings.cycle.q = block.q_number;
                 break;
             case G_84:
-                CYCLE_MACRO(convert_cycle_g84 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g84 (Plane::XY, aa, bb, clear_cc, cc,
                     settings.spindle_turning, settings.speed_feed_mode))
                     break;
             case G_85:
-                CYCLE_MACRO(convert_cycle_g85 (CANON_PLANE_XY, aa, bb, clear_cc, cc))
+                CYCLE_MACRO(convert_cycle_g85 (Plane::XY, aa, bb, clear_cc, cc))
                     break;
             case G_86:
                 error_if((settings.motion_mode != G_86) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g86 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g86 (Plane::XY, aa, bb, clear_cc, cc,
                     block.p_number, settings.spindle_turning))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3021,14 +2980,14 @@ repeat--) \
                 {
                     k = (cc + k);            /* k always absolute in function call below */
                 }
-                CYCLE_MACRO(convert_cycle_g87 (CANON_PLANE_XY, aa, (aa + i), bb,
+                CYCLE_MACRO(convert_cycle_g87 (Plane::XY, aa, (aa + i), bb,
                     (bb + j), r, clear_cc, k, cc, settings.spindle_turning))
                     break;
             case G_88:
                 error_if((settings.motion_mode != G_88) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g88 (CANON_PLANE_XY, aa, bb, cc,
+                CYCLE_MACRO(convert_cycle_g88 (Plane::XY, aa, bb, cc,
                     block.p_number, settings.spindle_turning))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3036,7 +2995,7 @@ repeat--) \
                 error_if((settings.motion_mode != G_89) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g89 (CANON_PLANE_XY, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g89 (Plane::XY, aa, bb, clear_cc, cc,
                     block.p_number))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3048,8 +3007,8 @@ repeat--) \
         settings.current.z = clear_cc;
         settings.cycle.cc = *block.z;
 
-        if (save_mode != CANON_EXACT_PATH)
-            SET_MOTION_CONTROL_MODE(save_mode);
+        if (save_mode != Motion::Exact_Path)
+            motion_mode(save_mode);
     }
 
    /****************************************************************************/
@@ -3116,12 +3075,12 @@ repeat--) \
         double j;
         double k;
         double old_cc;
-        CANON_PLANE plane;
+        Plane plane;
         double r;
         int repeat;
-        CANON_MOTION_MODE save_mode;
+        Motion save_mode;
 
-        plane = CANON_PLANE_YZ;
+        plane = Plane::YZ;
         if (settings.motion_mode != motion)
         {
             error_if(!block.x, NCE_X_VALUE_UNSPECIFIED_IN_YZ_PLANE_CANNED_CYCLE);
@@ -3153,29 +3112,25 @@ repeat--) \
 
         if (old_cc < r)
         {
-            STRAIGHT_TRAVERSE(r, settings.current.y, settings.current.z
-                ,      settings.current.a
-                ,  settings.current.b
-                ,  settings.current.c
-                );
+            rapid({r, settings.current.y, settings.current.z, settings.current.a, settings.current.b, settings.current.c});
             old_cc = r;
         }
         clear_cc = (settings.retract_mode == R_PLANE) ? r : old_cc;
 
-        save_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
-        if (save_mode != CANON_EXACT_PATH)
-            SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
+        save_mode = motion_mode();
+        if (save_mode != Motion::Exact_Path)
+            motion_mode(Motion::Exact_Path);
 
         switch(motion)
         {
             case G_81:
-                CYCLE_MACRO(convert_cycle_g81(CANON_PLANE_YZ, aa, bb, clear_cc, cc))
+                CYCLE_MACRO(convert_cycle_g81(Plane::YZ, aa, bb, clear_cc, cc))
                     break;
             case G_82:
                 error_if((settings.motion_mode != G_82) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g82 (Plane::YZ, aa, bb, clear_cc, cc,
                     block.p_number))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3183,22 +3138,22 @@ repeat--) \
                 error_if((settings.motion_mode != G_83) and (block.q_number == -1.0), NCE_Q_WORD_MISSING_WITH_G83);
                 block.q_number =
                     block.q_number == -1.0 ? settings.cycle.q : block.q_number;
-                CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_YZ, aa, bb, r, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g83 (Plane::YZ, aa, bb, r, clear_cc, cc,
                     block.q_number))
                     settings.cycle.q = block.q_number;
                 break;
             case G_84:
-                CYCLE_MACRO(convert_cycle_g84 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g84 (Plane::YZ, aa, bb, clear_cc, cc,
                     settings.spindle_turning, settings.speed_feed_mode))
                     break;
             case G_85:
-                CYCLE_MACRO(convert_cycle_g85 (CANON_PLANE_YZ, aa, bb, clear_cc, cc))
+                CYCLE_MACRO(convert_cycle_g85 (Plane::YZ, aa, bb, clear_cc, cc))
                     break;
             case G_86:
                 error_if((settings.motion_mode != G_86) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g86 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g86 (Plane::YZ, aa, bb, clear_cc, cc,
                     block.p_number, settings.spindle_turning))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3219,14 +3174,14 @@ repeat--) \
                 {
                     i = (cc + i);            /* i always absolute in function call below */
                 }
-                CYCLE_MACRO(convert_cycle_g87 (CANON_PLANE_YZ, aa, (aa + j), bb,
+                CYCLE_MACRO(convert_cycle_g87 (Plane::YZ, aa, (aa + j), bb,
                     (bb + k), r, clear_cc, i, cc, settings.spindle_turning))
                     break;
             case G_88:
                 error_if((settings.motion_mode != G_88) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g88 (CANON_PLANE_YZ, aa, bb, cc,
+                CYCLE_MACRO(convert_cycle_g88 (Plane::YZ, aa, bb, cc,
                     block.p_number, settings.spindle_turning))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3234,7 +3189,7 @@ repeat--) \
                 error_if((settings.motion_mode != G_89) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g89 (CANON_PLANE_YZ, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g89 (Plane::YZ, aa, bb, clear_cc, cc,
                     block.p_number))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3246,8 +3201,8 @@ repeat--) \
         settings.current.x = clear_cc;
         settings.cycle.cc = *block.x;
 
-        if (save_mode != CANON_EXACT_PATH)
-            SET_MOTION_CONTROL_MODE(save_mode);
+        if (save_mode != Motion::Exact_Path)
+            motion_mode(save_mode);
     }
 
    /****************************************************************************/
@@ -3303,7 +3258,7 @@ repeat--) \
    permutation of the symbols x, y, and z would allow for automatically
    converting the convert_cycle_xy function (or convert_cycle_yz) into
    the convert_cycle_xz function. However, the canonical interface uses
-   CANON_PLANE_XZ.
+   Plane::XZ.
 
    */
 
@@ -3322,12 +3277,12 @@ repeat--) \
         double j;
         double k;
         double old_cc;
-        CANON_PLANE plane;
+        Plane plane;
         double r;
         int repeat;
-        CANON_MOTION_MODE save_mode;
+        Motion save_mode;
 
-        plane = CANON_PLANE_XZ;
+        plane = Plane::XZ;
         if (settings.motion_mode != motion)
         {
             error_if(!block.y, NCE_Y_VALUE_UNSPECIFIED_IN_XZ_PLANE_CANNED_CYCLE);
@@ -3359,44 +3314,43 @@ repeat--) \
 
         if (old_cc < r)
         {
-            STRAIGHT_TRAVERSE(settings.current.x, r, settings.current.z, 
-                              settings.current.a, settings.current.b, settings.current.c);
+            rapid({settings.current.x, r, settings.current.z, settings.current.a, settings.current.b, settings.current.c});
             old_cc = r;
         }
         clear_cc = (settings.retract_mode == R_PLANE) ? r : old_cc;
 
-        save_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
-        if (save_mode != CANON_EXACT_PATH)
-            SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
+        save_mode = motion_mode();
+        if (save_mode != Motion::Exact_Path)
+            motion_mode(Motion::Exact_Path);
 
         switch(motion)
         {
             case G_81:
-                CYCLE_MACRO(convert_cycle_g81(CANON_PLANE_XZ, aa, bb, clear_cc, cc))
+                CYCLE_MACRO(convert_cycle_g81(Plane::XZ, aa, bb, clear_cc, cc))
                     break;
             case G_82:
                 error_if(((settings.motion_mode != G_82) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
                 block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g82 (CANON_PLANE_XZ, aa, bb, clear_cc, cc, block.p_number))
+                CYCLE_MACRO(convert_cycle_g82 (Plane::XZ, aa, bb, clear_cc, cc, block.p_number))
                     settings.cycle.p = block.p_number;
                 break;
             case G_83:
                 error_if(((settings.motion_mode != G_83) and (block.q_number == -1.0)), NCE_Q_WORD_MISSING_WITH_G83);
                 block.q_number = block.q_number == -1.0 ? settings.cycle.q : block.q_number;
-                CYCLE_MACRO(convert_cycle_g83 (CANON_PLANE_XZ, aa, bb, r, clear_cc, cc, block.q_number))
+                CYCLE_MACRO(convert_cycle_g83 (Plane::XZ, aa, bb, r, clear_cc, cc, block.q_number))
                     settings.cycle.q = block.q_number;
                 break;
             case G_84:
-                CYCLE_MACRO(convert_cycle_g84 (CANON_PLANE_XZ, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g84 (Plane::XZ, aa, bb, clear_cc, cc,
                     settings.spindle_turning, settings.speed_feed_mode))
                     break;
             case G_85:
-                CYCLE_MACRO(convert_cycle_g85 (CANON_PLANE_XZ, aa, bb, clear_cc, cc))
+                CYCLE_MACRO(convert_cycle_g85 (Plane::XZ, aa, bb, clear_cc, cc))
                     break;
             case G_86:
                 error_if(((settings.motion_mode != G_86) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
                 block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g86 (CANON_PLANE_XZ, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g86 (Plane::XZ, aa, bb, clear_cc, cc,
                     block.p_number, settings.spindle_turning))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3417,14 +3371,14 @@ repeat--) \
                 {
                     j = (cc + j);            /* j always absolute in function call below */
                 }
-                CYCLE_MACRO(convert_cycle_g87 (CANON_PLANE_XZ, aa, (aa + k), bb,
+                CYCLE_MACRO(convert_cycle_g87 (Plane::XZ, aa, (aa + k), bb,
                     (bb + i), r, clear_cc, j, cc, settings.spindle_turning))
                     break;
             case G_88:
                 error_if(((settings.motion_mode != G_88) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g88 (CANON_PLANE_XZ, aa, bb, cc,
+                CYCLE_MACRO(convert_cycle_g88 (Plane::XZ, aa, bb, cc,
                     block.p_number, settings.spindle_turning))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3432,7 +3386,7 @@ repeat--) \
                 error_if(((settings.motion_mode != G_89) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
                 block.p_number =
                     block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g89 (CANON_PLANE_XZ, aa, bb, clear_cc, cc,
+                CYCLE_MACRO(convert_cycle_g89 (Plane::XZ, aa, bb, clear_cc, cc,
                     block.p_number))
                     settings.cycle.p = block.p_number;
                 break;
@@ -3444,8 +3398,8 @@ repeat--) \
         settings.current.y = clear_cc;
         settings.cycle.cc = *block.y;
 
-        if (save_mode != CANON_EXACT_PATH)
-            SET_MOTION_CONTROL_MODE(save_mode);
+        if (save_mode != Motion::Exact_Path)
+            motion_mode(save_mode);
     }
 
    /****************************************************************************/
@@ -3479,7 +3433,7 @@ repeat--) \
             if (settings.distance_mode != MODE_ABSOLUTE)
             {
 #ifdef DEBUG_EMC
-                COMMENT("interpreter: distance mode changed to absolute");
+                comment("interpreter: distance mode changed to absolute");
 #endif
                 settings.distance_mode = MODE_ABSOLUTE;
             }
@@ -3489,7 +3443,7 @@ repeat--) \
             if (settings.distance_mode != MODE_INCREMENTAL)
             {
 #ifdef DEBUG_EMC
-                COMMENT("interpreter: distance mode changed to incremental");
+                comment("interpreter: distance mode changed to incremental");
 #endif
                 settings.distance_mode = MODE_INCREMENTAL;
             }
@@ -3514,7 +3468,7 @@ repeat--) \
     void rs274ngc::convert_dwell(                     /* ARGUMENTS                 */
     double time)                                  /* time in seconds to dwell  */
     {
-        DWELL(time);
+        dwell(time);
     }
 
    /****************************************************************************/
@@ -3546,14 +3500,14 @@ repeat--) \
         if (g_code == G_93)
         {
 #ifdef DEBUG_EMC
-            COMMENT("interpreter: feed mode set to inverse time");
+            comment("interpreter: feed mode set to inverse time");
 #endif
             settings.feed_mode = INVERSE_TIME;
         }
         else if (g_code == G_94)
         {
 #ifdef DEBUG_EMC
-            COMMENT("interpreter: feed mode set to units per minute");
+            comment("interpreter: feed mode set to units per minute");
 #endif
             settings.feed_mode = UNITS_PER_MINUTE;
         }
@@ -3582,7 +3536,7 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        SET_FEED_RATE(block.f_number);
+        feed_rate(block.f_number);
         settings.feed_rate = block.f_number;
     }
 
@@ -3747,11 +3701,7 @@ repeat--) \
             );
 
         error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_G28_OR_G30_WITH_CUTTER_RADIUS_COMP);
-        STRAIGHT_TRAVERSE(end_x, end_y, end_z
-            ,           AA_end
-            ,  BB_end
-            ,  CC_end
-            );
+        rapid({end_x, end_y, end_z, AA_end, BB_end, CC_end});
         if (move == G_28)
         {
             find_relative
@@ -3780,11 +3730,7 @@ repeat--) \
         }
         else
             throw error(NCE_BUG_CODE_NOT_G28_OR_G30);
-        STRAIGHT_TRAVERSE(end_x, end_y, end_z
-            ,           AA_end
-            ,  BB_end
-            ,  CC_end
-            );
+        rapid({end_x, end_y, end_z, AA_end, BB_end, CC_end});
         settings.current.x = end_x;
         settings.current.y = end_y;
         settings.current.z = end_z;
@@ -3842,10 +3788,10 @@ repeat--) \
         error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_CHANGE_UNITS_WITH_CUTTER_RADIUS_COMP);
         if (g_code == G_20)
         {
-            USE_LENGTH_UNITS(CANON_UNITS_INCHES);
-            if (settings.length_units != CANON_UNITS_INCHES)
+            units(Units::Imperial);
+            if (settings.length_units != Units::Imperial)
             {
-                settings.length_units = CANON_UNITS_INCHES;
+                settings.length_units = Units::Imperial;
                 settings.current.x = (settings.current.x * INCH_PER_MM);
                 settings.current.y = (settings.current.y * INCH_PER_MM);
                 settings.current.z = (settings.current.z * INCH_PER_MM);
@@ -3865,10 +3811,10 @@ repeat--) \
         }
         else if (g_code == G_21)
         {
-            USE_LENGTH_UNITS(CANON_UNITS_MM);
-            if (settings.length_units != CANON_UNITS_MM)
+            units(Units::Metric);
+            if (settings.length_units != Units::Metric)
             {
-                settings.length_units = CANON_UNITS_MM;
+                settings.length_units = Units::Metric;
                 settings.current.x = (settings.current.x * MM_PER_INCH);
                 settings.current.y = (settings.current.y * MM_PER_INCH);
                 settings.current.z = (settings.current.z * MM_PER_INCH);
@@ -3929,35 +3875,35 @@ repeat--) \
 
         if (block.m_modes[7] == 3)
         {
-            START_SPINDLE_CLOCKWISE();
-            settings.spindle_turning = CANON_CLOCKWISE;
+            spindle_start_clockwise();
+            settings.spindle_turning = Direction::Clockwise;
         }
         else if (block.m_modes[7] == 4)
         {
-            START_SPINDLE_COUNTERCLOCKWISE();
-            settings.spindle_turning = CANON_COUNTERCLOCKWISE;
+            spindle_start_counterclockwise();
+            settings.spindle_turning = Direction::CounterClockwise;
         }
         else if (block.m_modes[7] == 5)
         {
-            STOP_SPINDLE_TURNING();
-            settings.spindle_turning = CANON_STOPPED;
+            spindle_stop();
+            settings.spindle_turning = Direction::Stop;
         }
 
         if (block.m_modes[8] == 7)
         {
-            MIST_ON();
+            coolant_mist_on();
             settings.mist = ON;
         }
         else if (block.m_modes[8] == 8)
         {
-            FLOOD_ON();
+            coolant_flood_on();
             settings.flood = ON;
         }
         else if (block.m_modes[8] == 9)
         {
-            MIST_OFF();
+            coolant_mist_off();
             settings.mist = OFF;
-            FLOOD_OFF();
+            coolant_flood_off();
             settings.flood = OFF;
         }
 
@@ -3965,14 +3911,14 @@ repeat--) \
      if (block.m_modes[2] == 26)
        {
    #ifdef DEBUG_EMC
-   COMMENT("interpreter: automatic A-axis clamping turned on");
+   comment("interpreter: automatic A-axis clamping turned on");
    #endif
    settings.a_axis_clamping = ON;
    }
    else if (block.m_modes[2] == 27)
    {
    #ifdef DEBUG_EMC
-   COMMENT("interpreter: automatic A-axis clamping turned off");
+   comment("interpreter: automatic A-axis clamping turned off");
    #endif
    settings.a_axis_clamping = OFF;
    }
@@ -3980,15 +3926,15 @@ repeat--) \
 
         if (block.m_modes[9] == 48)
         {
-            ENABLE_FEED_OVERRIDE();
-            ENABLE_SPEED_OVERRIDE();
+            feed_override_enable();
+            speed_override_enable();
             settings.feed_override = ON;
             settings.speed_override = ON;
         }
         else if (block.m_modes[9] == 49)
         {
-            DISABLE_FEED_OVERRIDE();
-            DISABLE_SPEED_OVERRIDE();
+            feed_override_disable();
+            speed_override_disable();
             settings.feed_override = OFF;
             settings.speed_override = OFF;
         }
@@ -4085,7 +4031,7 @@ repeat--) \
         else if (motion == G_80)
         {
 #ifdef DEBUG_EMC
-            COMMENT("interpreter: motion mode set to none");
+            comment("interpreter: motion mode set to none");
 #endif
             settings.motion_mode = G_80;
         }
@@ -4160,10 +4106,10 @@ repeat--) \
         distance = sqrt(pow((settings.current.x - end_x), 2) +
             pow((settings.current.y - end_y), 2) +
             pow((settings.current.z - end_z), 2));
-        error_if((distance < ((settings.length_units == CANON_UNITS_MM) ? 0.254 : 0.01)), NCE_START_POINT_TOO_CLOSE_TO_PROBE_POINT);
-        TURN_PROBE_ON();
-        STRAIGHT_PROBE(end_x, end_y, end_z, AA_end, BB_end, CC_end);
-        TURN_PROBE_OFF();
+        error_if((distance < ((settings.length_units == Units::Metric) ? 0.254 : 0.01)), NCE_START_POINT_TOO_CLOSE_TO_PROBE_POINT);
+        probe_on();
+        probe({end_x, end_y, end_z, AA_end, BB_end, CC_end});
+        probe_off();
         settings.motion_mode = G_38_2;
         settings.probe_flag = ON;
     }
@@ -4196,14 +4142,14 @@ repeat--) \
         if (g_code == G_98)
         {
 #ifdef DEBUG_EMC
-            COMMENT("interpreter: retract mode set to old_z");
+            comment("interpreter: retract mode set to old_z");
 #endif
             settings.retract_mode = OLD_Z;
         }
         else if (g_code == G_99)
         {
 #ifdef DEBUG_EMC
-            COMMENT("interpreter: retract mode set to r_plane");
+            comment("interpreter: retract mode set to r_plane");
 #endif
             settings.retract_mode = R_PLANE;
         }
@@ -4328,17 +4274,12 @@ repeat--) \
             settings.current.b = (settings.current.b - b);
             settings.current.c = (settings.current.c - c);
 
-            SET_ORIGIN_OFFSETS(x + settings.axis_offset.x,
-                y + settings.axis_offset.y,
-                z + settings.axis_offset.z
-                ,            a + settings.axis_offset.a
-                ,            b + settings.axis_offset.b
-                ,            c + settings.axis_offset.c
-                );
+            offset_origin({x + settings.axis_offset.x, y + settings.axis_offset.y, z + settings.axis_offset.z, 
+            	a + settings.axis_offset.a, b + settings.axis_offset.b, c + settings.axis_offset.c});
         }
 #ifdef DEBUG_EMC
         else
-            COMMENT("interpreter: setting coordinate system origin");
+            comment("interpreter: setting coordinate system origin");
 #endif
     }
 
@@ -4368,20 +4309,20 @@ repeat--) \
     {
         if (g_code == G_17)
         {
-            SELECT_PLANE(CANON_PLANE_XY);
-            settings.plane = CANON_PLANE_XY;
+            plane(Plane::XY);
+            settings.plane = Plane::XY;
         }
         else if (g_code == G_18)
         {
             error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_XZ_PLANE_WITH_CUTTER_RADIUS_COMP);
-            SELECT_PLANE(CANON_PLANE_XZ);
-            settings.plane = CANON_PLANE_XZ;
+            plane(Plane::XZ);
+            settings.plane = Plane::XZ;
         }
         else if (g_code == G_19)
         {
             error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_YZ_PLANE_WITH_CUTTER_RADIUS_COMP);
-            SELECT_PLANE(CANON_PLANE_YZ);
-            settings.plane = CANON_PLANE_YZ;
+            plane(Plane::YZ);
+            settings.plane = Plane::YZ;
         }
         else
             throw error(NCE_BUG_CODE_NOT_G17_G18_OR_G19);
@@ -4395,7 +4336,7 @@ repeat--) \
 
    Side effects:
    The machine spindle speed is set to the value of s_number in the
-   block by a call to SET_SPINDLE_SPEED.
+   block by a call to spindle_speed.
    The machine model for spindle speed is set to that value.
 
    Called by: execute_block.
@@ -4406,7 +4347,7 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        SET_SPINDLE_SPEED(block.s_number);
+        spindle_speed(block.s_number);
         settings.speed = block.s_number;
     }
 
@@ -4423,12 +4364,12 @@ repeat--) \
    Side effects:
    An m0, m1, m2, m30, or m60 in the block is executed.
 
-   For m0, m1, and m60, this makes a function call to the PROGRAM_STOP
+   For m0, m1, and m60, this makes a function call to the program_stop
    canonical machining function (which stops program execution).
-   In addition, m60 calls PALLET_SHUTTLE.
+   In addition, m60 calls pallet_shuttle.
 
-   For m2 and m30, this resets the machine and then calls PROGRAM_END.
-   In addition, m30 calls PALLET_SHUTTLE.
+   For m2 and m30, this resets the machine and then calls program_end.
+   In addition, m30 calls pallet_shuttle.
 
    Called by: execute_block.
 
@@ -4459,17 +4400,17 @@ repeat--) \
    canonical machining command and/or by resetting interpreter
    settings. They occur on M2 or M30.
 
-   1. Axis offsets are set to zero (like g92.2) and      - SET_ORIGIN_OFFSETS
+   1. Axis offsets are set to zero (like g92.2) and      - offset_origin
    origin offsets are set to the default (like G54)
-   2. Selected plane is set to CANON_PLANE_XY (like G17) - SELECT_PLANE
+   2. Selected plane is set to Plane::XY (like G17) - plane
    3. Distance mode is set to MODE_ABSOLUTE (like G90)   - no canonical call
    4. Feed mode is set to UNITS_PER_MINUTE (like G94)    - no canonical call
-   5. Feed and speed overrides are set to ON (like M48)  - ENABLE_FEED_OVERRIDE
-   - ENABLE_SPEED_OVERRIDE
+   5. Feed and speed overrides are set to ON (like M48)  - feed_override_enable
+   - speed_override_enable
    6. Cutter compensation is turned off (like G40)       - no canonical call
-   7. The spindle is stopped (like M5)                   - STOP_SPINDLE_TURNING
+   7. The spindle is stopped (like M5)                   - spindle_stop
    8. The motion mode is set to G_1 (like G1)            - no canonical call
-   9. Coolant is turned off (like M9)                    - FLOOD_OFF & MIST_OFF
+   9. Coolant is turned off (like M9)                    - coolant_flood_off & coolant_mist_off
 
    */
 
@@ -4479,16 +4420,16 @@ repeat--) \
     {
         if (block.m_modes[4] == 0)
         {
-            PROGRAM_STOP();
+            program_stop();
         }
         else if (block.m_modes[4] == 60)
         {
-            PALLET_SHUTTLE();
-            PROGRAM_STOP();
+            pallet_shuttle();
+            program_stop();
         }
         else if (block.m_modes[4] == 1)
         {
-            OPTIONAL_PROGRAM_STOP();
+            program_optional_stop();
         }
         else if ((block.m_modes[4] == 2) or (block.m_modes[4] == 30))
         {                                         /* reset stuff here */
@@ -4535,18 +4476,13 @@ repeat--) \
             settings.current.c = settings.current.c -
                 settings.origin_offset.c;       /*CC*/
 
-            SET_ORIGIN_OFFSETS(settings.origin_offset.x,
-                settings.origin_offset.y,
-                settings.origin_offset.z
-                ,            settings.origin_offset.a
-                ,            settings.origin_offset.b
-                ,            settings.origin_offset.c
-                );
+            offset_origin({settings.origin_offset.x, settings.origin_offset.y, settings.origin_offset.z,            
+            	settings.origin_offset.a, settings.origin_offset.b, settings.origin_offset.c});
 
-            /*2*/ if (settings.plane != CANON_PLANE_XY)
+            /*2*/ if (settings.plane != Plane::XY)
             {
-                SELECT_PLANE(CANON_PLANE_XY);
-                settings.plane = CANON_PLANE_XY;
+                plane(Plane::XY);
+                settings.plane = Plane::XY;
             }
 
             /*3*/ settings.distance_mode = MODE_ABSOLUTE;
@@ -4555,37 +4491,37 @@ repeat--) \
 
             /*5*/ if (settings.feed_override != ON)
             {
-                ENABLE_FEED_OVERRIDE();
+                feed_override_enable();
                 settings.feed_override = ON;
             }
             if (settings.speed_override != ON)
             {
-                ENABLE_SPEED_OVERRIDE();
+                speed_override_enable();
                 settings.speed_override = ON;
             }
 
             /*6*/ settings.cutter_comp_side = OFF;
             settings.program_x = UNKNOWN;
 
-            /*7*/ STOP_SPINDLE_TURNING();
-            settings.spindle_turning = CANON_STOPPED;
+            /*7*/ spindle_stop();
+            settings.spindle_turning = Direction::Stop;
 
             /*8*/ settings.motion_mode = G_1;
 
             /*9*/ if (settings.mist == ON)
             {
-                MIST_OFF();
+                coolant_mist_off();
                 settings.mist = OFF;
             }
             if (settings.flood == ON)
             {
-                FLOOD_OFF();
+                coolant_flood_off();
                 settings.flood = OFF;
             }
 
             if (block.m_modes[4] == 30)
-                PALLET_SHUTTLE();
-            PROGRAM_END();
+                pallet_shuttle();
+            program_end();
             return RS274NGC_EXIT;
         }
         else
@@ -4616,12 +4552,12 @@ repeat--) \
    NCE_CANNOT_USE_G53_WITH_CUTTER_RADIUS_COMP
 
    Side effects:
-   This executes a STRAIGHT_FEED command at cutting feed rate
-   (if move is G_1) or a STRAIGHT_TRAVERSE command (if move is G_0).
+   This executes a linear command at cutting feed rate
+   (if move is G_1) or a rapid command (if move is G_0).
    It also updates the setting of the position of the tool point to the
    end point of the move. If cutter radius compensation is on, it may
    also generate an arc before the straight move. Also, in INVERSE_TIME
-   feed mode, SET_FEED_RATE will be called the feed rate setting changed.
+   feed mode, feed_rate will be called the feed rate setting changed.
 
    Called by: convert_motion.
 
@@ -4693,11 +4629,7 @@ repeat--) \
         }
         else if (move == G_0)
         {
-            STRAIGHT_TRAVERSE(end_x, end_y, end_z
-                ,           AA_end
-                ,  BB_end
-                ,  CC_end
-                );
+            rapid({end_x, end_y, end_z, AA_end, BB_end, CC_end});
             settings.current.x = end_x;
             settings.current.y = end_y;
         }
@@ -4710,11 +4642,7 @@ repeat--) \
                     , BB_end
                     , CC_end
                     , block, settings);
-            STRAIGHT_FEED(end_x, end_y, end_z
-                ,           AA_end
-                ,  BB_end
-                ,  CC_end
-                );
+            linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
             settings.current.x = end_x;
             settings.current.y = end_y;
         }
@@ -4743,7 +4671,7 @@ repeat--) \
 
    Side effects:
    This executes a STRAIGHT_MOVE command at cutting feed rate
-   or a STRAIGHT_TRAVERSE command.
+   or a rapid command.
    It also updates the setting of the position of the tool point
    to the end point of the move and updates the programmed point.
    If INVERSE_TIME feed rate mode is in effect, it resets the feed rate.
@@ -4800,11 +4728,7 @@ repeat--) \
         cx = (px + (radius * cos(alpha)));   /* reset to end location */
         cy = (py + (radius * sin(alpha)));
         if (move == G_0)
-            STRAIGHT_TRAVERSE(cx, cy, end_z
-                ,             AA_end
-                ,  BB_end
-                ,  CC_end
-                );
+            rapid({cx, cy, end_z, AA_end, BB_end, CC_end});
         else if (move == G_1)
         {
             if (settings.feed_mode == INVERSE_TIME)
@@ -4814,11 +4738,7 @@ repeat--) \
                     , BB_end
                     , CC_end
                     , block, settings);
-            STRAIGHT_FEED(cx, cy, end_z
-                ,           AA_end
-                ,  BB_end
-                ,  CC_end
-                );
+            linear({cx, cy, end_z, AA_end, BB_end, CC_end});
         }
         else
             throw error(NCE_BUG_CODE_NOT_G0_OR_G1);
@@ -4842,12 +4762,12 @@ repeat--) \
    NCE_CONCAVE_CORNER_WITH_CUTTER_RADIUS_COMP
 
    Side effects:
-   This executes a STRAIGHT_FEED command at cutting feed rate
-   or a STRAIGHT_TRAVERSE command.
-   It also generates an ARC_FEED to go around a corner, if necessary.
+   This executes a linear command at cutting feed rate
+   or a rapid command.
+   It also generates an arc to go around a corner, if necessary.
    It also updates the setting of the position of the tool point to
    the end point of the move and updates the programmed point.
-   If INVERSE_TIME feed mode is in effect, it also calls SET_FEED_RATE
+   If INVERSE_TIME feed mode is in effect, it also calls feed_rate
    and resets the feed rate in the machine model.
 
    Called by: convert_straight.
@@ -4895,7 +4815,7 @@ repeat--) \
    This handles the case of there being no XY motion.
 
    This handles G0 moves. Where an arc is inserted to round a corner in a
-   G1 move, no arc is inserted for a G0 move; a STRAIGHT_TRAVERSE is made
+   G1 move, no arc is inserted for a G0 move; a rapid is made
    from the current point to the end point. The end point for a G0
    move is the same as the end point for a G1 move, however.
 
@@ -4934,11 +4854,7 @@ repeat--) \
             end_x = settings.current.x;
             end_y = settings.current.y;
             if (move == G_0)
-                STRAIGHT_TRAVERSE(end_x, end_y, end_z
-                    ,             AA_end
-                    ,  BB_end
-                    ,  CC_end
-                    );
+                rapid({end_x, end_y, end_z, AA_end, BB_end, CC_end});
             else if (move == G_1)
             {
                 if (settings.feed_mode == INVERSE_TIME)
@@ -4948,11 +4864,7 @@ repeat--) \
                         , BB_end
                         , CC_end
                         , block, settings);
-                STRAIGHT_FEED(end_x, end_y, end_z
-                    ,           AA_end
-                    ,  BB_end
-                    ,  CC_end
-                    );
+                linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
             }
             else
                 throw error(NCE_BUG_CODE_NOT_G0_OR_G1);
@@ -4989,50 +4901,25 @@ repeat--) \
 
             error_if(((beta < -small) or (beta > (PI + small))), NCE_CONCAVE_CORNER_WITH_CUTTER_RADIUS_COMP);
             if (move == G_0)
-                STRAIGHT_TRAVERSE(end_x, end_y, end_z
-                    ,             AA_end
-                    ,  BB_end
-                    ,  CC_end
-                    );
+                rapid({end_x, end_y, end_z, AA_end, BB_end, CC_end});
             else if (move == G_1)
             {
                 if (beta > small)                 /* ARC NEEDED */
                 {
                     if (settings.feed_mode == INVERSE_TIME)
                         inverse_time_rate_as(start_x, start_y, (side == LEFT) ? -1 : 1,
-                        mid_x, mid_y, end_x, end_y,
-                        end_z
-                        , AA_end
-                        , BB_end
-                        , CC_end
-                        ,
-                        block, settings);
-                    ARC_FEED(mid_x,mid_y,start_x, start_y,((side == LEFT) ? -1 : 1),
-                        settings.current.z
-                        , AA_end
-                        , BB_end
-                        , CC_end
-                        );
-                    STRAIGHT_FEED(end_x, end_y, end_z
-                        ,               AA_end
-                        ,  BB_end
-                        ,  CC_end
-                        );
+                        mid_x, mid_y, end_x, end_y, end_z, 
+                        AA_end, BB_end, CC_end, block, settings);
+                    arc(mid_x,mid_y,start_x, start_y, ((side == LEFT) ? -1 : 1), settings.current.z, AA_end, BB_end, CC_end);
+                    linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
                 }
                 else
                 {
                     if (settings.feed_mode == INVERSE_TIME)
                         inverse_time_rate_straight
-                            (end_x,end_y,end_z
-                            , AA_end
-                            , BB_end
-                            , CC_end
-                            , block, settings);
-                    STRAIGHT_FEED(end_x, end_y, end_z
-                        ,               AA_end
-                        ,  BB_end
-                        ,  CC_end
-                        );
+                            (end_x,end_y,end_z, 
+                            AA_end, BB_end, CC_end, block, settings);
+                    linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
                 }
             }
             else
@@ -5058,7 +4945,7 @@ repeat--) \
    Called by: convert_m
 
    This function carries out an m6 command, which changes the tool in the
-   spindle. The only function call this makes is to the CHANGE_TOOL
+   spindle. The only function call this makes is to the tool_change
    function. The semantics of this function call is that when it is
    completely carried out, the tool that was selected is in the spindle,
    the tool that was in the spindle (if any) is returned to its changer
@@ -5078,9 +4965,9 @@ repeat--) \
    function can retrieve them and reset any settings that have changed.
    Fixed values could even be hard coded in this function.
 
-   2. Allow the executor of the CHANGE_TOOL function to change the state
+   2. Allow the executor of the tool_change function to change the state
    of the world however it pleases, and have the interpreter read the
-   executor's world model after the CHANGE_TOOL function is carried out.
+   executor's world model after the tool_change function is carried out.
    Implementing this would require a change in other parts of the EMC
    system, since calls to the interpreter would then have to be
    interleaved with execution of the function calls output by the
@@ -5095,8 +4982,8 @@ repeat--) \
 
    Note that if a different tool is put into the spindle, the current_z
    location setting may be incorrect for a time. It is assumed the
-   program will contain an appropriate USE_TOOL_LENGTH_OFFSET command
-   near the CHANGE_TOOL command, so that the incorrect setting is only
+   program will contain an appropriate tool_length_offset command
+   near the tool_change command, so that the incorrect setting is only
    temporary.
 
    In [NCMS, page 73, 74] there are three other legal approaches in addition
@@ -5107,9 +4994,9 @@ repeat--) \
     void rs274ngc::convert_tool_change(               /* ARGUMENTS                   */
     setup_t& settings)                       /* pointer to machine settings */
     {
-        CHANGE_TOOL(settings.selected_tool_slot);
+        tool_change(settings.selected_tool_slot);
         settings.current_slot = settings.selected_tool_slot;
-        settings.spindle_turning = CANON_STOPPED;
+        settings.spindle_turning = Direction::Stop;
     }
 
    /****************************************************************************/
@@ -5124,17 +5011,17 @@ repeat--) \
    NCE_BUG_CODE_NOT_G43_OR_G49
 
    Side effects:
-   A USE_TOOL_LENGTH_OFFSET function call is made. Current_z,
+   A tool_length_offset function call is made. Current_z,
    tool_length_offset, and length_offset_index are reset.
 
    Called by: convert_g
 
    This is called to execute g43 or g49.
 
-   The g49 RS274/NGC command translates into a USE_TOOL_LENGTH_OFFSET(0.0)
+   The g49 RS274/NGC command translates into a tool_length_offset(0.0)
    function call.
 
-   The g43 RS274/NGC command translates into a USE_TOOL_LENGTH_OFFSET(length)
+   The g43 RS274/NGC command translates into a tool_length_offset(length)
    function call, where length is the value of the entry in the tool length
    offset table whose index is the H number in the block.
 
@@ -5153,9 +5040,8 @@ repeat--) \
 
         if (g_code == G_49)
         {
-            USE_TOOL_LENGTH_OFFSET(0.0);
-            settings.current.z = (settings.current.z +
-                settings.tool_length_offset);
+            tool_length_offset(0.0);
+            settings.current.z = (settings.current.z + settings.tool_length_offset);
             settings.tool_length_offset = 0.0;
             settings.length_offset_index = 0;
         }
@@ -5164,9 +5050,8 @@ repeat--) \
             index = block.h_number;
             error_if(index == -1, NCE_OFFSET_INDEX_MISSING);
             offset = settings.tool_table[index].length;
-            USE_TOOL_LENGTH_OFFSET(offset);
-            settings.current.z =
-                (settings.current.z + settings.tool_length_offset - offset);
+            tool_length_offset(offset);
+            settings.current.z = (settings.current.z + settings.tool_length_offset - offset);
             settings.tool_length_offset = offset;
             settings.length_offset_index = index;
         }
@@ -5205,7 +5090,7 @@ repeat--) \
     setup_t& settings)                       /* pointer to machine settings              */
     {
         error_if(block.t_number > settings.tool_max, NCE_SELECTED_TOOL_SLOT_NUMBER_TOO_LARGE);
-        SELECT_TOOL(block.t_number);
+        tool_select(block.t_number);
         settings.selected_tool_slot = block.t_number;
     }
 
@@ -5216,7 +5101,7 @@ repeat--) \
    Returned Value: int (RS274NGC_OK)
 
    Side effects:
-   STRAIGHT_FEED is called.
+   linear is called.
 
    Called by:
    convert_cycle_g81
@@ -5229,35 +5114,23 @@ repeat--) \
    convert_cycle_g88
    convert_cycle_g89
 
-   This writes a STRAIGHT_FEED command appropriate for a cycle move with
+   This writes a linear command appropriate for a cycle move with
    respect to the given plane. No rotary axis motion takes place.
 
    */
 
     void rs274ngc::cycle_feed(                        /* ARGUMENTS                  */
-    CANON_PLANE plane,                            /* currently selected plane   */
+    Plane plane,                            /* currently selected plane   */
     double end1,                                  /* first coordinate value     */
     double end2,                                  /* second coordinate value    */
     double end3)                                  /* third coordinate value     */
     {
-        if (plane == CANON_PLANE_XY)
-            STRAIGHT_FEED(end1, end2, end3
-                ,         _setup.current.a
-                ,  _setup.current.b
-                ,  _setup.current.c
-                );
-        else if (plane == CANON_PLANE_YZ)
-            STRAIGHT_FEED(end3, end1, end2
-                    ,         _setup.current.a
-                    ,  _setup.current.b
-                    ,  _setup.current.c
-                    );
-        else                                      /* if (plane == CANON_PLANE_XZ) */
-            STRAIGHT_FEED(end2, end3, end1
-                ,         _setup.current.a
-                ,  _setup.current.b
-                ,  _setup.current.c
-                );
+        if (plane == Plane::XY)
+            linear({end1, end2, end3, _setup.current.a, _setup.current.b, _setup.current.c});
+        else if (plane == Plane::YZ)
+            linear({end3, end1, end2, _setup.current.a, _setup.current.b, _setup.current.c});
+        else                                      /* if (plane == Plane::XZ) */
+            linear({end2, end3, end1, _setup.current.a, _setup.current.b, _setup.current.c});
     }
 
    /****************************************************************************/
@@ -5267,7 +5140,7 @@ repeat--) \
    Returned Value: int (RS274NGC_OK)
 
    Side effects:
-   STRAIGHT_TRAVERSE is called.
+   rapid is called.
 
    Called by:
    convert_cycle
@@ -5280,35 +5153,23 @@ repeat--) \
    convert_cycle_yz (via CYCLE_MACRO)
    convert_cycle_zx (via CYCLE_MACRO)
 
-   This writes a STRAIGHT_TRAVERSE command appropriate for a cycle
+   This writes a rapid command appropriate for a cycle
    move with respect to the given plane. No rotary axis motion takes place.
 
    */
 
     void rs274ngc::cycle_traverse(                    /* ARGUMENTS                 */
-    CANON_PLANE plane,                            /* currently selected plane  */
+    Plane plane,                            /* currently selected plane  */
     double end1,                                  /* first coordinate value    */
     double end2,                                  /* second coordinate value   */
     double end3)                                  /* third coordinate value    */
     {
-        if (plane == CANON_PLANE_XY)
-            STRAIGHT_TRAVERSE(end1, end2, end3
-                ,             _setup.current.a
-                ,  _setup.current.b
-                ,  _setup.current.c
-                );
-        else if (plane == CANON_PLANE_YZ)
-            STRAIGHT_TRAVERSE(end3, end1, end2
-                    ,             _setup.current.a
-                    ,  _setup.current.b
-                    ,  _setup.current.c
-                    );
-        else                                      /* if (plane == CANON_PLANE_XZ) */
-            STRAIGHT_TRAVERSE(end2, end3, end1
-                ,             _setup.current.a
-                ,  _setup.current.b
-                ,  _setup.current.c
-                );
+        if (plane == Plane::XY)
+            rapid({end1, end2, end3, _setup.current.a, _setup.current.b, _setup.current.c});
+        else if (plane == Plane::YZ)
+            rapid({end3, end1, end2, _setup.current.a, _setup.current.b, _setup.current.c});
+        else                                      /* if (plane == Plane::XZ) */
+            rapid({end2, end3, end1, _setup.current.a, _setup.current.b, _setup.current.c});
     }
 
    /****************************************************************************/
@@ -5814,7 +5675,7 @@ repeat--) \
         if (block.g_modes[0] == G_53)            /* distance mode is absolute in this case */
         {
 #ifdef DEBUG_EMC
-            COMMENT("interpreter: offsets temporarily suspended");
+            comment("interpreter: offsets temporarily suspended");
 #endif
             *px = block.x ? (*block.x - (settings.origin_offset.x + settings.axis_offset.x)) : settings.current.x;
             *py = block.y ? (*block.y - (settings.origin_offset.y + settings.axis_offset.y)) : settings.current.y;
@@ -6016,7 +5877,7 @@ repeat--) \
 
    Returned Value: int (RS274NGC_OK)
 
-   Side effects: a call is made to SET_FEED_RATE and _setup.feed_rate is set.
+   Side effects: a call is made to feed_rate and _setup.feed_rate is set.
 
    Called by:
    convert_arc2
@@ -6047,7 +5908,7 @@ repeat--) \
 
         length = find_arc_length (x1, y1, z1, cx, cy, turn, x2, y2, z2);
         rate = std::max(0.1, (length * block.f_number));
-        SET_FEED_RATE (rate);
+        feed_rate (rate);
         settings.feed_rate = rate;
     }
 
@@ -6057,7 +5918,7 @@ repeat--) \
 
    Returned Value: int (RS274NGC_OK)
 
-   Side effects: a call is made to SET_FEED_RATE and _setup.feed_rate is set.
+   Side effects: a call is made to feed_rate and _setup.feed_rate is set.
 
    Called by: convert_arc_comp2
 
@@ -6097,7 +5958,7 @@ repeat--) \
             find_arc_length(mid_x, mid_y, settings.current.z,
             cx, cy, turn2, end_x, end_y, end_z));
         rate = std::max(0.1, (length * block.f_number));
-        SET_FEED_RATE (rate);
+        feed_rate (rate);
         settings.feed_rate = rate;
     }
 
@@ -6107,7 +5968,7 @@ repeat--) \
 
    Returned Value: int (RS274NGC_OK)
 
-   Side effects: a call is made to SET_FEED_RATE and _setup.feed_rate is set.
+   Side effects: a call is made to feed_rate and _setup.feed_rate is set.
 
    Called by: convert_straight_comp2
 
@@ -6142,22 +6003,18 @@ repeat--) \
         double length;
         double rate;
 
-        length = (find_arc_length (settings.current.x, settings.current.y,
-            settings.current.z, start_x, start_y,
-            turn, mid_x, mid_y, settings.current.z) +
-            find_straight_length(end_x, end_y,
-            end_z
-            , AA_end
-            , BB_end
-            , CC_end
-            , mid_x, mid_y,
-            settings.current.z
-            , AA_end
-            , BB_end
-            , CC_end
-            ));
+        length = (
+        	find_arc_length (settings.current.x, settings.current.y,
+		        settings.current.z, start_x, start_y,
+		        turn, mid_x, mid_y, settings.current.z)
+		    +
+            find_straight_length(end_x, end_y, end_z, 
+		        AA_end, BB_end, CC_end, 
+		        mid_x, mid_y, settings.current.z, 
+		        AA_end, BB_end, CC_end));
+		        
         rate = std::max(0.1, (length * block.f_number));
-        SET_FEED_RATE (rate);
+        feed_rate (rate);
         settings.feed_rate = rate;
     }
 
@@ -6167,7 +6024,7 @@ repeat--) \
 
    Returned Value: int (RS274NGC_OK)
 
-   Side effects: a call is made to SET_FEED_RATE and _setup.feed_rate is set.
+   Side effects: a call is made to feed_rate and _setup.feed_rate is set.
 
    Called by:
    convert_straight
@@ -6193,19 +6050,12 @@ repeat--) \
         double rate;
 
         length = find_straight_length
-            (end_x, end_y, end_z
-            , AA_end
-            , BB_end
-            , CC_end
-            , settings.current.x,
-            settings.current.y, settings.current.z
-
-            , settings.current.a
-            , settings.current.b
-            , settings.current.c
-            );
+            (end_x, end_y, end_z, 
+            AA_end, BB_end, CC_end, 
+            settings.current.x, settings.current.y, settings.current.z, 
+            settings.current.a, settings.current.b, settings.current.c);
         rate = std::max(0.1, (length * block.f_number));
-        SET_FEED_RATE (rate);
+        feed_rate (rate);
         settings.feed_rate = rate;
     }
 
@@ -8458,7 +8308,7 @@ repeat--) \
    1. The end of the file is found and the percent_flag is ON:
    NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN
    2. The end of the file is found and the percent_flag is OFF:
-   NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN_OR_PROGRAM_END
+   NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN_OR_program_end
    3. The command argument is not null and is too long or the command
    argument is null and the line read from the file is too long:
    NCE_COMMAND_TOO_LONG
@@ -8735,19 +8585,15 @@ repeat--) \
     void rs274ngc::set_probe_data(                    /* ARGUMENTS                   */
     setup_t& settings)                       /* pointer to machine settings */
     {
-        settings.current.x = GET_EXTERNAL_POSITION_X();
-        settings.current.y = GET_EXTERNAL_POSITION_Y();
-        settings.current.z = GET_EXTERNAL_POSITION_Z();
-        settings.current.a = GET_EXTERNAL_POSITION_A();
-        settings.current.b = GET_EXTERNAL_POSITION_B();
-        settings.current.c = GET_EXTERNAL_POSITION_C();
-        settings.parameters[5061] = GET_EXTERNAL_PROBE_POSITION_X();
-        settings.parameters[5062] = GET_EXTERNAL_PROBE_POSITION_Y();
-        settings.parameters[5063] = GET_EXTERNAL_PROBE_POSITION_Z();
-        settings.parameters[5064] = GET_EXTERNAL_PROBE_POSITION_A();
-        settings.parameters[5065] = GET_EXTERNAL_PROBE_POSITION_B();
-        settings.parameters[5066] = GET_EXTERNAL_PROBE_POSITION_C();
-        settings.parameters[5067] = GET_EXTERNAL_PROBE_VALUE();
+        settings.current = current_position();
+        auto probe_pos = probe_position();
+        settings.parameters[5061] = probe_pos.x;
+        settings.parameters[5062] = probe_pos.y;
+        settings.parameters[5063] = probe_pos.z;
+        settings.parameters[5064] = probe_pos.a;
+        settings.parameters[5065] = probe_pos.b;
+        settings.parameters[5066] = probe_pos.c;
+        settings.parameters[5067] = probe_value();
     }
 
    /****************************************************************************/
@@ -8805,27 +8651,23 @@ repeat--) \
         gez[1] = settings.motion_mode;
         gez[2] = ((block == NULL) ? -1 : block->g_modes[0]);
         gez[3] =
-            (settings.plane == CANON_PLANE_XY) ? G_17 :
-        (settings.plane == CANON_PLANE_XZ) ? G_18 : G_19;
+            (settings.plane == Plane::XY) ? G_17 : (settings.plane == Plane::XZ) ? G_18 : G_19;
         gez[4] =
-            (settings.cutter_comp_side == RIGHT) ? G_42 :
-        (settings.cutter_comp_side == LEFT) ? G_41 : G_40;
+            (settings.cutter_comp_side == RIGHT) ? G_42 : (settings.cutter_comp_side == LEFT) ? G_41 : G_40;
         gez[5] =
-            (settings.length_units == CANON_UNITS_INCHES) ? G_20 : G_21;
+            (settings.length_units == Units::Imperial) ? G_20 : G_21;
         gez[6] =
             (settings.distance_mode == MODE_ABSOLUTE) ? G_90 : G_91;
         gez[7] =
             (settings.feed_mode == INVERSE_TIME) ? G_93 : G_94;
         gez[8] =
-            (settings.origin_index < 7) ? (530 + (10 * settings.origin_index)) :
-        (584 + settings.origin_index);
+            (settings.origin_index < 7) ? (530 + (10 * settings.origin_index)) : (584 + settings.origin_index);
         gez[9] =
             (settings.tool_length_offset == 0.0) ? G_49 : G_43;
         gez[10] =
             (settings.retract_mode == OLD_Z) ? G_98 : G_99;
         gez[11] =
-            (settings.control_mode == CANON_CONTINUOUS) ? G_64 :
-        (settings.control_mode == CANON_EXACT_PATH) ? G_61 : G_61_1;
+            (settings.control_mode == Motion::Continious) ? G_64 : (settings.control_mode == Motion::Exact_Path) ? G_61 : G_61_1;
     }
 
    /****************************************************************************/
@@ -8858,8 +8700,8 @@ repeat--) \
             (block == NULL) ? -1 : block->m_modes[4];/* 1 stopping    */
         emz[2] =
    /* 2 spindle     */
-            (settings.spindle_turning == CANON_STOPPED) ? 5 :
-        (settings.spindle_turning == CANON_CLOCKWISE) ? 3 : 4;
+            (settings.spindle_turning == Direction::Stop) ? 5 :
+        (settings.spindle_turning == Direction::Clockwise) ? 3 : 4;
         emz[3] =                             /* 3 tool change */
             (block == NULL) ? -1 : block->m_modes[6];
         emz[4] =                             /* 4 mist        */
@@ -8976,7 +8818,7 @@ repeat--) \
     {
         char file_name[RS274NGC_TEXT_SIZE];
 
-        GET_EXTERNAL_PARAMETER_FILE_NAME(file_name, (RS274NGC_TEXT_SIZE - 1));
+        get_parameter_filename(file_name, (RS274NGC_TEXT_SIZE - 1));
         save_parameters
             (((file_name[0] == 0) ? RS274NGC_PARAMETER_FILE_NAME_DEFAULT : file_name),
             _setup.parameters);
@@ -8996,9 +8838,9 @@ repeat--) \
 
    Side Effects:
    Many values in the _setup structure are reset.
-   A USE_LENGTH_UNITS canonical command call is made.
+   A units canonical command call is made.
    A SET_FEED_REFERENCE canonical command call is made.
-   A SET_ORIGIN_OFFSETS canonical command call is made.
+   A offset_origin canonical command call is made.
    An INIT_CANON call is made.
 
    Called By: external programs
@@ -9016,10 +8858,10 @@ repeat--) \
         char filename[RS274NGC_TEXT_SIZE];
         double * pars;                            // short name for _setup.parameters
 
-        INIT_CANON();
-        _setup.length_units = GET_EXTERNAL_LENGTH_UNIT_TYPE();
-        USE_LENGTH_UNITS(_setup.length_units);
-        GET_EXTERNAL_PARAMETER_FILE_NAME(filename, RS274NGC_TEXT_SIZE);
+        interp_init();
+        _setup.length_units = units();
+        units(_setup.length_units);
+        get_parameter_filename(filename, RS274NGC_TEXT_SIZE);
         if (filename[0] == 0)
             strcpy(filename, RS274NGC_PARAMETER_FILE_NAME_DEFAULT);
         restore_parameters(filename);
@@ -9028,14 +8870,9 @@ repeat--) \
         error_if(((_setup.origin_index < 1) or (_setup.origin_index > 9)),
             NCE_COORDINATE_SYSTEM_INDEX_PARAMETER_5220_OUT_OF_RANGE);
         k = (5200 + (_setup.origin_index * 20));
-        SET_ORIGIN_OFFSETS((pars[k + 1] + pars[5211]),
-            (pars[k + 2] + pars[5212]),
-            (pars[k + 3] + pars[5213])
-            ,            (pars[k + 4] + pars[5214])
-            ,            (pars[k + 5] + pars[5215])
-            ,            (pars[k + 6] + pars[5216])
-            );
-        SET_FEED_REFERENCE(CANON_XYZ);
+        offset_origin({(pars[k + 1] + pars[5211]), (pars[k + 2] + pars[5212]), (pars[k + 3] + pars[5213]), 
+        	(pars[k + 4] + pars[5214]), (pars[k + 5] + pars[5215]), (pars[k + 6] + pars[5216])});
+        feed_reference(FeedReference::XYZ);
         _setup.axis_offset.a = pars[5214];  /*AA*/
    //_setup.current.a set in rs274ngc_synch
         _setup.origin_offset.a = pars[k + 4];
@@ -9087,7 +8924,7 @@ repeat--) \
    //_setup.selected_tool_slot set in rs274ngc_synch
         _setup.sequence_number = 0;          /*DOES THIS NEED TO BE AT TOP? */
    //_setup.speed set in rs274ngc_synch
-        _setup.speed_feed_mode = CANON_INDEPENDENT;
+        _setup.speed_feed_mode = SpeedFeedMode::Independant;
         _setup.speed_override = ON;
    //_setup.spindle_turning set in rs274ngc_synch
    //_setup.stack does not need initialization
@@ -9137,7 +8974,7 @@ repeat--) \
         error_if(_setup.tool_max > CANON_TOOL_MAX, NCE_TOOL_MAX_TOO_LARGE);
         for (n = 0; n <= _setup.tool_max; n++)
         {
-            _setup.tool_table[n] = GET_EXTERNAL_TOOL_TABLE(n);
+            _setup.tool_table[n] = tool(n);
         }
         for(; n <= CANON_TOOL_MAX; n++)
         {
@@ -9185,7 +9022,7 @@ repeat--) \
 
         if (_setup.probe_flag == ON)
         {
-            error_if(GET_EXTERNAL_QUEUE_EMPTY() == 0, NCE_QUEUE_IS_NOT_EMPTY_AFTER_PROBING);
+            error_if(!queue_empty(), NCE_QUEUE_IS_NOT_EMPTY_AFTER_PROBING);
             set_probe_data(_setup);
             _setup.probe_flag = OFF;
         }
@@ -9470,24 +9307,19 @@ repeat--) \
 
     void rs274ngc::synch()                          /* NO ARGUMENTS */
     {
-        _setup.control_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
-        _setup.current.a = GET_EXTERNAL_POSITION_A();
-        _setup.current.b = GET_EXTERNAL_POSITION_B();
-        _setup.current.c = GET_EXTERNAL_POSITION_C();
-        _setup.current_slot = GET_EXTERNAL_TOOL_SLOT();
-        _setup.current.x = GET_EXTERNAL_POSITION_X();
-        _setup.current.y = GET_EXTERNAL_POSITION_Y();
-        _setup.current.z = GET_EXTERNAL_POSITION_Z();
-        _setup.feed_rate = GET_EXTERNAL_FEED_RATE();
-        _setup.flood = (GET_EXTERNAL_FLOOD() != 0) ? ON : OFF;
-        _setup.length_units = GET_EXTERNAL_LENGTH_UNIT_TYPE();
-        _setup.mist = (GET_EXTERNAL_MIST() != 0) ? ON : OFF;
-        _setup.plane = GET_EXTERNAL_PLANE();
-        _setup.selected_tool_slot = GET_EXTERNAL_TOOL_SLOT();
-        _setup.speed = GET_EXTERNAL_SPEED();
-        _setup.spindle_turning = GET_EXTERNAL_SPINDLE();
-        _setup.tool_max = GET_EXTERNAL_TOOL_MAX();
-        _setup.traverse_rate = GET_EXTERNAL_TRAVERSE_RATE();
+        _setup.control_mode = motion_mode();
+        _setup.current = current_position();
+        _setup.current_slot = tool_slot();
+        _setup.feed_rate = feed_rate();
+        _setup.flood = coolant_flood() ? ON : OFF;
+        _setup.length_units = units();
+        _setup.mist = coolant_mist() ? ON : OFF;
+        _setup.plane = plane();
+        _setup.selected_tool_slot = tool_slot();
+        _setup.speed = spindle_speed();
+        _setup.spindle_turning = spindle_state();
+        _setup.tool_max = tool_max();
+        _setup.traverse_rate = rapid_rate();
 
         load_tool_table();               /*  must set  _setup.tool_max first */
     }

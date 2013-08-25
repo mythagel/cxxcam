@@ -48,7 +48,7 @@ Plan to reuse gcode parsing and interpreter individually.
    /* INCLUDE DIRECTIVES */
    /**********************/
 
-#include "canon.hh"
+//#include "canon.hh"
 #include <cstddef>
 #include <exception>
 
@@ -65,6 +65,93 @@ Plan to reuse gcode parsing and interpreter individually.
 
    // number of parameters in parameter table
 #define RS274NGC_MAX_PARAMETERS 5400
+
+enum class Plane
+{
+	XY,
+	YZ,
+	XZ
+};
+
+enum class Units
+{
+	Imperial,
+	Metric
+};
+
+enum class Motion
+{
+	Exact_Stop,
+	Exact_Path,
+	Continious
+};
+
+enum class SpeedFeedMode
+{
+	Synched,
+	Independant
+};
+
+enum class Direction
+{
+	Stop,
+	Clockwise,
+	CounterClockwise
+};
+
+enum class FeedReference
+{
+	Workpiece,
+	XYZ
+};
+
+enum class Side
+{
+	Right,
+	Left,
+	Off
+};
+
+enum class Axis
+{
+	X, Y, Z,
+	A, B, C
+};
+
+#define CANON_TOOL_MAX 128                        // max size of carousel handled
+#define CANON_TOOL_ENTRY_LEN 256                  // how long each file line can be
+
+struct Tool
+{
+    int id;
+    double length;
+    double diameter;
+    
+    Tool()
+     : id(), length(), diameter()
+    {
+    }
+};
+
+struct Position
+{
+	double x;
+	double y;
+	double z;
+	double a;
+	double b;
+	double c;
+	
+	Position()
+	 : x(), y(), z(), a(), b(), c()
+	{}
+	Position(double x, double y, double z, double a, double b, double c)
+	 : x(x), y(y), z(z), a(a), b(b), c(c)
+	{}
+	Position(double x, double y, double z)
+	 : x(x), y(y), z(z), a(), b(), c()
+	{}
+};
 
    /**********************/
    /*      TYPEDEFS      */
@@ -100,30 +187,16 @@ enum ON_OFF : bool
 
 struct setup_t
 {
-	struct position_t
-	{
-		double x;
-		double y;
-		double z;
-		double a;
-		double b;
-		double c;
-		
-		position_t()
-		 : x(), y(), z(), a(), b(), c()
-		{}
-	};
-
-    position_t axis_offset; // g92offset
-    position_t current;
-    position_t origin_offset;
+    Position axis_offset; // g92offset
+    Position current;
+    Position origin_offset;
     
     int active_g_codes [RS274NGC_ACTIVE_G_CODES];                // array of active G codes
     int active_m_codes [RS274NGC_ACTIVE_M_CODES];                // array of active M codes
     double active_settings [RS274NGC_ACTIVE_SETTINGS];               // array of feed, speed, etc.
     block_t block1;                                 // parsed next block
     char blocktext[RS274NGC_TEXT_SIZE];           // linetext downcased, white space gone
-    CANON_MOTION_MODE control_mode;               // exact path or cutting mode
+    Motion control_mode;               // exact path or cutting mode
     int current_slot;                             // carousel slot number of current tool
     double cutter_comp_radius;                    // current cutter compensation radius
     int cutter_comp_side;                         // current cutter compensation side
@@ -144,14 +217,14 @@ struct setup_t
     double feed_rate;                             // feed rate in current units/min
     ON_OFF flood;                                 // whether flood coolant is on
     int length_offset_index;                      // for use with tool length offsets
-    CANON_UNITS length_units;                     // millimeters or inches
+    Units length_units;                     // millimeters or inches
     int line_length;                              // length of line last read
     char linetext[RS274NGC_TEXT_SIZE];            // text of most recent line read
     ON_OFF mist;                                  // whether mist coolant is on
     int motion_mode;                              // active G-code for motion
     int origin_index;                             // active origin (1=G54 to 9=G59.3)
     double parameters [RS274NGC_MAX_PARAMETERS];                // system parameters
-    CANON_PLANE plane;                            // active plane, XY-, YZ-, or XZ-plane
+    Plane plane;                            // active plane, XY-, YZ-, or XZ-plane
     ON_OFF probe_flag;                            // flag indicating probing done
     double program_x;                             // program x, used when cutter comp on
     double program_y;                             // program y, used when cutter comp on
@@ -159,12 +232,12 @@ struct setup_t
     int selected_tool_slot;                       // tool slot selected but not active
     int sequence_number;                          // sequence number of line last read
     double speed;                                 // current spindle speed in rpm
-    CANON_SPEED_FEED_MODE speed_feed_mode;        // independent or synched
+    SpeedFeedMode speed_feed_mode;        // independent or synched
     ON_OFF speed_override;                        // whether speed override is enabled
-    CANON_DIRECTION spindle_turning;              // direction spindle is turning
+    Direction spindle_turning;              // direction spindle is turning
     double tool_length_offset;                    // current tool length offset
     int tool_max;                                 // highest number tool slot in carousel
-    CANON_TOOL_TABLE tool_table [CANON_TOOL_MAX + 1];                     // index is slot number
+    Tool tool_table [CANON_TOOL_MAX + 1];                     // index is slot number
     int tool_table_index;                         // tool index used with cutter comp
     double traverse_rate;                         // rate for traverse motions
 };
@@ -217,15 +290,15 @@ private:
 	void convert_cutter_compensation_off(setup_t& settings);
 	void convert_cutter_compensation_on(int side, block_t& block, setup_t& settings);
 	void convert_cycle(int motion, block_t& block, setup_t& settings);
-	void convert_cycle_g81(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z);
-	void convert_cycle_g82(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, double dwell);
-	void convert_cycle_g83(CANON_PLANE plane, double x, double y, double r, double clear_z, double bottom_z, double delta);
-	void convert_cycle_g84(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, CANON_DIRECTION direction, CANON_SPEED_FEED_MODE mode);
-	void convert_cycle_g85(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z);
-	void convert_cycle_g86(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, double dwell, CANON_DIRECTION direction);
-	void convert_cycle_g87(CANON_PLANE plane, double x, double offset_x, double y, double offset_y, double r, double clear_z, double middle_z, double bottom_z, CANON_DIRECTION direction);
-	void convert_cycle_g88(CANON_PLANE plane, double x, double y, double bottom_z, double dwell, CANON_DIRECTION direction);
-	void convert_cycle_g89(CANON_PLANE plane, double x, double y, double clear_z, double bottom_z, double dwell);
+	void convert_cycle_g81(Plane plane, double x, double y, double clear_z, double bottom_z);
+	void convert_cycle_g82(Plane plane, double x, double y, double clear_z, double bottom_z, double dwell);
+	void convert_cycle_g83(Plane plane, double x, double y, double r, double clear_z, double bottom_z, double delta);
+	void convert_cycle_g84(Plane plane, double x, double y, double clear_z, double bottom_z, Direction direction, SpeedFeedMode mode);
+	void convert_cycle_g85(Plane plane, double x, double y, double clear_z, double bottom_z);
+	void convert_cycle_g86(Plane plane, double x, double y, double clear_z, double bottom_z, double dwell, Direction direction);
+	void convert_cycle_g87(Plane plane, double x, double offset_x, double y, double offset_y, double r, double clear_z, double middle_z, double bottom_z, Direction direction);
+	void convert_cycle_g88(Plane plane, double x, double y, double bottom_z, double dwell, Direction direction);
+	void convert_cycle_g89(Plane plane, double x, double y, double clear_z, double bottom_z, double dwell);
 	void convert_cycle_xy(int motion, block_t& block, setup_t& settings);
 	void convert_cycle_yz(int motion, block_t& block, setup_t& settings);
 	void convert_cycle_zx(int motion, block_t& block, setup_t& settings);
@@ -251,8 +324,8 @@ private:
 	void convert_tool_change(setup_t& settings);
 	void convert_tool_length_offset(int g_code, block_t& block, setup_t& settings);
 	void convert_tool_select(block_t& block, setup_t& settings);
-	void cycle_feed(CANON_PLANE plane, double end1, double end2, double end3);
-	void cycle_traverse(CANON_PLANE plane, double end1, double end2, double end3);
+	void cycle_feed(Plane plane, double end1, double end2, double end3);
+	void cycle_traverse(Plane plane, double end1, double end2, double end3);
 	void enhance_block(block_t& block, setup_t& settings);
 	static void execute_binary(double * left, int operation, double * right);
 	static void execute_binary1(double * left, int operation, double * right);
@@ -264,10 +337,10 @@ private:
 	static void find_relative(double x1, double y1, double z1, double AA_1, double BB_1, double CC_1, double * x2, double * y2, double * z2, double * AA_2, double * BB_2, double * CC_2,setup_t& settings);
 	static double find_straight_length(double x2, double y2, double z2, double AA_2, double BB_2, double CC_2, double x1, double y1, double z1, double AA_1, double BB_1, double CC_1);
 	static double find_turn(double x1, double y1, double center_x, double center_y, int turn, double x2, double y2);
-	static void inverse_time_rate_arc(double x1, double y1, double z1, double cx, double cy, int turn, double x2, double y2, double z2, block_t& block, setup_t& settings);
-	static void inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_t& block, setup_t& settings);
-	static void inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
-	static void inverse_time_rate_straight(double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
+	void inverse_time_rate_arc(double x1, double y1, double z1, double cx, double cy, int turn, double x2, double y2, double z2, block_t& block, setup_t& settings);
+	void inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_t& block, setup_t& settings);
+	void inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
+	void inverse_time_rate_straight(double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
 	void parse_line(const char * line, block_t& block,setup_t& settings);
 	static int precedence(int an_operator);
 	void read_a(const char * line, int * counter, block_t& block, double * parameters) const;
@@ -310,6 +383,93 @@ private:
 	void write_g_codes(const block_t* block, setup_t& settings);
 	void write_m_codes(const block_t* block, setup_t& settings);
 	void write_settings(setup_t& settings);
+
+private:
+	virtual void interp_init() =0;
+
+	virtual void offset_origin(const Position& pos) =0;
+	
+	virtual void units(Units u) =0;
+	virtual Units units() const =0;
+	
+	virtual void plane(Plane pl) =0;
+	virtual Plane plane() const =0;
+	
+	virtual void rapid_rate(double rate) =0;
+	virtual double rapid_rate() const =0;
+	
+	virtual void feed_rate(double rate) =0;
+	virtual double feed_rate() const =0;
+	virtual void feed_reference(FeedReference reference) =0;
+	
+	virtual void motion_mode(Motion mode) =0;
+	virtual Motion motion_mode() const =0;
+	
+	virtual void cutter_radius_comp(double radius) =0;
+	virtual void cutter_radius_comp_start(Side direction) =0;
+	virtual void cutter_radius_comp_stop() =0;
+	
+	virtual void speed_feed_sync_start() =0;
+	virtual void speed_feed_sync_stop() =0;
+	
+	virtual void rapid(const Position& pos) =0;
+	virtual void arc(double end0, double end1, double axis0, double axis1, int rotation, double end_point, double a, double b, double c) =0;
+	virtual void linear(const Position& pos) =0;
+	virtual void probe(const Position& pos) =0;
+	virtual void stop() =0;
+	virtual void dwell(double seconds) =0;
+
+	virtual void spindle_start_clockwise() =0;
+	virtual void spindle_start_counterclockwise() =0;
+	virtual void spindle_stop() =0;
+	virtual Direction spindle_state() const =0;
+	virtual void spindle_speed(double r) =0;
+	virtual double spindle_speed() const =0;
+	virtual void spindle_orient(double orientation, Direction direction) =0;
+
+	virtual void tool_length_offset(double length) =0;
+	virtual double tool_length_offset() const =0;
+	virtual void tool_change(int slot) =0;
+	virtual void tool_select(int i) =0;
+	virtual int tool_slot() const =0;
+	virtual Tool tool(int pocket) const =0;
+	virtual int tool_max() const =0;
+
+	virtual void axis_clamp(Axis axis) =0;
+	virtual void axis_unclamp(Axis axis) =0;
+
+	virtual void comment(const char *s) =0;
+
+	virtual void feed_override_disable() =0;
+	virtual void feed_override_enable() =0;
+
+	virtual void speed_override_disable() =0;
+	virtual void speed_override_enable() =0;
+
+	virtual void coolant_flood_off() =0;
+	virtual void coolant_flood_on() =0;
+	virtual bool coolant_flood() const =0;
+	
+	virtual void coolant_mist_off() =0;
+	virtual void coolant_mist_on() =0;
+	virtual bool coolant_mist() const =0;
+
+	virtual void message(const char *s) =0;
+
+	virtual void pallet_shuttle() =0;
+
+	virtual void probe_off() =0;
+	virtual void probe_on() =0;
+	virtual Position probe_position() const =0;
+	virtual double probe_value() const =0;
+
+	virtual void program_optional_stop() =0;
+	virtual void program_end() =0;
+	virtual void program_stop() =0;
+
+	virtual void get_parameter_filename(char* filename, int max_size) const =0;
+	virtual Position current_position() const =0;
+	virtual bool queue_empty() const =0;
 
 public:
 
