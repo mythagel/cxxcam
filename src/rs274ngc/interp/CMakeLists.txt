@@ -1,9 +1,0 @@
-
-IF(UNIX)
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
-ENDIF()
-
-#INCLUDE_DIRECTORIES( )
-ADD_LIBRARY(interp STATIC interpreter.cpp)
-TARGET_LINK_LIBRARIES(interp m)
-
