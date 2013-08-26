@@ -252,7 +252,7 @@ struct setup_t
     ON_OFF speed_override;                        // whether speed override is enabled
     Direction spindle_turning;              // direction spindle is turning
     double tool_length_offset;                    // current tool length offset
-    int tool_max;                                 // highest number tool slot in carousel
+    unsigned int tool_max;                                 // highest number tool slot in carousel
     Tool tool_table [CANON_TOOL_MAX + 1];                     // index is slot number
     int tool_table_index;                         // tool index used with cutter comp
     double traverse_rate;                         // rate for traverse motions
@@ -365,7 +365,7 @@ private:
 	void read_g(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_h(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_i(const char * line, int * counter, block_t& block, double * parameters) const;
-	void read_integer_unsigned(const char * line, int * counter, int * integer_ptr) const;
+	void read_integer_unsigned(const char * line, int * counter, unsigned int * integer_ptr) const;
 	void read_integer_value(const char * line, int * counter, int * integer_ptr, double * parameters) const;
 	void read_items(block_t& block, const char * line, double * parameters) const;
 	void read_j(const char * line, int * counter, block_t& block, double * parameters) const;
@@ -443,7 +443,7 @@ private:
 	virtual void tool_select(int i) =0;
 	virtual int tool_slot() const =0;
 	virtual Tool tool(int pocket) const =0;
-	virtual int tool_max() const =0;
+	virtual unsigned int tool_max() const =0;
 
 	virtual void axis_clamp(Axis axis) =0;
 	virtual void axis_unclamp(Axis axis) =0;

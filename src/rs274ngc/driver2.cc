@@ -685,7 +685,7 @@ virtual int tool_slot() const
 
 
    /* Returns maximum number of tools */
-virtual int tool_max() const
+virtual unsigned int tool_max() const
 {
     return _tool_max;
 }

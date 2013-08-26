@@ -798,13 +798,13 @@ rs274ngc::rs274ngc()
         }
         else if (mode0 == G_4)
         {
-            error_if(block.p_number == -1.0, NCE_DWELL_TIME_MISSING_WITH_G4);
+            error_if(!block.p, NCE_DWELL_TIME_MISSING_WITH_G4);
         }
         else if (mode0 == G_10)
         {
-            p_int = (int)(block.p_number + 0.0001);
-            error_if(block.l_number != 2, NCE_LINE_WITH_G10_DOES_NOT_HAVE_L2);
-            error_if(((block.p_number + 0.0001) - p_int) > 0.0002, NCE_P_VALUE_NOT_AN_INTEGER_WITH_G10_L2);
+            p_int = (int)(*block.p + 0.0001);
+            error_if(*block.l != 2, NCE_LINE_WITH_G10_DOES_NOT_HAVE_L2);
+            error_if(((*block.p + 0.0001) - p_int) > 0.0002, NCE_P_VALUE_NOT_AN_INTEGER_WITH_G10_L2);
             error_if((p_int < 1) or (p_int > 9), NCE_P_VALUE_OUT_OF_RANGE_WITH_G10_L2);
         }
         else if (mode0 == G_28)
@@ -957,11 +957,11 @@ rs274ngc::rs274ngc()
         {
             error_if((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90), NCE_CANNOT_PUT_A_C_IN_CANNED_CYCLE);
         }
-        if (block.d_number != -1)
+        if (block.d)
         {
             error_if((block.g_modes[7] != G_41) and (block.g_modes[7] != G_42), NCE_D_WORD_WITH_NO_G41_OR_G42);
         }
-        if (block.h_number != -1)
+        if (block.h)
         {
             error_if(block.g_modes[8] != G_43, NCE_H_WORD_WITH_NO_G43);
         }
@@ -981,14 +981,12 @@ rs274ngc::rs274ngc()
             error_if((motion != G_2) and (motion != G_3) and (motion != G_87), NCE_K_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
         }
 
-        if (block.l_number != -1)
+        if (block.l)
         {
-            error_if((((motion < G_81) or (motion > G_89)) and
-                (block.g_modes[0] != G_10)),
-                NCE_L_WORD_WITH_NO_CANNED_CYCLE_OR_G10);
+            error_if(((motion < G_81) or (motion > G_89)) and (block.g_modes[0] != G_10), NCE_L_WORD_WITH_NO_CANNED_CYCLE_OR_G10);
         }
 
-        if (block.p_number != -1.0)
+        if (block.p)
         {
             error_if(((block.g_modes[0] != G_10) and
                 (block.g_modes[0] != G_4) and
@@ -997,7 +995,7 @@ rs274ngc::rs274ngc()
                 NCE_P_WORD_WITH_NO_G4_G10_G82_G86_G88_G89);
         }
 
-        if (block.q_number != -1.0)
+        if (block.q)
         {
             error_if(motion != G_83, NCE_Q_WORD_WITH_NO_G83);
         }
@@ -1170,7 +1168,7 @@ rs274ngc::rs274ngc()
         }
         else if (settings.feed_mode == INVERSE_TIME)
         {
-            error_if(block.f_number == -1.0, NCE_F_WORD_MISSING_WITH_INVERSE_TIME_ARC_MOVE);
+            error_if(!block.f, NCE_F_WORD_MISSING_WITH_INVERSE_TIME_ARC_MOVE);
         }
         if (ijk_flag)
         {
@@ -2093,8 +2091,7 @@ rs274ngc::rs274ngc()
 
         error_if(settings.plane != Plane::XY, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_OUT_OF_XY_PLANE);
         error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_WHEN_ON);
-        index =
-            (block.d_number != -1) ? block.d_number : settings.current_slot;
+        index = block.d ? *block.d : settings.current_slot;
         radius = ((settings.tool_table[index].diameter)/2.0);
 
         if (radius < 0.0)                         /* switch side & make radius positive if radius negative */
@@ -2164,9 +2161,9 @@ rs274ngc::rs274ngc()
                 throw error(NCE_R_CLEARANCE_PLANE_UNSPECIFIED_IN_CYCLE);
         }
 
-        error_if(block.l_number == 0, NCE_CANNOT_DO_ZERO_REPEATS_OF_CYCLE);
-        if (block.l_number == -1)
-            block.l_number = 1;
+        if(!block.l)
+            block.l = 1;
+        error_if(*block.l == 0, NCE_CANNOT_DO_ZERO_REPEATS_OF_CYCLE);
 
         if (plane == Plane::XY)
         {
@@ -2183,7 +2180,7 @@ rs274ngc::rs274ngc()
         else
             throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
 
-        settings.cycle.l = block.l_number;
+        settings.cycle.l = *block.l;
         settings.cycle.r = *block.r;
         settings.motion_mode = motion;
     }
@@ -2756,7 +2753,7 @@ rs274ngc::rs274ngc()
 
    */
 
-#define CYCLE_MACRO(call) for (int repeat = block.l_number; repeat > 0; repeat--) \
+#define CYCLE_MACRO(call) for (int repeat = *block.l; repeat > 0; repeat--) \
 { \
     aa = (aa + aa_increment); \
     bb = (bb + bb_increment); \
@@ -2833,16 +2830,16 @@ rs274ngc::rs274ngc()
                 CYCLE_MACRO(convert_cycle_g81(Plane::XY, aa, bb, clear_cc, cc))
                 break;
             case G_82:
-                error_if((settings.motion_mode != G_82) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g82 (Plane::XY, aa, bb, clear_cc, cc, block.p_number))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_82) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g82 (Plane::XY, aa, bb, clear_cc, cc, *block.p))
+                settings.cycle.p = *block.p;
                 break;
             case G_83:
-                error_if((settings.motion_mode != G_83) and (block.q_number == -1.0), NCE_Q_WORD_MISSING_WITH_G83);
-                block.q_number = block.q_number == -1.0 ? settings.cycle.q : block.q_number;
-                CYCLE_MACRO(convert_cycle_g83 (Plane::XY, aa, bb, r, clear_cc, cc, block.q_number))
-                settings.cycle.q = block.q_number;
+                error_if((settings.motion_mode != G_83) and !block.q, NCE_Q_WORD_MISSING_WITH_G83);
+                block.q = !block.q ? settings.cycle.q : *block.q;
+                CYCLE_MACRO(convert_cycle_g83 (Plane::XY, aa, bb, r, clear_cc, cc, *block.q))
+                settings.cycle.q = *block.q;
                 break;
             case G_84:
                 CYCLE_MACRO(convert_cycle_g84 (Plane::XY, aa, bb, clear_cc, cc, settings.spindle_turning, settings.speed_feed_mode))
@@ -2851,10 +2848,10 @@ rs274ngc::rs274ngc()
                 CYCLE_MACRO(convert_cycle_g85 (Plane::XY, aa, bb, clear_cc, cc))
                     break;
             case G_86:
-                error_if((settings.motion_mode != G_86) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g86 (Plane::XY, aa, bb, clear_cc, cc, block.p_number, settings.spindle_turning))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_86) and (!block.p), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g86 (Plane::XY, aa, bb, clear_cc, cc, *block.p, settings.spindle_turning))
+                settings.cycle.p = *block.p;
                 break;
             case G_87:
                 if (settings.motion_mode != G_87)
@@ -2876,16 +2873,16 @@ rs274ngc::rs274ngc()
                 CYCLE_MACRO(convert_cycle_g87 (Plane::XY, aa, (aa + i), bb, (bb + j), r, clear_cc, k, cc, settings.spindle_turning))
                     break;
             case G_88:
-                error_if((settings.motion_mode != G_88) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g88 (Plane::XY, aa, bb, cc, block.p_number, settings.spindle_turning))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_88) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g88 (Plane::XY, aa, bb, cc, *block.p, settings.spindle_turning))
+                settings.cycle.p = *block.p;
                 break;
             case G_89:
-                error_if((settings.motion_mode != G_89) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g89 (Plane::XY, aa, bb, clear_cc, cc, block.p_number))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_89) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g89 (Plane::XY, aa, bb, clear_cc, cc, *block.p))
+                settings.cycle.p = *block.p;
                 break;
             default:
                 throw error(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
@@ -3014,16 +3011,16 @@ rs274ngc::rs274ngc()
                 CYCLE_MACRO(convert_cycle_g81(Plane::YZ, aa, bb, clear_cc, cc))
                 break;
             case G_82:
-                error_if((settings.motion_mode != G_82) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g82 (Plane::YZ, aa, bb, clear_cc, cc, block.p_number))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_82) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g82 (Plane::YZ, aa, bb, clear_cc, cc, *block.p))
+                settings.cycle.p = *block.p;
                 break;
             case G_83:
-                error_if((settings.motion_mode != G_83) and (block.q_number == -1.0), NCE_Q_WORD_MISSING_WITH_G83);
-                block.q_number = block.q_number == -1.0 ? settings.cycle.q : block.q_number;
-                CYCLE_MACRO(convert_cycle_g83 (Plane::YZ, aa, bb, r, clear_cc, cc, block.q_number))
-                settings.cycle.q = block.q_number;
+                error_if((settings.motion_mode != G_83) and !block.q, NCE_Q_WORD_MISSING_WITH_G83);
+                block.q = !block.q ? settings.cycle.q : *block.q;
+                CYCLE_MACRO(convert_cycle_g83 (Plane::YZ, aa, bb, r, clear_cc, cc, *block.q))
+                settings.cycle.q = *block.q;
                 break;
             case G_84:
                 CYCLE_MACRO(convert_cycle_g84 (Plane::YZ, aa, bb, clear_cc, cc, settings.spindle_turning, settings.speed_feed_mode))
@@ -3032,10 +3029,10 @@ rs274ngc::rs274ngc()
                 CYCLE_MACRO(convert_cycle_g85 (Plane::YZ, aa, bb, clear_cc, cc))
                 break;
             case G_86:
-                error_if((settings.motion_mode != G_86) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g86 (Plane::YZ, aa, bb, clear_cc, cc, block.p_number, settings.spindle_turning))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_86) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g86 (Plane::YZ, aa, bb, clear_cc, cc, *block.p, settings.spindle_turning))
+                settings.cycle.p = *block.p;
                 break;
             case G_87:
                 if (settings.motion_mode != G_87)
@@ -3057,16 +3054,16 @@ rs274ngc::rs274ngc()
                 CYCLE_MACRO(convert_cycle_g87 (Plane::YZ, aa, (aa + j), bb, (bb + k), r, clear_cc, i, cc, settings.spindle_turning))
                     break;
             case G_88:
-                error_if((settings.motion_mode != G_88) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g88 (Plane::YZ, aa, bb, cc, block.p_number, settings.spindle_turning))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_88) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g88 (Plane::YZ, aa, bb, cc, *block.p, settings.spindle_turning))
+                settings.cycle.p = *block.p;
                 break;
             case G_89:
-                error_if((settings.motion_mode != G_89) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g89 (Plane::YZ, aa, bb, clear_cc, cc, block.p_number))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_89) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g89 (Plane::YZ, aa, bb, clear_cc, cc, *block.p))
+                settings.cycle.p = *block.p;
                 break;
             default:
                 throw error(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
@@ -3203,16 +3200,16 @@ rs274ngc::rs274ngc()
                 CYCLE_MACRO(convert_cycle_g81(Plane::XZ, aa, bb, clear_cc, cc))
                 break;
             case G_82:
-                error_if(((settings.motion_mode != G_82) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g82 (Plane::XZ, aa, bb, clear_cc, cc, block.p_number))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_82) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g82 (Plane::XZ, aa, bb, clear_cc, cc, *block.p))
+                settings.cycle.p = *block.p;
                 break;
             case G_83:
-                error_if(((settings.motion_mode != G_83) and (block.q_number == -1.0)), NCE_Q_WORD_MISSING_WITH_G83);
-                block.q_number = block.q_number == -1.0 ? settings.cycle.q : block.q_number;
-                CYCLE_MACRO(convert_cycle_g83 (Plane::XZ, aa, bb, r, clear_cc, cc, block.q_number))
-                settings.cycle.q = block.q_number;
+                error_if((settings.motion_mode != G_83) and !block.q, NCE_Q_WORD_MISSING_WITH_G83);
+                block.q = !block.q ? settings.cycle.q : *block.q;
+                CYCLE_MACRO(convert_cycle_g83 (Plane::XZ, aa, bb, r, clear_cc, cc, *block.q))
+                settings.cycle.q = *block.q;
                 break;
             case G_84:
                 CYCLE_MACRO(convert_cycle_g84 (Plane::XZ, aa, bb, clear_cc, cc, settings.spindle_turning, settings.speed_feed_mode))
@@ -3221,10 +3218,10 @@ rs274ngc::rs274ngc()
                 CYCLE_MACRO(convert_cycle_g85 (Plane::XZ, aa, bb, clear_cc, cc))
                 break;
             case G_86:
-                error_if(((settings.motion_mode != G_86) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g86 (Plane::XZ, aa, bb, clear_cc, cc, block.p_number, settings.spindle_turning))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_86) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g86 (Plane::XZ, aa, bb, clear_cc, cc, *block.p, settings.spindle_turning))
+                settings.cycle.p = *block.p;
                 break;
             case G_87:
                 if (settings.motion_mode != G_87)
@@ -3246,16 +3243,16 @@ rs274ngc::rs274ngc()
                 CYCLE_MACRO(convert_cycle_g87 (Plane::XZ, aa, (aa + k), bb, (bb + i), r, clear_cc, j, cc, settings.spindle_turning))
                 break;
             case G_88:
-                error_if(((settings.motion_mode != G_88) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g88 (Plane::XZ, aa, bb, cc, block.p_number, settings.spindle_turning))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_88) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g88 (Plane::XZ, aa, bb, cc, *block.p, settings.spindle_turning))
+                settings.cycle.p = *block.p;
                 break;
             case G_89:
-                error_if(((settings.motion_mode != G_89) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
-                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g89 (Plane::XZ, aa, bb, clear_cc, cc, block.p_number))
-                settings.cycle.p = block.p_number;
+                error_if((settings.motion_mode != G_89) and !block.p, NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
+                block.p = !block.p ? settings.cycle.p : *block.p;
+                CYCLE_MACRO(convert_cycle_g89 (Plane::XZ, aa, bb, clear_cc, cc, *block.p))
+                settings.cycle.p = *block.p;
                 break;
             default:
                 throw error(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
@@ -3403,8 +3400,8 @@ rs274ngc::rs274ngc()
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        feed_rate(block.f_number);
-        settings.feed_rate = block.f_number;
+        feed_rate(*block.f);
+        settings.feed_rate = *block.f;
     }
 
    /****************************************************************************/
@@ -3469,7 +3466,7 @@ rs274ngc::rs274ngc()
     {
         if (block.g_modes[0] == G_4)
         {
-            convert_dwell(block.p_number);
+            convert_dwell(*block.p);
         }
         if (block.g_modes[2] != -1)
         {
@@ -4024,7 +4021,7 @@ rs274ngc::rs274ngc()
         int p_int;
 
         parameters = settings.parameters;
-        p_int = (int)(block.p_number + 0.0001);
+        p_int = (int)(*block.p + 0.0001);
 
         if (block.x)
         {
@@ -4153,8 +4150,8 @@ rs274ngc::rs274ngc()
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        spindle_speed(block.s_number);
-        settings.speed = block.s_number;
+        spindle_speed(*block.s);
+        settings.speed = *block.s;
     }
 
    /****************************************************************************/
@@ -4364,7 +4361,7 @@ rs274ngc::rs274ngc()
             }
             else if (settings.feed_mode == INVERSE_TIME)
             {
-                error_if(block.f_number == -1.0, NCE_F_WORD_MISSING_WITH_INVERSE_TIME_G1_MOVE);
+                error_if(!block.f, NCE_F_WORD_MISSING_WITH_INVERSE_TIME_G1_MOVE);
             }
         }
 
@@ -4785,7 +4782,7 @@ rs274ngc::rs274ngc()
         }
         else if (g_code == G_43)
         {
-            index = block.h_number;
+            index = *block.h;
             error_if(index == -1, NCE_OFFSET_INDEX_MISSING);
             offset = settings.tool_table[index].length;
             tool_length_offset(offset);
@@ -4827,9 +4824,9 @@ rs274ngc::rs274ngc()
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        error_if(block.t_number > settings.tool_max, NCE_SELECTED_TOOL_SLOT_NUMBER_TOO_LARGE);
-        tool_select(block.t_number);
-        settings.selected_tool_slot = block.t_number;
+        error_if(*block.t > settings.tool_max, NCE_SELECTED_TOOL_SLOT_NUMBER_TOO_LARGE);
+        tool_select(*block.t);
+        settings.selected_tool_slot = *block.t;
     }
 
    /****************************************************************************/
@@ -5179,7 +5176,7 @@ rs274ngc::rs274ngc()
         {
             convert_feed_mode(block.g_modes[5], settings);
         }
-        if (block.f_number > -1.0)
+        if (block.f)
         {
    /* handle elsewhere */
             if (settings.feed_mode == INVERSE_TIME);
@@ -5188,11 +5185,11 @@ rs274ngc::rs274ngc()
                 convert_feed_rate(block, settings);
             }
         }
-        if (block.s_number > -1.0)
+        if (block.s)
         {
             convert_speed(block, settings);
         }
-        if (block.t_number != -1)
+        if (block.t)
         {
             convert_tool_select(block, settings);
         }
@@ -5620,7 +5617,7 @@ rs274ngc::rs274ngc()
         double rate;
 
         length = find_arc_length (x1, y1, z1, cx, cy, turn, x2, y2, z2);
-        rate = std::max(0.1, (length * block.f_number));
+        rate = std::max(0.1, (length * *block.f));
         feed_rate (rate);
         settings.feed_rate = rate;
     }
@@ -5670,7 +5667,7 @@ rs274ngc::rs274ngc()
             turn1, mid_x, mid_y, settings.current.z) +
             find_arc_length(mid_x, mid_y, settings.current.z,
             cx, cy, turn2, end_x, end_y, end_z));
-        rate = std::max(0.1, (length * block.f_number));
+        rate = std::max(0.1, (length * *block.f));
         feed_rate (rate);
         settings.feed_rate = rate;
     }
@@ -5724,7 +5721,7 @@ rs274ngc::rs274ngc()
             find_straight_length({end_x, end_y, end_z, AA_end, BB_end, CC_end}, 
 		      				  	 {mid_x, mid_y, settings.current.z, AA_end, BB_end, CC_end}));
 		        
-        rate = std::max(0.1, (length * block.f_number));
+        rate = std::max(0.1, (length * *block.f));
         feed_rate (rate);
         settings.feed_rate = rate;
     }
@@ -5764,7 +5761,7 @@ rs274ngc::rs274ngc()
             ({end_x, end_y, end_z, AA_end, BB_end, CC_end}, 
             {settings.current.x, settings.current.y, settings.current.z, 
             settings.current.a, settings.current.b, settings.current.c});
-        rate = std::max(0.1, (length * block.f_number));
+        rate = std::max(0.1, (length * *block.f));
         feed_rate (rate);
         settings.feed_rate = rate;
     }
@@ -6139,11 +6136,12 @@ rs274ngc::rs274ngc()
 
         error_if(line[*counter] != 'd', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if(block.d_number > -1, NCE_MULTIPLE_D_WORDS_ON_ONE_LINE);
+        error_if(!!block.d, NCE_MULTIPLE_D_WORDS_ON_ONE_LINE);
         read_integer_value(line, counter, &value, parameters);
         error_if(value < 0, NCE_NEGATIVE_D_WORD_TOOL_RADIUS_INDEX_USED);
-        error_if(value > _setup.tool_max, NCE_TOOL_RADIUS_INDEX_TOO_BIG);
-        block.d_number = value;
+        unsigned int d = value;
+        error_if(d > _setup.tool_max, NCE_TOOL_RADIUS_INDEX_TOO_BIG);
+        block.d = d;
     }
 
    /****************************************************************************/
@@ -6188,10 +6186,10 @@ rs274ngc::rs274ngc()
 
         error_if(line[*counter] != 'f', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if(block.f_number > -1.0, NCE_MULTIPLE_F_WORDS_ON_ONE_LINE);
+        error_if(!!block.f, NCE_MULTIPLE_F_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
         error_if(value < 0.0, NCE_NEGATIVE_F_WORD_USED);
-        block.f_number = value;
+        block.f = value;
     }
 
    /****************************************************************************/
@@ -6312,11 +6310,12 @@ rs274ngc::rs274ngc()
 
         error_if(line[*counter] != 'h', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if(block.h_number > -1, NCE_MULTIPLE_H_WORDS_ON_ONE_LINE);
+        error_if(!!block.h, NCE_MULTIPLE_H_WORDS_ON_ONE_LINE);
         read_integer_value(line, counter, &value, parameters);
         error_if(value < 0, NCE_NEGATIVE_H_WORD_TOOL_LENGTH_OFFSET_INDEX_USED);
-        error_if(value > _setup.tool_max, NCE_TOOL_LENGTH_OFFSET_INDEX_TOO_BIG);
-        block.h_number = value;
+        unsigned int h = value;
+        error_if(h > _setup.tool_max, NCE_TOOL_LENGTH_OFFSET_INDEX_TOO_BIG);
+        block.h = h;
     }
 
    /****************************************************************************/
@@ -6393,7 +6392,7 @@ rs274ngc::rs274ngc()
     void rs274ngc::read_integer_unsigned(             /* ARGUMENTS                       */
     const char * line,                                  /* string: line of RS274 code being processed    */
     int * counter,                                /* pointer to a counter for position on the line */
-    int * integer_ptr) const                            /* pointer to the value being read               */
+    unsigned int * integer_ptr) const                            /* pointer to the value being read               */
     {
         int n;
         char c;
@@ -6405,7 +6404,7 @@ rs274ngc::rs274ngc()
                 break;
         }
         error_if(n == *counter, NCE_BAD_FORMAT_UNSIGNED_INTEGER);
-        if (sscanf(line + *counter, "%d", integer_ptr) == 0)
+        if (sscanf(line + *counter, "%u", integer_ptr) == 0)
             throw error(NCE_SSCANF_FAILED);
         *counter = n;
     }
@@ -6640,10 +6639,10 @@ rs274ngc::rs274ngc()
 
         error_if(line[*counter] != 'l', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if(block.l_number > -1, NCE_MULTIPLE_L_WORDS_ON_ONE_LINE);
+        error_if(!!block.l, NCE_MULTIPLE_L_WORDS_ON_ONE_LINE);
         read_integer_value(line, counter, &value, parameters);
         error_if(value < 0, NCE_NEGATIVE_L_WORD_USED);
-        block.l_number = value;
+        block.l = value;
     }
 
    /****************************************************************************/
@@ -6680,7 +6679,7 @@ rs274ngc::rs274ngc()
     int * counter,                                /* pointer to a counter for position on the line  */
     block_t& block) const                          /* pointer to a block being filled from the line  */
     {
-        int value;
+        unsigned int value;
 
         error_if(line[*counter] != 'n', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
@@ -7160,10 +7159,10 @@ rs274ngc::rs274ngc()
 
         error_if(line[*counter] != 'p', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if(block.p_number > -1.0, NCE_MULTIPLE_P_WORDS_ON_ONE_LINE);
+        error_if(!!block.p, NCE_MULTIPLE_P_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
         error_if(value < 0.0, NCE_NEGATIVE_P_WORD_USED);
-        block.p_number = value;
+        block.p = value;
     }
 
    /****************************************************************************/
@@ -7347,10 +7346,10 @@ rs274ngc::rs274ngc()
 
         error_if(line[*counter] != 'q', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if(block.q_number > -1.0, NCE_MULTIPLE_Q_WORDS_ON_ONE_LINE);
+        error_if(!!block.q, NCE_MULTIPLE_Q_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
         error_if(value <= 0.0, NCE_NEGATIVE_OR_ZERO_Q_VALUE_USED);
-        block.q_number = value;
+        block.q = value;
     }
 
    /****************************************************************************/
@@ -8012,10 +8011,10 @@ rs274ngc::rs274ngc()
 
         error_if(line[*counter] != 's', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if(block.s_number > -1.0, NCE_MULTIPLE_S_WORDS_ON_ONE_LINE);
+        error_if(!!block.s, NCE_MULTIPLE_S_WORDS_ON_ONE_LINE);
         read_real_value(line, counter, &value, parameters);
         error_if(value < 0.0, NCE_NEGATIVE_SPINDLE_SPEED_USED);
-        block.s_number = value;
+        block.s = value;
     }
 
    /****************************************************************************/
@@ -8059,10 +8058,10 @@ rs274ngc::rs274ngc()
 
         error_if(line[*counter] != 't', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
-        error_if(block.t_number > -1, NCE_MULTIPLE_T_WORDS_ON_ONE_LINE);
+        error_if(!!block.t, NCE_MULTIPLE_T_WORDS_ON_ONE_LINE);
         read_integer_value(line, counter, &value, parameters);
         error_if(value < 0, NCE_NEGATIVE_TOOL_ID_USED);
-        block.t_number = value;
+        block.t = value;
     }
 
    /****************************************************************************/
@@ -8738,7 +8737,7 @@ rs274ngc::rs274ngc()
 
     void rs274ngc::load_tool_table()                /* NO ARGUMENTS */
     {
-        int n;
+        unsigned int n;
 
         error_if(_setup.tool_max > CANON_TOOL_MAX, NCE_TOOL_MAX_TOO_LARGE);
         for (n = 0; n <= _setup.tool_max; n++)

@@ -38,25 +38,25 @@ struct block_t
     maybe<double>   c;
     
     char     comment[256];
-    int      d_number;
-    double   f_number;
+    maybe<unsigned int>      d;
+    maybe<double>   f;
     int      g_modes[14];
-    int      h_number;
+    maybe<unsigned int>      h;
     
     maybe<double>   i;
     maybe<double>   j;
     maybe<double>   k;
     
-    int      l_number;
-    int      line_number;
+    maybe<unsigned int>      l;
+    maybe<unsigned int>      line_number;
     int      motion_to_be;
     int      m_count;
     int      m_modes[10];
-    double   p_number;
-    double   q_number;
+    maybe<double>   p;
+    maybe<double>   q;
     maybe<double>   r;
-    double   s_number;
-    int      t_number;
+    maybe<double>   s;
+    maybe<unsigned int>      t;
     
     
     std::size_t parameter_occurrence;                     // parameter buffer index

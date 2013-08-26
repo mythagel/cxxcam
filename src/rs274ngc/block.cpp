@@ -27,21 +27,12 @@
 block_t::block_t()
 {
 	comment[0] = 0;
-	d_number = -1;
-	f_number = -1.0;
 	for (int n = 0; n < 14; n++)
 		g_modes[n] = -1;
-	h_number = -1;
-	l_number = -1;
-	line_number = -1;
 	motion_to_be = -1;
 	m_count = 0;
 	for (int n = 0; n < 10; n++)
 		m_modes[n] = -1;
-	p_number = -1.0;
-	q_number = -1.0;
-	s_number = -1.0;
-	t_number = -1;
-parameter_occurrence = 0;
+	parameter_occurrence = 0;
 }
 
