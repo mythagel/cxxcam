@@ -8920,7 +8920,7 @@ repeat--) \
         _setup.probe_flag = OFF;
         _setup.program_x = UNKNOWN;          /* for cutter comp */
         _setup.program_y = UNKNOWN;          /* for cutter comp */
-   //_setup.retract_mode does not need initialization
+        _setup.retract_mode = OLD_Z;
    //_setup.selected_tool_slot set in rs274ngc_synch
         _setup.sequence_number = 0;          /*DOES THIS NEED TO BE AT TOP? */
    //_setup.speed set in rs274ngc_synch
@@ -8935,12 +8935,13 @@ repeat--) \
         _setup.tool_table_index = 1;
    //_setup.traverse_rate set in rs274ngc_synch
 
+   // Synch rest of settings to external world
+        synch();
+        
         write_g_codes(nullptr, _setup);
         write_m_codes(nullptr, _setup);
         write_settings(_setup);
 
-   // Synch rest of settings to external world
-        synch();
     }
 
    /***********************************************************************/

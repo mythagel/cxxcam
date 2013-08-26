@@ -187,6 +187,13 @@ enum ON_OFF : bool
 
 struct setup_t
 {
+	setup_t()
+	{
+		blocktext[0] = 0;
+		line_length = 0;
+		linetext[0] = 0;
+	}
+
     Position axis_offset; // g92offset
     Position current;
     Position origin_offset;
@@ -416,7 +423,6 @@ private:
 	virtual void arc(double end0, double end1, double axis0, double axis1, int rotation, double end_point, double a, double b, double c) =0;
 	virtual void linear(const Position& pos) =0;
 	virtual void probe(const Position& pos) =0;
-	virtual void stop() =0;
 	virtual void dwell(double seconds) =0;
 
 	virtual void spindle_start_clockwise() =0;
@@ -428,7 +434,6 @@ private:
 	virtual void spindle_orient(double orientation, Direction direction) =0;
 
 	virtual void tool_length_offset(double length) =0;
-	virtual double tool_length_offset() const =0;
 	virtual void tool_change(int slot) =0;
 	virtual void tool_select(int i) =0;
 	virtual int tool_slot() const =0;
@@ -467,7 +472,7 @@ private:
 	virtual void program_end() =0;
 	virtual void program_stop() =0;
 
-	virtual void get_parameter_filename(char* filename, int max_size) const =0;
+	virtual void get_parameter_filename(char* filename, size_t max_size) const =0;
 	virtual Position current_position() const =0;
 	virtual bool queue_empty() const =0;
 
