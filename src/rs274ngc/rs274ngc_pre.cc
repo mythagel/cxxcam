@@ -4966,8 +4966,6 @@ rs274ngc::rs274ngc()
 
    Called by: read_real_expression
 
-   This just calls either execute_binary1 or execute_binary2.
-
    */
 
     void rs274ngc::execute_binary(
@@ -4975,107 +4973,38 @@ rs274ngc::rs274ngc()
     BinaryOperation operation,
     double * right)
     {
-        if (operation < AND2)
-            execute_binary1(left, operation, right);
-        else
-            execute_binary2(left, operation, right);
-    }
-
-   /****************************************************************************/
-
-   /* execute_binary1
-
-   Returned Value: int
-   If any of the following errors occur, this returns the error shown.
-   Otherwise, it returns RS274NGC_OK.
-   1. operation is unknown: NCE_BUG_UNKNOWN_OPERATION
-   2. An attempt is made to divide by zero: NCE_ATTEMPT_TO_DIVIDE_BY_ZERO
-   3. An attempt is made to raise a negative number to a non-integer power:
-   NCE_ATTEMPT_TO_RAISE_NEGATIVE_TO_NON_INTEGER_POWER
-
-   Side effects:
-   The result from performing the operation is put into what left points at.
-
-   Called by: read_real_expression.
-
-   This executes the operations: DIVIDED_BY, MODULO, POWER, TIMES.
-
-   */
-
-    void rs274ngc::execute_binary1(                   /* ARGUMENTS                       */
-    double * left,                                /* pointer to the left operand     */
-    BinaryOperation operation,                                /* integer code for the operation  */
-    double * right)                               /* pointer to the right operand    */
-    {
         switch (operation)
         {
-            case DIVIDED_BY:
+            case BinaryOperation::DIVIDED_BY:
                 error_if(*right == 0.0, NCE_ATTEMPT_TO_DIVIDE_BY_ZERO);
                 *left = (*left / *right);
                 break;
-            case MODULO:                          /* always calculates a positive answer */
+            case BinaryOperation::MODULO:                          /* always calculates a positive answer */
                 *left = fmod(*left, *right);
                 if (*left < 0.0)
-                {
                     *left = (*left + fabs(*right));
-                }
                 break;
-            case POWER:
+            case BinaryOperation::POWER:
                 error_if(((*left < 0.0) and (floor(*right) != *right)), NCE_ATTEMPT_TO_RAISE_NEGATIVE_TO_NON_INTEGER_POWER);
                 *left = pow(*left, *right);
                 break;
-            case TIMES:
+            case BinaryOperation::TIMES:
                 *left = (*left * *right);
                 break;
-            default:
-                throw error(NCE_BUG_UNKNOWN_OPERATION);
-        }
-    }
-
-   /****************************************************************************/
-
-   /* execute_binary2
-
-   Returned Value: int
-   If any of the following errors occur, this returns the error code shown.
-   Otherwise, it returns RS274NGC_OK.
-   1. operation is unknown: NCE_BUG_UNKNOWN_OPERATION
-
-   Side effects:
-   The result from performing the operation is put into what left points at.
-
-   Called by: read_real_expression.
-
-   This executes the operations: AND2, EXCLUSIVE_OR, MINUS,
-   NON_EXCLUSIVE_OR, PLUS. The RS274/NGC manual [NCMS] does not say what
-   the calculated value of the three logical operations should be. This
-   function calculates either 1.0 (meaning true) or 0.0 (meaning false).
-   Any non-zero input value is taken as meaning true, and only 0.0 means
-   false.
-
-   */
-
-    void rs274ngc::execute_binary2(                   /* ARGUMENTS                       */
-    double * left,                                /* pointer to the left operand     */
-    BinaryOperation operation,                                /* integer code for the operation  */
-    double * right)                               /* pointer to the right operand    */
-    {
-        switch (operation)
-        {
-            case AND2:
+            case BinaryOperation::AND2:
                 *left = ((*left == 0.0) or (*right == 0.0)) ? 0.0 : 1.0;
                 break;
-            case EXCLUSIVE_OR:
+            case BinaryOperation::EXCLUSIVE_OR:
                 *left = (((*left == 0.0) and (*right != 0.0)) or
                     ((*left != 0.0) and (*right == 0.0))) ? 1.0 : 0.0;
                 break;
-            case MINUS:
+            case BinaryOperation::MINUS:
                 *left = (*left - *right);
                 break;
-            case NON_EXCLUSIVE_OR:
+            case BinaryOperation::NON_EXCLUSIVE_OR:
                 *left = ((*left != 0.0) or (*right != 0.0)) ? 1.0 : 0.0;
                 break;
-            case PLUS:
+            case BinaryOperation::PLUS:
                 *left = (*left + *right);
                 break;
             default:
@@ -5207,52 +5136,52 @@ rs274ngc::rs274ngc()
 
     void rs274ngc::execute_unary(                     /* ARGUMENTS                       */
     double * double_ptr,                          /* pointer to the operand          */
-    int operation)                                /* integer code for the operation  */
+    UnaryOperation operation)                                /* integer code for the operation  */
     {
         switch (operation)
         {
-            case ABS:
+            case UnaryOperation::ABS:
                 if (*double_ptr < 0.0)
                     *double_ptr = (-1.0 * *double_ptr);
                 break;
-            case ACOS:
+            case UnaryOperation::ACOS:
                 error_if(((*double_ptr < -1.0) or (*double_ptr > 1.0)), NCE_ARGUMENT_TO_ACOS_OUT_OF_RANGE);
                 *double_ptr = acos(*double_ptr);
                 *double_ptr = ((*double_ptr * 180.0)/ PI);
                 break;
-            case ASIN:
+            case UnaryOperation::ASIN:
                 error_if(((*double_ptr < -1.0) or (*double_ptr > 1.0)), NCE_ARGUMENT_TO_ASIN_OUT_OF_RANGE);
                 *double_ptr = asin(*double_ptr);
                 *double_ptr = ((*double_ptr * 180.0)/ PI);
                 break;
-            case COS:
+            case UnaryOperation::COS:
                 *double_ptr = cos((*double_ptr * PI)/180.0);
                 break;
-            case EXP:
+            case UnaryOperation::EXP:
                 *double_ptr = exp(*double_ptr);
                 break;
-            case FIX:
+            case UnaryOperation::FIX:
                 *double_ptr = floor(*double_ptr);
                 break;
-            case FUP:
+            case UnaryOperation::FUP:
                 *double_ptr = ceil(*double_ptr);
                 break;
-            case LN:
+            case UnaryOperation::LN:
                 error_if((*double_ptr <= 0.0), NCE_ZERO_OR_NEGATIVE_ARGUMENT_TO_LN);
                 *double_ptr = log(*double_ptr);
                 break;
-            case ROUND:
+            case UnaryOperation::ROUND:
                 *double_ptr = (double)
                     ((int) (*double_ptr + ((*double_ptr < 0.0) ? -0.5 : 0.5)));
                 break;
-            case SIN:
+            case UnaryOperation::SIN:
                 *double_ptr = sin((*double_ptr * PI)/180.0);
                 break;
-            case SQRT:
+            case UnaryOperation::SQRT:
                 error_if((*double_ptr < 0.0), NCE_NEGATIVE_ARGUMENT_TO_SQRT);
                 *double_ptr = sqrt(*double_ptr);
                 break;
-            case TAN:
+            case UnaryOperation::TAN:
                 *double_ptr = tan((*double_ptr * PI)/180.0);
                 break;
             default:
@@ -5783,13 +5712,13 @@ rs274ngc::rs274ngc()
    */
 
     int rs274ngc::precedence(                        /* ARGUMENTS  */
-    int an_operator)
+    BinaryOperation an_operator)
     {
-        if (an_operator == RIGHT_BRACKET)
+        if (an_operator == BinaryOperation::RIGHT_BRACKET)
             return 1;
-        else if (an_operator == POWER)
+        else if (an_operator == BinaryOperation::POWER)
             return 4;
-        else if (an_operator >= AND2)
+        else if (an_operator >= BinaryOperation::AND2)
             return 2;
         else
             return 3;
@@ -6868,7 +6797,7 @@ rs274ngc::rs274ngc()
     void rs274ngc::read_operation(                    /* ARGUMENTS                                      */
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
-    int * operation) const                              /* pointer to operation to be read                */
+    BinaryOperation * operation) const                              /* pointer to operation to be read                */
     {
         char c;
 
@@ -6877,30 +6806,30 @@ rs274ngc::rs274ngc()
         switch(c)
         {
             case '+':
-                *operation = PLUS;
+                *operation = BinaryOperation::PLUS;
                 break;
             case '-':
-                *operation = MINUS;
+                *operation = BinaryOperation::MINUS;
                 break;
             case '/':
-                *operation = DIVIDED_BY;
+                *operation = BinaryOperation::DIVIDED_BY;
                 break;
             case '*':
                 if(line[*counter] == '*')
                 {
-                    *operation = POWER;
+                    *operation = BinaryOperation::POWER;
                     *counter = (*counter + 1);
                 }
                 else
-                    *operation = TIMES;
+                    *operation = BinaryOperation::TIMES;
                 break;
             case ']':
-                *operation = RIGHT_BRACKET;
+                *operation = BinaryOperation::RIGHT_BRACKET;
                 break;
             case 'a':
                 if((line[*counter] == 'n') and (line[(*counter)+1] == 'd'))
                 {
-                    *operation = AND2;
+                    *operation = BinaryOperation::AND2;
                     *counter = (*counter + 2);
                 }
                 else
@@ -6909,7 +6838,7 @@ rs274ngc::rs274ngc()
             case 'm':
                 if((line[*counter] == 'o') and (line[(*counter)+1] == 'd'))
                 {
-                    *operation = MODULO;
+                    *operation = BinaryOperation::MODULO;
                     *counter = (*counter + 2);
                 }
                 else
@@ -6918,7 +6847,7 @@ rs274ngc::rs274ngc()
             case 'o':
                 if(line[*counter] == 'r')
                 {
-                    *operation = NON_EXCLUSIVE_OR;
+                    *operation = BinaryOperation::NON_EXCLUSIVE_OR;
                     *counter = (*counter + 1);
                 }
                 else
@@ -6927,7 +6856,7 @@ rs274ngc::rs274ngc()
             case 'x':
                 if((line[*counter] == 'o') and (line[(*counter)+1] == 'r'))
                 {
-                    *operation = EXCLUSIVE_OR;
+                    *operation = BinaryOperation::EXCLUSIVE_OR;
                     *counter = (*counter + 2);
                 }
                 else
@@ -6976,7 +6905,7 @@ rs274ngc::rs274ngc()
     void rs274ngc::read_operation_unary(              /* ARGUMENTS                               */
     const char * line,                                  /* string: line of RS274/NGC code being processed */
     int * counter,                                /* pointer to a counter for position on the line  */
-    int * operation) const                              /* pointer to operation to be read                */
+    UnaryOperation * operation) const                              /* pointer to operation to be read                */
     {
         char c;
 
@@ -6987,22 +6916,22 @@ rs274ngc::rs274ngc()
             case 'a':
                 if((line[*counter] == 'b') and (line[(*counter)+1] == 's'))
                 {
-                    *operation = ABS;
+                    *operation = UnaryOperation::ABS;
                     *counter = (*counter + 2);
                 }
                 else if(strncmp((line + *counter), "cos", 3) == 0)
                 {
-                    *operation = ACOS;
+                    *operation = UnaryOperation::ACOS;
                     *counter = (*counter + 3);
                 }
                 else if(strncmp((line + *counter), "sin", 3) == 0)
                 {
-                    *operation = ASIN;
+                    *operation = UnaryOperation::ASIN;
                     *counter = (*counter + 3);
                 }
                 else if(strncmp((line + *counter), "tan", 3) == 0)
                 {
-                    *operation = ATAN;
+                    *operation = UnaryOperation::ATAN;
                     *counter = (*counter + 3);
                 }
                 else
@@ -7011,7 +6940,7 @@ rs274ngc::rs274ngc()
             case 'c':
                 if((line[*counter] == 'o') and (line[(*counter)+1] == 's'))
                 {
-                    *operation = COS;
+                    *operation = UnaryOperation::COS;
                     *counter = (*counter + 2);
                 }
                 else
@@ -7020,7 +6949,7 @@ rs274ngc::rs274ngc()
             case 'e':
                 if((line[*counter] == 'x') and (line[(*counter)+1] == 'p'))
                 {
-                    *operation = EXP;
+                    *operation = UnaryOperation::EXP;
                     *counter = (*counter + 2);
                 }
                 else
@@ -7029,12 +6958,12 @@ rs274ngc::rs274ngc()
             case 'f':
                 if((line[*counter] == 'i') and (line[(*counter)+1] == 'x'))
                 {
-                    *operation = FIX;
+                    *operation = UnaryOperation::FIX;
                     *counter = (*counter + 2);
                 }
                 else if((line[*counter] == 'u') and (line[(*counter)+1] == 'p'))
                 {
-                    *operation = FUP;
+                    *operation = UnaryOperation::FUP;
                     *counter = (*counter + 2);
                 }
                 else
@@ -7043,7 +6972,7 @@ rs274ngc::rs274ngc()
             case 'l':
                 if(line[*counter] == 'n')
                 {
-                    *operation = LN;
+                    *operation = UnaryOperation::LN;
                     *counter = (*counter + 1);
                 }
                 else
@@ -7052,7 +6981,7 @@ rs274ngc::rs274ngc()
             case 'r':
                 if(strncmp((line + *counter), "ound", 4) == 0)
                 {
-                    *operation = ROUND;
+                    *operation = UnaryOperation::ROUND;
                     *counter = (*counter + 4);
                 }
                 else
@@ -7061,12 +6990,12 @@ rs274ngc::rs274ngc()
             case 's':
                 if((line[*counter] == 'i') and (line[(*counter)+1] == 'n'))
                 {
-                    *operation = SIN;
+                    *operation = UnaryOperation::SIN;
                     *counter = (*counter + 2);
                 }
                 else if(strncmp((line + *counter), "qrt", 3) == 0)
                 {
-                    *operation = SQRT;
+                    *operation = UnaryOperation::SQRT;
                     *counter = (*counter + 3);
                 }
                 else
@@ -7075,7 +7004,7 @@ rs274ngc::rs274ngc()
             case 't':
                 if((line[*counter] == 'a') and (line[(*counter)+1] == 'n'))
                 {
-                    *operation = TAN;
+                    *operation = UnaryOperation::TAN;
                     *counter = (*counter + 2);
                 }
                 else
@@ -7623,7 +7552,7 @@ rs274ngc::rs274ngc()
     double * parameters) const                          /* array of system parameters                     */
     {
         double values[MAX_STACK];
-        int operators[MAX_STACK];
+        BinaryOperation operators[MAX_STACK];
         int stack_index;
 
         error_if(line[*counter] != '[', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
@@ -7631,7 +7560,7 @@ rs274ngc::rs274ngc()
         read_real_value(line, counter, values, parameters);
         read_operation(line, counter, operators);
         stack_index = 1;
-        for(; operators[0] != RIGHT_BRACKET ;)
+        for(; operators[0] != BinaryOperation::RIGHT_BRACKET ;)
         {
             read_real_value(line, counter, values+stack_index, parameters);
             read_operation(line, counter, operators+stack_index);
@@ -8153,13 +8082,13 @@ rs274ngc::rs274ngc()
     double * double_ptr,                          /* pointer to double to be read                   */
     double * parameters) const                          /* array of system parameters                     */
     {
-        int operation;
+        UnaryOperation operation;
 
         read_operation_unary (line, counter, &operation);
         error_if(line[*counter] != '[', NCE_LEFT_BRACKET_MISSING_AFTER_UNARY_OPERATION_NAME);
         read_real_expression (line, counter, double_ptr, parameters);
 
-        if (operation == ATAN)
+        if (operation == UnaryOperation::ATAN)
             read_atan(line, counter, double_ptr, parameters);
         else
             execute_unary(double_ptr, operation);

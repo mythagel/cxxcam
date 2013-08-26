@@ -179,7 +179,7 @@ enum ON_OFF : bool
 };
 
 // unary operations
-enum UnaryOperation
+enum class UnaryOperation
 {
 	ABS = 1,
 	ACOS = 2,
@@ -196,8 +196,8 @@ enum UnaryOperation
 	TAN = 13
 };
 
-   // binary operations
-enum BinaryOperation
+// binary operations
+enum class BinaryOperation
 {
 	DIVIDED_BY = 1,
 	MODULO = 2,
@@ -372,10 +372,8 @@ private:
 	void cycle_traverse(Plane plane, double end1, double end2, double end3);
 	void enhance_block(block_t& block, setup_t& settings);
 	static void execute_binary(double * left, BinaryOperation operation, double * right);
-	static void execute_binary1(double * left, BinaryOperation operation, double * right);
-	static void execute_binary2(double * left, BinaryOperation operation, double * right);
 	int execute_block(block_t& block, setup_t& settings);
-	static void execute_unary(double * double_ptr, int operation);
+	static void execute_unary(double * double_ptr, UnaryOperation operation);
 	static double find_arc_length(double x1, double y1, double z1, double center_x, double center_y, int turn, double x2, double y2, double z2);
 	static void find_ends(block_t& block, setup_t& settings, double * px, double * py, double * pz, double * AA_p, double * BB_p, double * CC_p);
 	static void find_relative(double x1, double y1, double z1, double AA_1, double BB_1, double CC_1, double * x2, double * y2, double * z2, double * AA_2, double * BB_2, double * CC_2,setup_t& settings);
@@ -386,7 +384,7 @@ private:
 	void inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
 	void inverse_time_rate_straight(double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
 	void parse_line(const char * line, block_t& block,setup_t& settings);
-	static int precedence(int an_operator);
+	static int precedence(BinaryOperation an_operator);
 	void read_a(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_atan(const char * line, int * counter, double * double_ptr, double * parameters) const;
 	void read_b(const char * line, int * counter, block_t& block, double * parameters) const;
@@ -406,8 +404,8 @@ private:
 	void read_line_number(const char * line, int * counter, block_t& block) const;
 	void read_m(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_one_item(const char * line, int * counter, block_t& block, double * parameters) const;
-	void read_operation(const char * line, int * counter, int * operation) const;
-	void read_operation_unary(const char * line, int * counter, int * operation) const;
+	void read_operation(const char * line, int * counter, BinaryOperation * operation) const;
+	void read_operation_unary(const char * line, int * counter, UnaryOperation * operation) const;
 	void read_p(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_parameter(const char * line, int * counter, double * double_ptr, double * parameters) const;
 	void read_parameter_setting(const char * line, int * counter, block_t& block, double * parameters) const;
