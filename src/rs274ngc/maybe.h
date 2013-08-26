@@ -54,9 +54,9 @@ struct maybe
 		return *this;
 	}
 
-	T const& operator*() const
+	const T& operator*() const
 	{
-		if(!value)
+		if(!valid)
 			throw std::logic_error("Value not valid.");
 		return value;
 	}
