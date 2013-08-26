@@ -810,8 +810,9 @@ rs274ngc::rs274ngc()
         mode0 = block.g_modes[0];
 
         if (mode0 == -1)
-            {}
-            else if (mode0 == G_4)
+        {
+        }
+        else if (mode0 == G_4)
         {
             error_if(block.p_number == -1.0, NCE_DWELL_TIME_MISSING_WITH_G4);
         }
@@ -823,23 +824,27 @@ rs274ngc::rs274ngc()
             error_if((p_int < 1) or (p_int > 9), NCE_P_VALUE_OUT_OF_RANGE_WITH_G10_L2);
         }
         else if (mode0 == G_28)
-            {}
-            else if (mode0 == G_30)
-                {}
-                else if (mode0 == G_53)
-                {
-                    error_if((block.motion_to_be != G_0) and (block.motion_to_be != G_1), NCE_MUST_USE_G0_OR_G1_WITH_G53);
-            error_if(((block.g_modes[3] == G_91) or
-                ((block.g_modes[3] != G_90) and
-                (settings.distance_mode == MODE_INCREMENTAL))),
-                NCE_CANNOT_USE_G53_INCREMENTAL);
+        {
+        }
+        else if (mode0 == G_30)
+        {
+        }
+        else if (mode0 == G_53)
+        {
+            error_if((block.motion_to_be != G_0) and (block.motion_to_be != G_1), NCE_MUST_USE_G0_OR_G1_WITH_G53);
+		    error_if(((block.g_modes[3] == G_91) or
+		    ((block.g_modes[3] != G_90) and
+		    (settings.distance_mode == MODE_INCREMENTAL))),
+		    NCE_CANNOT_USE_G53_INCREMENTAL);
         }
         else if (mode0 == G_92)
-            {}
-            else if ((mode0 == G_92_1) or (mode0 == G_92_2) or (mode0 == G_92_3))
-                {}
-                else
-                    throw error(NCE_BUG_BAD_G_CODE_MODAL_GROUP_0);
+        {
+        }
+        else if ((mode0 == G_92_1) or (mode0 == G_92_2) or (mode0 == G_92_3))
+        {
+        }
+        else
+            throw error(NCE_BUG_BAD_G_CODE_MODAL_GROUP_0);
     }
 
    /****************************************************************************/
@@ -1071,7 +1076,7 @@ rs274ngc::rs274ngc()
         int comment;
         char item;
         comment = 0;
-        for (n = 0, m = 0; (item = line[m]) != (char) NULL; m++)
+        for (n = 0, m = 0; (item = line[m]) != 0; m++)
         {
             if (comment)
             {
@@ -1168,12 +1173,7 @@ rs274ngc::rs274ngc()
     {
         int first;                                /* flag set ON if this is first move after comp ON */
         int ijk_flag;                             /* flag set ON if any of i,j,k present in NC code  */
-        double end_x;
-        double end_y;
-        double end_z;
-        double AA_end;                            /*AA*/
-        double BB_end;                            /*BB*/
-        double CC_end;                            /*CC*/
+        Position end;
 
         ijk_flag = (block.i or block.j or block.k) ? ON : OFF;
         first = (settings.program_x == UNKNOWN);
@@ -1235,44 +1235,43 @@ rs274ngc::rs274ngc()
             error_if(!block.x and !block.z, NCE_X_AND_Z_WORDS_MISSING_FOR_ARC_IN_XZ_PLANE);
         }
 
-        find_ends(block, settings, &end_x, &end_y, &end_z, &AA_end, &BB_end, &CC_end);
+        find_ends(block, settings, &end.x, &end.y, &end.z, &end.a, &end.b, &end.c);
         settings.motion_mode = move;
 
         if (settings.plane == Plane::XY)
         {
-            if ((settings.cutter_comp_side == OFF) or
-                (settings.cutter_comp_radius == 0.0))
+            if ((settings.cutter_comp_side == OFF) or (settings.cutter_comp_radius == 0.0))
             {
                     convert_arc2(move, block, settings,
                     &(settings.current.x), &(settings.current.y), &(settings.current.z), 
-                    end_x, end_y, end_z, 
-                    AA_end, BB_end, CC_end, 
+                    end.x, end.y, end.z, 
+                    end.a, end.b, end.c, 
                     *block.i, *block.j);
             }
             else if (first)
             {
-                    convert_arc_comp1(move, block, settings, end_x, end_y, end_z, AA_end, BB_end, CC_end);
+                convert_arc_comp1(move, block, settings, end.x, end.y, end.z, end.a, end.b, end.c);
             }
             else
             {
-                    convert_arc_comp2(move, block, settings, end_x, end_y, end_z, AA_end, BB_end, CC_end);
+                convert_arc_comp2(move, block, settings, end.x, end.y, end.z, end.a, end.b, end.c);
             }
         }
         else if (settings.plane == Plane::XZ)
         {
-                convert_arc2 (move, block, settings,
-                &(settings.current.z), &(settings.current.x), &(settings.current.y), 
-                end_z, end_x, end_y, 
-                AA_end, BB_end, CC_end, 
-                *block.k, *block.i);
+            convert_arc2 (move, block, settings,
+	            &(settings.current.z), &(settings.current.x), &(settings.current.y), 
+	            end.z, end.x, end.y, 
+	            end.a, end.b, end.c, 
+	            *block.k, *block.i);
         }
         else if (settings.plane == Plane::YZ)
         {
-                convert_arc2 (move, block, settings,
-                &(settings.current.y), &(settings.current.z), &(settings.current.x), 
-                end_y, end_z, end_x, 
-                AA_end, BB_end, CC_end, 
-                *block.j, *block.k);
+            convert_arc2 (move, block, settings,
+	            &(settings.current.y), &(settings.current.z), &(settings.current.x), 
+	            end.y, end.z, end.x, 
+	            end.a, end.b, end.c, 
+	            *block.j, *block.k);
         }
         else
             throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
@@ -1308,9 +1307,9 @@ rs274ngc::rs274ngc()
     double end1,                                  /* coordinate 1 value at end of arc         */
     double end2,                                  /* coordinate 2 value at end of arc         */
     double end3,                                  /* coordinate 3 value at end of arc         */
-    double AA_end,                                /* a-value at end of arc                    *//*AA*/
-    double BB_end,                                /* b-value at end of arc                    *//*BB*/
-    double CC_end,                                /* c-value at end of arc                    *//*CC*/
+    double AA_end,                                /* a-value at end of arc                    */
+    double BB_end,                                /* b-value at end of arc                    */
+    double CC_end,                                /* c-value at end of arc                    */
     double offset1,                               /* offset of center from current1           */
     double offset2)                               /* offset of center from current2           */
     {
@@ -1331,15 +1330,14 @@ rs274ngc::rs274ngc()
         }
 
         if (settings.feed_mode == INVERSE_TIME)
-            inverse_time_rate_arc(*current1, *current2, *current3, center1, center2,
-                turn, end1, end2, end3, block, settings);
+            inverse_time_rate_arc(*current1, *current2, *current3, center1, center2, turn, end1, end2, end3, block, settings);
         arc(end1, end2, center1, center2, turn, end3, AA_end, BB_end, CC_end);
         *current1 = end1;
         *current2 = end2;
         *current3 = end3;
-        settings.current.a = AA_end;       /*AA*/
-        settings.current.b = BB_end;       /*BB*/
-        settings.current.c = CC_end;       /*CC*/
+        settings.current.a = AA_end;
+        settings.current.b = BB_end;
+        settings.current.c = CC_end;
     }
 
    /****************************************************************************/
@@ -1377,9 +1375,9 @@ rs274ngc::rs274ngc()
     double end_x,                                 /* x-value at end of programmed (then actual) arc   */
     double end_y,                                 /* y-value at end of programmed (then actual) arc   */
     double end_z                                  /* z-value at end of arc                            */
-    , double AA_end                               /* a-value at end of arc                      *//*AA*/
-    , double BB_end                               /* b-value at end of arc                      *//*BB*/
-    , double CC_end                               /* c-value at end of arc                      *//*CC*/
+    , double AA_end                               /* a-value at end of arc                      */
+    , double BB_end                               /* b-value at end of arc                      */
+    , double CC_end                               /* c-value at end of arc                      */
     )
     {
         double center_x;
@@ -1429,9 +1427,9 @@ rs274ngc::rs274ngc()
         settings.current.x = end_x;
         settings.current.y = end_y;
         settings.current.z = end_z;
-        settings.current.a = AA_end;       /*AA*/
-        settings.current.b = BB_end;       /*BB*/
-        settings.current.c = CC_end;       /*CC*/
+        settings.current.a = AA_end;
+        settings.current.b = BB_end;
+        settings.current.c = CC_end;
     }
 
    /****************************************************************************/
@@ -1480,9 +1478,9 @@ rs274ngc::rs274ngc()
     double end_x,                                 /* x-value at end of programmed (then actual) arc */
     double end_y,                                 /* y-value at end of programmed (then actual) arc */
     double end_z                                  /* z-value at end of arc                          */
-    , double AA_end                               /* a-value at end of arc                    *//*AA*/
-    , double BB_end                               /* b-value at end of arc                    *//*BB*/
-    , double CC_end                               /* c-value at end of arc                    *//*CC*/
+    , double AA_end                               /* a-value at end of arc                    */
+    , double BB_end                               /* b-value at end of arc                    */
+    , double CC_end                               /* c-value at end of arc                    */
     )
     {
         double alpha;                             /* direction of tangent to start of arc */
@@ -1576,9 +1574,9 @@ rs274ngc::rs274ngc()
         settings.current.x = end_x;
         settings.current.y = end_y;
         settings.current.z = end_z;
-        settings.current.a = AA_end;       /*AA*/
-        settings.current.b = BB_end;       /*BB*/
-        settings.current.c = CC_end;       /*CC*/
+        settings.current.a = AA_end;
+        settings.current.b = BB_end;
+        settings.current.c = CC_end;
     }
 
    /****************************************************************************/
@@ -1669,32 +1667,25 @@ rs274ngc::rs274ngc()
                 settings.current.z = *block.z;
             }
 
-            if (block.a)              /*AA*/
-            {                                     /*AA*/
+            if (block.a)
+            {
                 settings.axis_offset.a = (settings.current.a + settings.axis_offset.a - *block.a);
                 settings.current.a = *block.a;
             }
 
-            if (block.b)              /*BB*/
-            {                                     /*BB*/
+            if (block.b)
+            {
                 settings.axis_offset.b = (settings.current.b + settings.axis_offset.b - *block.b);
                 settings.current.b = *block.b;
             }
 
-            if (block.c)              /*CC*/
-            {                                     /*CC*/
+            if (block.c)
+            {
                 settings.axis_offset.c = (settings.current.c + settings.axis_offset.c - *block.c);
                 settings.current.c = *block.c;
             }
 
-            offset_origin({
-            	settings.origin_offset.x + settings.axis_offset.x,
-                settings.origin_offset.y + settings.axis_offset.y,
-                settings.origin_offset.z + settings.axis_offset.z,
-                settings.origin_offset.a + settings.axis_offset.a,
-                settings.origin_offset.b + settings.axis_offset.b,                      
-                settings.origin_offset.c + settings.axis_offset.c
-                });
+            offset_origin(settings.origin_offset + settings.axis_offset);
             pars[5211] = settings.axis_offset.x;
             pars[5212] = settings.axis_offset.y;
             pars[5213] = settings.axis_offset.z;
@@ -1704,58 +1695,25 @@ rs274ngc::rs274ngc()
         }
         else if ((g_code == G_92_1) or (g_code == G_92_2))
         {
-            settings.current.x = settings.current.x + settings.axis_offset.x;
-            settings.current.y = settings.current.y + settings.axis_offset.y;
-            settings.current.z = settings.current.z + settings.axis_offset.z;
-            settings.current.a = settings.current.a + settings.axis_offset.a;
-            settings.current.b = settings.current.b + settings.axis_offset.b;
-            settings.current.c = settings.current.c + settings.axis_offset.c;
-            offset_origin({
-            	settings.origin_offset.x,
-                settings.origin_offset.y,
-                settings.origin_offset.z,
-                settings.origin_offset.a,            
-                settings.origin_offset.b,            
-                settings.origin_offset.c
-                });
-            settings.axis_offset.x = 0.0;
-            settings.axis_offset.y = 0.0;
-            settings.axis_offset.z = 0.0;
-            settings.axis_offset.a = 0.0;
-            settings.axis_offset.b = 0.0;
-            settings.axis_offset.c = 0.0;
+	        settings.current = settings.current + settings.axis_offset;
+            offset_origin(settings.origin_offset);
+            settings.axis_offset = Position{};
             if (g_code == G_92_1)
             {
                 pars[5211] = 0.0;
                 pars[5212] = 0.0;
                 pars[5213] = 0.0;
-                pars[5214] = 0.0;            /*AA*/
-                pars[5215] = 0.0;            /*BB*/
-                pars[5216] = 0.0;            /*CC*/
+                pars[5214] = 0.0;
+                pars[5215] = 0.0;
+                pars[5216] = 0.0;
             }
         }
         else if (g_code == G_92_3)
         {
-            settings.current.x = settings.current.x + settings.axis_offset.x - pars[5211];
-            settings.current.y = settings.current.y + settings.axis_offset.y - pars[5212];
-            settings.current.z = settings.current.z + settings.axis_offset.z - pars[5213];
-            settings.current.a = settings.current.a + settings.axis_offset.a - pars[5214];
-            settings.current.b = settings.current.b + settings.axis_offset.b - pars[5215];
-            settings.current.c = settings.current.c + settings.axis_offset.c - pars[5216];
-            settings.axis_offset.x = pars[5211];
-            settings.axis_offset.y = pars[5212];
-            settings.axis_offset.z = pars[5213];
-            settings.axis_offset.a = pars[5214];
-            settings.axis_offset.b = pars[5215];
-            settings.axis_offset.c = pars[5216];
-            offset_origin({
-            	settings.origin_offset.x + settings.axis_offset.x,
-                settings.origin_offset.y + settings.axis_offset.y,
-                settings.origin_offset.z + settings.axis_offset.z,
-                settings.origin_offset.a + settings.axis_offset.a,
-                settings.origin_offset.b + settings.axis_offset.b,
-                settings.origin_offset.c + settings.axis_offset.c
-                });
+        	Position param_pos {pars[5211], pars[5212], pars[5213], pars[5214], pars[5215], pars[5216]};
+            settings.current = settings.current + settings.axis_offset - param_pos;
+            settings.axis_offset = param_pos;
+            offset_origin(settings.origin_offset + settings.axis_offset);
         }
         else
             throw error(NCE_BUG_CODE_NOT_IN_G92_SERIES);
@@ -1949,12 +1907,7 @@ rs274ngc::rs274ngc()
     setup_t& settings)                       /* pointer to machine settings                   */
     {
         int origin;
-        double x;
-        double y;
-        double z;
-        double a;                                 /*AA*/
-        double b;                                 /*BB*/
-        double c;                                 /*CC*/
+        Position pos;
         double * parameters;
 
         parameters = settings.parameters;
@@ -2005,48 +1958,20 @@ rs274ngc::rs274ngc()
    /* axis offsets could be included in the two set of calculations for
       current_x, current_y, etc., but do not need to be because the results
       would be the same. They would be added in then subtracted out. */
-        settings.current.x =
-            (settings.current.x + settings.origin_offset.x);
-        settings.current.y =
-            (settings.current.y + settings.origin_offset.y);
-        settings.current.z =
-            (settings.current.z + settings.origin_offset.z);
-        settings.current.a =               /*AA*/
-            (settings.current.a + settings.origin_offset.a);
-        settings.current.b =               /*BB*/
-            (settings.current.b + settings.origin_offset.b);
-        settings.current.c =               /*CC*/
-            (settings.current.c + settings.origin_offset.c);
+      settings.current = settings.current + settings.origin_offset;
 
-        x = parameters[5201 + (origin * 20)];
-        y = parameters[5202 + (origin * 20)];
-        z = parameters[5203 + (origin * 20)];
-        a = parameters[5204 + (origin * 20)];/*AA*/
-        b = parameters[5205 + (origin * 20)];/*BB*/
-        c = parameters[5206 + (origin * 20)];/*CC*/
+        pos.x = parameters[5201 + (origin * 20)];
+        pos.y = parameters[5202 + (origin * 20)];
+        pos.z = parameters[5203 + (origin * 20)];
+        pos.a = parameters[5204 + (origin * 20)];
+        pos.b = parameters[5205 + (origin * 20)];
+        pos.c = parameters[5206 + (origin * 20)];
 
-        settings.origin_offset.x = x;
-        settings.origin_offset.y = y;
-        settings.origin_offset.z = z;
-        settings.origin_offset.a = a;      /*AA*/
-        settings.origin_offset.b = b;      /*BB*/
-        settings.origin_offset.c = c;      /*CC*/
+        settings.origin_offset = pos;
 
-        settings.current.x = (settings.current.x - x);
-        settings.current.y = (settings.current.y - y);
-        settings.current.z = (settings.current.z - z);
-        settings.current.a = (settings.current.a - a);
-        settings.current.b = (settings.current.b - b);
-        settings.current.c = (settings.current.c - c);
+        settings.current = settings.current - pos;
 
-        offset_origin({
-        	x + settings.axis_offset.x,
-            y + settings.axis_offset.y,
-            z + settings.axis_offset.z,            
-            a + settings.axis_offset.a,            
-            b + settings.axis_offset.b,            
-            c + settings.axis_offset.c
-            });
+        offset_origin(pos + settings.axis_offset);
     }
 
    /****************************************************************************/
@@ -2549,9 +2474,7 @@ rs274ngc::rs274ngc()
     double dwell,                                 /* dwell time                          */
     Direction direction)                    /* direction spindle turning at outset */
     {
-        error_if(((direction != Direction::Clockwise) and
-            (direction != Direction::CounterClockwise)),
-            NCE_SPINDLE_NOT_TURNING_IN_G86);
+        error_if((direction != Direction::Clockwise) and (direction != Direction::CounterClockwise), NCE_SPINDLE_NOT_TURNING_IN_G86);
 
         cycle_feed(plane, x, y, bottom_z);
         this->dwell(dwell);
@@ -2634,9 +2557,7 @@ rs274ngc::rs274ngc()
     double bottom_z,                              /* value of z at bottom of cycle       */
     Direction direction)                    /* direction spindle turning at outset */
     {
-        error_if(((direction != Direction::Clockwise) and
-            (direction != Direction::CounterClockwise)),
-            NCE_SPINDLE_NOT_TURNING_IN_G87);
+        error_if((direction != Direction::Clockwise) and (direction != Direction::CounterClockwise), NCE_SPINDLE_NOT_TURNING_IN_G87);
 
         cycle_traverse(plane, offset_x, offset_y, r);
         spindle_stop();
@@ -2698,9 +2619,7 @@ rs274ngc::rs274ngc()
     double dwell,                                 /* dwell time                          */
     Direction direction)                    /* direction spindle turning at outset */
     {
-        error_if(((direction != Direction::Clockwise) and
-            (direction != Direction::CounterClockwise)),
-            NCE_SPINDLE_NOT_TURNING_IN_G88);
+        error_if((direction != Direction::Clockwise) and (direction != Direction::CounterClockwise), NCE_SPINDLE_NOT_TURNING_IN_G88);
 
         cycle_feed(plane, x, y, bottom_z);
         this->dwell(dwell);
@@ -2853,15 +2772,13 @@ rs274ngc::rs274ngc()
 
    */
 
-#define CYCLE_MACRO(call) for (repeat = block.l_number; \
-repeat > 0; \
-repeat--) \
+#define CYCLE_MACRO(call) for (int repeat = block.l_number; repeat > 0; repeat--) \
 { \
     aa = (aa + aa_increment); \
     bb = (bb + bb_increment); \
     cycle_traverse(plane, aa, bb, old_cc); \
     if (old_cc != r) \
-    cycle_traverse(plane, aa, bb, r); \
+    	cycle_traverse(plane, aa, bb, r); \
     call; \
     old_cc = clear_cc; \
 }
@@ -2883,7 +2800,6 @@ repeat--) \
         double old_cc;
         Plane plane;
         double r;
-        int repeat;
         Motion save_mode;
 
         plane = Plane::XY;
@@ -2931,37 +2847,30 @@ repeat--) \
         {
             case G_81:
                 CYCLE_MACRO(convert_cycle_g81(Plane::XY, aa, bb, clear_cc, cc))
-                    break;
+                break;
             case G_82:
                 error_if((settings.motion_mode != G_82) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g82 (Plane::XY, aa, bb, clear_cc, cc,
-                    block.p_number))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g82 (Plane::XY, aa, bb, clear_cc, cc, block.p_number))
+                settings.cycle.p = block.p_number;
                 break;
             case G_83:
                 error_if((settings.motion_mode != G_83) and (block.q_number == -1.0), NCE_Q_WORD_MISSING_WITH_G83);
-                block.q_number =
-                    block.q_number == -1.0 ? settings.cycle.q : block.q_number;
-                CYCLE_MACRO(convert_cycle_g83 (Plane::XY, aa, bb, r, clear_cc, cc,
-                    block.q_number))
-                    settings.cycle.q = block.q_number;
+                block.q_number = block.q_number == -1.0 ? settings.cycle.q : block.q_number;
+                CYCLE_MACRO(convert_cycle_g83 (Plane::XY, aa, bb, r, clear_cc, cc, block.q_number))
+                settings.cycle.q = block.q_number;
                 break;
             case G_84:
-                CYCLE_MACRO(convert_cycle_g84 (Plane::XY, aa, bb, clear_cc, cc,
-                    settings.spindle_turning, settings.speed_feed_mode))
+                CYCLE_MACRO(convert_cycle_g84 (Plane::XY, aa, bb, clear_cc, cc, settings.spindle_turning, settings.speed_feed_mode))
                     break;
             case G_85:
                 CYCLE_MACRO(convert_cycle_g85 (Plane::XY, aa, bb, clear_cc, cc))
                     break;
             case G_86:
                 error_if((settings.motion_mode != G_86) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g86 (Plane::XY, aa, bb, clear_cc, cc,
-                    block.p_number, settings.spindle_turning))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g86 (Plane::XY, aa, bb, clear_cc, cc, block.p_number, settings.spindle_turning))
+                settings.cycle.p = block.p_number;
                 break;
             case G_87:
                 if (settings.motion_mode != G_87)
@@ -2980,24 +2889,19 @@ repeat--) \
                 {
                     k = (cc + k);            /* k always absolute in function call below */
                 }
-                CYCLE_MACRO(convert_cycle_g87 (Plane::XY, aa, (aa + i), bb,
-                    (bb + j), r, clear_cc, k, cc, settings.spindle_turning))
+                CYCLE_MACRO(convert_cycle_g87 (Plane::XY, aa, (aa + i), bb, (bb + j), r, clear_cc, k, cc, settings.spindle_turning))
                     break;
             case G_88:
                 error_if((settings.motion_mode != G_88) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g88 (Plane::XY, aa, bb, cc,
-                    block.p_number, settings.spindle_turning))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g88 (Plane::XY, aa, bb, cc, block.p_number, settings.spindle_turning))
+                settings.cycle.p = block.p_number;
                 break;
             case G_89:
                 error_if((settings.motion_mode != G_89) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g89 (Plane::XY, aa, bb, clear_cc, cc,
-                    block.p_number))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g89 (Plane::XY, aa, bb, clear_cc, cc, block.p_number))
+                settings.cycle.p = block.p_number;
                 break;
             default:
                 throw error(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
@@ -3077,7 +2981,6 @@ repeat--) \
         double old_cc;
         Plane plane;
         double r;
-        int repeat;
         Motion save_mode;
 
         plane = Plane::YZ;
@@ -3125,37 +3028,30 @@ repeat--) \
         {
             case G_81:
                 CYCLE_MACRO(convert_cycle_g81(Plane::YZ, aa, bb, clear_cc, cc))
-                    break;
+                break;
             case G_82:
                 error_if((settings.motion_mode != G_82) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g82 (Plane::YZ, aa, bb, clear_cc, cc,
-                    block.p_number))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g82 (Plane::YZ, aa, bb, clear_cc, cc, block.p_number))
+                settings.cycle.p = block.p_number;
                 break;
             case G_83:
                 error_if((settings.motion_mode != G_83) and (block.q_number == -1.0), NCE_Q_WORD_MISSING_WITH_G83);
-                block.q_number =
-                    block.q_number == -1.0 ? settings.cycle.q : block.q_number;
-                CYCLE_MACRO(convert_cycle_g83 (Plane::YZ, aa, bb, r, clear_cc, cc,
-                    block.q_number))
-                    settings.cycle.q = block.q_number;
+                block.q_number = block.q_number == -1.0 ? settings.cycle.q : block.q_number;
+                CYCLE_MACRO(convert_cycle_g83 (Plane::YZ, aa, bb, r, clear_cc, cc, block.q_number))
+                settings.cycle.q = block.q_number;
                 break;
             case G_84:
-                CYCLE_MACRO(convert_cycle_g84 (Plane::YZ, aa, bb, clear_cc, cc,
-                    settings.spindle_turning, settings.speed_feed_mode))
-                    break;
+                CYCLE_MACRO(convert_cycle_g84 (Plane::YZ, aa, bb, clear_cc, cc, settings.spindle_turning, settings.speed_feed_mode))
+                break;
             case G_85:
                 CYCLE_MACRO(convert_cycle_g85 (Plane::YZ, aa, bb, clear_cc, cc))
-                    break;
+                break;
             case G_86:
                 error_if((settings.motion_mode != G_86) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g86 (Plane::YZ, aa, bb, clear_cc, cc,
-                    block.p_number, settings.spindle_turning))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g86 (Plane::YZ, aa, bb, clear_cc, cc, block.p_number, settings.spindle_turning))
+                settings.cycle.p = block.p_number;
                 break;
             case G_87:
                 if (settings.motion_mode != G_87)
@@ -3174,24 +3070,19 @@ repeat--) \
                 {
                     i = (cc + i);            /* i always absolute in function call below */
                 }
-                CYCLE_MACRO(convert_cycle_g87 (Plane::YZ, aa, (aa + j), bb,
-                    (bb + k), r, clear_cc, i, cc, settings.spindle_turning))
+                CYCLE_MACRO(convert_cycle_g87 (Plane::YZ, aa, (aa + j), bb, (bb + k), r, clear_cc, i, cc, settings.spindle_turning))
                     break;
             case G_88:
                 error_if((settings.motion_mode != G_88) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g88 (Plane::YZ, aa, bb, cc,
-                    block.p_number, settings.spindle_turning))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g88 (Plane::YZ, aa, bb, cc, block.p_number, settings.spindle_turning))
+                settings.cycle.p = block.p_number;
                 break;
             case G_89:
                 error_if((settings.motion_mode != G_89) and (block.p_number == -1.0), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g89 (Plane::YZ, aa, bb, clear_cc, cc,
-                    block.p_number))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g89 (Plane::YZ, aa, bb, clear_cc, cc, block.p_number))
+                settings.cycle.p = block.p_number;
                 break;
             default:
                 throw error(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
@@ -3279,7 +3170,6 @@ repeat--) \
         double old_cc;
         Plane plane;
         double r;
-        int repeat;
         Motion save_mode;
 
         plane = Plane::XZ;
@@ -3327,32 +3217,30 @@ repeat--) \
         {
             case G_81:
                 CYCLE_MACRO(convert_cycle_g81(Plane::XZ, aa, bb, clear_cc, cc))
-                    break;
+                break;
             case G_82:
                 error_if(((settings.motion_mode != G_82) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G82);
                 block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
                 CYCLE_MACRO(convert_cycle_g82 (Plane::XZ, aa, bb, clear_cc, cc, block.p_number))
-                    settings.cycle.p = block.p_number;
+                settings.cycle.p = block.p_number;
                 break;
             case G_83:
                 error_if(((settings.motion_mode != G_83) and (block.q_number == -1.0)), NCE_Q_WORD_MISSING_WITH_G83);
                 block.q_number = block.q_number == -1.0 ? settings.cycle.q : block.q_number;
                 CYCLE_MACRO(convert_cycle_g83 (Plane::XZ, aa, bb, r, clear_cc, cc, block.q_number))
-                    settings.cycle.q = block.q_number;
+                settings.cycle.q = block.q_number;
                 break;
             case G_84:
-                CYCLE_MACRO(convert_cycle_g84 (Plane::XZ, aa, bb, clear_cc, cc,
-                    settings.spindle_turning, settings.speed_feed_mode))
-                    break;
+                CYCLE_MACRO(convert_cycle_g84 (Plane::XZ, aa, bb, clear_cc, cc, settings.spindle_turning, settings.speed_feed_mode))
+                break;
             case G_85:
                 CYCLE_MACRO(convert_cycle_g85 (Plane::XZ, aa, bb, clear_cc, cc))
-                    break;
+                break;
             case G_86:
                 error_if(((settings.motion_mode != G_86) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G86);
                 block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g86 (Plane::XZ, aa, bb, clear_cc, cc,
-                    block.p_number, settings.spindle_turning))
-                    settings.cycle.p = block.p_number;
+                CYCLE_MACRO(convert_cycle_g86 (Plane::XZ, aa, bb, clear_cc, cc, block.p_number, settings.spindle_turning))
+                settings.cycle.p = block.p_number;
                 break;
             case G_87:
                 if (settings.motion_mode != G_87)
@@ -3371,24 +3259,19 @@ repeat--) \
                 {
                     j = (cc + j);            /* j always absolute in function call below */
                 }
-                CYCLE_MACRO(convert_cycle_g87 (Plane::XZ, aa, (aa + k), bb,
-                    (bb + i), r, clear_cc, j, cc, settings.spindle_turning))
-                    break;
+                CYCLE_MACRO(convert_cycle_g87 (Plane::XZ, aa, (aa + k), bb, (bb + i), r, clear_cc, j, cc, settings.spindle_turning))
+                break;
             case G_88:
                 error_if(((settings.motion_mode != G_88) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G88);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g88 (Plane::XZ, aa, bb, cc,
-                    block.p_number, settings.spindle_turning))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g88 (Plane::XZ, aa, bb, cc, block.p_number, settings.spindle_turning))
+                settings.cycle.p = block.p_number;
                 break;
             case G_89:
                 error_if(((settings.motion_mode != G_89) and (block.p_number == -1.0)), NCE_DWELL_TIME_P_WORD_MISSING_WITH_G89);
-                block.p_number =
-                    block.p_number == -1.0 ? settings.cycle.p : block.p_number;
-                CYCLE_MACRO(convert_cycle_g89 (Plane::XZ, aa, bb, clear_cc, cc,
-                    block.p_number))
-                    settings.cycle.p = block.p_number;
+                block.p_number = block.p_number == -1.0 ? settings.cycle.p : block.p_number;
+                CYCLE_MACRO(convert_cycle_g89 (Plane::XZ, aa, bb, clear_cc, cc, block.p_number))
+                settings.cycle.p = block.p_number;
                 break;
             default:
                 throw error(NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
@@ -3681,62 +3564,44 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        double end_x;
-        double end_y;
-        double end_z;
-        double AA_end;                            /*AA*/
-        double AA_end2;                           /*AA*/
-        double BB_end;                            /*BB*/
-        double BB_end2;                           /*BB*/
-        double CC_end;                            /*CC*/
-        double CC_end2;                           /*CC*/
+    	Position end;
+        
+        double AA_end2;
+        double BB_end2;
+        double CC_end2;
         double * parameters;
 
         parameters = settings.parameters;
-        find_ends(block, settings, &end_x, &end_y,
-            &end_z
-            , &AA_end
-            , &BB_end
-            , &CC_end
-            );
+        find_ends(block, settings, &end.x, &end.y, &end.z, &end.a, &end.b, &end.c);
 
         error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_G28_OR_G30_WITH_CUTTER_RADIUS_COMP);
-        rapid({end_x, end_y, end_z, AA_end, BB_end, CC_end});
+        rapid(end);
         if (move == G_28)
         {
-            find_relative
-                (parameters[5161], parameters[5162], parameters[5163],
-                parameters[5164],                 /*AA*/
-                parameters[5165],                 /*BB*/
-                parameters[5166],                 /*CC*/
-                &end_x, &end_y, &end_z
-                , &AA_end2
-                , &BB_end2
-                , &CC_end2
-                , settings);
+            find_relative(
+            	parameters[5161], parameters[5162], parameters[5163],
+                parameters[5164], parameters[5165], parameters[5166],
+                &end.x, &end.y, &end.z, &AA_end2, &BB_end2, &CC_end2, 
+                settings);
         }
         else if (move == G_30)
         {
-            find_relative
-                (parameters[5181], parameters[5182], parameters[5183],
-                parameters[5184],                 /*AA*/
-                parameters[5185],                 /*BB*/
-                parameters[5186],                 /*CC*/
-                &end_x, &end_y, &end_z
-                , &AA_end2
-                , &BB_end2
-                , &CC_end2
-                , settings);
+            find_relative(
+            	parameters[5181], parameters[5182], parameters[5183],
+                parameters[5184], parameters[5185], parameters[5186],
+                &end.x, &end.y, &end.z, &AA_end2, &BB_end2, &CC_end2, 
+                settings);
         }
         else
             throw error(NCE_BUG_CODE_NOT_G28_OR_G30);
-        rapid({end_x, end_y, end_z, AA_end, BB_end, CC_end});
-        settings.current.x = end_x;
-        settings.current.y = end_y;
-        settings.current.z = end_z;
-        settings.current.a = AA_end2;      /*AA*/
-        settings.current.b = BB_end2;      /*BB*/
-        settings.current.c = CC_end2;      /*CC*/
+        
+        rapid(end);
+        settings.current.x = end.x;
+        settings.current.y = end.y;
+        settings.current.z = end.z;
+        settings.current.a = AA_end2;
+        settings.current.b = BB_end2;
+        settings.current.c = CC_end2;
     }
 
    /****************************************************************************/
@@ -3795,18 +3660,12 @@ repeat--) \
                 settings.current.x = (settings.current.x * INCH_PER_MM);
                 settings.current.y = (settings.current.y * INCH_PER_MM);
                 settings.current.z = (settings.current.z * INCH_PER_MM);
-                settings.axis_offset.x =
-                    (settings.axis_offset.x * INCH_PER_MM);
-                settings.axis_offset.y =
-                    (settings.axis_offset.y * INCH_PER_MM);
-                settings.axis_offset.z =
-                    (settings.axis_offset.z * INCH_PER_MM);
-                settings.origin_offset.x =
-                    (settings.origin_offset.x * INCH_PER_MM);
-                settings.origin_offset.y =
-                    (settings.origin_offset.y * INCH_PER_MM);
-                settings.origin_offset.z =
-                    (settings.origin_offset.z * INCH_PER_MM);
+                settings.axis_offset.x = (settings.axis_offset.x * INCH_PER_MM);
+                settings.axis_offset.y = (settings.axis_offset.y * INCH_PER_MM);
+                settings.axis_offset.z = (settings.axis_offset.z * INCH_PER_MM);
+                settings.origin_offset.x = (settings.origin_offset.x * INCH_PER_MM);
+                settings.origin_offset.y = (settings.origin_offset.y * INCH_PER_MM);
+                settings.origin_offset.z = (settings.origin_offset.z * INCH_PER_MM);
             }
         }
         else if (g_code == G_21)
@@ -3818,18 +3677,12 @@ repeat--) \
                 settings.current.x = (settings.current.x * MM_PER_INCH);
                 settings.current.y = (settings.current.y * MM_PER_INCH);
                 settings.current.z = (settings.current.z * MM_PER_INCH);
-                settings.axis_offset.x =
-                    (settings.axis_offset.x * MM_PER_INCH);
-                settings.axis_offset.y =
-                    (settings.axis_offset.y * MM_PER_INCH);
-                settings.axis_offset.z =
-                    (settings.axis_offset.z * MM_PER_INCH);
-                settings.origin_offset.x =
-                    (settings.origin_offset.x * MM_PER_INCH);
-                settings.origin_offset.y =
-                    (settings.origin_offset.y * MM_PER_INCH);
-                settings.origin_offset.z =
-                    (settings.origin_offset.z * MM_PER_INCH);
+                settings.axis_offset.x = (settings.axis_offset.x * MM_PER_INCH);
+                settings.axis_offset.y = (settings.axis_offset.y * MM_PER_INCH);
+                settings.axis_offset.z = (settings.axis_offset.z * MM_PER_INCH);
+                settings.origin_offset.x = (settings.origin_offset.x * MM_PER_INCH);
+                settings.origin_offset.y = (settings.origin_offset.y * MM_PER_INCH);
+                settings.origin_offset.z = (settings.origin_offset.z * MM_PER_INCH);
             }
         }
         else
@@ -3978,8 +3831,7 @@ repeat--) \
         {
             convert_home(code, block, settings);
         }
-        else if ((code == G_92)   or (code == G_92_1) or
-            (code == G_92_2) or (code == G_92_3))
+        else if ((code == G_92)   or (code == G_92_1) or (code == G_92_2) or (code == G_92_3))
         {
             convert_axis_offsets(code, block, settings);
         }
@@ -4085,30 +3937,24 @@ repeat--) \
     setup_t& settings)                       /* pointer to machine settings              */
     {
         double distance;
-        double end_x;
-        double end_y;
-        double end_z;
-        double AA_end;                            /*AA*/
-        double BB_end;                            /*BB*/
-        double CC_end;                            /*CC*/
+        Position end;
 
         error_if(!block.x and !block.y and !block.z, NCE_X_Y_AND_Z_WORDS_ALL_MISSING_WITH_G38_2);
         error_if(settings.feed_mode == INVERSE_TIME, NCE_CANNOT_PROBE_IN_INVERSE_TIME_FEED_MODE);
         error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_PROBE_WITH_CUTTER_RADIUS_COMP_ON);
         error_if(settings.feed_rate == 0.0, NCE_CANNOT_PROBE_WITH_ZERO_FEED_RATE);
-        find_ends(block, settings, &end_x, &end_y, &end_z, &AA_end, &BB_end, &CC_end);
-        if (0
-            or (AA_end != settings.current.a) /*AA*/
-            or (BB_end != settings.current.b) /*BB*/
-            or (CC_end != settings.current.c) /*CC*/
+        find_ends(block, settings, &end.x, &end.y, &end.z, &end.a, &end.b, &end.c);
+        if ((end.a != settings.current.a)
+            or (end.b != settings.current.b)
+            or (end.c != settings.current.c)
             )
             throw error(NCE_CANNOT_MOVE_ROTARY_AXES_DURING_PROBING);
-        distance = sqrt(pow((settings.current.x - end_x), 2) +
-            pow((settings.current.y - end_y), 2) +
-            pow((settings.current.z - end_z), 2));
+        distance = sqrt(pow((settings.current.x - end.x), 2) +
+            pow((settings.current.y - end.y), 2) +
+            pow((settings.current.z - end.z), 2));
         error_if((distance < ((settings.length_units == Units::Metric) ? 0.254 : 0.01)), NCE_START_POINT_TOO_CLOSE_TO_PROBE_POINT);
         probe_on();
-        probe({end_x, end_y, end_z, AA_end, BB_end, CC_end});
+        probe(end);
         probe_off();
         settings.motion_mode = G_38_2;
         settings.probe_flag = ON;
@@ -4189,12 +4035,7 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274/NGC instructions */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
-        double x;
-        double y;
-        double z;
-        double a;                                 /*AA*/
-        double b;                                 /*BB*/
-        double c;                                 /*CC*/
+    	Position pos;
         double * parameters;
         int p_int;
 
@@ -4203,79 +4044,60 @@ repeat--) \
 
         if (block.x)
         {
-            x = *block.x;
-            parameters[5201 + (p_int * 20)] = x;
+            pos.x = *block.x;
+            parameters[5201 + (p_int * 20)] = pos.x;
         }
         else
-            x = parameters[5201 + (p_int * 20)];
+            pos.x = parameters[5201 + (p_int * 20)];
 
         if (block.y)
         {
-            y = *block.y;
-            parameters[5202 + (p_int * 20)] = y;
+            pos.y = *block.y;
+            parameters[5202 + (p_int * 20)] = pos.y;
         }
         else
-            y = parameters[5202 + (p_int * 20)];
+            pos.y = parameters[5202 + (p_int * 20)];
         if (block.z)
         {
-            z = *block.z;
-            parameters[5203 + (p_int * 20)] = z;
+            pos.z = *block.z;
+            parameters[5203 + (p_int * 20)] = pos.z;
         }
         else
-            z = parameters[5203 + (p_int * 20)];
+            pos.z = parameters[5203 + (p_int * 20)];
 
         if (block.a)
         {
-            a = *block.a;
-            parameters[5204 + (p_int * 20)] = a;
+            pos.a = *block.a;
+            parameters[5204 + (p_int * 20)] = pos.a;
         }
         else
-            a = parameters[5204 + (p_int * 20)];
+            pos.a = parameters[5204 + (p_int * 20)];
 
         if (block.b)
         {
-            b = *block.b;
-            parameters[5205 + (p_int * 20)] = b;
+            pos.b = *block.b;
+            parameters[5205 + (p_int * 20)] = pos.b;
         }
         else
-            b = parameters[5205 + (p_int * 20)];
+            pos.b = parameters[5205 + (p_int * 20)];
 
         if (block.c)
         {
-            c = *block.c;
-            parameters[5206 + (p_int * 20)] = c;
+            pos.c = *block.c;
+            parameters[5206 + (p_int * 20)] = pos.c;
         }
         else
-            c = parameters[5206 + (p_int * 20)];
+            pos.c = parameters[5206 + (p_int * 20)];
 
    /* axis offsets could be included in the two sets of calculations for
       current_x, current_y, etc., but do not need to be because the results
       would be the same. They would be added in then subtracted out. */
         if (p_int == settings.origin_index)      /* system is currently used */
         {
-            settings.current.x = (settings.current.x + settings.origin_offset.x);
-            settings.current.y = (settings.current.y + settings.origin_offset.y);
-            settings.current.z = (settings.current.z + settings.origin_offset.z);
-            settings.current.a = (settings.current.a + settings.origin_offset.a);
-            settings.current.b = (settings.current.b + settings.origin_offset.b);
-            settings.current.c = (settings.current.c + settings.origin_offset.c);
-
-            settings.origin_offset.x = x;
-            settings.origin_offset.y = y;
-            settings.origin_offset.z = z;
-            settings.origin_offset.a = a;  /*AA*/
-            settings.origin_offset.b = b;  /*BB*/
-            settings.origin_offset.c = c;  /*CC*/
-
-            settings.current.x = (settings.current.x - x);
-            settings.current.y = (settings.current.y - y);
-            settings.current.z = (settings.current.z - z);
-            settings.current.a = (settings.current.a - a);
-            settings.current.b = (settings.current.b - b);
-            settings.current.c = (settings.current.c - c);
-
-            offset_origin({x + settings.axis_offset.x, y + settings.axis_offset.y, z + settings.axis_offset.z, 
-            	a + settings.axis_offset.a, b + settings.axis_offset.b, c + settings.axis_offset.c});
+            settings.current = settings.current + settings.origin_offset;
+            settings.origin_offset = pos;
+            settings.current = settings.current - pos;
+            offset_origin(pos + settings.axis_offset);
         }
 #ifdef DEBUG_EMC
         else
@@ -4434,18 +4256,7 @@ repeat--) \
         else if ((block.m_modes[4] == 2) or (block.m_modes[4] == 30))
         {                                         /* reset stuff here */
    /*1*/
-            settings.current.x = settings.current.x
-                + settings.origin_offset.x + settings.axis_offset.x;
-            settings.current.y = settings.current.y
-                + settings.origin_offset.y + settings.axis_offset.y;
-            settings.current.z = settings.current.z
-                + settings.origin_offset.z + settings.axis_offset.z;
-            settings.current.a = settings.current.a
-                + settings.origin_offset.a + settings.axis_offset.a;
-            settings.current.b = settings.current.b
-                + settings.origin_offset.b + settings.axis_offset.b;
-            settings.current.c = settings.current.c
-                + settings.origin_offset.c + settings.axis_offset.c;
+            settings.current = settings.current + settings.origin_offset + settings.axis_offset;
 
             settings.origin_index = 1;
             settings.parameters[5220] = 1.0;
@@ -4456,28 +4267,10 @@ repeat--) \
             settings.origin_offset.b = settings.parameters[5225];
             settings.origin_offset.c = settings.parameters[5226];
 
-            settings.axis_offset.x = 0;
-            settings.axis_offset.x = 0;
-            settings.axis_offset.x = 0;
-            settings.axis_offset.a = 0;    /*AA*/
-            settings.axis_offset.b = 0;    /*BB*/
-            settings.axis_offset.c = 0;    /*CC*/
+            settings.axis_offset = Position{};
+            settings.current = settings.current - settings.origin_offset;
 
-            settings.current.x = settings.current.x -
-                settings.origin_offset.x;
-            settings.current.y = settings.current.y -
-                settings.origin_offset.y;
-            settings.current.z = settings.current.z -
-                settings.origin_offset.z;
-            settings.current.a = settings.current.a -
-                settings.origin_offset.a;       /*AA*/
-            settings.current.b = settings.current.b -
-                settings.origin_offset.b;       /*BB*/
-            settings.current.c = settings.current.c -
-                settings.origin_offset.c;       /*CC*/
-
-            offset_origin({settings.origin_offset.x, settings.origin_offset.y, settings.origin_offset.z,            
-            	settings.origin_offset.a, settings.origin_offset.b, settings.origin_offset.c});
+            offset_origin(settings.origin_offset);
 
             /*2*/ if (settings.plane != Plane::XY)
             {
@@ -4577,12 +4370,7 @@ repeat--) \
     block_t& block,                          /* pointer to a block of RS274 instructions */
     setup_t& settings)                       /* pointer to machine settings              */
     {
-        double end_x;
-        double end_y;
-        double end_z;
-        double AA_end;                            /*AA*/
-        double BB_end;                            /*BB*/
-        double CC_end;                            /*CC*/
+    	Position end;
 
         if (move == G_1)
         {
@@ -4597,62 +4385,41 @@ repeat--) \
         }
 
         settings.motion_mode = move;
-        find_ends(block, settings, &end_x, &end_y,
-            &end_z
-            , &AA_end
-            , &BB_end
-            , &CC_end
-            );
+        find_ends(block, settings, &end.x, &end.y, &end.z, &end.a, &end.b, &end.c);
    /* not "IS ON" */
-        if ((settings.cutter_comp_side != OFF) and
-            (settings.cutter_comp_radius > 0.0)) /* radius always is >= 0 */
+        if ((settings.cutter_comp_side != OFF) and (settings.cutter_comp_radius > 0.0)) /* radius always is >= 0 */
         {
             error_if(block.g_modes[0] == G_53, NCE_CANNOT_USE_G53_WITH_CUTTER_RADIUS_COMP);
             if (settings.program_x == UNKNOWN)
             {
-                    convert_straight_comp1(move, block, settings, end_x, end_y,
-                    end_z
-                    , AA_end
-                    , BB_end
-                    , CC_end
-                    );
+                convert_straight_comp1(move, block, settings, end.x, end.y, end.z, end.a, end.b, end.c);
             }
             else
             {
-                    convert_straight_comp2 (move, block, settings, end_x, end_y,
-                    end_z
-                    , AA_end
-                    , BB_end
-                    , CC_end
-                    );
+                convert_straight_comp2 (move, block, settings, end.x, end.y, end.z, end.a, end.b, end.c);
             }
         }
         else if (move == G_0)
         {
-            rapid({end_x, end_y, end_z, AA_end, BB_end, CC_end});
-            settings.current.x = end_x;
-            settings.current.y = end_y;
+            rapid(end);
+            settings.current.x = end.x;
+            settings.current.y = end.y;
         }
         else if (move == G_1)
         {
             if (settings.feed_mode == INVERSE_TIME)
-                inverse_time_rate_straight
-                    (end_x, end_y, end_z
-                    , AA_end
-                    , BB_end
-                    , CC_end
-                    , block, settings);
-            linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
-            settings.current.x = end_x;
-            settings.current.y = end_y;
+                inverse_time_rate_straight(end.x, end.y, end.z, end.a, end.b, end.c, block, settings);
+            linear(end);
+            settings.current.x = end.x;
+            settings.current.y = end.y;
         }
         else
             throw error(NCE_BUG_CODE_NOT_G0_OR_G1);
 
-        settings.current.z = end_z;
-        settings.current.a = AA_end;       /*AA*/
-        settings.current.b = BB_end;       /*BB*/
-        settings.current.c = CC_end;       /*CC*/
+        settings.current.z = end.z;
+        settings.current.a = end.a;
+        settings.current.b = end.b;
+        settings.current.c = end.c;
     }
 
    /****************************************************************************/
@@ -4698,9 +4465,9 @@ repeat--) \
     double px,                                    /* X coordinate of end point                 */
     double py,                                    /* Y coordinate of end point                 */
     double end_z                                  /* Z coordinate of end point                 */
-    , double AA_end                               /* A coordinate of end point           *//*AA*/
-    , double BB_end                               /* B coordinate of end point           *//*BB*/
-    , double CC_end                               /* C coordinate of end point           *//*CC*/
+    , double AA_end                               /* A coordinate of end point           */
+    , double BB_end                               /* B coordinate of end point           */
+    , double CC_end                               /* C coordinate of end point           */
     )
     {
         double alpha;
@@ -4732,12 +4499,7 @@ repeat--) \
         else if (move == G_1)
         {
             if (settings.feed_mode == INVERSE_TIME)
-                inverse_time_rate_straight
-                    (cx, cy, end_z
-                    , AA_end
-                    , BB_end
-                    , CC_end
-                    , block, settings);
+                inverse_time_rate_straight(cx, cy, end_z, AA_end, BB_end, CC_end, block, settings);
             linear({cx, cy, end_z, AA_end, BB_end, CC_end});
         }
         else
@@ -4828,9 +4590,9 @@ repeat--) \
     double px,                                    /* X coordinate of programmed end point      */
     double py,                                    /* Y coordinate of programmed end point      */
     double end_z                                  /* Z coordinate of end point                 */
-    , double AA_end                               /* A coordinate of end point           *//*AA*/
-    , double BB_end                               /* B coordinate of end point           *//*BB*/
-    , double CC_end                               /* C coordinate of end point           *//*CC*/
+    , double AA_end                               /* A coordinate of end point           */
+    , double BB_end                               /* B coordinate of end point           */
+    , double CC_end                               /* C coordinate of end point           */
     )
     {
         double alpha;
@@ -4858,12 +4620,7 @@ repeat--) \
             else if (move == G_1)
             {
                 if (settings.feed_mode == INVERSE_TIME)
-                    inverse_time_rate_straight
-                        (end_x, end_y, end_z
-                        , AA_end
-                        , BB_end
-                        , CC_end
-                        , block, settings);
+                    inverse_time_rate_straight(end_x, end_y, end_z, AA_end, BB_end, CC_end, block, settings);
                 linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
             }
             else
@@ -4874,8 +4631,7 @@ repeat--) \
             side = settings.cutter_comp_side;
    /* will always be positive */
             radius = settings.cutter_comp_radius;
-            theta = atan2(settings.current.y - start_y,
-                settings.current.x - start_x);
+            theta = atan2(settings.current.y - start_y, settings.current.x - start_x);
             alpha = atan2(py - start_y, px - start_x);
 
             if (side == LEFT)
@@ -4916,9 +4672,7 @@ repeat--) \
                 else
                 {
                     if (settings.feed_mode == INVERSE_TIME)
-                        inverse_time_rate_straight
-                            (end_x,end_y,end_z, 
-                            AA_end, BB_end, CC_end, block, settings);
+                        inverse_time_rate_straight(end_x,end_y,end_z, AA_end, BB_end, CC_end, block, settings);
                     linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
                 }
             }
@@ -5216,7 +4970,7 @@ repeat--) \
         int mode_zero_covets_axes;
 
         axis_flag = (block.x or block.y or block.z or
-                     block.a or  block.b or block.c);
+                     block.a or block.b or block.c);
         mode_zero_covets_axes = ((block.g_modes[0] == G_10) or
             (block.g_modes[0] == G_28) or
             (block.g_modes[0] == G_30) or
@@ -5659,9 +5413,9 @@ repeat--) \
     double * px,                                  /* pointer to end_x                             */
     double * py,                                  /* pointer to end_y                             */
     double * pz                                   /* pointer to end_z                             */
-    , double * AA_p                               /* pointer to end_a                       *//*AA*/
-    , double * BB_p                               /* pointer to end_b                       *//*BB*/
-    , double * CC_p                               /* pointer to end_c                       *//*CC*/
+    , double * AA_p                               /* pointer to end_a                       */
+    , double * BB_p                               /* pointer to end_b                       */
+    , double * CC_p                               /* pointer to end_c                       */
     )
     {
         int mode;
@@ -5739,27 +5493,23 @@ repeat--) \
     double x1,                                    /* absolute x position         */
     double y1,                                    /* absolute y position         */
     double z1,                                    /* absolute z position         */
-    double AA_1,             /* absolute a position         */ /*AA*/
-    double BB_1,             /* absolute b position         */ /*BB*/
-    double CC_1,             /* absolute c position         */ /*CC*/
+    double AA_1,             /* absolute a position         */
+    double BB_1,             /* absolute b position         */
+    double CC_1,             /* absolute c position         */
     double * x2,                                  /* pointer to relative x       */
     double * y2,                                  /* pointer to relative y       */
     double * z2,                                  /* pointer to relative z       */
-    double * AA_2,           /* pointer to relative a       */ /*AA*/
-    double * BB_2,           /* pointer to relative b       */ /*BB*/
-    double * CC_2,           /* pointer to relative c       */ /*CC*/
+    double * AA_2,           /* pointer to relative a       */
+    double * BB_2,           /* pointer to relative b       */
+    double * CC_2,           /* pointer to relative c       */
     setup_t& settings)                       /* pointer to machine settings */
     {
         *x2 = (x1 - (settings.origin_offset.x + settings.axis_offset.x));
         *y2 = (y1 - (settings.origin_offset.y + settings.axis_offset.y));
-        *z2 = (z1 - (settings.tool_length_offset +
-            settings.origin_offset.z + settings.axis_offset.z));
-        *AA_2 = (AA_1 - (settings.origin_offset.a +
-            settings.axis_offset.a));           /*AA*/
-        *BB_2 = (BB_1 - (settings.origin_offset.b +
-            settings.axis_offset.b));           /*BB*/
-        *CC_2 = (CC_1 - (settings.origin_offset.c +
-            settings.axis_offset.c));           /*CC*/
+        *z2 = (z1 - (settings.tool_length_offset + settings.origin_offset.z + settings.axis_offset.z));
+        *AA_2 = (AA_1 - (settings.origin_offset.a + settings.axis_offset.a));
+        *BB_2 = (BB_1 - (settings.origin_offset.b + settings.axis_offset.b));
+        *CC_2 = (CC_1 - (settings.origin_offset.c + settings.axis_offset.c));
     }
 
    /****************************************************************************/
@@ -5795,34 +5545,13 @@ repeat--) \
 
    */
 
-    double rs274ngc::find_straight_length(           /* ARGUMENTS   */
-    double x2,                                    /* X-coordinate of end point    */
-    double y2,                                    /* Y-coordinate of end point    */
-    double z2,                                    /* Z-coordinate of end point    */
-    double AA_2,      /* A-coordinate of end point    */ /*AA*/
-    double BB_2,      /* B-coordinate of end point    */ /*BB*/
-    double CC_2,      /* C-coordinate of end point    */ /*CC*/
-    double x1,                                    /* X-coordinate of start point  */
-    double y1,                                    /* Y-coordinate of start point  */
-    double z1                                     /* Z-coordinate of start point  */
-    , double AA_1     /* A-coordinate of start point  */ /*AA*/
-    , double BB_1     /* B-coordinate of start point  */ /*BB*/
-    , double CC_1     /* C-coordinate of start point  */ /*CC*/
-    )
+    double rs274ngc::find_straight_length(const Position& end, const Position& start)
     {
-        if ((x1 != x2) or (y1 != y2) or (z1 != z2) or
-            (1
-            and (AA_2 == AA_1)                    /*AA*/
-            and (BB_2 == BB_1)                    /*BB*/
-            and (CC_2 == CC_1)                    /*CC*/
-            ))                                    /* straight line */
-            return sqrt(pow((x2 - x1),2) + pow((y2 - y1),2) + pow((z2 - z1),2));
+	    /* straight line */
+        if ((start.x != end.x) or (start.y != end.y) or (start.z != end.z) or ((end.a == start.a) and (end.b == start.b) and (end.c == start.c)))
+            return sqrt(pow(end.x - start.x, 2) + pow(end.y - start.y, 2) + pow(end.z - start.z, 2));
         else
-            return sqrt(0 +
-                pow((AA_2 - AA_1), 2) +           /*AA*/
-                pow((BB_2 - BB_1), 2) +           /*BB*/
-                pow((CC_2 - CC_1), 2) +           /*CC*/
-                0);
+            return sqrt(pow(end.a - start.a, 2) + pow(end.b - start.b, 2) + pow(end.c - start.c, 2));
     }
 
    /****************************************************************************/
@@ -5994,9 +5723,9 @@ repeat--) \
     double end_x,                                 /* x coord of end point of straight line             */
     double end_y,                                 /* y coord of end point of straight line             */
     double end_z,                                 /* z coord of end point of straight line             */
-    double AA_end,                                /* A coord of end point of straight line       *//*AA*/
-    double BB_end,                                /* B coord of end point of straight line       *//*BB*/
-    double CC_end,                                /* C coord of end point of straight line       *//*CC*/
+    double AA_end,                                /* A coord of end point of straight line       */
+    double BB_end,                                /* B coord of end point of straight line       */
+    double CC_end,                                /* C coord of end point of straight line       */
     block_t& block,                          /* pointer to a block of RS274 instructions          */
     setup_t& settings)                       /* pointer to machine settings                       */
     {
@@ -6008,10 +5737,8 @@ repeat--) \
 		        settings.current.z, start_x, start_y,
 		        turn, mid_x, mid_y, settings.current.z)
 		    +
-            find_straight_length(end_x, end_y, end_z, 
-		        AA_end, BB_end, CC_end, 
-		        mid_x, mid_y, settings.current.z, 
-		        AA_end, BB_end, CC_end));
+            find_straight_length({end_x, end_y, end_z, AA_end, BB_end, CC_end}, 
+		      				  	 {mid_x, mid_y, settings.current.z, AA_end, BB_end, CC_end}));
 		        
         rate = std::max(0.1, (length * block.f_number));
         feed_rate (rate);
@@ -6040,9 +5767,9 @@ repeat--) \
     double end_x,                                 /* x coordinate of end point of straight line */
     double end_y,                                 /* y coordinate of end point of straight line */
     double end_z,                                 /* z coordinate of end point of straight line */
-    double AA_end,                                /* A coordinate of end point of straight line *//*AA*/
-    double BB_end,                                /* B coordinate of end point of straight line *//*BB*/
-    double CC_end,                                /* C coordinate of end point of straight line *//*CC*/
+    double AA_end,                                /* A coordinate of end point of straight line */
+    double BB_end,                                /* B coordinate of end point of straight line */
+    double CC_end,                                /* C coordinate of end point of straight line */
     block_t& block,                          /* pointer to a block of RS274 instructions   */
     setup_t& settings)                       /* pointer to machine settings                */
     {
@@ -6050,10 +5777,9 @@ repeat--) \
         double rate;
 
         length = find_straight_length
-            (end_x, end_y, end_z, 
-            AA_end, BB_end, CC_end, 
-            settings.current.x, settings.current.y, settings.current.z, 
-            settings.current.a, settings.current.b, settings.current.c);
+            ({end_x, end_y, end_z, AA_end, BB_end, CC_end}, 
+            {settings.current.x, settings.current.y, settings.current.z, 
+            settings.current.a, settings.current.b, settings.current.c});
         rate = std::max(0.1, (length * block.f_number));
         feed_rate (rate);
         settings.feed_rate = rate;
@@ -7982,7 +7708,7 @@ repeat--) \
             throw error(NCE_BAD_NUMBER_FORMAT);
 
    /* check out rest of characters (must be digit or decimal point) */
-        for (; (c = line[n]) != (char) NULL; n++)
+        for (; (c = line[n]) != 0; n++)
         {
             if (( 47 < c) and ( c < 58))
             {
@@ -8649,7 +8375,7 @@ repeat--) \
         gez = settings.active_g_codes;
         gez[0] = settings.sequence_number;
         gez[1] = settings.motion_mode;
-        gez[2] = ((block == NULL) ? -1 : block->g_modes[0]);
+        gez[2] = ((block == nullptr) ? -1 : block->g_modes[0]);
         gez[3] =
             (settings.plane == Plane::XY) ? G_17 : (settings.plane == Plane::XZ) ? G_18 : G_19;
         gez[4] =
@@ -8697,13 +8423,13 @@ repeat--) \
         emz = settings.active_m_codes;
         emz[0] = settings.sequence_number;  /* 0 seq number  */
         emz[1] =
-            (block == NULL) ? -1 : block->m_modes[4];/* 1 stopping    */
+            (block == nullptr) ? -1 : block->m_modes[4];/* 1 stopping    */
         emz[2] =
    /* 2 spindle     */
             (settings.spindle_turning == Direction::Stop) ? 5 :
         (settings.spindle_turning == Direction::Clockwise) ? 3 : 4;
         emz[3] =                             /* 3 tool change */
-            (block == NULL) ? -1 : block->m_modes[6];
+            (block == nullptr) ? -1 : block->m_modes[6];
         emz[4] =                             /* 4 mist        */
             (settings.mist == ON) ? 7 :
         (settings.flood == ON) ? -1 : 9;
@@ -8867,33 +8593,29 @@ repeat--) \
         restore_parameters(filename);
         pars = _setup.parameters;
         _setup.origin_index = (int)(pars[5220] + 0.0001);
-        error_if(((_setup.origin_index < 1) or (_setup.origin_index > 9)),
-            NCE_COORDINATE_SYSTEM_INDEX_PARAMETER_5220_OUT_OF_RANGE);
+        error_if(((_setup.origin_index < 1) or (_setup.origin_index > 9)), NCE_COORDINATE_SYSTEM_INDEX_PARAMETER_5220_OUT_OF_RANGE);
         k = (5200 + (_setup.origin_index * 20));
         offset_origin({(pars[k + 1] + pars[5211]), (pars[k + 2] + pars[5212]), (pars[k + 3] + pars[5213]), 
         	(pars[k + 4] + pars[5214]), (pars[k + 5] + pars[5215]), (pars[k + 6] + pars[5216])});
         feed_reference(FeedReference::XYZ);
-        _setup.axis_offset.a = pars[5214];  /*AA*/
-   //_setup.current.a set in rs274ngc_synch
-        _setup.origin_offset.a = pars[k + 4];
    //_setup.active_g_codes initialized below
    //_setup.active_m_codes initialized below
    //_setup.active_settings initialized below
         _setup.axis_offset.x = pars[5211];
         _setup.axis_offset.y = pars[5212];
         _setup.axis_offset.z = pars[5213];
-        _setup.axis_offset.b = pars[5215];  /*BB*/
-   //_setup.current.b set in rs274ngc_synch
-        _setup.origin_offset.b = pars[k + 5];
+        _setup.axis_offset.a = pars[5214];
+        _setup.axis_offset.b = pars[5215];
+        _setup.axis_offset.c = pars[5216];
    //_setup.block1 does not need initialization
         _setup.blocktext[0] = 0;
-        _setup.axis_offset.c = pars[5216];  /*CC*/
-   //_setup.current.c set in rs274ngc_synch
-        _setup.origin_offset.c = pars[k + 6];
    //_setup.current_slot set in rs274ngc_synch
    //_setup.current_x set in rs274ngc_synch
    //_setup.current_y set in rs274ngc_synch
    //_setup.current_z set in rs274ngc_synch
+   //_setup.current.a set in rs274ngc_synch
+   //_setup.current.b set in rs274ngc_synch
+   //_setup.current.c set in rs274ngc_synch
         _setup.cutter_comp_side = OFF;
    //_setup.cycle values do not need initialization
         _setup.distance_mode = MODE_ABSOLUTE;
@@ -8911,6 +8633,9 @@ repeat--) \
         _setup.origin_offset.x = pars[k + 1];
         _setup.origin_offset.y = pars[k + 2];
         _setup.origin_offset.z = pars[k + 3];
+        _setup.origin_offset.a = pars[k + 4];
+        _setup.origin_offset.b = pars[k + 5];
+        _setup.origin_offset.c = pars[k + 6];
    //_setup.parameters set above
    //_setup.parameter_occurrence does not need initialization
    //_setup.parameter_numbers does not need initialization
@@ -9027,7 +8752,7 @@ repeat--) \
             set_probe_data(_setup);
             _setup.probe_flag = OFF;
         }
-        error_if(command == NULL, NCE_FILE_NOT_OPEN);
+        error_if(command == nullptr, NCE_FILE_NOT_OPEN);
         read_status = read_text(command, _setup.linetext, _setup.blocktext, &_setup.line_length);
         if ((read_status == RS274NGC_EXECUTE_FINISH) or
             (read_status == RS274NGC_OK))
@@ -9132,7 +8857,7 @@ repeat--) \
 
    // open original for reading
         infile = fopen(filename, "r");
-        error_if(infile == NULL, NCE_UNABLE_TO_OPEN_FILE);
+        error_if(infile == nullptr, NCE_UNABLE_TO_OPEN_FILE);
 
         pars = _setup.parameters;
         k = 0;
@@ -9140,7 +8865,7 @@ repeat--) \
         required = _required_parameters[index++];
         while (feof(infile) == 0)
         {
-            if (fgets(line, 256, infile) == NULL)
+            if (fgets(line, 256, infile) == nullptr)
             {
                 break;
             }
@@ -9233,18 +8958,18 @@ repeat--) \
 
    // open backup for reading
         infile = fopen(line, "r");
-        error_if(infile == NULL, NCE_CANNOT_OPEN_BACKUP_FILE);
+        error_if(infile == nullptr, NCE_CANNOT_OPEN_BACKUP_FILE);
 
    // open original for writing
         outfile = fopen(filename, "w");
-        error_if(outfile == NULL, NCE_CANNOT_OPEN_VARIABLE_FILE);
+        error_if(outfile == nullptr, NCE_CANNOT_OPEN_VARIABLE_FILE);
 
         k = 0;
         index = 0;
         required = _required_parameters[index++];
         while (feof(infile) == 0)
         {
-            if (fgets(line, 256, infile) == NULL)
+            if (fgets(line, 256, infile) == nullptr)
             {
                 break;
             }

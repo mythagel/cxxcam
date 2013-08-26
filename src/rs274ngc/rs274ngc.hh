@@ -151,6 +151,15 @@ struct Position
 	Position(double x, double y, double z)
 	 : x(x), y(y), z(z), a(), b(), c()
 	{}
+	
+	Position operator+(const Position& p) const
+	{
+		return {x+p.x, y+p.y, z+p.z, a+p.a, b+p.b, c+p.c};
+	}
+	Position operator-(const Position& p) const
+	{
+		return {x-p.x, y-p.y, z-p.z, a-p.a, b-p.b, c-p.c};
+	}
 };
 
    /**********************/
@@ -342,7 +351,7 @@ private:
 	static double find_arc_length(double x1, double y1, double z1, double center_x, double center_y, int turn, double x2, double y2, double z2);
 	static void find_ends(block_t& block, setup_t& settings, double * px, double * py, double * pz, double * AA_p, double * BB_p, double * CC_p);
 	static void find_relative(double x1, double y1, double z1, double AA_1, double BB_1, double CC_1, double * x2, double * y2, double * z2, double * AA_2, double * BB_2, double * CC_2,setup_t& settings);
-	static double find_straight_length(double x2, double y2, double z2, double AA_2, double BB_2, double CC_2, double x1, double y1, double z1, double AA_1, double BB_1, double CC_1);
+	static double find_straight_length(const Position& end, const Position& start);
 	static double find_turn(double x1, double y1, double center_x, double center_y, int turn, double x2, double y2);
 	void inverse_time_rate_arc(double x1, double y1, double z1, double cx, double cy, int turn, double x2, double y2, double z2, block_t& block, setup_t& settings);
 	void inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_t& block, setup_t& settings);
