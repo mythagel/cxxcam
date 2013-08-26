@@ -48,7 +48,6 @@ Plan to reuse gcode parsing and interpreter individually.
    /* INCLUDE DIRECTIVES */
    /**********************/
 
-//#include "canon.hh"
 #include <cstddef>
 #include <exception>
 
@@ -179,6 +178,39 @@ enum ON_OFF : bool
 	ON = true
 };
 
+// unary operations
+enum UnaryOperation
+{
+	ABS = 1,
+	ACOS = 2,
+	ASIN = 3,
+	ATAN = 4,
+	COS = 5,
+	EXP = 6,
+	FIX = 7,
+	FUP = 8,
+	LN = 9,
+	ROUND = 10,
+	SIN = 11,
+	SQRT = 12,
+	TAN = 13
+};
+
+   // binary operations
+enum BinaryOperation
+{
+	DIVIDED_BY = 1,
+	MODULO = 2,
+	POWER = 3,
+	TIMES = 4,
+	AND2 = 5,
+	EXCLUSIVE_OR = 6,
+	MINUS = 7,
+	NON_EXCLUSIVE_OR = 8,
+	PLUS = 9,
+	RIGHT_BRACKET = 10
+};
+
    /*
 
    The current_x, current_y, and current_z are the location of the tool
@@ -234,7 +266,7 @@ struct setup_t
     ON_OFF flood;                                 // whether flood coolant is on
     int length_offset_index;                      // for use with tool length offsets
     Units length_units;                     // millimeters or inches
-    int line_length;                              // length of line last read
+    unsigned int line_length;                              // length of line last read
     char linetext[RS274NGC_TEXT_SIZE];            // text of most recent line read
     ON_OFF mist;                                  // whether mist coolant is on
     int motion_mode;                              // active G-code for motion
@@ -339,9 +371,9 @@ private:
 	void cycle_feed(Plane plane, double end1, double end2, double end3);
 	void cycle_traverse(Plane plane, double end1, double end2, double end3);
 	void enhance_block(block_t& block, setup_t& settings);
-	static void execute_binary(double * left, int operation, double * right);
-	static void execute_binary1(double * left, int operation, double * right);
-	static void execute_binary2(double * left, int operation, double * right);
+	static void execute_binary(double * left, BinaryOperation operation, double * right);
+	static void execute_binary1(double * left, BinaryOperation operation, double * right);
+	static void execute_binary2(double * left, BinaryOperation operation, double * right);
 	int execute_block(block_t& block, setup_t& settings);
 	static void execute_unary(double * double_ptr, int operation);
 	static double find_arc_length(double x1, double y1, double z1, double center_x, double center_y, int turn, double x2, double y2, double z2);
@@ -386,15 +418,15 @@ private:
 	void read_real_value(const char * line, int * counter, double * double_ptr, double * parameters) const;
 	void read_s(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_t(const char * line, int * counter, block_t& block, double * parameters) const;
-	int read_text(const char * command, char * raw_line, char * line, int * length);
+	int read_text(const char * command, char * raw_line, char * line, unsigned int * length);
 	void read_unary(const char * line, int * counter, double * double_ptr, double * parameters) const;
 	void read_x(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_y(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_z(const char * line, int * counter, block_t& block, double * parameters) const;
 	void set_probe_data(setup_t& settings);
-	void write_g_codes(const block_t* block, setup_t& settings);
-	void write_m_codes(const block_t* block, setup_t& settings);
-	void write_settings(setup_t& settings);
+	static void write_g_codes(const block_t* block, setup_t& settings);
+	static void write_m_codes(const block_t* block, setup_t& settings);
+	static void write_settings(setup_t& settings);
 
 private:
 	virtual void interp_init() =0;
@@ -537,11 +569,11 @@ public:
 	void error_text(int error_code, char * error_text, size_t max_size);
 
 	   // return the length of the most recently read line
-	int line_length();
+	unsigned int line_length();
 
 	   // copy the text of the most recently read line into the line_text array,
 	   // but stop at max_size if the text is longer
-	void line_text(char * line_text, size_t max_size);
+	void line_text(char * line_text, unsigned int max_size);
 
 	   // return the current sequence number (how many lines read)
 	int sequence_number();

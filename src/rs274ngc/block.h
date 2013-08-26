@@ -50,7 +50,7 @@ struct block_t
     maybe<unsigned int>      l;
     maybe<unsigned int>      line_number;
     int      motion_to_be;
-    int      m_count;
+    unsigned int      m_count;
     int      m_modes[10];
     maybe<double>   p;
     maybe<double>   q;

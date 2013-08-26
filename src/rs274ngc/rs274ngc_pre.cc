@@ -169,37 +169,6 @@ enum
 	G_99 =    990
 };
 
-   // unary operations
-   // These are not enums because the "&" operator is used in
-   // reading the operation names and is illegal with an enum
-
-#define ABS 1
-#define ACOS 2
-#define ASIN 3
-#define ATAN 4
-#define COS 5
-#define EXP 6
-#define FIX 7
-#define FUP 8
-#define LN 9
-#define ROUND 10
-#define SIN 11
-#define SQRT 12
-#define TAN 13
-
-   // binary operations
-#define NO_OPERATION 0
-#define DIVIDED_BY 1
-#define MODULO 2
-#define POWER 3
-#define TIMES 4
-#define AND2 5
-#define EXCLUSIVE_OR 6
-#define MINUS 7
-#define NON_EXCLUSIVE_OR 8
-#define PLUS 9
-#define RIGHT_BRACKET 10
-
    // name of parameter file for saving/restoring interpreter variables
 #define RS274NGC_PARAMETER_FILE_NAME_DEFAULT "rs274ngc.var"
 #define RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX ".bak"
@@ -5003,7 +4972,7 @@ rs274ngc::rs274ngc()
 
     void rs274ngc::execute_binary(
     double * left,
-    int operation,
+    BinaryOperation operation,
     double * right)
     {
         if (operation < AND2)
@@ -5035,7 +5004,7 @@ rs274ngc::rs274ngc()
 
     void rs274ngc::execute_binary1(                   /* ARGUMENTS                       */
     double * left,                                /* pointer to the left operand     */
-    int operation,                                /* integer code for the operation  */
+    BinaryOperation operation,                                /* integer code for the operation  */
     double * right)                               /* pointer to the right operand    */
     {
         switch (operation)
@@ -5088,7 +5057,7 @@ rs274ngc::rs274ngc()
 
     void rs274ngc::execute_binary2(                   /* ARGUMENTS                       */
     double * left,                                /* pointer to the left operand     */
-    int operation,                                /* integer code for the operation  */
+    BinaryOperation operation,                                /* integer code for the operation  */
     double * right)                               /* pointer to the right operand    */
     {
         switch (operation)
@@ -6740,7 +6709,7 @@ rs274ngc::rs274ngc()
         error_if(mode == -1, NCE_UNKNOWN_M_CODE_USED);
         error_if(block.m_modes[mode] != -1, NCE_TWO_M_CODES_USED_FROM_SAME_MODAL_GROUP);
         block.m_modes[mode] = value;
-        block.m_count++;
+        ++block.m_count;
     }
 
    /****************************************************************************/
@@ -8133,7 +8102,7 @@ rs274ngc::rs274ngc()
     const char * command,                         /* a string which has input text */
     char * raw_line,                              /* array to write raw input line into          */
     char * line,                                  /* array for input line to be processed in     */
-    int * length)                                 /* a pointer to an integer to be set           */
+    unsigned int * length)                                 /* a pointer to an integer to be set           */
     {
         error_if(strlen(command) >= RS274NGC_TEXT_SIZE, NCE_COMMAND_TOO_LONG);
         strcpy(raw_line, command);
@@ -8626,33 +8595,46 @@ rs274ngc::rs274ngc()
 
     void rs274ngc::init()                           /* NO ARGUMENTS */
     {
-        int k;                                    // starting index in parameters of origin offsets
         char filename[RS274NGC_TEXT_SIZE];
         double * pars;                            // short name for _setup.parameters
 
         interp_init();
+
         _setup.length_units = units();
         units(_setup.length_units);
+
         get_parameter_filename(filename, RS274NGC_TEXT_SIZE);
         if (filename[0] == 0)
             strcpy(filename, RS274NGC_PARAMETER_FILE_NAME_DEFAULT);
         restore_parameters(filename);
         pars = _setup.parameters;
+        
         _setup.origin_index = (int)(pars[5220] + 0.0001);
         error_if(((_setup.origin_index < 1) or (_setup.origin_index > 9)), NCE_COORDINATE_SYSTEM_INDEX_PARAMETER_5220_OUT_OF_RANGE);
-        k = (5200 + (_setup.origin_index * 20));
-        offset_origin({(pars[k + 1] + pars[5211]), (pars[k + 2] + pars[5212]), (pars[k + 3] + pars[5213]), 
-        	(pars[k + 4] + pars[5214]), (pars[k + 5] + pars[5215]), (pars[k + 6] + pars[5216])});
-        feed_reference(FeedReference::XYZ);
-   //_setup.active_g_codes initialized below
-   //_setup.active_m_codes initialized below
-   //_setup.active_settings initialized below
+        
+        // starting index in parameters of origin offsets
+        unsigned int k = (5200 + (_setup.origin_index * 20));
+
         _setup.axis_offset.x = pars[5211];
         _setup.axis_offset.y = pars[5212];
         _setup.axis_offset.z = pars[5213];
         _setup.axis_offset.a = pars[5214];
         _setup.axis_offset.b = pars[5215];
         _setup.axis_offset.c = pars[5216];
+
+        _setup.origin_offset.x = pars[k + 1];
+        _setup.origin_offset.y = pars[k + 2];
+        _setup.origin_offset.z = pars[k + 3];
+        _setup.origin_offset.a = pars[k + 4];
+        _setup.origin_offset.b = pars[k + 5];
+        _setup.origin_offset.c = pars[k + 6];
+        
+        offset_origin(_setup.origin_offset + _setup.axis_offset);
+        
+        feed_reference(FeedReference::XYZ);
+   //_setup.active_g_codes initialized below
+   //_setup.active_m_codes initialized below
+   //_setup.active_settings initialized below
    //_setup.block1 does not need initialization
         _setup.blocktext[0] = 0;
    //_setup.current_slot set in rs274ngc_synch
@@ -8676,12 +8658,6 @@ rs274ngc::rs274ngc()
    //_setup.mist set in rs274ngc_synch
         _setup.motion_mode = G_80;
    //_setup.origin_index set above
-        _setup.origin_offset.x = pars[k + 1];
-        _setup.origin_offset.y = pars[k + 2];
-        _setup.origin_offset.z = pars[k + 3];
-        _setup.origin_offset.a = pars[k + 4];
-        _setup.origin_offset.b = pars[k + 5];
-        _setup.origin_offset.c = pars[k + 6];
    //_setup.parameters set above
    //_setup.plane set in rs274ngc_synch
         _setup.probe_flag = OFF;
@@ -8796,8 +8772,7 @@ rs274ngc::rs274ngc()
         }
         error_if(command == nullptr, NCE_FILE_NOT_OPEN);
         read_status = read_text(command, _setup.linetext, _setup.blocktext, &_setup.line_length);
-        if ((read_status == RS274NGC_EXECUTE_FINISH) or
-            (read_status == RS274NGC_OK))
+        if (read_status == RS274NGC_EXECUTE_FINISH or read_status == RS274NGC_OK)
         {
             if (_setup.line_length != 0)
             {
@@ -9223,7 +9198,7 @@ rs274ngc::rs274ngc()
 
    */
 
-    int rs274ngc::line_length()
+    unsigned int rs274ngc::line_length()
     {
         return _setup.line_length;
     }
@@ -9246,9 +9221,9 @@ rs274ngc::rs274ngc()
 
     void rs274ngc::line_text(                      /* ARGUMENTS                            */
     char * line_text,                             /* string: to copy line into            */
-    size_t max_size)                                 /* maximum number of characters to copy */
+    unsigned int max_size)                                 /* maximum number of characters to copy */
     {
-        size_t n;
+        unsigned int n;
         char * the_text;
 
         the_text = _setup.linetext;
