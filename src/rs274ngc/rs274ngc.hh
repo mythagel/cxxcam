@@ -281,10 +281,6 @@ public:
 private:
     setup_t _setup;
 
-	// pointer to function that reads
-	typedef void (rs274ngc::*read_function_pointer) (const char *, int *, block_t&, double *) const;
-	read_function_pointer _readers[127];
-
 	static void arc_data_comp_ijk(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
 	static void arc_data_comp_r(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
 	static void arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);

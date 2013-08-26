@@ -421,22 +421,6 @@ error::~error() noexcept
 }
 
 rs274ngc::rs274ngc()
-:	_readers
-    {
-        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-        0,      0,      0, 0, 0, &rs274ngc::read_parameter_setting,0,      0,      0,      0,
-        &rs274ngc::read_comment, 0, 0,     0,      0,      0,      0,      0,      0,      0,
-        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-        0,      0,      0,      0,      0,      0,      0,      0,      0,      0,
-        0,      0,      0,      0,      0,      0,      0,      &rs274ngc::read_a, &rs274ngc::read_b, &rs274ngc::read_c,
-        &rs274ngc::read_d, 0,      &rs274ngc::read_f, &rs274ngc::read_g, &rs274ngc::read_h, &rs274ngc::read_i, &rs274ngc::read_j, &rs274ngc::read_k, &rs274ngc::read_l, &rs274ngc::read_m,
-        0,      0,      &rs274ngc::read_p, &rs274ngc::read_q, &rs274ngc::read_r, &rs274ngc::read_s, &rs274ngc::read_t, 0     , 0,      0,
-        &rs274ngc::read_x, &rs274ngc::read_y, &rs274ngc::read_z
-    }
 {
 }
 
@@ -6811,14 +6795,77 @@ rs274ngc::rs274ngc()
     block_t& block,                          /* pointer to a block being filled from the line  */
     double * parameters) const                          /* array of system parameters                     */
     {
-        read_function_pointer function_pointer;
-        char letter;
-
-        letter = line[*counter];             /* check if in array range */
-        error_if(((letter < 0) or (letter > 'z')), NCE_BAD_CHARACTER_USED);
-        function_pointer = _readers[static_cast<unsigned int>(letter)];
-        error_if(function_pointer == 0, NCE_BAD_CHARACTER_USED);
-        (this->*function_pointer)(line, counter, block, parameters);
+        switch(line[*counter])
+        {
+		    case '#':
+		    	read_parameter_setting(line, counter, block, parameters);
+		    	break;
+		    case '(':
+			    read_comment(line, counter, block, parameters);
+		    	break;
+		    case 'a':
+		    	read_a(line, counter, block, parameters);
+		    	break;
+		    case 'b':
+			    read_b(line, counter, block, parameters);
+			    break;
+		    case 'c':
+			    read_c(line, counter, block, parameters);
+			    break;
+		    case 'd':
+			    read_d(line, counter, block, parameters);
+			    break;
+		    case 'f':
+			    read_f(line, counter, block, parameters);
+			    break;
+		    case 'g':
+			    read_g(line, counter, block, parameters);
+			    break;
+		    case 'h':
+			    read_h(line, counter, block, parameters);
+			    break;
+		    case 'i':
+			    read_i(line, counter, block, parameters);
+			    break;
+		    case 'j':
+			    read_j(line, counter, block, parameters);
+			    break;
+		    case 'k':
+			    read_k(line, counter, block, parameters);
+			    break;
+		    case 'l':
+			    read_l(line, counter, block, parameters);
+			    break;
+		    case 'm':
+			    read_m(line, counter, block, parameters);
+			    break;
+		    case 'p':
+			    read_p(line, counter, block, parameters);
+			    break;
+		    case 'q':
+			    read_q(line, counter, block, parameters);
+			    break;
+		    case 'r':
+			    read_r(line, counter, block, parameters);
+			    break;
+		    case 's':
+			    read_s(line, counter, block, parameters);
+			    break;
+		    case 't':
+			    read_t(line, counter, block, parameters);
+			    break;
+		    case 'x':
+			    read_x(line, counter, block, parameters);
+			    break;
+		    case 'y':
+			    read_y(line, counter, block, parameters);
+			    break;
+		    case 'z':
+			    read_z(line, counter, block, parameters);
+			    break;
+			default:
+				throw error(NCE_BAD_CHARACTER_USED);
+        }
     }
 
    /****************************************************************************/
@@ -8637,10 +8684,6 @@ rs274ngc::rs274ngc()
         _setup.origin_offset.b = pars[k + 5];
         _setup.origin_offset.c = pars[k + 6];
    //_setup.parameters set above
-   //_setup.parameter_occurrence does not need initialization
-   //_setup.parameter_numbers does not need initialization
-   //_setup.parameter_values does not need initialization
-   //_setup.percent_flag does not need initialization
    //_setup.plane set in rs274ngc_synch
         _setup.probe_flag = OFF;
         _setup.program_x = UNKNOWN;          /* for cutter comp */
