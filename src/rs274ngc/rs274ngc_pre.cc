@@ -5688,7 +5688,7 @@ rs274ngc::rs274ngc()
     void rs274ngc::parse_line(                        /* ARGUMENTS                            */
     const char * line,                                  /* array holding a line of RS274 code   */
     block_t& block,                          /* pointer to a block to be filled      */
-    setup_t& settings)                       /* pointer to machine settings          */
+    setup_t& settings) const                       /* pointer to machine settings          */
     {
         block = block_t{};
         read_items(block, line, settings.parameters);
@@ -8038,7 +8038,6 @@ rs274ngc::rs274ngc()
         strcpy(line, command);
         close_and_downcase(line);
         
-        _setup.sequence_number++;
         if ((line[0] == 0) or ((line[0] == '/') and (line[1] == 0)))
             *length = 0;
         else
@@ -8317,7 +8316,7 @@ rs274ngc::rs274ngc()
         int * gez;
 
         gez = settings.active_g_codes;
-        gez[0] = settings.sequence_number;
+        gez[0] = 0 /*unused*/;
         gez[1] = settings.motion_mode;
         gez[2] = ((block == nullptr) ? -1 : block->g_modes[0]);
         gez[3] =
@@ -8365,7 +8364,7 @@ rs274ngc::rs274ngc()
         int * emz;
 
         emz = settings.active_m_codes;
-        emz[0] = settings.sequence_number;  /* 0 seq number  */
+        emz[0] = 0/*unused*/;
         emz[1] =
             (block == nullptr) ? -1 : block->m_modes[4];/* 1 stopping    */
         emz[2] =
@@ -8405,7 +8404,7 @@ rs274ngc::rs274ngc()
         double * vals;
 
         vals = settings.active_settings;
-        vals[0] = settings.sequence_number; /* 0 sequence number */
+        vals[0] = 0/*unused*/;
         vals[1] = settings.feed_rate;       /* 1 feed rate       */
         vals[2] = settings.speed;           /* 2 spindle speed   */
     }
@@ -8594,7 +8593,6 @@ rs274ngc::rs274ngc()
         _setup.program_y = UNKNOWN;          /* for cutter comp */
         _setup.retract_mode = OLD_Z;
    //_setup.selected_tool_slot set in rs274ngc_synch
-        _setup.sequence_number = 0;          /*DOES THIS NEED TO BE AT TOP? */
    //_setup.speed set in rs274ngc_synch
         _setup.speed_feed_mode = SpeedFeedMode::Independant;
         _setup.speed_override = ON;
@@ -9164,25 +9162,6 @@ rs274ngc::rs274ngc()
                 break;
         }
         line_text[n] = 0;
-    }
-
-   /***********************************************************************/
-
-   /* rs274ngc_sequence_number
-
-   Returned Value: the current interpreter sequence number (how many
-   lines read since the last time the sequence number was reset to zero,
-   which happens only when rs274ngc_init or rs274ngc_open is called).
-
-   Side Effects: none
-
-   Called By: external programs
-
-   */
-
-    int rs274ngc::sequence_number()
-    {
-        return _setup.sequence_number;
     }
 
    /***********************************************************************/

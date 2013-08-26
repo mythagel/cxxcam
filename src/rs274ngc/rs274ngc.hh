@@ -278,7 +278,6 @@ struct setup_t
     double program_y;                             // program y, used when cutter comp on
     RETRACT_MODE retract_mode;                    // for cycles, old_z or r_plane
     int selected_tool_slot;                       // tool slot selected but not active
-    int sequence_number;                          // sequence number of line last read
     double speed;                                 // current spindle speed in rpm
     SpeedFeedMode speed_feed_mode;        // independent or synched
     ON_OFF speed_override;                        // whether speed override is enabled
@@ -317,10 +316,10 @@ private:
 	static void arc_data_comp_r(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
 	static void arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
 	static void arc_data_r(int move, double current_x, double current_y, double end_x, double end_y, double radius, double * center_x, double * center_y, int * turn);
-	void check_g_codes(block_t& block, setup_t& settings);
-	void check_items(block_t& block, setup_t& settings);
-	void check_m_codes(block_t& block);
-	void check_other_codes(block_t& block);
+	static void check_g_codes(block_t& block, setup_t& settings);
+	static void check_items(block_t& block, setup_t& settings);
+	static void check_m_codes(block_t& block);
+	static void check_other_codes(block_t& block);
 	static void close_and_downcase(char * line);
 	void convert_arc(int move, block_t& block, setup_t& settings);
 	void convert_arc2(int move, block_t& block, setup_t& settings, double * current1, double * current2, double * current3, double end1, double end2, double end3, double AA_end, double BB_end, double CC_end, double offset1, double offset2);
@@ -370,7 +369,7 @@ private:
 	void convert_tool_select(block_t& block, setup_t& settings);
 	void cycle_feed(Plane plane, double end1, double end2, double end3);
 	void cycle_traverse(Plane plane, double end1, double end2, double end3);
-	void enhance_block(block_t& block, setup_t& settings);
+	static void enhance_block(block_t& block, setup_t& settings);
 	static void execute_binary(double * left, BinaryOperation operation, double * right);
 	int execute_block(block_t& block, setup_t& settings);
 	static void execute_unary(double * double_ptr, UnaryOperation operation);
@@ -383,7 +382,7 @@ private:
 	void inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_t& block, setup_t& settings);
 	void inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
 	void inverse_time_rate_straight(double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
-	void parse_line(const char * line, block_t& block,setup_t& settings);
+	void parse_line(const char * line, block_t& block,setup_t& settings) const;
 	static int precedence(BinaryOperation an_operator);
 	void read_a(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_atan(const char * line, int * counter, double * double_ptr, double * parameters) const;
@@ -416,7 +415,7 @@ private:
 	void read_real_value(const char * line, int * counter, double * double_ptr, double * parameters) const;
 	void read_s(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_t(const char * line, int * counter, block_t& block, double * parameters) const;
-	int read_text(const char * command, char * raw_line, char * line, unsigned int * length);
+	static int read_text(const char * command, char * raw_line, char * line, unsigned int * length);
 	void read_unary(const char * line, int * counter, double * double_ptr, double * parameters) const;
 	void read_x(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_y(const char * line, int * counter, block_t& block, double * parameters) const;
@@ -572,9 +571,6 @@ public:
 	   // copy the text of the most recently read line into the line_text array,
 	   // but stop at max_size if the text is longer
 	void line_text(char * line_text, unsigned int max_size);
-
-	   // return the current sequence number (how many lines read)
-	int sequence_number();
 
 };
 
