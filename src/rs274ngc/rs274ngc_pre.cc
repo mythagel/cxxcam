@@ -836,11 +836,11 @@ rs274ngc::rs274ngc()
             }
             else if (first)
             {
-                convert_arc_comp1(move, block, settings, end.x, end.y, end.z, end.a, end.b, end.c);
+                convert_arc_comp1(move, block, settings, end);
             }
             else
             {
-                convert_arc_comp2(move, block, settings, end.x, end.y, end.z, end.a, end.b, end.c);
+                convert_arc_comp2(move, block, settings, end);
             }
         }
         else if (settings.plane == Plane::XZ)
@@ -958,12 +958,7 @@ rs274ngc::rs274ngc()
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)             */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions     */
     setup_t& settings,                       /* pointer to machine settings                      */
-    double end_x,                                 /* x-value at end of programmed (then actual) arc   */
-    double end_y,                                 /* y-value at end of programmed (then actual) arc   */
-    double end_z                                  /* z-value at end of arc                            */
-    , double AA_end                               /* a-value at end of arc                      */
-    , double BB_end                               /* b-value at end of arc                      */
-    , double CC_end                               /* c-value at end of arc                      */
+    Position end
     )
     {
         double center_x;
@@ -979,43 +974,36 @@ rs274ngc::rs274ngc()
         tool_radius = settings.cutter_comp_radius;
         tolerance = (settings.length_units == Units::Imperial) ? TOLERANCE_INCH : TOLERANCE_MM;
 
-        error_if((hypot((end_x - settings.current.x),
-            (end_y - settings.current.y)) <= tool_radius),
-            NCE_CUTTER_GOUGING_WITH_CUTTER_RADIUS_COMP);
+        error_if((hypot((end.x - settings.current.x), (end.y - settings.current.y)) <= tool_radius), NCE_CUTTER_GOUGING_WITH_CUTTER_RADIUS_COMP);
 
         if (block.r)
         {
-            arc_data_comp_r(move, side, tool_radius, settings.current.x, settings.current.y, end_x, end_y, *block.r, &center_x, &center_y, &turn);
+            arc_data_comp_r(move, side, tool_radius, settings.current.x, settings.current.y, end.x, end.y, *block.r, &center_x, &center_y, &turn);
         }
         else
         {
-            arc_data_comp_ijk(move, side, tool_radius, settings.current.x, settings.current.y, end_x, end_y, *block.i, *block.j, &center_x, &center_y, &turn, tolerance);
+            arc_data_comp_ijk(move, side, tool_radius, settings.current.x, settings.current.y, end.x, end.y, *block.i, *block.j, &center_x, &center_y, &turn, tolerance);
         }
 
         gamma =
             (((side == Side::Left) and (move == G_3)) or
             ((side == Side::Right) and (move == G_2))) ?
-            atan2 ((center_y - end_y), (center_x - end_x)) :
-        atan2 ((end_y - center_y), (end_x - center_x));
+            atan2 ((center_y - end.y), (center_x - end.x)) :
+        atan2 ((end.y - center_y), (end.x - center_x));
 
-        settings.program_x = end_x;
-        settings.program_y = end_y;
-   /* end_x reset actual */
-        end_x = (end_x + (tool_radius * cos(gamma)));
-   /* end_y reset actual */
-        end_y = (end_y + (tool_radius * sin(gamma)));
+        settings.program_x = end.x;
+        settings.program_y = end.y;
+   /* end.x reset actual */
+        end.x = (end.x + (tool_radius * cos(gamma)));
+   /* end.y reset actual */
+        end.y = (end.y + (tool_radius * sin(gamma)));
 
         if (settings.feed_mode == FeedMode::InverseTime)
             inverse_time_rate_arc(settings.current.x, settings.current.y,
                 settings.current.z, center_x, center_y, turn,
-                end_x, end_y, end_z, block, settings);
-        arc(end_x, end_y, center_x, center_y, turn, end_z, AA_end, BB_end, CC_end);
-        settings.current.x = end_x;
-        settings.current.y = end_y;
-        settings.current.z = end_z;
-        settings.current.a = AA_end;
-        settings.current.b = BB_end;
-        settings.current.c = CC_end;
+                end.x, end.y, end.z, block, settings);
+        arc(end.x, end.y, center_x, center_y, turn, end.z, end.a, end.b, end.c);
+        settings.current = end;
     }
 
    /****************************************************************************/
@@ -1061,12 +1049,7 @@ rs274ngc::rs274ngc()
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)           */
     block_t& block,                          /* pointer to a block of RS274/NGC instructions   */
     setup_t& settings,                       /* pointer to machine settings                    */
-    double end_x,                                 /* x-value at end of programmed (then actual) arc */
-    double end_y,                                 /* y-value at end of programmed (then actual) arc */
-    double end_z                                  /* z-value at end of arc                          */
-    , double AA_end                               /* a-value at end of arc                    */
-    , double BB_end                               /* b-value at end of arc                    */
-    , double CC_end                               /* c-value at end of arc                    */
+    Position end
     )
     {
         double alpha;                             /* direction of tangent to start of arc */
@@ -1096,18 +1079,18 @@ rs274ngc::rs274ngc()
 
         if (block.r)
         {
-            arc_data_r(move, start_x, start_y, end_x, end_y, *block.r, &center_x, &center_y, &turn);
+            arc_data_r(move, start_x, start_y, end.x, end.y, *block.r, &center_x, &center_y, &turn);
         }
         else
         {
-            arc_data_ijk(move, start_x, start_y, end_x, end_y, *block.i, *block.j, &center_x, &center_y, &turn, tolerance);
+            arc_data_ijk(move, start_x, start_y, end.x, end.y, *block.i, *block.j, &center_x, &center_y, &turn, tolerance);
         }
 
    /* compute other data */
         side = settings.cutter_comp_side;
    /* always is positive */
         tool_radius = settings.cutter_comp_radius;
-        arc_radius = hypot((center_x - end_x), (center_y - end_y));
+        arc_radius = hypot((center_x - end.x), (center_y - end.y));
         theta = atan2(settings.current.y - start_y, settings.current.x - start_x);
         theta = (side == Side::Left) ? (theta - PI2) : (theta + PI2);
         delta = atan2(center_y - start_y, center_x - start_x);
@@ -1118,21 +1101,21 @@ rs274ngc::rs274ngc()
 
         if (((side == Side::Left)  and (move == G_3)) or ((side == Side::Right) and (move == G_2)))
         {
-            gamma = atan2 ((center_y - end_y), (center_x - end_x));
+            gamma = atan2 ((center_y - end.y), (center_x - end.x));
             error_if(arc_radius <= tool_radius, NCE_TOOL_RADIUS_NOT_LESS_THAN_ARC_RADIUS_WITH_COMP);
         }
         else
         {
-            gamma = atan2 ((end_y - center_y), (end_x - center_x));
+            gamma = atan2 ((end.y - center_y), (end.x - center_x));
             delta = (delta + PI);
         }
 
-        settings.program_x = end_x;
-        settings.program_y = end_y;
-   /* end_x reset actual */
-        end_x = (end_x + (tool_radius * cos(gamma)));
-   /* end_y reset actual */
-        end_y = (end_y + (tool_radius * sin(gamma)));
+        settings.program_x = end.x;
+        settings.program_y = end.y;
+   /* end.x reset actual */
+        end.x = (end.x + (tool_radius * cos(gamma)));
+   /* end.y reset actual */
+        end.y = (end.y + (tool_radius * sin(gamma)));
 
    /* check if extra arc needed and insert if so */
 
@@ -1144,25 +1127,20 @@ rs274ngc::rs274ngc()
             if (settings.feed_mode == FeedMode::InverseTime)
                 inverse_time_rate_arc2(start_x, start_y, (side == Side::Left) ? -1 : 1,
                 mid_x, mid_y, center_x, center_y, turn,
-                end_x, end_y, end_z, block, settings);
-            arc(mid_x, mid_y, start_x, start_y, ((side == Side::Left) ? -1 : 1), settings.current.z, AA_end, BB_end, CC_end);
-            arc(end_x, end_y, center_x, center_y, turn, end_z, AA_end, BB_end, CC_end);
+                end.x, end.y, end.z, block, settings);
+            arc(mid_x, mid_y, start_x, start_y, ((side == Side::Left) ? -1 : 1), settings.current.z, end.a, end.b, end.c);
+            arc(end.x, end.y, center_x, center_y, turn, end.z, end.a, end.b, end.c);
         }
         else                                      /* one arc needed */
         {
             if (settings.feed_mode == FeedMode::InverseTime)
                 inverse_time_rate_arc(settings.current.x, settings.current.y,
                     settings.current.z, center_x, center_y, turn,
-                    end_x, end_y, end_z, block, settings);
-            arc(end_x, end_y, center_x, center_y, turn, end_z, AA_end, BB_end, CC_end);
+                    end.x, end.y, end.z, block, settings);
+            arc(end.x, end.y, center_x, center_y, turn, end.z, end.a, end.b, end.c);
         }
 
-        settings.current.x = end_x;
-        settings.current.y = end_y;
-        settings.current.z = end_z;
-        settings.current.a = AA_end;
-        settings.current.b = BB_end;
-        settings.current.c = CC_end;
+        settings.current = end;
     }
 
    /****************************************************************************/

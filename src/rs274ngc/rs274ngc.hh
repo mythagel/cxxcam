@@ -54,8 +54,8 @@ private:
 	
 	void convert_arc(int move, block_t& block, setup_t& settings);
 	void convert_arc2(int move, block_t& block, setup_t& settings, double * current1, double * current2, double * current3, double end1, double end2, double end3, double AA_end, double BB_end, double CC_end, double offset1, double offset2);
-	void convert_arc_comp1(int move, block_t& block, setup_t& settings, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end);
-	void convert_arc_comp2(int move, block_t& block, setup_t& settings, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end);
+	void convert_arc_comp1(int move, block_t& block, setup_t& settings, Position end);
+	void convert_arc_comp2(int move, block_t& block, setup_t& settings, Position end);
 	void convert_axis_offsets(int g_code, block_t& block, setup_t& settings);
 	void convert_comment(char * comment);
 	void convert_control_mode(int g_code, setup_t& settings);
