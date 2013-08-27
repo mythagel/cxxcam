@@ -37,6 +37,7 @@ Plan to reuse gcode parsing and interpreter individually.
 #define RS274NGC_HH
 #include "types.h"
 #include "setup.h"
+#include "ops.h"
 #include <cstddef>
 
 class rs274ngc
@@ -44,11 +45,6 @@ class rs274ngc
 public:
 private:
     setup_t _setup;
-
-	static void arc_data_comp_ijk(int move, Side side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
-	static void arc_data_comp_r(int move, Side side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
-	static void arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
-	static void arc_data_r(int move, double current_x, double current_y, double end_x, double end_y, double radius, double * center_x, double * center_y, int * turn);
 
 	static void close_and_downcase(char * line);
 	
@@ -101,20 +97,14 @@ private:
 	
 	void cycle_feed(Plane plane, double end1, double end2, double end3);
 	void cycle_traverse(Plane plane, double end1, double end2, double end3);
-	static void execute_binary(double * left, BinaryOperation operation, double * right);
 	int execute_block(block_t& block, setup_t& settings);
-	static void execute_unary(double * double_ptr, UnaryOperation operation);
-	static double find_arc_length(double x1, double y1, double z1, double center_x, double center_y, int turn, double x2, double y2, double z2);
 	static void find_ends(block_t& block, setup_t& settings, double * px, double * py, double * pz, double * AA_p, double * BB_p, double * CC_p);
 	static void find_relative(double x1, double y1, double z1, double AA_1, double BB_1, double CC_1, double * x2, double * y2, double * z2, double * AA_2, double * BB_2, double * CC_2,setup_t& settings);
-	static double find_straight_length(const Position& end, const Position& start);
-	static double find_turn(double x1, double y1, double center_x, double center_y, int turn, double x2, double y2);
 	void inverse_time_rate_arc(double x1, double y1, double z1, double cx, double cy, int turn, double x2, double y2, double z2, block_t& block, setup_t& settings);
 	void inverse_time_rate_arc2(double start_x, double start_y, int turn1, double mid_x, double mid_y, double cx, double cy, int turn2, double end_x, double end_y, double end_z, block_t& block, setup_t& settings);
 	void inverse_time_rate_as(double start_x, double start_y, int turn, double mid_x, double mid_y, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
 	void inverse_time_rate_straight(double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end, block_t& block, setup_t& settings);
 	void parse_line(const char * line, block_t& block,setup_t& settings) const;
-	static int precedence(BinaryOperation an_operator);
 	void read_a(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_atan(const char * line, int * counter, double * double_ptr, double * parameters) const;
 	void read_b(const char * line, int * counter, block_t& block, double * parameters) const;

@@ -32,6 +32,22 @@ static const size_t RS274NGC_ACTIVE_M_CODES = 7;
 static const size_t RS274NGC_ACTIVE_SETTINGS = 3;
 static const size_t RS274NGC_MAX_PARAMETERS = 5400;
 
+/* numerical constants */
+static const double TOLERANCE_INCH = 0.0002;
+static const double TOLERANCE_MM  = 0.002;
+/* angle threshold for concavity for cutter compensation, in radians */
+static const double TOLERANCE_CONCAVE_CORNER = 0.01;
+
+static const double TINY = 1e-12;                                /* for arc_data_r */
+static const double UNKNOWN = 1e-20;
+static const double TWO_PI =  6.2831853071795864;
+static const double PI =      3.1415926535897932;
+static const double PI2 =     1.5707963267948966;
+
+   // English - Metric conversion (long number keeps error buildup down)
+static const double MM_PER_INCH = 25.4;
+static const double INCH_PER_MM = 0.039370078740157477;
+
 enum class Plane
 {
 	XY,
@@ -127,38 +143,5 @@ enum class DistanceMode
 
    /* retract_mode for cycles */
 enum RETRACT_MODE {R_PLANE, OLD_Z};
-
-// unary operations
-enum class UnaryOperation
-{
-	ABS = 1,
-	ACOS = 2,
-	ASIN = 3,
-	ATAN = 4,
-	COS = 5,
-	EXP = 6,
-	FIX = 7,
-	FUP = 8,
-	LN = 9,
-	ROUND = 10,
-	SIN = 11,
-	SQRT = 12,
-	TAN = 13
-};
-
-// binary operations
-enum class BinaryOperation
-{
-	DIVIDED_BY = 1,
-	MODULO = 2,
-	POWER = 3,
-	TIMES = 4,
-	AND2 = 5,
-	EXCLUSIVE_OR = 6,
-	MINUS = 7,
-	NON_EXCLUSIVE_OR = 8,
-	PLUS = 9,
-	RIGHT_BRACKET = 10
-};
 
 #endif /* TYPES_H_ */
