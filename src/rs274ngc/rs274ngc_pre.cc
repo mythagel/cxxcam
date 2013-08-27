@@ -93,8 +93,8 @@ Significant modifications by Nicholas Gill.
 #include <algorithm>
 #include "rs274ngc.hh"
 #include "rs274ngc_return.hh"
-
-extern const char * _rs274ngc_errors[];
+#include "codes.h"
+#include "error.h"
 
    /* numerical constants */
 static const double TOLERANCE_INCH = 0.0002;
@@ -112,86 +112,11 @@ static const double PI2 =     1.5707963267948966;
 static const double MM_PER_INCH = 25.4;
 static const double INCH_PER_MM = 0.039370078740157477;
 
-   // G Codes are symbolic to be dialect-independent in source code
-enum
-{
-	G_0 =       0,
-	G_1 =      10,
-	G_2 =      20,
-	G_3 =      30,
-	G_4 =      40,
-	G_10 =    100,
-	G_17 =    170,
-	G_18 =    180,
-	G_19 =    190,
-	G_20 =    200,
-	G_21 =    210,
-	G_28 =    280,
-	G_30 =    300,
-	G_38_2 =  382,
-	G_40 =    400,
-	G_41 =    410,
-	G_42 =    420,
-	G_43 =    430,
-	G_49 =    490,
-	G_53 =    530,
-	G_54 =    540,
-	G_55 =    550,
-	G_56 =    560,
-	G_57 =    570,
-	G_58 =    580,
-	G_59 =    590,
-	G_59_1 =  591,
-	G_59_2 =  592,
-	G_59_3 =  593,
-	G_61 =    610,
-	G_61_1 =  611,
-	G_64 =    640,
-	G_80 =    800,
-	G_81 =    810,
-	G_82 =    820,
-	G_83 =    830,
-	G_84 =    840,
-	G_85 =    850,
-	G_86 =    860,
-	G_87 =    870,
-	G_88 =    880,
-	G_89 =    890,
-	G_90 =    900,
-	G_91 =    910,
-	G_92 =    920,
-	G_92_1 =  921,
-	G_92_2 =  922,
-	G_92_3 =  923,
-	G_93 =    930,
-	G_94 =    940,
-	G_98 =    980,
-	G_99 =    990
-};
-
    // name of parameter file for saving/restoring interpreter variables
 #define RS274NGC_PARAMETER_FILE_NAME_DEFAULT "rs274ngc.var"
 #define RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX ".bak"
 
-   // max number of m codes on one line
-#define MAX_EMS  4
-
-   // feed_mode
-#define UNITS_PER_MINUTE 0
-#define INVERSE_TIME 1
-
-   // cutter radius compensation mode, OFF already defined to 0
-   // not using CANON_SIDE since interpreter handles cutter radius comp
-#define RIGHT 1
-#define LEFT 2
-
 //#define DEBUG_EMC
-
-void error_if(bool bad, int error_code)
-{
-	if(bad)
-		throw error(error_code);
-}
 
    /* Interpreter global arrays for g_codes and m_codes. The nth entry
    in each array is the modal group number corresponding to the nth
@@ -331,7 +256,7 @@ static const int _ems[] =
 
    */
 
-    static const int _required_parameters[] =
+    static const unsigned int _required_parameters[] =
     {
         5161, 5162, 5163,                     /* G28 home */
         5164, 5165, 5166,
@@ -374,21 +299,6 @@ static const int _ems[] =
         RS274NGC_MAX_PARAMETERS
     };
 
-error::error(int code)
- : code(code)
-{
-}
-const char* error::what() const noexcept
-{
-	if ((code >= RS274NGC_MIN_ERROR) and (code <= RS274NGC_MAX_ERROR))
-		return _rs274ngc_errors[code];
-	else
-		return "Unknown error";
-}
-error::~error() noexcept
-{
-}
-
 rs274ngc::rs274ngc()
 {
 }
@@ -428,7 +338,7 @@ rs274ngc::rs274ngc()
 
     void rs274ngc::arc_data_comp_ijk(                 /* ARGUMENTS                               */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)             */
-    int side,                                     /* either RIGHT or LEFT                             */
+    Side side,                                     /* either RIGHT or LEFT                             */
     double tool_radius,                           /* radius of the tool                               */
     double current_x,                             /* first coordinate of current point                */
     double current_y,                             /* second coordinate of current point               */
@@ -449,8 +359,8 @@ rs274ngc::rs274ngc()
         arc_radius = hypot(i_number, j_number);
         radius2 = hypot((*center_x - end_x), (*center_y - end_y));
         radius2 =
-            (((side == LEFT ) and (move == 30)) or
-            ((side == RIGHT) and (move == 20))) ?
+            (((side == Side::Left ) and (move == 30)) or
+            ((side == Side::Right) and (move == 20))) ?
             (radius2 - tool_radius): (radius2 + tool_radius);
         error_if(fabs(arc_radius - radius2) > tolerance, NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
    /* This catches an arc too small for the tool, also */
@@ -521,7 +431,7 @@ rs274ngc::rs274ngc()
 
     void rs274ngc::arc_data_comp_r(                   /* ARGUMENTS                                 */
     int move,                                     /* either G_2 (cw arc) or G_3 (ccw arc)             */
-    int side,                                     /* either RIGHT or LEFT                             */
+    Side side,                                     /* either RIGHT or LEFT                             */
     double tool_radius,                           /* radius of the tool                               */
     double current_x,                             /* first coordinate of current point                */
     double current_y,                             /* second coordinate of current point               */
@@ -543,8 +453,8 @@ rs274ngc::rs274ngc()
         double theta;                             /* direction of line from P to center    */
 
         abs_radius = fabs(big_radius);
-        error_if((abs_radius <= tool_radius) and (((side == LEFT ) and (move == G_3)) or
-            ((side == RIGHT) and (move == G_2))),
+        error_if((abs_radius <= tool_radius) and (((side == Side::Left ) and (move == G_3)) or
+            ((side == Side::Right) and (move == G_2))),
             NCE_TOOL_RADIUS_NOT_LESS_THAN_ARC_RADIUS_WITH_COMP);
 
         distance = hypot((end_x - current_x), (end_y - current_y));
@@ -552,8 +462,8 @@ rs274ngc::rs274ngc()
         theta = (((move == G_3) and (big_radius > 0)) or
             ((move == G_2) and (big_radius < 0))) ?
             (alpha + PI2) : (alpha - PI2);
-        radius2 = (((side == LEFT ) and (move == G_3)) or
-            ((side == RIGHT) and (move == G_2))) ?
+        radius2 = (((side == Side::Left ) and (move == G_3)) or
+            ((side == Side::Right) and (move == G_2))) ?
             (abs_radius - tool_radius) : (abs_radius + tool_radius);
         error_if(distance > (radius2 + abs_radius), NCE_RADIUS_TOO_SMALL_TO_REACH_END_POINT);
         mid_length = (((radius2 * radius2) + (distance * distance) -
@@ -700,281 +610,6 @@ rs274ngc::rs274ngc()
         *center_x = mid_x + (offset * cos(theta));
         *center_y = mid_y + (offset * sin(theta));
         *turn = (move == G_2) ? -1 : 1;
-    }
-
-   /****************************************************************************/
-
-   /* check_g_codes
-
-   Returned Value: int
-   If any of the following errors occur, this returns the error shown.
-   Otherwise, it returns RS274NGC_OK.
-   1. NCE_DWELL_TIME_MISSING_WITH_G4
-   2. NCE_MUST_USE_G0_OR_G1_WITH_G53
-   3. NCE_CANNOT_USE_G53_INCREMENTAL
-   4. NCE_LINE_WITH_G10_DOES_NOT_HAVE_L2
-   5. NCE_P_VALUE_NOT_AN_INTEGER_WITH_G10_L2
-   6. NCE_P_VALUE_OUT_OF_RANGE_WITH_G10_L2
-   7. NCE_BUG_BAD_G_CODE_MODAL_GROUP_0
-
-   Side effects: none
-
-   Called by: check_items
-
-   This runs checks on g_codes from a block of RS274/NGC instructions.
-   Currently, all checks are on g_codes in modal group 0.
-
-   The read_g function checks for errors which would foul up the reading.
-   The enhance_block function checks for logical errors in the use of
-   axis values by g-codes in modal groups 0 and 1.
-   This function checks for additional logical errors in g_codes.
-
-   [Fanuc, page 45, note 4] says there is no maximum for how many g_codes
-   may be put on the same line, [NCMS] says nothing one way or the other,
-   so the test for that is not used.
-
-   We are suspending any implicit motion g_code when a g_code from our
-   group 0 is used.  The implicit motion g_code takes effect again
-   automatically after the line on which the group 0 g_code occurs.  It
-   is not clear what the intent of [Fanuc] is in this regard. The
-   alternative is to require that any implicit motion be explicitly
-   cancelled.
-
-   Not all checks on g_codes are included here. Those checks that are
-   sensitive to whether other g_codes on the same line have been executed
-   yet are made by the functions called by convert_g.
-
-   Our reference sources differ regarding what codes may be used for
-   dwell time.  [Fanuc, page 58] says use "p" or "x". [NCMS, page 23] says
-   use "p", "x", or "u". We are allowing "p" only, since it is consistent
-   with both sources and "x" would be confusing. However, "p" is also used
-   with G10, where it must be an integer, so reading "p" values is a bit
-   more trouble than would be nice.
-
-   */
-
-    void rs274ngc::check_g_codes(                     /* ARGUMENTS                        */
-    block_t& block,                          /* pointer to a block to be checked */
-    setup_t& settings)                       /* pointer to machine settings      */
-    {
-        int mode0;
-        int p_int;
-
-        mode0 = block.g_modes[0];
-
-        if (mode0 == -1)
-        {
-        }
-        else if (mode0 == G_4)
-        {
-            error_if(!block.p, NCE_DWELL_TIME_MISSING_WITH_G4);
-        }
-        else if (mode0 == G_10)
-        {
-            p_int = (int)(*block.p + 0.0001);
-            error_if(*block.l != 2, NCE_LINE_WITH_G10_DOES_NOT_HAVE_L2);
-            error_if(((*block.p + 0.0001) - p_int) > 0.0002, NCE_P_VALUE_NOT_AN_INTEGER_WITH_G10_L2);
-            error_if((p_int < 1) or (p_int > 9), NCE_P_VALUE_OUT_OF_RANGE_WITH_G10_L2);
-        }
-        else if (mode0 == G_28)
-        {
-        }
-        else if (mode0 == G_30)
-        {
-        }
-        else if (mode0 == G_53)
-        {
-            error_if((block.motion_to_be != G_0) and (block.motion_to_be != G_1), NCE_MUST_USE_G0_OR_G1_WITH_G53);
-		    error_if(((block.g_modes[3] == G_91) or
-		    ((block.g_modes[3] != G_90) and
-		    (settings.distance_mode == MODE_INCREMENTAL))),
-		    NCE_CANNOT_USE_G53_INCREMENTAL);
-        }
-        else if (mode0 == G_92)
-        {
-        }
-        else if ((mode0 == G_92_1) or (mode0 == G_92_2) or (mode0 == G_92_3))
-        {
-        }
-        else
-            throw error(NCE_BUG_BAD_G_CODE_MODAL_GROUP_0);
-    }
-
-   /****************************************************************************/
-
-   /* check_items
-
-   Returned Value: int
-   If any one of check_g_codes, check_m_codes, and check_other_codes
-   returns an error code, this returns that code.
-   Otherwise, it returns RS274NGC_OK.
-
-   Side effects: none
-
-   Called by: parse_line
-
-   This runs checks on a block of RS274 code.
-
-   The functions named read_XXXX check for errors which would foul up the
-   reading. This function checks for additional logical errors.
-
-   A block has an array of g_codes, which are initialized to -1
-   (meaning no code). This calls check_g_codes to check the g_codes.
-
-   A block has an array of m_codes, which are initialized to -1
-   (meaning no code). This calls check_m_codes to check the m_codes.
-
-   Items in the block which are not m or g codes are checked by
-   check_other_codes.
-
-   */
-
-    void rs274ngc::check_items(                       /* ARGUMENTS                        */
-    block_t& block,                          /* pointer to a block to be checked */
-    setup_t& settings)                       /* pointer to machine settings      */
-    {
-        check_g_codes(block, settings);
-        check_m_codes(block);
-        check_other_codes(block);
-    }
-
-   /****************************************************************************/
-
-   /* check_m_codes
-
-   Returned Value: int
-   If any of the following errors occur, this returns the error code shown.
-   Otherwise, it returns RS274NGC_OK.
-   1. There are too many m codes in the block: NCE_TOO_MANY_M_CODES_ON_LINE
-
-   Side effects: none
-
-   Called by: check_items
-
-   This runs checks on m_codes from a block of RS274/NGC instructions.
-
-   The read_m function checks for errors which would foul up the
-   reading. This function checks for additional errors in m_codes.
-
-   */
-
-    void rs274ngc::check_m_codes(                     /* ARGUMENTS                        */
-    block_t& block)                          /* pointer to a block to be checked */
-    {
-        error_if(block.m_count > MAX_EMS, NCE_TOO_MANY_M_CODES_ON_LINE);
-    }
-
-   /****************************************************************************/
-
-   /* check_other_codes
-
-   Returned Value: int
-   If any of the following errors occur, this returns the error code shown.
-   Otherwise, it returns RS274NGC_OK.
-   1. An A-axis value is given with a canned cycle (g80 to g89):
-   NCE_CANNOT_PUT_AN_A_IN_CANNED_CYCLE
-   2. A B-axis value is given with a canned cycle (g80 to g89):
-   NCE_CANNOT_PUT_A_B_IN_CANNED_CYCLE
-   3. A C-axis value is given with a canned cycle (g80 to g89):
-   NCE_CANNOT_PUT_A_C_IN_CANNED_CYCLE
-   4. A d word is in a block with no cutter_radius_compensation_on command:
-   NCE_D_WORD_WITH_NO_G41_OR_G42
-   5. An h_number is in a block with no tool length offset setting:
-   NCE_H_WORD_WITH_NO_G43
-   6. An i_number is in a block with no G code that uses it:
-   NCE_I_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT
-   7. A j_number is in a block with no G code that uses it:
-   NCE_J_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT
-   8. A k_number is in a block with no G code that uses it:
-   NCE_K_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT
-   9. A l_number is in a block with no G code that uses it:
-   NCE_L_WORD_WITH_NO_CANNED_CYCLE_OR_G10
-   10. A p_number is in a block with no G code that uses it:
-   NCE_P_WORD_WITH_NO_G4_G10_G82_G86_G88_G89
-   11. A q_number is in a block with no G code that uses it:
-   NCE_Q_WORD_WITH_NO_G83
-   12. An r_number is in a block with no G code that uses it:
-   NCE_R_WORD_WITH_NO_G_CODE_THAT_USES_IT
-
-   Side effects: none
-
-   Called by: check_items
-
-   This runs checks on codes from a block of RS274/NGC code which are
-   not m or g codes.
-
-   The functions named read_XXXX check for errors which would foul up the
-   reading. This function checks for additional logical errors in codes.
-
-   */
-
-    void rs274ngc::check_other_codes(                 /* ARGUMENTS                               */
-    block_t& block)                          /* pointer to a block of RS274/NGC instructions */
-    {
-        int motion;
-
-        motion = block.motion_to_be;
-        if (block.a)
-        {
-            error_if((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90), NCE_CANNOT_PUT_AN_A_IN_CANNED_CYCLE);
-        }
-        if (block.b)
-        {
-            error_if((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90), NCE_CANNOT_PUT_A_B_IN_CANNED_CYCLE);
-        }
-        if (block.c)
-        {
-            error_if((block.g_modes[1] > G_80) and (block.g_modes[1] < G_90), NCE_CANNOT_PUT_A_C_IN_CANNED_CYCLE);
-        }
-        if (block.d)
-        {
-            error_if((block.g_modes[7] != G_41) and (block.g_modes[7] != G_42), NCE_D_WORD_WITH_NO_G41_OR_G42);
-        }
-        if (block.h)
-        {
-            error_if(block.g_modes[8] != G_43, NCE_H_WORD_WITH_NO_G43);
-        }
-
-        if (block.i)                  /* could still be useless if yz_plane arc */
-        {
-            error_if((motion != G_2) and (motion != G_3) and (motion != G_87), NCE_I_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
-        }
-
-        if (block.j)                  /* could still be useless if xz_plane arc */
-        {
-            error_if((motion != G_2) and (motion != G_3) and (motion != G_87), NCE_J_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
-        }
-
-        if (block.k)                  /* could still be useless if xy_plane arc */
-        {
-            error_if((motion != G_2) and (motion != G_3) and (motion != G_87), NCE_K_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
-        }
-
-        if (block.l)
-        {
-            error_if(((motion < G_81) or (motion > G_89)) and (block.g_modes[0] != G_10), NCE_L_WORD_WITH_NO_CANNED_CYCLE_OR_G10);
-        }
-
-        if (block.p)
-        {
-            error_if(((block.g_modes[0] != G_10) and
-                (block.g_modes[0] != G_4) and
-                (motion != G_82) and (motion != G_86) and
-                (motion != G_88) and (motion != G_89)),
-                NCE_P_WORD_WITH_NO_G4_G10_G82_G86_G88_G89);
-        }
-
-        if (block.q)
-        {
-            error_if(motion != G_83, NCE_Q_WORD_WITH_NO_G83);
-        }
-
-        if (block.r)
-        {
-            error_if((((motion != G_2) and (motion != G_3)) and
-                ((motion < G_81) or (motion > G_89))),
-                NCE_R_WORD_WITH_NO_G_CODE_THAT_USES_IT);
-        }
     }
 
    /****************************************************************************/
@@ -1131,11 +766,11 @@ rs274ngc::rs274ngc()
 
         error_if(!block.r and (ijk_flag != ON), NCE_R_I_J_K_WORDS_ALL_MISSING_FOR_ARC);
         error_if(block.r and (ijk_flag == ON), NCE_MIXED_RADIUS_IJK_FORMAT_FOR_ARC);
-        if (settings.feed_mode == UNITS_PER_MINUTE)
+        if (settings.feed_mode == FeedMode::UnitsPerMinute)
         {
             error_if(settings.feed_rate == 0.0, NCE_CANNOT_MAKE_ARC_WITH_ZERO_FEED_RATE);
         }
-        else if (settings.feed_mode == INVERSE_TIME)
+        else if (settings.feed_mode == FeedMode::InverseTime)
         {
             error_if(!block.f, NCE_F_WORD_MISSING_WITH_INVERSE_TIME_ARC_MOVE);
         }
@@ -1191,7 +826,7 @@ rs274ngc::rs274ngc()
 
         if (settings.plane == Plane::XY)
         {
-            if ((settings.cutter_comp_side == OFF) or (settings.cutter_comp_radius == 0.0))
+            if ((settings.cutter_comp_side == Side::Off) or (settings.cutter_comp_radius == 0.0))
             {
                     convert_arc2(move, block, settings,
                     &(settings.current.x), &(settings.current.y), &(settings.current.z), 
@@ -1280,7 +915,7 @@ rs274ngc::rs274ngc()
             arc_data_ijk(move, *current1, *current2, end1, end2, offset1, offset2, &center1, &center2, &turn, tolerance);
         }
 
-        if (settings.feed_mode == INVERSE_TIME)
+        if (settings.feed_mode == FeedMode::InverseTime)
             inverse_time_rate_arc(*current1, *current2, *current3, center1, center2, turn, end1, end2, end3, block, settings);
         arc(end1, end2, center1, center2, turn, end3, AA_end, BB_end, CC_end);
         *current1 = end1;
@@ -1334,7 +969,7 @@ rs274ngc::rs274ngc()
         double center_x;
         double center_y;
         double gamma;                             /* direction of perpendicular to arc at end */
-        int side;                                 /* offset side - right or left              */
+        Side side;                                 /* offset side - right or left              */
         double tolerance;                         /* tolerance for difference of radii        */
         double tool_radius;
         int turn;                                 /* 1 for counterclockwise, -1 for clockwise */
@@ -1358,8 +993,8 @@ rs274ngc::rs274ngc()
         }
 
         gamma =
-            (((side == LEFT) and (move == G_3)) or
-            ((side == RIGHT) and (move == G_2))) ?
+            (((side == Side::Left) and (move == G_3)) or
+            ((side == Side::Right) and (move == G_2))) ?
             atan2 ((center_y - end_y), (center_x - end_x)) :
         atan2 ((end_y - center_y), (end_x - center_x));
 
@@ -1370,7 +1005,7 @@ rs274ngc::rs274ngc()
    /* end_y reset actual */
         end_y = (end_y + (tool_radius * sin(gamma)));
 
-        if (settings.feed_mode == INVERSE_TIME)
+        if (settings.feed_mode == FeedMode::InverseTime)
             inverse_time_rate_arc(settings.current.x, settings.current.y,
                 settings.current.z, center_x, center_y, turn,
                 end_x, end_y, end_z, block, settings);
@@ -1443,7 +1078,7 @@ rs274ngc::rs274ngc()
         double gamma;                             /* direction of perpendicular to arc at end */
         double mid_x;
         double mid_y;
-        int side;
+        Side side;
    /* angle for testing corners */
         double small = TOLERANCE_CONCAVE_CORNER;
         double start_x;
@@ -1474,14 +1109,14 @@ rs274ngc::rs274ngc()
         tool_radius = settings.cutter_comp_radius;
         arc_radius = hypot((center_x - end_x), (center_y - end_y));
         theta = atan2(settings.current.y - start_y, settings.current.x - start_x);
-        theta = (side == LEFT) ? (theta - PI2) : (theta + PI2);
+        theta = (side == Side::Left) ? (theta - PI2) : (theta + PI2);
         delta = atan2(center_y - start_y, center_x - start_x);
         alpha = (move == G_3) ? (delta - PI2) : (delta + PI2);
-        beta = (side == LEFT) ? (theta - alpha) : (alpha - theta);
+        beta = (side == Side::Left) ? (theta - alpha) : (alpha - theta);
         beta = (beta > (1.5 * PI))  ? (beta - TWO_PI) :
         (beta < -PI2) ? (beta + TWO_PI) : beta;
 
-        if (((side == LEFT)  and (move == G_3)) or ((side == RIGHT) and (move == G_2)))
+        if (((side == Side::Left)  and (move == G_3)) or ((side == Side::Right) and (move == G_2)))
         {
             gamma = atan2 ((center_y - end_y), (center_x - end_x));
             error_if(arc_radius <= tool_radius, NCE_TOOL_RADIUS_NOT_LESS_THAN_ARC_RADIUS_WITH_COMP);
@@ -1506,16 +1141,16 @@ rs274ngc::rs274ngc()
         {
             mid_x = (start_x + (tool_radius * cos(delta)));
             mid_y = (start_y + (tool_radius * sin(delta)));
-            if (settings.feed_mode == INVERSE_TIME)
-                inverse_time_rate_arc2(start_x, start_y, (side == LEFT) ? -1 : 1,
+            if (settings.feed_mode == FeedMode::InverseTime)
+                inverse_time_rate_arc2(start_x, start_y, (side == Side::Left) ? -1 : 1,
                 mid_x, mid_y, center_x, center_y, turn,
                 end_x, end_y, end_z, block, settings);
-            arc(mid_x, mid_y, start_x, start_y, ((side == LEFT) ? -1 : 1), settings.current.z, AA_end, BB_end, CC_end);
+            arc(mid_x, mid_y, start_x, start_y, ((side == Side::Left) ? -1 : 1), settings.current.z, AA_end, BB_end, CC_end);
             arc(end_x, end_y, center_x, center_y, turn, end_z, AA_end, BB_end, CC_end);
         }
         else                                      /* one arc needed */
         {
-            if (settings.feed_mode == INVERSE_TIME)
+            if (settings.feed_mode == FeedMode::InverseTime)
                 inverse_time_rate_arc(settings.current.x, settings.current.y,
                     settings.current.z, center_x, center_y, turn,
                     end_x, end_y, end_z, block, settings);
@@ -1596,7 +1231,7 @@ rs274ngc::rs274ngc()
     {
         double * pars;                            /* short name for settings.parameters            */
 
-        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_CHANGE_AXIS_OFFSETS_WITH_CUTTER_RADIUS_COMP);
+        error_if(settings.cutter_comp_side != Side::Off, NCE_CANNOT_CHANGE_AXIS_OFFSETS_WITH_CUTTER_RADIUS_COMP);
         pars = settings.parameters;
         if (g_code == G_92)
         {
@@ -1961,11 +1596,11 @@ rs274ngc::rs274ngc()
         }
         else if (g_code == G_41)
         {
-            convert_cutter_compensation_on(LEFT, block, settings);
+            convert_cutter_compensation_on(Side::Left, block, settings);
         }
         else if (g_code == G_42)
         {
-            convert_cutter_compensation_on(RIGHT, block, settings);
+            convert_cutter_compensation_on(Side::Right, block, settings);
         }
         else
             throw error(NCE_BUG_CODE_NOT_G40_G41_OR_G42);
@@ -1994,7 +1629,7 @@ rs274ngc::rs274ngc()
 #ifdef DEBUG_EMC
         comment("interpreter: cutter radius compensation off");
 #endif
-        settings.cutter_comp_side = OFF;
+        settings.cutter_comp_side = Side::Off;
         settings.program_x = UNKNOWN;
     }
 
@@ -2051,7 +1686,7 @@ rs274ngc::rs274ngc()
    */
 
     void rs274ngc::convert_cutter_compensation_on(    /* ARGUMENTS               */
-    int side,                                     /* side of path cutter is on (LEFT or RIGHT) */
+    Side side,                                     /* side of path cutter is on (LEFT or RIGHT) */
     block_t& block,                          /* pointer to a block of RS274 instructions  */
     setup_t& settings)                       /* pointer to machine settings               */
     {
@@ -2059,17 +1694,17 @@ rs274ngc::rs274ngc()
         int index;
 
         error_if(settings.plane != Plane::XY, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_OUT_OF_XY_PLANE);
-        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_WHEN_ON);
+        error_if(settings.cutter_comp_side != Side::Off, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_WHEN_ON);
         index = block.d ? *block.d : settings.current_slot;
         radius = ((settings.tool_table[index].diameter)/2.0);
 
         if (radius < 0.0)                         /* switch side & make radius positive if radius negative */
         {
             radius = -radius;
-            if (side == RIGHT)
-                side = LEFT;
+            if (side == Side::Right)
+                side = Side::Left;
             else
-                side = RIGHT;
+                side = Side::Right;
         }
 
 #ifdef DEBUG_EMC
@@ -2760,7 +2395,7 @@ rs274ngc::rs274ngc()
         block.z = block.z ? *block.z : settings.cycle.cc;
         old_cc = settings.current.z;
 
-        if (settings.distance_mode == MODE_ABSOLUTE)
+        if (settings.distance_mode == DistanceMode::Absolute)
         {
             aa_increment = 0.0;
             bb_increment = 0.0;
@@ -2769,7 +2404,7 @@ rs274ngc::rs274ngc()
             aa = block.x ? *block.x : settings.current.x;
             bb = block.y ? *block.y : settings.current.y;
         }
-        else if (settings.distance_mode == MODE_INCREMENTAL)
+        else if (settings.distance_mode == DistanceMode::Incremental)
         {
             aa_increment = *block.x;
             bb_increment = *block.y;
@@ -2835,7 +2470,7 @@ rs274ngc::rs274ngc()
                 settings.cycle.i = i;
                 settings.cycle.j = j;
                 settings.cycle.k = k;
-                if (settings.distance_mode == MODE_INCREMENTAL)
+                if (settings.distance_mode == DistanceMode::Incremental)
                 {
                     k = (cc + k);            /* k always absolute in function call below */
                 }
@@ -2941,7 +2576,7 @@ rs274ngc::rs274ngc()
         block.x = block.x ? *block.x : settings.cycle.cc;
         old_cc = settings.current.x;
 
-        if (settings.distance_mode == MODE_ABSOLUTE)
+        if (settings.distance_mode == DistanceMode::Absolute)
         {
             aa_increment = 0.0;
             bb_increment = 0.0;
@@ -2950,7 +2585,7 @@ rs274ngc::rs274ngc()
             aa = block.y ? *block.y : settings.current.y;
             bb = block.z ? *block.z : settings.current.z;
         }
-        else if (settings.distance_mode == MODE_INCREMENTAL)
+        else if (settings.distance_mode == DistanceMode::Incremental)
         {
             aa_increment = *block.y;
             bb_increment = *block.z;
@@ -3016,7 +2651,7 @@ rs274ngc::rs274ngc()
                 settings.cycle.i = i;
                 settings.cycle.j = j;
                 settings.cycle.k = k;
-                if (settings.distance_mode == MODE_INCREMENTAL)
+                if (settings.distance_mode == DistanceMode::Incremental)
                 {
                     i = (cc + i);            /* i always absolute in function call below */
                 }
@@ -3130,7 +2765,7 @@ rs274ngc::rs274ngc()
         block.y = block.y ? *block.y : settings.cycle.cc;
         old_cc = settings.current.y;
 
-        if (settings.distance_mode == MODE_ABSOLUTE)
+        if (settings.distance_mode == DistanceMode::Absolute)
         {
             aa_increment = 0.0;
             bb_increment = 0.0;
@@ -3139,7 +2774,7 @@ rs274ngc::rs274ngc()
             aa = block.z ? *block.z : settings.current.z;
             bb = block.x ? *block.x : settings.current.x;
         }
-        else if (settings.distance_mode == MODE_INCREMENTAL)
+        else if (settings.distance_mode == DistanceMode::Incremental)
         {
             aa_increment = *block.z;
             bb_increment = *block.x;
@@ -3205,7 +2840,7 @@ rs274ngc::rs274ngc()
                 settings.cycle.i = i;
                 settings.cycle.j = j;
                 settings.cycle.k = k;
-                if (settings.distance_mode == MODE_INCREMENTAL)
+                if (settings.distance_mode == DistanceMode::Incremental)
                 {
                     j = (cc + j);            /* j always absolute in function call below */
                 }
@@ -3263,22 +2898,22 @@ rs274ngc::rs274ngc()
     {
         if (g_code == G_90)
         {
-            if (settings.distance_mode != MODE_ABSOLUTE)
+            if (settings.distance_mode != DistanceMode::Absolute)
             {
 #ifdef DEBUG_EMC
                 comment("interpreter: distance mode changed to absolute");
 #endif
-                settings.distance_mode = MODE_ABSOLUTE;
+                settings.distance_mode = DistanceMode::Absolute;
             }
         }
         else if (g_code == G_91)
         {
-            if (settings.distance_mode != MODE_INCREMENTAL)
+            if (settings.distance_mode != DistanceMode::Incremental)
             {
 #ifdef DEBUG_EMC
                 comment("interpreter: distance mode changed to incremental");
 #endif
-                settings.distance_mode = MODE_INCREMENTAL;
+                settings.distance_mode = DistanceMode::Incremental;
             }
         }
         else
@@ -3335,14 +2970,14 @@ rs274ngc::rs274ngc()
 #ifdef DEBUG_EMC
             comment("interpreter: feed mode set to inverse time");
 #endif
-            settings.feed_mode = INVERSE_TIME;
+            settings.feed_mode = FeedMode::InverseTime;
         }
         else if (g_code == G_94)
         {
 #ifdef DEBUG_EMC
             comment("interpreter: feed mode set to units per minute");
 #endif
-            settings.feed_mode = UNITS_PER_MINUTE;
+            settings.feed_mode = FeedMode::UnitsPerMinute;
         }
         else
             throw error(NCE_BUG_CODE_NOT_G93_OR_G94);
@@ -3524,7 +3159,7 @@ rs274ngc::rs274ngc()
         parameters = settings.parameters;
         find_ends(block, settings, &end.x, &end.y, &end.z, &end.a, &end.b, &end.c);
 
-        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_G28_OR_G30_WITH_CUTTER_RADIUS_COMP);
+        error_if(settings.cutter_comp_side != Side::Off, NCE_CANNOT_USE_G28_OR_G30_WITH_CUTTER_RADIUS_COMP);
         rapid(end);
         if (move == G_28)
         {
@@ -3600,7 +3235,7 @@ rs274ngc::rs274ngc()
     int g_code,                                   /* g_code being executed (must be G_20 or G_21) */
     setup_t& settings)                       /* pointer to machine settings                  */
     {
-        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_CHANGE_UNITS_WITH_CUTTER_RADIUS_COMP);
+        error_if(settings.cutter_comp_side != Side::Off, NCE_CANNOT_CHANGE_UNITS_WITH_CUTTER_RADIUS_COMP);
         if (g_code == G_20)
         {
             units(Units::Imperial);
@@ -3695,19 +3330,19 @@ rs274ngc::rs274ngc()
         if (block.m_modes[8] == 7)
         {
             coolant_mist_on();
-            settings.mist = ON;
+            settings.coolant.mist = ON;
         }
         else if (block.m_modes[8] == 8)
         {
             coolant_flood_on();
-            settings.flood = ON;
+            settings.coolant.flood = ON;
         }
         else if (block.m_modes[8] == 9)
         {
             coolant_mist_off();
-            settings.mist = OFF;
+            settings.coolant.mist = OFF;
             coolant_flood_off();
-            settings.flood = OFF;
+            settings.coolant.flood = OFF;
         }
 
    /* No axis clamps in this version
@@ -3890,8 +3525,8 @@ rs274ngc::rs274ngc()
         Position end;
 
         error_if(!block.x and !block.y and !block.z, NCE_X_Y_AND_Z_WORDS_ALL_MISSING_WITH_G38_2);
-        error_if(settings.feed_mode == INVERSE_TIME, NCE_CANNOT_PROBE_IN_INVERSE_TIME_FEED_MODE);
-        error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_PROBE_WITH_CUTTER_RADIUS_COMP_ON);
+        error_if(settings.feed_mode == FeedMode::InverseTime, NCE_CANNOT_PROBE_IN_INVERSE_TIME_FEED_MODE);
+        error_if(settings.cutter_comp_side != Side::Off, NCE_CANNOT_PROBE_WITH_CUTTER_RADIUS_COMP_ON);
         error_if(settings.feed_rate == 0.0, NCE_CANNOT_PROBE_WITH_ZERO_FEED_RATE);
         find_ends(block, settings, &end.x, &end.y, &end.z, &end.a, &end.b, &end.c);
         if ((end.a != settings.current.a)
@@ -4086,13 +3721,13 @@ rs274ngc::rs274ngc()
         }
         else if (g_code == G_18)
         {
-            error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_XZ_PLANE_WITH_CUTTER_RADIUS_COMP);
+            error_if(settings.cutter_comp_side != Side::Off, NCE_CANNOT_USE_XZ_PLANE_WITH_CUTTER_RADIUS_COMP);
             plane(Plane::XZ);
             settings.plane = Plane::XZ;
         }
         else if (g_code == G_19)
         {
-            error_if(settings.cutter_comp_side != OFF, NCE_CANNOT_USE_YZ_PLANE_WITH_CUTTER_RADIUS_COMP);
+            error_if(settings.cutter_comp_side != Side::Off, NCE_CANNOT_USE_YZ_PLANE_WITH_CUTTER_RADIUS_COMP);
             plane(Plane::YZ);
             settings.plane = Plane::YZ;
         }
@@ -4228,9 +3863,9 @@ rs274ngc::rs274ngc()
                 settings.plane = Plane::XY;
             }
 
-            /*3*/ settings.distance_mode = MODE_ABSOLUTE;
+            /*3*/ settings.distance_mode = DistanceMode::Absolute;
 
-            /*4*/ settings.feed_mode = UNITS_PER_MINUTE;
+            /*4*/ settings.feed_mode = FeedMode::UnitsPerMinute;
 
             /*5*/ if (settings.feed_override != ON)
             {
@@ -4243,7 +3878,7 @@ rs274ngc::rs274ngc()
                 settings.speed_override = ON;
             }
 
-            /*6*/ settings.cutter_comp_side = OFF;
+            /*6*/ settings.cutter_comp_side = Side::Off;
             settings.program_x = UNKNOWN;
 
             /*7*/ spindle_stop();
@@ -4251,15 +3886,15 @@ rs274ngc::rs274ngc()
 
             /*8*/ settings.motion_mode = G_1;
 
-            /*9*/ if (settings.mist == ON)
+            /*9*/ if (settings.coolant.mist == ON)
             {
                 coolant_mist_off();
-                settings.mist = OFF;
+                settings.coolant.mist = OFF;
             }
-            if (settings.flood == ON)
+            if (settings.coolant.flood == ON)
             {
                 coolant_flood_off();
-                settings.flood = OFF;
+                settings.coolant.flood = OFF;
             }
 
             if (block.m_modes[4] == 30)
@@ -4324,11 +3959,11 @@ rs274ngc::rs274ngc()
 
         if (move == G_1)
         {
-            if (settings.feed_mode == UNITS_PER_MINUTE)
+            if (settings.feed_mode == FeedMode::UnitsPerMinute)
             {
                 error_if(settings.feed_rate == 0.0, NCE_CANNOT_DO_G1_WITH_ZERO_FEED_RATE);
             }
-            else if (settings.feed_mode == INVERSE_TIME)
+            else if (settings.feed_mode == FeedMode::InverseTime)
             {
                 error_if(!block.f, NCE_F_WORD_MISSING_WITH_INVERSE_TIME_G1_MOVE);
             }
@@ -4337,7 +3972,7 @@ rs274ngc::rs274ngc()
         settings.motion_mode = move;
         find_ends(block, settings, &end.x, &end.y, &end.z, &end.a, &end.b, &end.c);
    /* not "IS ON" */
-        if ((settings.cutter_comp_side != OFF) and (settings.cutter_comp_radius > 0.0)) /* radius always is >= 0 */
+        if ((settings.cutter_comp_side != Side::Off) and (settings.cutter_comp_radius > 0.0)) /* radius always is >= 0 */
         {
             error_if(block.g_modes[0] == G_53, NCE_CANNOT_USE_G53_WITH_CUTTER_RADIUS_COMP);
             if (settings.program_x == UNKNOWN)
@@ -4357,7 +3992,7 @@ rs274ngc::rs274ngc()
         }
         else if (move == G_1)
         {
-            if (settings.feed_mode == INVERSE_TIME)
+            if (settings.feed_mode == FeedMode::InverseTime)
                 inverse_time_rate_straight(end.x, end.y, end.z, end.a, end.b, end.c, block, settings);
             linear(end);
             settings.current.x = end.x;
@@ -4425,7 +4060,7 @@ rs274ngc::rs274ngc()
         double cy;                                /* first current point y then end point y */
         double distance;
         double radius;
-        int side;
+        Side side;
         double theta;
 
         side = settings.cutter_comp_side;
@@ -4436,19 +4071,18 @@ rs274ngc::rs274ngc()
         radius = settings.cutter_comp_radius;
         distance = hypot((px - cx), (py -cy));
 
-        error_if((side != LEFT) and (side != RIGHT), NCE_BUG_SIDE_NOT_RIGHT_OR_LEFT);
+        error_if((side != Side::Left) and (side != Side::Right), NCE_BUG_SIDE_NOT_RIGHT_OR_LEFT);
         error_if(distance <= radius, NCE_CUTTER_GOUGING_WITH_CUTTER_RADIUS_COMP);
 
         theta = acos(radius/distance);
-        alpha = (side == LEFT) ? (atan2((cy - py), (cx - px)) - theta) :
-        (atan2((cy - py), (cx - px)) + theta);
+        alpha = (side == Side::Left) ? (atan2((cy - py), (cx - px)) - theta) : (atan2((cy - py), (cx - px)) + theta);
         cx = (px + (radius * cos(alpha)));   /* reset to end location */
         cy = (py + (radius * sin(alpha)));
         if (move == G_0)
             rapid({cx, cy, end_z, AA_end, BB_end, CC_end});
         else if (move == G_1)
         {
-            if (settings.feed_mode == INVERSE_TIME)
+            if (settings.feed_mode == FeedMode::InverseTime)
                 inverse_time_rate_straight(cx, cy, end_z, AA_end, BB_end, CC_end, block, settings);
             linear({cx, cy, end_z, AA_end, BB_end, CC_end});
         }
@@ -4553,7 +4187,7 @@ rs274ngc::rs274ngc()
         double mid_x;                             /* x-coordinate of end of added arc, if needed */
         double mid_y;                             /* y-coordinate of end of added arc, if needed */
         double radius;
-        int side;
+        Side side;
    /* radians, testing corners */
         double small = TOLERANCE_CONCAVE_CORNER;
         double start_x, start_y;                  /* programmed beginning point */
@@ -4569,7 +4203,7 @@ rs274ngc::rs274ngc()
                 rapid({end_x, end_y, end_z, AA_end, BB_end, CC_end});
             else if (move == G_1)
             {
-                if (settings.feed_mode == INVERSE_TIME)
+                if (settings.feed_mode == FeedMode::InverseTime)
                     inverse_time_rate_straight(end_x, end_y, end_z, AA_end, BB_end, CC_end, block, settings);
                 linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
             }
@@ -4584,14 +4218,14 @@ rs274ngc::rs274ngc()
             theta = atan2(settings.current.y - start_y, settings.current.x - start_x);
             alpha = atan2(py - start_y, px - start_x);
 
-            if (side == LEFT)
+            if (side == Side::Left)
             {
                 if (theta < alpha)
                     theta = (theta + TWO_PI);
                 beta = ((theta - alpha) - PI2);
                 gamma = PI2;
             }
-            else if (side == RIGHT)
+            else if (side == Side::Right)
             {
                 if (alpha < theta)
                     alpha = (alpha + TWO_PI);
@@ -4612,16 +4246,16 @@ rs274ngc::rs274ngc()
             {
                 if (beta > small)                 /* ARC NEEDED */
                 {
-                    if (settings.feed_mode == INVERSE_TIME)
-                        inverse_time_rate_as(start_x, start_y, (side == LEFT) ? -1 : 1,
+                    if (settings.feed_mode == FeedMode::InverseTime)
+                        inverse_time_rate_as(start_x, start_y, (side == Side::Left) ? -1 : 1,
                         mid_x, mid_y, end_x, end_y, end_z, 
                         AA_end, BB_end, CC_end, block, settings);
-                    arc(mid_x,mid_y,start_x, start_y, ((side == LEFT) ? -1 : 1), settings.current.z, AA_end, BB_end, CC_end);
+                    arc(mid_x,mid_y,start_x, start_y, ((side == Side::Left) ? -1 : 1), settings.current.z, AA_end, BB_end, CC_end);
                     linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
                 }
                 else
                 {
-                    if (settings.feed_mode == INVERSE_TIME)
+                    if (settings.feed_mode == FeedMode::InverseTime)
                         inverse_time_rate_straight(end_x,end_y,end_z, AA_end, BB_end, CC_end, block, settings);
                     linear({end_x, end_y, end_z, AA_end, BB_end, CC_end});
                 }
@@ -4751,8 +4385,8 @@ rs274ngc::rs274ngc()
         }
         else if (g_code == G_43)
         {
+            error_if(!block.h, NCE_OFFSET_INDEX_MISSING);
             index = *block.h;
-            error_if(index == -1, NCE_OFFSET_INDEX_MISSING);
             offset = settings.tool_table[index].length;
             tool_length_offset(offset);
             settings.current.z = (settings.current.z + settings.tool_length_offset - offset);
@@ -4874,82 +4508,6 @@ rs274ngc::rs274ngc()
             rapid({end3, end1, end2, _setup.current.a, _setup.current.b, _setup.current.c});
         else                                      /* if (plane == Plane::XZ) */
             rapid({end2, end3, end1, _setup.current.a, _setup.current.b, _setup.current.c});
-    }
-
-   /****************************************************************************/
-
-   /* enhance_block
-
-   Returned Value:
-   If any of the following errors occur, this returns the error shown.
-   Otherwise, it returns RS274NGC_OK.
-   1. A g80 is in the block, no modal group 0 code that uses axes
-   is in the block, and one or more axis values is given:
-   NCE_CANNOT_USE_AXIS_VALUES_WITH_G80
-   2. A g92 is in the block and no axis value is given:
-   NCE_ALL_AXES_MISSING_WITH_G92
-   3. One g-code from group 1 and one from group 0, both of which can use
-   axis values, are in the block:
-   NCE_CANNOT_USE_TWO_G_CODES_THAT_BOTH_USE_AXIS_VALUES
-   4. A g-code from group 1 which can use axis values is in the block,
-   but no axis value is given: NCE_ALL_AXES_MISSING_WITH_MOTION_CODE
-   5. Axis values are given, but there is neither a g-code in the block
-   nor an active previously given modal g-code that uses axis values:
-   NCE_CANNOT_USE_AXIS_VALUES_WITHOUT_A_G_CODE_THAT_USES_THEM
-
-   Side effects:
-   The value of motion_to_be in the block is set.
-
-   Called by: parse_line
-
-   If there is a g-code for motion in the block (in g_modes[1]),
-   set motion_to_be to that. Otherwise, if there is an axis value in the
-   block and no g-code to use it (any such would be from group 0 in
-   g_modes[0]), set motion_to_be to be the last motion saved (in
-   settings.motion mode).
-
-   This also make the checks described above.
-
-   */
-
-    void rs274ngc::enhance_block(                     /* ARGUMENTS                         */
-    block_t& block,                          /* pointer to a block to be checked  */
-    setup_t& settings)                       /* pointer to machine settings       */
-    {
-        int axis_flag;
-        int mode_zero_covets_axes;
-
-        axis_flag = (block.x or block.y or block.z or
-                     block.a or block.b or block.c);
-        mode_zero_covets_axes = ((block.g_modes[0] == G_10) or
-            (block.g_modes[0] == G_28) or
-            (block.g_modes[0] == G_30) or
-            (block.g_modes[0] == G_92));
-
-        if (block.g_modes[1] != -1)
-        {
-            if (block.g_modes[1] == G_80)
-            {
-                error_if((axis_flag and (not mode_zero_covets_axes)), NCE_CANNOT_USE_AXIS_VALUES_WITH_G80);
-                error_if(((not axis_flag) and (block.g_modes[0] == G_92)), NCE_ALL_AXES_MISSING_WITH_G92);
-            }
-            else
-            {
-                error_if(mode_zero_covets_axes, NCE_CANNOT_USE_TWO_G_CODES_THAT_BOTH_USE_AXIS_VALUES);
-                error_if((not axis_flag), NCE_ALL_AXES_MISSING_WITH_MOTION_CODE);
-            }
-            block.motion_to_be = block.g_modes[1];
-        }
-        else if (mode_zero_covets_axes)
-        {                                         /* other 3 can get by without axes but not G92 */
-            error_if(((not axis_flag) and (block.g_modes[0] == G_92)), NCE_ALL_AXES_MISSING_WITH_G92);
-        }
-        else if (axis_flag)
-        {
-            error_if(((settings.motion_mode == -1) or (settings.motion_mode == G_80)),
-                NCE_CANNOT_USE_AXIS_VALUES_WITHOUT_A_G_CODE_THAT_USES_THEM);
-            block.motion_to_be = settings.motion_mode;
-        }
     }
 
    /****************************************************************************/
@@ -5077,7 +4635,7 @@ rs274ngc::rs274ngc()
         if (block.f)
         {
    /* handle elsewhere */
-            if (settings.feed_mode == INVERSE_TIME);
+            if (settings.feed_mode == FeedMode::InverseTime);
             else
             {
                 convert_feed_rate(block, settings);
@@ -5297,13 +4855,13 @@ rs274ngc::rs274ngc()
     , double * CC_p                               /* pointer to end_c                       */
     )
     {
-        int mode;
+        DistanceMode mode;
         int middle;
         int comp;
 
         mode = settings.distance_mode;
         middle = (settings.program_x != UNKNOWN);
-        comp = (settings.cutter_comp_side != OFF);
+        comp = (settings.cutter_comp_side != Side::Off);
 
         if (block.g_modes[0] == G_53)            /* distance mode is absolute in this case */
         {
@@ -5318,7 +4876,7 @@ rs274ngc::rs274ngc()
             *BB_p = block.b ? (*block.b - (settings.origin_offset.b + settings.axis_offset.b)) : settings.current.b;
             *CC_p = block.c ? (*block.c - (settings.tool_length_offset + settings.origin_offset.c + settings.axis_offset.c)) : settings.current.c;
         }
-        else if (mode == MODE_ABSOLUTE)
+        else if (mode == DistanceMode::Absolute)
         {
             *px = block.x ? *block.x : (comp and middle) ? settings.program_x : settings.current.x;
             *py = block.y ? *block.y : (comp and middle) ? settings.program_y : settings.current.y;
@@ -5692,8 +5250,8 @@ rs274ngc::rs274ngc()
     {
         block = block_t{};
         read_items(block, line, settings.parameters);
-        enhance_block(block, settings);
-        check_items (block, settings);
+        block.enhance(settings);
+        block.check_items(settings);
     }
 
    /****************************************************************************/
@@ -7111,7 +6669,7 @@ rs274ngc::rs274ngc()
         error_if(line[*counter] != '#', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         read_integer_value(line, counter, &index, parameters);
-        error_if(((index < 1) or (index >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
+        error_if(((index < 1) or (static_cast<unsigned int>(index) >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
         *double_ptr = parameters[index];
     }
 
@@ -7194,7 +6752,7 @@ rs274ngc::rs274ngc()
         error_if(line[*counter] != '#', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         read_integer_value(line, counter, &index, parameters);
-        error_if(((index < 1) or (index >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
+        error_if(((index < 1) or (static_cast<unsigned int>(index) >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
         error_if(line[*counter] != '=', NCE_EQUAL_SIGN_MISSING_IN_PARAMETER_SETTING);
         *counter = (*counter + 1);
         read_real_value(line, counter, &value, parameters);
@@ -8266,150 +7824,6 @@ rs274ngc::rs274ngc()
     }
 
    /****************************************************************************/
-   /* write_g_codes
-
-   Returned Value: int (RS274NGC_OK)
-
-   Side effects:
-   The active_g_codes in the settings are updated.
-
-   Called by:
-   rs274ngc_execute
-   rs274ngc_init
-
-   The block may be NULL.
-
-   This writes active g_codes into the settings.active_g_codes array by
-   examining the interpreter settings. The array of actives is composed
-   of ints, so (to handle codes like 59.1) all g_codes are reported as
-   ints ten times the actual value. For example, 59.1 is reported as 591.
-
-   The correspondence between modal groups and array indexes is as follows
-   (no apparent logic to it).
-
-   The group 0 entry is taken from the block (if there is one), since its
-   codes are not modal.
-
-   group 0  - gez[2]  g4, g10, g28, g30, g53, g92 g92.1, g92.2, g92.3 - misc
-   group 1  - gez[1]  g0, g1, g2, g3, g38.2, g80, g81, g82, g83, g84, g85,
-   g86, g87, g88, g89 - motion
-   group 2  - gez[3]  g17, g18, g19 - plane selection
-   group 3  - gez[6]  g90, g91 - distance mode
-   group 4  - no such group
-   group 5  - gez[7]  g93, g94 - feed rate mode
-   group 6  - gez[5]  g20, g21 - units
-   group 7  - gez[4]  g40, g41, g42 - cutter radius compensation
-   group 8  - gez[9]  g43, g49 - tool length offse
-   group 9  - no such group
-   group 10 - gez[10] g98, g99 - return mode in canned cycles
-   group 11 - no such group
-   group 12 - gez[8]  g54, g55, g56, g57, g58, g59, g59.1, g59.2, g59.3
-   - coordinate system
-   group 13 - gez[11] g61, g61.1, g64 - control mode
-
-   */
-
-    void rs274ngc::write_g_codes(                     /* ARGUMENTS                                    */
-    const block_t* block,                          /* pointer to a block of RS274/NGC instructions */
-    setup_t& settings)                       /* pointer to machine settings                  */
-    {
-        int * gez;
-
-        gez = settings.active_g_codes;
-        gez[0] = 0 /*unused*/;
-        gez[1] = settings.motion_mode;
-        gez[2] = ((block == nullptr) ? -1 : block->g_modes[0]);
-        gez[3] =
-            (settings.plane == Plane::XY) ? G_17 : (settings.plane == Plane::XZ) ? G_18 : G_19;
-        gez[4] =
-            (settings.cutter_comp_side == RIGHT) ? G_42 : (settings.cutter_comp_side == LEFT) ? G_41 : G_40;
-        gez[5] =
-            (settings.length_units == Units::Imperial) ? G_20 : G_21;
-        gez[6] =
-            (settings.distance_mode == MODE_ABSOLUTE) ? G_90 : G_91;
-        gez[7] =
-            (settings.feed_mode == INVERSE_TIME) ? G_93 : G_94;
-        gez[8] =
-            (settings.origin_index < 7) ? (530 + (10 * settings.origin_index)) : (584 + settings.origin_index);
-        gez[9] =
-            (settings.tool_length_offset == 0.0) ? G_49 : G_43;
-        gez[10] =
-            (settings.retract_mode == OLD_Z) ? G_98 : G_99;
-        gez[11] =
-            (settings.control_mode == Motion::Continious) ? G_64 : (settings.control_mode == Motion::Exact_Path) ? G_61 : G_61_1;
-    }
-
-   /****************************************************************************/
-
-   /* write_m_codes
-
-   Returned Value: int (RS274NGC_OK)
-
-   Side effects:
-   The settings.active_m_codes are updated.
-
-   Called by:
-   rs274ngc_execute
-   rs274ngc_init
-
-   This is testing only the feed override to see if overrides is on.
-   Might add check of speed override.
-
-   */
-
-    void rs274ngc::write_m_codes(                     /* ARGUMENTS                                    */
-    const block_t* block,                          /* pointer to a block of RS274/NGC instructions */
-    setup_t& settings)                       /* pointer to machine settings                  */
-    {
-        int * emz;
-
-        emz = settings.active_m_codes;
-        emz[0] = 0/*unused*/;
-        emz[1] =
-            (block == nullptr) ? -1 : block->m_modes[4];/* 1 stopping    */
-        emz[2] =
-   /* 2 spindle     */
-            (settings.spindle_turning == Direction::Stop) ? 5 :
-        (settings.spindle_turning == Direction::Clockwise) ? 3 : 4;
-        emz[3] =                             /* 3 tool change */
-            (block == nullptr) ? -1 : block->m_modes[6];
-        emz[4] =                             /* 4 mist        */
-            (settings.mist == ON) ? 7 :
-        (settings.flood == ON) ? -1 : 9;
-        emz[5] =                             /* 5 flood       */
-            (settings.flood == ON) ? 8 : -1;
-        emz[6] =                             /* 6 overrides   */
-            (settings.feed_override == ON) ? 48 : 49;
-    }
-
-   /****************************************************************************/
-
-   /* write_settings
-
-   Returned Value: int (RS274NGC_OK)
-
-   Side effects:
-   The settings.active_settings array of doubles is updated with the
-   sequence number, feed, and speed settings.
-
-   Called by:
-   rs274ngc_execute
-   rs274ngc_init
-
-   */
-
-    void rs274ngc::write_settings(                    /* ARGUMENTS                   */
-    setup_t& settings)                       /* pointer to machine settings */
-    {
-        double * vals;
-
-        vals = settings.active_settings;
-        vals[0] = 0/*unused*/;
-        vals[1] = settings.feed_rate;       /* 1 feed rate       */
-        vals[2] = settings.speed;           /* 2 spindle speed   */
-    }
-
-   /****************************************************************************/
    /****************************************************************************/
 
    /*
@@ -8453,9 +7867,9 @@ rs274ngc::rs274ngc()
 		        _setup.parameters[_setup.block1.parameter_numbers[n]] = _setup.block1.parameter_values[n];
 		    }
             status = execute_block (_setup.block1, _setup);
-            write_g_codes(&_setup.block1, _setup);
-            write_m_codes(&_setup.block1, _setup);
-            write_settings(_setup);
+            _setup.write_g_codes(&_setup.block1);
+            _setup.write_m_codes(&_setup.block1);
+            _setup.write_settings();
             if ((status != RS274NGC_OK) and
                 (status != RS274NGC_EXECUTE_FINISH) and
                 (status != RS274NGC_EXIT))
@@ -8572,10 +7986,10 @@ rs274ngc::rs274ngc()
    //_setup.current.a set in rs274ngc_synch
    //_setup.current.b set in rs274ngc_synch
    //_setup.current.c set in rs274ngc_synch
-        _setup.cutter_comp_side = OFF;
+        _setup.cutter_comp_side = Side::Off;
    //_setup.cycle values do not need initialization
-        _setup.distance_mode = MODE_ABSOLUTE;
-        _setup.feed_mode = UNITS_PER_MINUTE;
+        _setup.distance_mode = DistanceMode::Absolute;
+        _setup.feed_mode = FeedMode::UnitsPerMinute;
         _setup.feed_override = ON;
    //_setup.feed_rate set in rs274ngc_synch
    //_setup.flood set in rs274ngc_synch
@@ -8608,9 +8022,9 @@ rs274ngc::rs274ngc()
    // Synch rest of settings to external world
         synch();
         
-        write_g_codes(nullptr, _setup);
-        write_m_codes(nullptr, _setup);
-        write_settings(_setup);
+        _setup.write_g_codes(nullptr);
+        _setup.write_m_codes(nullptr);
+        _setup.write_settings();
 
     }
 
@@ -8794,17 +8208,16 @@ rs274ngc::rs274ngc()
         char line[256];
         int variable;
         double value;
-        int required;                             // number of next required parameter
+        unsigned int required;                             // number of next required parameter
         int index;                                // index into _required_parameters
         double * pars;                            // short name for _setup.parameters
-        int k;
 
    // open original for reading
         infile = fopen(filename, "r");
         error_if(infile == nullptr, NCE_UNABLE_TO_OPEN_FILE);
 
         pars = _setup.parameters;
-        k = 0;
+        unsigned int k = 0;
         index = 0;
         required = _required_parameters[index++];
         while (feof(infile) == 0)
@@ -8817,12 +8230,12 @@ rs274ngc::rs274ngc()
    // try for a variable-value match in the file
             if (sscanf(line, "%d %lf", &variable, &value) == 2)
             {
-                error_if(((variable <= 0) or (variable >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
+                error_if(((variable <= 0) or (static_cast<unsigned int>(variable) >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
                 for (; k < RS274NGC_MAX_PARAMETERS; k++)
                 {
-                    if (k > variable)
+                    if (k > static_cast<unsigned int>(variable))
                         throw error(NCE_PARAMETER_FILE_OUT_OF_ORDER);
-                    else if (k == variable)
+                    else if (k == static_cast<unsigned int>(variable))
                     {
                         pars[k] = value;
                         if (k == required)
@@ -8891,9 +8304,8 @@ rs274ngc::rs274ngc()
         char line[256];
         int variable;
         double value;
-        int required;                             // number of next required parameter
+        unsigned int required;                             // number of next required parameter
         int index;                                // index into _required_parameters
-        int k;
 
    // rename as .bak
         strcpy(line, filename);
@@ -8908,7 +8320,7 @@ rs274ngc::rs274ngc()
         outfile = fopen(filename, "w");
         error_if(outfile == nullptr, NCE_CANNOT_OPEN_VARIABLE_FILE);
 
-        k = 0;
+        unsigned int k = 0;
         index = 0;
         required = _required_parameters[index++];
         while (feof(infile) == 0)
@@ -8920,12 +8332,12 @@ rs274ngc::rs274ngc()
    // try for a variable-value match
             if (sscanf(line, "%d %lf", &variable, &value) == 2)
             {
-                error_if(((variable <= 0) or (variable >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
+                error_if(((variable <= 0) or (static_cast<unsigned int>(variable) >= RS274NGC_MAX_PARAMETERS)), NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
                 for (; k < RS274NGC_MAX_PARAMETERS; k++)
                 {
-                    if (k > variable)
+                    if (k > static_cast<unsigned int>(variable))
                         throw error(NCE_PARAMETER_FILE_OUT_OF_ORDER);
-                    else if (k == variable)
+                    else if (k == static_cast<unsigned int>(variable))
                     {
                         sprintf(line, "%d\t%f\n", k, parameters[k]);
                         fputs(line, outfile);
@@ -8981,9 +8393,9 @@ rs274ngc::rs274ngc()
         _setup.current = current_position();
         _setup.current_slot = tool_slot();
         _setup.feed_rate = feed_rate();
-        _setup.flood = coolant_flood() ? ON : OFF;
+        _setup.coolant.flood = coolant_flood() ? ON : OFF;
+        _setup.coolant.mist = coolant_mist() ? ON : OFF;
         _setup.length_units = units();
-        _setup.mist = coolant_mist() ? ON : OFF;
         _setup.plane = plane();
         _setup.selected_tool_slot = tool_slot();
         _setup.speed = spindle_speed();
@@ -9021,9 +8433,7 @@ rs274ngc::rs274ngc()
     void rs274ngc::active_g_codes(                 /* ARGUMENTS                   */
     int * codes)                                  /* array of codes to copy into */
     {
-        int n;
-
-        for (n = 0; n < RS274NGC_ACTIVE_G_CODES; n++)
+        for (unsigned n = 0; n < RS274NGC_ACTIVE_G_CODES; n++)
         {
             codes[n] = _setup.active_g_codes[n];
         }
@@ -9046,9 +8456,7 @@ rs274ngc::rs274ngc()
     void rs274ngc::active_m_codes(                 /* ARGUMENTS                   */
     int * codes)                                  /* array of codes to copy into */
     {
-        int n;
-
-        for (n = 0; n < RS274NGC_ACTIVE_M_CODES; n++)
+        for (unsigned int n = 0; n < RS274NGC_ACTIVE_M_CODES; n++)
         {
             codes[n] = _setup.active_m_codes[n];
         }
@@ -9071,46 +8479,10 @@ rs274ngc::rs274ngc()
     void rs274ngc::active_settings(                /* ARGUMENTS                      */
     double * settings)                            /* array of settings to copy into */
     {
-        int n;
-
-        for (n = 0; n < RS274NGC_ACTIVE_SETTINGS; n++)
+        for (unsigned int n = 0; n < RS274NGC_ACTIVE_SETTINGS; n++)
         {
             settings[n] = _setup.active_settings[n];
         }
-    }
-
-   /***********************************************************************/
-
-   /* rs274ngc_error_text
-
-   Returned Value: none
-
-   Side Effects: see below
-
-   Called By: external programs
-
-   This copies the error string whose index in the _rs274ngc_errors array
-   is error_code into the error_text array -- unless the error_code is
-   an out-of-bounds index or the length of the error string is not less
-   than max_size, in which case an empty string is put into the
-   error_text. The length of the error_text array should be at least
-   max_size.
-
-   */
-
-    void rs274ngc::error_text(                     /* ARGUMENTS                            */
-    int error_code,                               /* code number of error                 */
-    char * error_text,                            /* char array to copy error text into   */
-    size_t max_size)                                 /* maximum number of characters to copy */
-    {
-        if (((error_code >= RS274NGC_MIN_ERROR) and
-            (error_code <= RS274NGC_MAX_ERROR)) and
-            (strlen(_rs274ngc_errors[error_code]) < max_size))
-        {
-            strcpy(error_text, _rs274ngc_errors[error_code]);
-        }
-        else
-            error_text[0] = 0;
     }
 
    /***********************************************************************/

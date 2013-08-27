@@ -35,276 +35,9 @@ Plan to reuse gcode parsing and interpreter individually.
 
 #ifndef RS274NGC_HH
 #define RS274NGC_HH
-#include "block.h"
-
-   /*
-     rs274ngc.hh
-
-   Declarations for the rs274abc translator.
-
-   */
-
-   /**********************/
-   /* INCLUDE DIRECTIVES */
-   /**********************/
-
+#include "types.h"
+#include "setup.h"
 #include <cstddef>
-#include <exception>
-
-   /**********************/
-   /*   COMPILER MACROS  */
-   /**********************/
-
-#define RS274NGC_TEXT_SIZE 256
-
-   // array sizes
-#define RS274NGC_ACTIVE_G_CODES 12
-#define RS274NGC_ACTIVE_M_CODES 7
-#define RS274NGC_ACTIVE_SETTINGS 3
-
-   // number of parameters in parameter table
-#define RS274NGC_MAX_PARAMETERS 5400
-
-enum class Plane
-{
-	XY,
-	YZ,
-	XZ
-};
-
-enum class Units
-{
-	Imperial,
-	Metric
-};
-
-enum class Motion
-{
-	Exact_Stop,
-	Exact_Path,
-	Continious
-};
-
-enum class SpeedFeedMode
-{
-	Synched,
-	Independant
-};
-
-enum class Direction
-{
-	Stop,
-	Clockwise,
-	CounterClockwise
-};
-
-enum class FeedReference
-{
-	Workpiece,
-	XYZ
-};
-
-enum class Side
-{
-	Right,
-	Left,
-	Off
-};
-
-enum class Axis
-{
-	X, Y, Z,
-	A, B, C
-};
-
-#define CANON_TOOL_MAX 128                        // max size of carousel handled
-#define CANON_TOOL_ENTRY_LEN 256                  // how long each file line can be
-
-struct Tool
-{
-    int id;
-    double length;
-    double diameter;
-    
-    Tool()
-     : id(), length(), diameter()
-    {
-    }
-};
-
-struct Position
-{
-	double x;
-	double y;
-	double z;
-	double a;
-	double b;
-	double c;
-	
-	Position()
-	 : x(), y(), z(), a(), b(), c()
-	{}
-	Position(double x, double y, double z, double a, double b, double c)
-	 : x(x), y(y), z(z), a(a), b(b), c(c)
-	{}
-	Position(double x, double y, double z)
-	 : x(x), y(y), z(z), a(), b(), c()
-	{}
-	
-	Position operator+(const Position& p) const
-	{
-		return {x+p.x, y+p.y, z+p.z, a+p.a, b+p.b, c+p.c};
-	}
-	Position operator-(const Position& p) const
-	{
-		return {x-p.x, y-p.y, z-p.z, a-p.a, b-p.b, c-p.c};
-	}
-};
-
-   /**********************/
-   /*      TYPEDEFS      */
-   /**********************/
-
-   /* distance_mode */
-enum DISTANCE_MODE {MODE_ABSOLUTE, MODE_INCREMENTAL};
-
-   /* retract_mode for cycles */
-enum RETRACT_MODE {R_PLANE, OLD_Z};
-
-   // on-off switch settings
-enum ON_OFF : bool
-{
-	OFF = false,
-	ON = true
-};
-
-// unary operations
-enum class UnaryOperation
-{
-	ABS = 1,
-	ACOS = 2,
-	ASIN = 3,
-	ATAN = 4,
-	COS = 5,
-	EXP = 6,
-	FIX = 7,
-	FUP = 8,
-	LN = 9,
-	ROUND = 10,
-	SIN = 11,
-	SQRT = 12,
-	TAN = 13
-};
-
-// binary operations
-enum class BinaryOperation
-{
-	DIVIDED_BY = 1,
-	MODULO = 2,
-	POWER = 3,
-	TIMES = 4,
-	AND2 = 5,
-	EXCLUSIVE_OR = 6,
-	MINUS = 7,
-	NON_EXCLUSIVE_OR = 8,
-	PLUS = 9,
-	RIGHT_BRACKET = 10
-};
-
-   /*
-
-   The current_x, current_y, and current_z are the location of the tool
-   in the current coordinate system. current_x and current_y differ from
-   program_x and program_y when cutter radius compensation is on.
-   current_z is the position of the tool tip in program coordinates when
-   tool length compensation is using the actual tool length; it is the
-   position of the spindle when tool length is zero.
-
-   In a setup, the axis_offset values are set by g92 and the origin_offset
-   values are set by g54 - g59.3. The net origin offset uses both values
-   and is not represented here
-
-   */
-
-struct setup_t
-{
-	setup_t()
-	{
-		blocktext[0] = 0;
-		line_length = 0;
-		linetext[0] = 0;
-	}
-
-    Position axis_offset; // g92offset
-    Position current;
-    Position origin_offset;
-    
-    int active_g_codes [RS274NGC_ACTIVE_G_CODES];                // array of active G codes
-    int active_m_codes [RS274NGC_ACTIVE_M_CODES];                // array of active M codes
-    double active_settings [RS274NGC_ACTIVE_SETTINGS];               // array of feed, speed, etc.
-    block_t block1;                                 // parsed next block
-    char blocktext[RS274NGC_TEXT_SIZE];           // linetext downcased, white space gone
-    Motion control_mode;               // exact path or cutting mode
-    int current_slot;                             // carousel slot number of current tool
-    double cutter_comp_radius;                    // current cutter compensation radius
-    int cutter_comp_side;                         // current cutter compensation side
-    struct
-    {
-		double cc;                              // cc-value (normal) for canned cycles
-		double i;                               // i-value for canned cycles
-		double j;                               // j-value for canned cycles
-		double k;                               // k-value for canned cycles
-		int l;                                  // l-value for canned cycles
-		double p;                               // p-value (dwell) for canned cycles
-		double q;                               // q-value for canned cycles
-		double r;                               // r-value for canned cycles
-    } cycle;
-    DISTANCE_MODE distance_mode;                  // absolute or incremental
-    int feed_mode;                                // G_93 (inverse time) or G_94 units/min
-    ON_OFF feed_override;                         // whether feed override is enabled
-    double feed_rate;                             // feed rate in current units/min
-    ON_OFF flood;                                 // whether flood coolant is on
-    int length_offset_index;                      // for use with tool length offsets
-    Units length_units;                     // millimeters or inches
-    unsigned int line_length;                              // length of line last read
-    char linetext[RS274NGC_TEXT_SIZE];            // text of most recent line read
-    ON_OFF mist;                                  // whether mist coolant is on
-    int motion_mode;                              // active G-code for motion
-    int origin_index;                             // active origin (1=G54 to 9=G59.3)
-    double parameters [RS274NGC_MAX_PARAMETERS];                // system parameters
-    Plane plane;                            // active plane, XY-, YZ-, or XZ-plane
-    ON_OFF probe_flag;                            // flag indicating probing done
-    double program_x;                             // program x, used when cutter comp on
-    double program_y;                             // program y, used when cutter comp on
-    RETRACT_MODE retract_mode;                    // for cycles, old_z or r_plane
-    int selected_tool_slot;                       // tool slot selected but not active
-    double speed;                                 // current spindle speed in rpm
-    SpeedFeedMode speed_feed_mode;        // independent or synched
-    ON_OFF speed_override;                        // whether speed override is enabled
-    Direction spindle_turning;              // direction spindle is turning
-    double tool_length_offset;                    // current tool length offset
-    unsigned int tool_max;                                 // highest number tool slot in carousel
-    Tool tool_table [CANON_TOOL_MAX + 1];                     // index is slot number
-    int tool_table_index;                         // tool index used with cutter comp
-    double traverse_rate;                         // rate for traverse motions
-};
-
-   /*************************************************************************/
-   /*
-
-   Interface functions to call to tell the interpreter what to do.
-   Return values indicate status of execution.
-   These functions may change the state of the interpreter.
-
-   */
-
-struct error : std::exception
-{
-	int code;
-	error(int code);
-	virtual const char* what() const noexcept;
-	virtual ~error() noexcept;
-};
 
 class rs274ngc
 {
@@ -312,15 +45,13 @@ public:
 private:
     setup_t _setup;
 
-	static void arc_data_comp_ijk(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
-	static void arc_data_comp_r(int move, int side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
+	static void arc_data_comp_ijk(int move, Side side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
+	static void arc_data_comp_r(int move, Side side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
 	static void arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
 	static void arc_data_r(int move, double current_x, double current_y, double end_x, double end_y, double radius, double * center_x, double * center_y, int * turn);
-	static void check_g_codes(block_t& block, setup_t& settings);
-	static void check_items(block_t& block, setup_t& settings);
-	static void check_m_codes(block_t& block);
-	static void check_other_codes(block_t& block);
+
 	static void close_and_downcase(char * line);
+	
 	void convert_arc(int move, block_t& block, setup_t& settings);
 	void convert_arc2(int move, block_t& block, setup_t& settings, double * current1, double * current2, double * current3, double end1, double end2, double end3, double AA_end, double BB_end, double CC_end, double offset1, double offset2);
 	void convert_arc_comp1(int move, block_t& block, setup_t& settings, double end_x, double end_y, double end_z, double AA_end, double BB_end, double CC_end);
@@ -331,7 +62,7 @@ private:
 	void convert_coordinate_system(int g_code, setup_t& settings);
 	void convert_cutter_compensation(int g_code, block_t& block, setup_t& settings);
 	void convert_cutter_compensation_off(setup_t& settings);
-	void convert_cutter_compensation_on(int side, block_t& block, setup_t& settings);
+	void convert_cutter_compensation_on(Side side, block_t& block, setup_t& settings);
 	void convert_cycle(int motion, block_t& block, setup_t& settings);
 	void convert_cycle_g81(Plane plane, double x, double y, double clear_z, double bottom_z);
 	void convert_cycle_g82(Plane plane, double x, double y, double clear_z, double bottom_z, double dwell);
@@ -367,9 +98,9 @@ private:
 	void convert_tool_change(setup_t& settings);
 	void convert_tool_length_offset(int g_code, block_t& block, setup_t& settings);
 	void convert_tool_select(block_t& block, setup_t& settings);
+	
 	void cycle_feed(Plane plane, double end1, double end2, double end3);
 	void cycle_traverse(Plane plane, double end1, double end2, double end3);
-	static void enhance_block(block_t& block, setup_t& settings);
 	static void execute_binary(double * left, BinaryOperation operation, double * right);
 	int execute_block(block_t& block, setup_t& settings);
 	static void execute_unary(double * double_ptr, UnaryOperation operation);
@@ -421,9 +152,6 @@ private:
 	void read_y(const char * line, int * counter, block_t& block, double * parameters) const;
 	void read_z(const char * line, int * counter, block_t& block, double * parameters) const;
 	void set_probe_data(setup_t& settings);
-	static void write_g_codes(const block_t* block, setup_t& settings);
-	static void write_m_codes(const block_t* block, setup_t& settings);
-	static void write_settings(setup_t& settings);
 
 private:
 	virtual void interp_init() =0;
@@ -514,62 +242,36 @@ public:
 
 	rs274ngc();
 
-	   // execute a line of NC code
+	// execute a line of NC code
 	int execute();
-
-	   // stop running
+	// stop running
 	void exit();
-
-	   // get ready to run
+	// get ready to run
 	void init();
-
-	   // load a tool table
+	// load a tool table
 	void load_tool_table();
-
-	   // read the command
+	// read the command
 	int read(const char * command);
-
-	   // reset yourself
+	// reset yourself
 	void reset();
-
-	   // restore interpreter variables from a file
+	// restore interpreter variables from a file
 	void restore_parameters(const char * filename);
-
-	   // save interpreter variables to file
+	// save interpreter variables to file
 	void save_parameters(const char * filename, const double parameters[]);
-
-	   // synchronize your internal model with the external world
+	// synchronize your internal model with the external world
 	void synch();
 
-	   /*************************************************************************/
-	   /* 
-
-	   Interface functions to call to get information from the interpreter.
-	   If a function has a return value, the return value contains the information.
-	   If a function returns nothing, information is copied into one of the
-	   arguments to the function. These functions do not change the state of
-	   the interpreter.
-
-	   */
-
-	   // copy active G codes into array [0]..[11]
+	// copy active G codes into array [0]..[11]
 	void active_g_codes(int * codes);
-
-	   // copy active M codes into array [0]..[6]
+	// copy active M codes into array [0]..[6]
 	void active_m_codes(int * codes);
-
-	   // copy active F, S settings into array [0]..[2]
+	// copy active F, S settings into array [0]..[2]
 	void active_settings(double * settings);
 
-	   // copy the text of the error message whose number is error_code into the
-	   // error_text array, but stop at max_size if the text is longer.
-	void error_text(int error_code, char * error_text, size_t max_size);
-
-	   // return the length of the most recently read line
+	// return the length of the most recently read line
 	unsigned int line_length();
-
-	   // copy the text of the most recently read line into the line_text array,
-	   // but stop at max_size if the text is longer
+	// copy the text of the most recently read line into the line_text array,
+	// but stop at max_size if the text is longer
 	void line_text(char * line_text, unsigned int max_size);
 
 };

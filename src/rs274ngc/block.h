@@ -27,9 +27,18 @@
 #include <cstddef>
 #include "maybe.h"
 
+struct setup_t;
+
 struct block_t
 {
 	block_t();
+	
+	void enhance(const setup_t& settings);
+	void check_g_codes(const setup_t& settings) const;
+	void check_items(const setup_t& settings) const;
+	void check_m_codes() const;
+	void check_other_codes() const;
+	
     maybe<double>   x;
     maybe<double>   y;
     maybe<double>   z;
