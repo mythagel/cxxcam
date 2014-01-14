@@ -27,16 +27,15 @@
 #include "codes.h"
 #include "error.h"
 #include "rs274ngc_return.hh"
+#include <algorithm>
 
 block_t::block_t()
 {
 	comment[0] = 0;
-	for (int n = 0; n < 14; n++)
-		g_modes[n] = -1;
+    std::fill(std::begin(g_modes), std::end(g_modes), -1);
 	motion_to_be = -1;
 	m_count = 0;
-	for (int n = 0; n < 10; n++)
-		m_modes[n] = -1;
+    std::fill(std::begin(m_modes), std::end(m_modes), -1);
 	parameter_occurrence = 0;
 }
 
