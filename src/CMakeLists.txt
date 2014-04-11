@@ -30,4 +30,4 @@ Math.cpp
 Simulation.cpp 
 Bbox.cpp
 )
-TARGET_LINK_LIBRARIES(cxxcam geom ${CMAKE_THREAD_LIBS_INIT})
+TARGET_LINK_LIBRARIES(cxxcam geom ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
