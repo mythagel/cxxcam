@@ -9,21 +9,6 @@ MACRO(CXXCAM_TEST testname)
 	ADD_DEPENDENCIES(check ${testname})
 ENDMACRO()
 
-find_package(Boost COMPONENTS unit_test_framework)
-IF(${Boost_UNIT_TEST_FRAMEWORK_FOUND})
-	MACRO(BOOST_TEST testname)
-		ADD_EXECUTABLE(${testname} EXCLUDE_FROM_ALL "${testname}.cpp")
-		TARGET_LINK_LIBRARIES(${testname} cxxcam ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-		SET_TARGET_PROPERTIES(${testname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-		ADD_TEST(${testname} "${MAKE_CURRENT_BINARY_DIR}/${testname}")
-		ADD_DEPENDENCIES(check ${testname})
-	ENDMACRO()
-ELSE()
-	MESSAGE(STATUS "Boost UTF missing; Skipping boost tests.")
-	MACRO(BOOST_TEST testname)
-	ENDMACRO()
-ENDIF()
-
 FOREACH(test 
 mill_basic 
 lathe_basic 
