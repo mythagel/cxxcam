@@ -38,16 +38,21 @@ struct point_3
 	double y;
 	double z;
 };
+struct bbox_3
+{
+    point_3 min;
+    point_3 max;
+};
 }
 
-/*
- * TODO implement query operations for polyhedron types.
- * 
+/* implement query operations for polyhedron types.
  */
 
 bool intersects(const polyhedron_t& p0, const polyhedron_t& p1);
 
 double distance(const polyhedron_t& poly, const query::point_3& p);
+
+query::bbox_3 bounding_box(const polyhedron_t& poly);
 
 }
 

@@ -21,6 +21,10 @@
  *  Created on: 2013-07-26
  *      Author: nicholas
  */
+Linking CXX static library ../lib/libcxxcam.a
+[ 96%] Built target cxxcam
+[100%] Built target postp
+nicholas@mythdev:~/dev/build/cxxcam$ 
 
 #include "query.h"
 #include "polyhedron.h"
@@ -73,6 +77,13 @@ double distance(const polyhedron_t& poly, const query::point_3& p)
     auto dist2 = aabb_p0.squared_distance(query);
 	
 	return sqrt(to_double(dist2));
+}
+
+query::bbox_3 bounding_box(const polyhedron_t& poly)
+{
+    auto p0 = to_Polyhedron_3(poly);
+    auto b = bbox(p0);
+    return {{b.xmin(), b.ymin(), b.zmin()}, {b.xmax(), b.ymax(), b.zmax()}};
 }
 
 }
