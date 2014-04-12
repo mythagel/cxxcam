@@ -75,5 +75,12 @@ double distance(const polyhedron_t& poly, const query::point_3& p)
 	return sqrt(to_double(dist2));
 }
 
+query::bbox_3 bounding_box(const polyhedron_t& poly)
+{
+    auto p0 = to_Polyhedron_3(poly);
+    auto b = bbox(p0);
+    return {{b.xmin(), b.ymin(), b.zmin()}, {b.xmax(), b.ymax(), b.zmax()}};
+}
+
 }
 
