@@ -1423,6 +1423,10 @@ void Machine::Arc(Direction dir, const std::vector<Axis>& end_pos, const std::ve
 		throw error("Feedrate is 0.0");
 	if(m_State.m_CurrentTool == 0)
 		throw error("No tool loaded.");
+	if(end_pos.empty() && center.empty())
+		throw error("Must specify end position or center.");
+
+    // TODO check for zero radius arc.
 	
 	Line line;
 	switch(dir)
