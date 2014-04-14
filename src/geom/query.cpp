@@ -29,10 +29,10 @@
 #include <CGAL/Bbox_3.h>
 #include <CGAL/AABB_tree.h>
 #include <CGAL/AABB_traits.h>
-#include <CGAL/AABB_polyhedron_triangle_primitive.h>
+#include <CGAL/AABB_face_graph_triangle_primitive.h>
 #include <cmath>
 
-typedef CGAL::AABB_polyhedron_triangle_primitive<Nef_Kernel, Polyhedron_3> AABB_polyhedron_triangle_primitive;
+typedef CGAL::AABB_face_graph_triangle_primitive<Polyhedron_3> AABB_polyhedron_triangle_primitive;
 typedef CGAL::AABB_traits<Nef_Kernel, AABB_polyhedron_triangle_primitive> AABB_traits;
 typedef CGAL::AABB_tree<AABB_traits> AABB_tree;
 
@@ -66,7 +66,7 @@ double distance(const polyhedron_t& poly, const query::point_3& p)
 	
 	// TODO constructing the AABB tree is expensive.
 	// design an interface where this can be cached between calls.
-	AABB_tree aabb_p0 { P.facets_begin(), P.facets_end() };
+	AABB_tree aabb_p0 { P.facets_begin(), P.facets_end(), P};
 	aabb_p0.accelerate_distance_queries();
 	
 	Point_3 query(p.x, p.y, p.z);
