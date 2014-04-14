@@ -57,6 +57,8 @@
     - Geometry
        - Validate primitive geometry
        - Correcting narrowing warnings.
+    - Wrapper for CGAL/AABB_tree
+       - Needed for motion planning (ray intersection tests)
  * Represent workholding, clamps, etc. (for intersection tests)
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
