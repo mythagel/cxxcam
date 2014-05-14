@@ -17,6 +17,9 @@
  * Simulation
     - Ensure feed rate passed to simulation is normalised.
     - Implement additional simulation steps.
+       - Calculate machine force vectors
+       - Calculate cutter engagements
+       - Calculate machine torque required
  * Path expansion
     - Use path::expand_rotary in Machine when pure rotary motion is detected.
     - UVW mapped into cartesian space?
