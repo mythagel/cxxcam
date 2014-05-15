@@ -20,6 +20,9 @@
        - Calculate machine force vectors
        - Calculate cutter engagements
        - Calculate machine torque required
+    - Modify Machine interface to return simulation results
+       - Current thought is to wrap simulation result API in a different machining result struct.
+       - For Linear & Arc (Maybe rapid if useful information is calculated).
  * Path expansion
     - Use path::expand_rotary in Machine when pure rotary motion is detected.
     - UVW mapped into cartesian space?
