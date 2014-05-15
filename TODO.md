@@ -65,6 +65,8 @@
        - Correcting narrowing warnings.
     - Wrapper for CGAL/AABB_tree
        - Needed for motion planning (ray intersection tests)
+    - Wrapper for CGAL/Mesh objects
+       - Tetrahedral mesh desired to have better js api
  * Represent workholding, clamps, etc. (for intersection tests)
  * Restore position
     - Ensure move is safe (no intersection with tool or clamps)
