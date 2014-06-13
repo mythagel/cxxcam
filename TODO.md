@@ -92,5 +92,5 @@
  * tool wear can be approximated as a cost for each mm linearly travelled through material for each tooth.
  * i.e. model troicoidal path that each tooth takes, measure length of curve from first contact with material to last (possibly use a gradient function to map cost - higher at contact and lower at exit (climb; opposite for conventional) then sum those costs as the tool wear cost.
  * Thought is that this will model tool wear reasonably well - tool wears at edge - repeated shallow cuts will cost more than fewer deeper cuts (relative to MRR).
- * 
+ * It should be possible to measure chatter with a contact microphone.
 
