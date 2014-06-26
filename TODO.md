@@ -24,7 +24,8 @@
        - Current thought is to wrap simulation result API in a different machining result struct.
        - For Linear & Arc (Maybe rapid if useful information is calculated).
        - Split simulation data and methods between public and private headers
-       - simulation.h and simulation_int.h
+       - Simulation.h and Simulation_int.h
+       - Requires split / move of Path.h and Path_int.h
  * Path expansion
     - Use path::expand_rotary in Machine when pure rotary motion is detected.
     - UVW mapped into cartesian space?
