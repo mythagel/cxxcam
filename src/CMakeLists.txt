@@ -5,5 +5,5 @@ ENDIF()
 ADD_SUBDIRECTORY(rs274ngc)
 
 INCLUDE_DIRECTORIES(rs274ngc)
-ADD_EXECUTABLE(driver driver.cc)
-TARGET_LINK_LIBRARIES(driver rs274ngc)
+ADD_EXECUTABLE(postp driver.cc log_interpreter.cc)
+TARGET_LINK_LIBRARIES(postp rs274ngc)

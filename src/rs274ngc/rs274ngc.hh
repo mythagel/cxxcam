@@ -42,7 +42,6 @@ Plan to reuse gcode parsing and interpreter individually.
 
 class rs274ngc
 {
-public:
 private:
     setup_t _setup;
 
@@ -231,6 +230,7 @@ private:
 public:
 
 	rs274ngc();
+	virtual ~rs274ngc() = default;
 
 	// execute a line of NC code
 	int execute();
