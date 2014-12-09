@@ -90,7 +90,7 @@ void setup_t::write_g_codes(const block_t* block)
     gez[8] = (origin_index < 7) ? (530 + (10 * origin_index)) : (584 + origin_index);
     gez[9] = (tool_length_offset == 0.0) ? G_49 : G_43;
     gez[10] = (retract_mode == OLD_Z) ? G_98 : G_99;
-    gez[11] = (control_mode == Motion::Continious) ? G_64 : (control_mode == Motion::Exact_Path) ? G_61 : G_61_1;
+    gez[11] = (control_mode == Motion::Continuous) ? G_64 : (control_mode == Motion::Exact_Path) ? G_61 : G_61_1;
 }
 
 /****************************************************************************/

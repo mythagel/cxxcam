@@ -149,10 +149,10 @@ void log_interpreter::motion_mode(Motion mode)
         PRINT("SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH)\n");
         _motion_mode = Motion::Exact_Path;
     }
-    else if (mode == Motion::Continious)
+    else if (mode == Motion::Continuous)
     {
         PRINT("SET_MOTION_CONTROL_MODE(CANON_CONTINUOUS)\n");
-        _motion_mode = Motion::Continious;
+        _motion_mode = Motion::Continuous;
     }
     else
         PRINT("SET_MOTION_CONTROL_MODE(UNKNOWN)\n");

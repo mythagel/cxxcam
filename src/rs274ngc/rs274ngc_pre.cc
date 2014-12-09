@@ -1073,8 +1073,8 @@ rs274ngc::rs274ngc()
         }
         else if (g_code == G_64)
         {
-            motion_mode(Motion::Continious);
-            settings.control_mode = Motion::Continious;
+            motion_mode(Motion::Continuous);
+            settings.control_mode = Motion::Continuous;
         }
         else
             throw error(NCE_BUG_CODE_NOT_G61_G61_1_OR_G64);

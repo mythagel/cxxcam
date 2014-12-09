@@ -65,7 +65,7 @@ enum class Motion
 {
 	Exact_Stop,
 	Exact_Path,
-	Continious
+	Continuous
 };
 
 enum class SpeedFeedMode

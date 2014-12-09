@@ -38,7 +38,7 @@ private:
 	Units       _length_unit_type = Units::Metric;
 	int               _line_number = 1;
 	int               _mist = 0;
-	Motion _motion_mode = Motion::Continious;
+	Motion _motion_mode = Motion::Continuous;
 
 	char                     _parameter_file_name[100];
 	Position probe_pos;
