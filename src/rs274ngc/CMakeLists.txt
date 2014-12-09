@@ -6,7 +6,3 @@ ENDIF()
 #INCLUDE_DIRECTORIES( )
 ADD_LIBRARY(rs274ngc STATIC rs274ngc_errors.cc rs274ngc_pre.cc block.cpp types.cpp setup.cpp error.cpp ops.cpp arc.cpp)
 TARGET_LINK_LIBRARIES(rs274ngc m)
-
-ADD_EXECUTABLE(driver driver2.cc)
-TARGET_LINK_LIBRARIES(driver rs274ngc)
-
