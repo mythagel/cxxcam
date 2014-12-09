@@ -40,7 +40,7 @@ struct Position_Cartesian
 
 struct Position : Position_Cartesian
 {
-	static const Position zero;	
+	static const Position zero;
 	
 	units::plane_angle A;
 	units::plane_angle B;
