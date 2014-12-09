@@ -7397,16 +7397,10 @@ rs274ngc::rs274ngc()
         unsigned int n;
 
         error_if(_setup.tool_max > CANON_TOOL_MAX, NCE_TOOL_MAX_TOO_LARGE);
-        for (n = 0; n <= _setup.tool_max; n++)
-        {
+        for (n = 0; n <= _setup.tool_max; ++n)
             _setup.tool_table[n] = tool(n);
-        }
-        for(; n <= CANON_TOOL_MAX; n++)
-        {
-            _setup.tool_table[n].id = 0;
-            _setup.tool_table[n].length = 0;
-            _setup.tool_table[n].diameter = 0;
-        }
+        for(; n <= CANON_TOOL_MAX; ++n)
+            _setup.tool_table[n] = Tool();
     }
 
    /***********************************************************************/

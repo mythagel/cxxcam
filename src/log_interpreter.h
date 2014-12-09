@@ -31,25 +31,35 @@ class log_interpreter : public rs274ngc
 private:
 	virtual void interp_init();
 
+	// Logging
+	int               _line_number = 1;
+
+	// State
+
 	Plane       _active_plane = Plane::XY;
 	int               _active_slot = 1;
 	double            _feed_rate = 0.0;
 	int               _flood = 0;
-	Units       _length_unit_type = Units::Metric;
-	int               _line_number = 1;
 	int               _mist = 0;
+	Units       _length_unit_type = Units::Metric;
 	Motion _motion_mode = Motion::Continuous;
 
-	char                     _parameter_file_name[100];
 	Position probe_pos;
 	Position origin_pos;
 	Position program_pos;
 
 	double            _spindle_speed;
 	Direction   _spindle_turning;
-	int                      _tool_max = 68;          /*Not static. Driver reads  */
-	Tool         _tools[CANON_TOOL_MAX];  /*Not static. Driver writes */
 	double            _traverse_rate;
+
+	// Data
+
+	/* Provided by interpreter, rs274ngc will
+	 * call tool(n) with n up to tool_max. */
+	int                      _tool_max = 68;
+	Tool         _tools[CANON_TOOL_MAX];
+
+	char                     _parameter_file_name[100];
 private:
 
 	void print_nc_line_number();
