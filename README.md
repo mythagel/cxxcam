@@ -1,7 +1,7 @@
 cxxcam
 ======
 
-CNC/CAM library to act as driver for jscam machining tool
+CNC CAM library to act as driver for jscam machining tool
 
 Currently capable of generating GCode (LinuxCNC dialect) for CNC lathes and mills. Nine axis (XYZ ABC UVW) generation is supported however only six are simulated (XYZ ABC). Lathe simulation is incomplete.
 
