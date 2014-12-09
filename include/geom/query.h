@@ -45,9 +45,7 @@ struct bbox_3
 };
 }
 
-/*
- * TODO implement query operations for polyhedron types.
- * 
+/* implement query operations for polyhedron types.
  */
 
 bool intersects(const polyhedron_t& p0, const polyhedron_t& p1);
