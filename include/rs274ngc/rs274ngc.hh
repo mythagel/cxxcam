@@ -246,6 +246,7 @@ public:
 	void reset();
 	// restore interpreter variables from a file
 	void restore_parameters(const char * filename);
+	void default_parameters();
 	// save interpreter variables to file
 	void save_parameters(const char * filename, const double parameters[]);
 	// synchronize your internal model with the external world

@@ -7247,9 +7247,8 @@ rs274ngc::rs274ngc()
         char file_name[RS274NGC_TEXT_SIZE];
 
         get_parameter_filename(file_name, (RS274NGC_TEXT_SIZE - 1));
-        save_parameters
-            (((file_name[0] == 0) ? RS274NGC_PARAMETER_FILE_NAME_DEFAULT : file_name),
-            _setup.parameters);
+        if(file_name[0] != 0)
+            save_parameters(file_name, _setup.parameters);
         reset();
     }
 
@@ -7291,9 +7290,10 @@ rs274ngc::rs274ngc()
         units(_setup.length_units);
 
         get_parameter_filename(filename, RS274NGC_TEXT_SIZE);
-        if (filename[0] == 0)
-            strcpy(filename, RS274NGC_PARAMETER_FILE_NAME_DEFAULT);
-        restore_parameters(filename);
+        if(filename[0] == 0)
+            default_parameters();
+        else
+            restore_parameters(filename);
         pars = _setup.parameters;
         
         _setup.origin_index = (int)(pars[5220] + 0.0001);
@@ -7594,6 +7594,60 @@ rs274ngc::rs274ngc()
             pars[k] = 0;
         }
     }
+
+void rs274ngc::default_parameters()
+{
+    int index = 0;                                // index into _required_parameters
+    double * pars;                            // short name for _setup.parameters
+
+    pars = _setup.parameters;
+    unsigned int k = 0;
+    unsigned int required = _required_parameters[index++];
+
+    auto set_validate = [&] (int variable, double value) {
+        for (; k < RS274NGC_MAX_PARAMETERS; k++)
+        {
+            if (k > static_cast<unsigned int>(variable))
+                throw error(NCE_PARAMETER_FILE_OUT_OF_ORDER);
+            else if (k == static_cast<unsigned int>(variable))
+            {
+                pars[k] = value;
+                if (k == required)
+                    required = _required_parameters[index++];
+                k++;
+                break;
+            }
+            else                          // if (k < variable)
+            {
+                if (k == required)
+                    throw error(NCE_REQUIRED_PARAMETER_MISSING);
+                else
+                    pars[k] = 0;
+            }
+        }
+    };
+
+    for(auto base : {5161, 5181, 5211, 5220, 5221, 5241, 5261, 5281, 5301, 5321, 5341, 5361, 5381})
+    {
+        if(base == 5220)
+        {
+            set_validate(5220, 1.0);
+        }
+        else
+        {
+            for(auto offset : {0,1,2,3,4,5})
+            {
+                int variable = base + offset;
+                set_validate(variable, 0.0);
+            }
+        }
+    }
+    error_if(required != RS274NGC_MAX_PARAMETERS, NCE_REQUIRED_PARAMETER_MISSING);
+    for (; k < RS274NGC_MAX_PARAMETERS; k++)
+    {
+        pars[k] = 0;
+    }
+}
 
    /***********************************************************************/
 
