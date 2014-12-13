@@ -198,8 +198,6 @@ void Machine::Preamble()
 
 	Line line;
 
-	line += G00;
-
 	switch(m_State.m_Plane)
 	{
 		case Plane::XY:
