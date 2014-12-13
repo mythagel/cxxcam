@@ -29,6 +29,7 @@
 #include <vector>
 #include <string>
 #include <iosfwd>
+#include <functional>
 
 namespace cxxcam
 {
@@ -65,10 +66,13 @@ private:
 	EndOfLine m_EndOfLine;
 
 	std::vector<Block> m_Blocks;
+	std::function<void(const std::vector<Word>&, const std::string&)> m_Callback;
 protected:
 	const char* eol() const;
 public:
 	Code(const std::string& variant);
+
+    void SetCallback(std::function<void(const std::vector<Word>&, const std::string&)> fn);
 
 	const_iterator begin() const;
 	const_iterator end() const;
@@ -76,7 +80,7 @@ public:
 
 	bool AddLine(const Line& line);
 	void NewBlock(const std::string& name, const MachineState& initial_state);
-	Block& CurrentBlock();
+	const Block& CurrentBlock();
 	void EndBlock();
 
 	std::string debug_str() const;

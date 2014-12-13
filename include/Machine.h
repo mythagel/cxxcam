@@ -30,6 +30,7 @@
 #include <iosfwd>
 #include <utility>
 #include <stack>
+#include <functional>
 #include "GCodeWord.h"
 
 namespace cxxcam
@@ -337,6 +338,7 @@ public:
 		}
 	};
 	std::vector<block_t> Generate() const;
+	void SetGCodeCallback(std::function<void(const std::vector<gcode::Word>&, const std::string&)> fn);
 
 	~Machine();
 };

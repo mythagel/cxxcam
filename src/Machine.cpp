@@ -902,8 +902,8 @@ void Machine::EndBlock(int restore)
 	{
 		m_GCode.AddLine(Line("Restore State"));
 
-		Block& block = m_GCode.CurrentBlock();
-		const MachineState& saved_state = block.State();
+		const auto& block = m_GCode.CurrentBlock();
+		const auto& saved_state = block.State();
 
 		if(restore & block_RestoreUnits)
 			SetUnits(saved_state.m_Units);
@@ -1725,6 +1725,12 @@ auto Machine::Generate() const -> std::vector<block_t>
 	lines.push_back({ {M02}, "End of program."});
 	
 	return lines;
+}
+
+void Machine::SetGCodeCallback(std::function<void(const std::vector<gcode::Word>&, const std::string&)> fn)
+{
+    auto& m_GCode = m_Private->m_GCode;
+    m_GCode.SetCallback(fn);
 }
 
 Machine::~Machine()

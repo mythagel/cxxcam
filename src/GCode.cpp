@@ -69,6 +69,11 @@ Code::Code(const std::string& variant)
 	}
 }
 
+void Code::SetCallback(std::function<void(const std::vector<Word>&, const std::string&)> fn)
+{
+    m_Callback = fn;
+}
+
 auto Code::begin() const -> const_iterator
 {
 	return m_Blocks.begin();
@@ -88,6 +93,8 @@ bool Code::AddLine(const Line& line)
 		m_Blocks.emplace_back("", MachineState());
 
 	m_Blocks.back().append(line);
+	if(m_Callback) m_Callback({line.begin(), line.end()}, line.Comment());
+
 	return true;
 }
 
@@ -105,7 +112,7 @@ void Code::NewBlock(const std::string& name, const MachineState& initial_state)
 	m_Blocks.emplace_back(name, initial_state);
 }
 
-Block& Code::CurrentBlock()
+const Block& Code::CurrentBlock()
 {
 	if(m_Blocks.empty())
 		m_Blocks.emplace_back("", MachineState());
