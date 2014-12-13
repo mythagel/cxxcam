@@ -188,7 +188,7 @@ protected:
 public:
 
 	explicit Machine(Type type);
-	Machine(Type type, Units units, const std::string& gcode_variant);
+	Machine(Type type, Units units, const std::string& gcode_variant, std::function<void(const std::vector<gcode::Word>&, const std::string&)> gcode_callback);
 
 	Machine(const Machine& m);
 	Machine& operator=(const Machine& m);
@@ -338,7 +338,6 @@ public:
 		}
 	};
 	std::vector<block_t> Generate() const;
-	void SetGCodeCallback(std::function<void(const std::vector<gcode::Word>&, const std::string&)> fn);
 
 	~Machine();
 };

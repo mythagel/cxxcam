@@ -27,6 +27,7 @@
 #include <map>
 #include <vector>
 #include <memory>
+#include <functional>
 #include "Machine.h"
 #include "Tool.h"
 #include "Stock.h"
@@ -80,6 +81,7 @@ struct Configuration
 	Machine::Units units = Machine::Units::Metric;
 	std::string gcode_variant = "Generic";
 	std::string axes = "XYZABCUVW";
+    std::function<void(const std::vector<gcode::Word>&, const std::string&)> gcode_callback;
 	
 	std::map<int, Tool> tools;
 	std::vector<spindle_speed> spindle_speeds;

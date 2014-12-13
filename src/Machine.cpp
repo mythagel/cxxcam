@@ -462,11 +462,12 @@ Machine::Machine(Type type)
 	Preamble();
 }
 
-Machine::Machine(Type type, Units units, const std::string& gcode_variant)
+Machine::Machine(Type type, Units units, const std::string& gcode_variant, std::function<void(const std::vector<gcode::Word>&, const std::string&)> gcode_callback)
  : m_Private(make_unique<Private>(type, gcode_variant))
 {
 	const auto& m_Type = m_Private->m_Type;
 	auto& m_State = m_Private->m_State;
+	auto& m_GCode = m_Private->m_GCode;
 
 	m_State.m_Units = units;
 
@@ -481,6 +482,8 @@ Machine::Machine(Type type, Units units, const std::string& gcode_variant)
 			m_State.m_FeedRateMode = FeedRateMode::UnitsPerRevolution;
 			break;
 	}
+
+    m_GCode.SetCallback(gcode_callback);
 	
 	Preamble();
 }
@@ -1725,12 +1728,6 @@ auto Machine::Generate() const -> std::vector<block_t>
 	lines.push_back({ {M02}, "End of program."});
 	
 	return lines;
-}
-
-void Machine::SetGCodeCallback(std::function<void(const std::vector<gcode::Word>&, const std::string&)> fn)
-{
-    auto& m_GCode = m_Private->m_GCode;
-    m_GCode.SetCallback(fn);
 }
 
 Machine::~Machine()

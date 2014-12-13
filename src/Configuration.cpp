@@ -30,7 +30,7 @@ namespace cxxcam
 
 std::unique_ptr<Machine> Configuration::Construct() const
 {
-	auto machine = make_unique<Machine>(type, units, gcode_variant);
+	auto machine = make_unique<Machine>(type, units, gcode_variant, gcode_callback);
 	machine->SetMachineAxes(axes);
 	
 	for(auto& tool : tools)
