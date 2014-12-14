@@ -60,15 +60,22 @@ double current_x,                             /* first coordinate of current poi
 double current_y,                             /* second coordinate of current point               */
 double end_x,                                 /* first coordinate of arc end point                */
 double end_y,                                 /* second coordinate of arc end point               */
+bool ij_absolute,
 double i_number,                              /* first coordinate offset of center from current   */
 double j_number,                              /* second coordinate offset of center from current  */
+int p_number,
 double * center_x,                            /* pointer to first coordinate of center of arc     */
 double * center_y,                            /* pointer to second coordinate of center of arc    */
 int * turn,                                   /* pointer to number of full or partial circles CCW */
 double tolerance)                             /* tolerance of differing radii                     */
 {
-    *center_x = (current_x + i_number);
-    *center_y = (current_y + j_number);
+    if ( ij_absolute ) {
+        *center_x = i_number;
+        *center_y = j_number;
+    } else {
+        *center_x = current_x + i_number;
+        *center_y = current_y + j_number;
+    }
     double arc_radius = hypot(i_number, j_number);
     double radius2 = hypot((*center_x - end_x), (*center_y - end_y));
     radius2 =
@@ -78,9 +85,9 @@ double tolerance)                             /* tolerance of differing radii   
     error_if(fabs(arc_radius - radius2) > tolerance, NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
 /* This catches an arc too small for the tool, also */
     if (move == G_2)
-        *turn = -1;
+        *turn = -1*p_number;
     else if (move == G_3)
-        *turn = 1;
+        *turn = 1*p_number;
     else
         throw error(NCE_BUG_CODE_NOT_G2_OR_G3);
 }
@@ -151,6 +158,7 @@ double current_y,                             /* second coordinate of current po
 double end_x,                                 /* first coordinate of arc end point                */
 double end_y,                                 /* second coordinate of arc end point               */
 double big_radius,                            /* radius of arc                                    */
+int p_number,
 double * center_x,                            /* pointer to first coordinate of center of arc     */
 double * center_y,                            /* pointer to second coordinate of center of arc    */
 int * turn)                                   /* pointer to number of full or partial circles CCW */
@@ -187,7 +195,7 @@ int * turn)                                   /* pointer to number of full or pa
     
     *center_x = mid_x + (offset * cos(theta));
     *center_y = mid_y + (offset * sin(theta));
-    *turn = (move == G_2) ? -1 : 1;
+    *turn = (move == G_2) ? -1*p_number : 1*p_number;
 }
 
 /****************************************************************************/
@@ -225,8 +233,10 @@ double current_x,                             /* first coordinate of current poi
 double current_y,                             /* second coordinate of current point              */
 double end_x,                                 /* first coordinate of arc end point               */
 double end_y,                                 /* second coordinate of arc end point              */
+bool ij_absolute,
 double i_number,                              /* first coordinate offset of center from current  */
 double j_number,                              /* second coordinate offset of center from current */
+int p_number,
 double * center_x,                            /* pointer to first coordinate of center of arc    */
 double * center_y,                            /* pointer to second coordinate of center of arc   */
 int * turn,                                   /* pointer to no. of full or partial circles CCW   */
@@ -234,16 +244,21 @@ double tolerance)                             /* tolerance of differing radii   
 {
     double radius;                            /* radius to current point */
     double radius2;                           /* radius to end point     */
-    *center_x = (current_x + i_number);
-    *center_y = (current_y + j_number);
+    if ( ij_absolute ) {
+        *center_x = i_number;
+        *center_y = j_number;
+    } else {
+        *center_x = current_x + i_number;
+        *center_y = current_y + j_number;
+    }
     radius = hypot((*center_x - current_x), (*center_y - current_y));
     radius2 = hypot((*center_x - end_x), (*center_y - end_y));
     error_if((radius == 0.0) or (radius2 == 0.0), NCE_ZERO_RADIUS_ARC);
     error_if(fabs(radius - radius2) > tolerance, NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
     if (move == G_2)
-        *turn = -1;
+        *turn = -1*p_number;
     else if (move == G_3)
-        *turn = 1;
+        *turn = 1*p_number;
     else
         throw error(NCE_BUG_CODE_NOT_G2_OR_G3);
 }
@@ -291,9 +306,11 @@ double current_y,                             /* second coordinate of current po
 double end_x,                                 /* first coordinate of arc end point             */
 double end_y,                                 /* second coordinate of arc end point            */
 double radius,                                /* radius of arc                                 */
+int p_number,
 double * center_x,                            /* pointer to first coordinate of center of arc  */
 double * center_y,                            /* pointer to second coordinate of center of arc */
-int * turn)                                   /* pointer to no. of full or partial circles CCW */
+int * turn,
+double tolerance)                                   /* pointer to no. of full or partial circles CCW */
 {
     double abs_radius;                        /* absolute value of given radius */
     double half_length;                       /* distance from M to end point   */
@@ -308,7 +325,7 @@ int * turn)                                   /* pointer to no. of full or parti
     mid_x = (end_x + current_x)/2.0;
     mid_y = (end_y + current_y)/2.0;
     half_length = hypot((mid_x - end_x), (mid_y - end_y));
-    error_if((half_length/abs_radius) > (1+TINY), NCE_ARC_RADIUS_TOO_SMALL_TO_REACH_END_POINT);
+    error_if((half_length/abs_radius) > tolerance, NCE_ARC_RADIUS_TOO_SMALL_TO_REACH_END_POINT);
     if ((half_length/abs_radius) > (1-TINY))
         half_length = abs_radius;        /* allow a small error for semicircle */
 /* check needed before calling asin   */
@@ -322,7 +339,7 @@ int * turn)                                   /* pointer to no. of full or parti
     offset = abs_radius * cos(turn2);
     *center_x = mid_x + (offset * cos(theta));
     *center_y = mid_y + (offset * sin(theta));
-    *turn = (move == G_2) ? -1 : 1;
+    *turn = (move == G_2) ? -1*p_number : 1*p_number;
 }
 
 /****************************************************************************/

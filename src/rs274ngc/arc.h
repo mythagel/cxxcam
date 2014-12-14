@@ -26,13 +26,13 @@
 #define ARC_H_
 #include "types.h"
 
-void arc_data_comp_ijk(int move, Side side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
+void arc_data_comp_ijk(int move, Side side, double tool_radius, double current_x, double current_y, double end_x, double end_y, bool ij_absolute, double i_number, double j_number, int p_number, double * center_x, double * center_y, int * turn, double tolerance);
 
-void arc_data_comp_r(int move, Side side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, double * center_x, double * center_y, int * turn);
+void arc_data_comp_r(int move, Side side, double tool_radius, double current_x, double current_y, double end_x, double end_y, double big_radius, int p_number, double * center_x, double * center_y, int * turn);
 
-void arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, double i_number, double j_number, double * center_x, double * center_y, int * turn, double tolerance);
+void arc_data_ijk(int move, double current_x, double current_y, double end_x, double end_y, bool ij_absolute, double i_number, double j_number, int p_number, double * center_x, double * center_y, int * turn, double tolerance);
 
-void arc_data_r(int move, double current_x, double current_y, double end_x, double end_y, double radius, double * center_x, double * center_y, int * turn);
+void arc_data_r(int move, double current_x, double current_y, double end_x, double end_y, double radius, int p_number, double * center_x, double * center_y, int * turn, double tolerance);
 
 double find_arc_length(double x1, double y1, double z1, double center_x, double center_y, int turn, double x2, double y2, double z2);
 

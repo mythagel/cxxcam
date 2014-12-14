@@ -91,6 +91,7 @@ void setup_t::write_g_codes(const block_t* block)
     gez[9] = (tool_length_offset == 0.0) ? G_49 : G_43;
     gez[10] = (retract_mode == OLD_Z) ? G_98 : G_99;
     gez[11] = (control_mode == Motion::Continuous) ? G_64 : (control_mode == Motion::Exact_Path) ? G_61 : G_61_1;
+    gez[14] = (ijk_distance_mode == DistanceMode::Absolute) ? G_90_1 : G_91_1;
 }
 
 /****************************************************************************/

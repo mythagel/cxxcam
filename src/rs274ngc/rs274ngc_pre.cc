@@ -138,6 +138,7 @@ Significant modifications by Nicholas Gill.
    group  1 = {g0,g1,g2,g3,g38.2,g80,g81,g82,g83,g84,g85,g86,g87,g88,g89} - motion
    group  2 = {g17,g18,g19}   - plane selection
    group  3 = {g90,g91}       - distance mode
+   group  4 = {g90.1,g91.1}   - arc distance mode
    group  5 = {g93,g94}       - feed rate mode
    group  6 = {g20,g21}       - units
    group  7 = {g40,g41,g42}   - cutter diameter compensation
@@ -195,7 +196,7 @@ static const int _gees[] =
     /* 840 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     /* 860 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     /* 880 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    /* 900 */   3,-1,-1,-1,-1,-1,-1,-1,-1,-1, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 900 */   3, 4,-1,-1,-1,-1,-1,-1,-1,-1, 3, 4,-1,-1,-1,-1,-1,-1,-1,-1,
     /* 920 */   0, 0, 0, 0,-1,-1,-1,-1,-1,-1, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     /* 940 */   5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     /* 960 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -465,25 +466,43 @@ rs274ngc::rs274ngc()
             {
                 error_if(!!block.k, NCE_K_WORD_GIVEN_FOR_ARC_IN_XY_PLANE);
                 if (!block.i)         /* i or j flag on to get here */
+                {
+                    error_if(settings.ijk_distance_mode == DistanceMode::Absolute, NCE_I_WORD_MISSING_IN_ABSOLUTE_CENTER_ARC);
                     block.i = 0.0;
+                }
                 else if (!block.j)
+                {
+                    error_if(settings.ijk_distance_mode == DistanceMode::Absolute, NCE_J_WORD_MISSING_IN_ABSOLUTE_CENTER_ARC);
                     block.j = 0.0;
+                }
             }
             else if (settings.plane == Plane::YZ)
             {
                 error_if(!!block.i, NCE_I_WORD_GIVEN_FOR_ARC_IN_YZ_PLANE);
                 if (!block.j)         /* j or k flag on to get here */
+                {
+                    error_if(settings.ijk_distance_mode == DistanceMode::Absolute, NCE_J_WORD_MISSING_IN_ABSOLUTE_CENTER_ARC);
                     block.j = 0.0;
+                }
                 else if (!block.k)
+                {
+                    error_if(settings.ijk_distance_mode == DistanceMode::Absolute, NCE_K_WORD_MISSING_IN_ABSOLUTE_CENTER_ARC);
                     block.k = 0.0;
+                }
             }
             else if (settings.plane == Plane::XZ)
             {
                 error_if(!!block.j, NCE_J_WORD_GIVEN_FOR_ARC_IN_XZ_PLANE);
                 if (!block.i)         /* i or k flag on to get here */
+                {
+                    error_if(settings.ijk_distance_mode == DistanceMode::Absolute, NCE_I_WORD_MISSING_IN_ABSOLUTE_CENTER_ARC);
                     block.i = 0.0;
+                }
                 else if (!block.k)
+                {
+                    error_if(settings.ijk_distance_mode == DistanceMode::Absolute, NCE_K_WORD_MISSING_IN_ABSOLUTE_CENTER_ARC);
                     block.k = 0.0;
+                }
             }
             else
                 throw error(NCE_BUG_PLANE_NOT_XY_YZ_OR_XZ);
@@ -593,11 +612,11 @@ rs274ngc::rs274ngc()
 
         if (block.r)
         {
-            arc_data_r(move, *current1, *current2, end1, end2, *block.r, &center1, &center2, &turn);
+            arc_data_r(move, *current1, *current2, end1, end2, *block.r, block.p?std::round(*block.p) : 1, &center1, &center2, &turn, tolerance);
         }
         else
         {
-            arc_data_ijk(move, *current1, *current2, end1, end2, offset1, offset2, &center1, &center2, &turn, tolerance);
+            arc_data_ijk(move, *current1, *current2, end1, end2, (settings.ijk_distance_mode == DistanceMode::Absolute), offset1, offset2, block.p? std::round(*block.p) : 1, &center1, &center2, &turn, tolerance);
         }
 
         if (settings.feed_mode == FeedMode::InverseTime)
@@ -663,11 +682,11 @@ rs274ngc::rs274ngc()
 
         if (block.r)
         {
-            arc_data_comp_r(move, side, tool_radius, settings.current.x, settings.current.y, end.x, end.y, *block.r, &center_x, &center_y, &turn);
+            arc_data_comp_r(move, side, tool_radius, settings.current.x, settings.current.y, end.x, end.y, *block.r, block.p? std::round(*block.p): 1, &center_x, &center_y, &turn);
         }
         else
         {
-            arc_data_comp_ijk(move, side, tool_radius, settings.current.x, settings.current.y, end.x, end.y, *block.i, *block.j, &center_x, &center_y, &turn, tolerance);
+            arc_data_comp_ijk(move, side, tool_radius, settings.current.x, settings.current.y, end.x, end.y, (settings.ijk_distance_mode == DistanceMode::Absolute), *block.i, *block.j, block.p? std::round(*block.p): 1, &center_x, &center_y, &turn, tolerance);
         }
 
         gamma =
@@ -764,11 +783,11 @@ rs274ngc::rs274ngc()
 
         if (block.r)
         {
-            arc_data_r(move, start_x, start_y, end.x, end.y, *block.r, &center_x, &center_y, &turn);
+            arc_data_r(move, start_x, start_y, end.x, end.y, *block.r, block.p? std::round(*block.p): 1, &center_x, &center_y, &turn, tolerance);
         }
         else
         {
-            arc_data_ijk(move, start_x, start_y, end.x, end.y, *block.i, *block.j, &center_x, &center_y, &turn, tolerance);
+            arc_data_ijk(move, start_x, start_y, end.x, end.y, (settings.ijk_distance_mode == DistanceMode::Absolute), *block.i, *block.j, block.p? std::round(*block.p): 1, &center_x, &center_y, &turn, tolerance);
         }
 
    /* compute other data */
@@ -2585,6 +2604,54 @@ rs274ngc::rs274ngc()
 
    /****************************************************************************/
 
+/*! convert_ijk_distance_mode
+
+merged from linuxcnc rs274ngc version.
+
+Returned Value: int
+   If any of the following errors occur, this returns the error shown.
+   Otherwise, it returns INTERP_OK.
+   1. g_code isn't G_90.1 or G_91.1: NCE_BUG_CODE_NOT_G90_OR_G91
+
+Side effects:
+   The interpreter switches the machine settings to indicate the current
+   distance mode for arc centers (absolute or incremental).
+
+   The canonical machine to which commands are being sent does not have
+   an incremental mode, so no command setting the distance mode is
+   generated in this function. A comment function call explaining the
+   change of mode is made (conditionally), however, if there is a change.
+
+Called by: convert_g.
+
+*/
+
+// OK to call this in a concave corner with a deferred move, since it
+// doesn't issue any CANONs except comments (and who cares where the comments are)
+
+void rs274ngc::convert_ijk_distance_mode(int g_code,    //!< g_code being executed (must be G_90_1 or G_91_1)
+                                 setup_t& settings)        //!< pointer to machine settings                 
+{
+  if (g_code == G_90_1) {
+    if (settings.ijk_distance_mode != DistanceMode::Absolute) {
+#ifdef DEBUG_EMC
+      comment("interpreter: IJK distance mode changed to absolute");
+#endif
+      settings.ijk_distance_mode = DistanceMode::Absolute;
+    }
+  } else if (g_code == G_91_1) {
+    if (settings.ijk_distance_mode != DistanceMode::Incremental) {
+#ifdef DEBUG_EMC
+      comment("interpreter: IJK distance mode changed to incremental");
+#endif
+      settings.ijk_distance_mode = DistanceMode::Incremental;
+    }
+  } else
+    throw error(NCE_BUG_CODE_NOT_G90_OR_G91);
+}
+
+   /****************************************************************************/
+
    /* convert_dwell
 
    Returned Value: int (RS274NGC_OK)
@@ -2762,6 +2829,10 @@ rs274ngc::rs274ngc()
         if (block.g_modes[3] != -1)
         {
             convert_distance_mode(block.g_modes[3], settings);
+        }
+        if (block.g_modes[4] != -1)
+        {
+            convert_ijk_distance_mode(block.g_modes[4], settings);
         }
         if (block.g_modes[10] != -1)
         {
@@ -3527,6 +3598,7 @@ rs274ngc::rs274ngc()
             }
 
             /*3*/ settings.distance_mode = DistanceMode::Absolute;
+            /*3*/ settings.ijk_distance_mode = DistanceMode::Incremental;
 
             /*4*/ settings.feed_mode = FeedMode::UnitsPerMinute;
 
@@ -7329,6 +7401,7 @@ rs274ngc::rs274ngc()
         _setup.cutter_comp_side = Side::Off;
    //_setup.cycle values do not need initialization
         _setup.distance_mode = DistanceMode::Absolute;
+        _setup.ijk_distance_mode = DistanceMode::Incremental;
         _setup.feed_mode = FeedMode::UnitsPerMinute;
         _setup.feed_override = ON;
    //_setup.feed_rate set in rs274ngc_synch

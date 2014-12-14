@@ -222,5 +222,8 @@ const char * _rs274ngc_errors[] =
     /* 195 */ "Z value unspecified in xy plane canned cycle", // convert_cycle_xy
     /* 196 */ "Zero or negative argument to ln", // execute_unary
     /* 197 */ "Zero radius arc", // arc_data_ijk
+    /* 198 */ "I word missing in absolute center arc", // convert_arc
+    /* 199 */ "J word missing in absolute center arc", // convert_arc
+    /* 200 */ "K word missing in absolute center arc", // convert_arc
     "The End"
 };

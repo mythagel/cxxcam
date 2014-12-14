@@ -72,6 +72,7 @@ private:
 	void convert_cycle_yz(int motion, block_t& block, setup_t& settings);
 	void convert_cycle_zx(int motion, block_t& block, setup_t& settings);
 	void convert_distance_mode(int g_code, setup_t& settings);
+	void convert_ijk_distance_mode(int g_code, setup_t& settings);
 	void convert_dwell(double time);
 	void convert_feed_mode(int g_code, setup_t& settings);
 	void convert_feed_rate(block_t& block, setup_t& settings);

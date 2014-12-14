@@ -82,6 +82,7 @@ struct setup_t
 		double r;                               // r-value for canned cycles
     } cycle;
     DistanceMode distance_mode;                  // absolute or incremental
+    DistanceMode ijk_distance_mode;                  // absolute or incremental
     FeedMode feed_mode;                                // G_93 (inverse time) or G_94 units/min
     ON_OFF feed_override;                         // whether feed override is enabled
     double feed_rate;                             // feed rate in current units/min
