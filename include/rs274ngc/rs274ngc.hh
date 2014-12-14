@@ -185,6 +185,7 @@ private:
 	virtual void spindle_speed(double r) =0;
 	virtual double spindle_speed() const =0;
 	virtual void spindle_mode(double r) =0;
+	virtual double spindle_mode() const =0;
 	virtual void spindle_orient(double orientation, Direction direction) =0;
 
 	virtual void tool_length_offset(double length) =0;
