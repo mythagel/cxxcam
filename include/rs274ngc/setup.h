@@ -105,6 +105,7 @@ struct setup_t
     RETRACT_MODE retract_mode;                    // for cycles, old_z or r_plane
     int selected_tool_slot;                       // tool slot selected but not active
     double speed;                                 // current spindle speed in rpm
+    SpindleMode spindle_mode;
     SpeedFeedMode speed_feed_mode;        // independent or synched
     ON_OFF speed_override;                        // whether speed override is enabled
     Direction spindle_turning;              // direction spindle is turning

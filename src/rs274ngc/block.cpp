@@ -326,7 +326,7 @@ void block_t::check_other_codes() const
     }
     if (d)
     {
-        error_if((g_modes[7] != G_41) and (g_modes[7] != G_42), NCE_D_WORD_WITH_NO_G41_OR_G42);
+        error_if((g_modes[7] != G_41) and (g_modes[7] != G_42) and (g_modes[14] != G_96), NCE_D_WORD_WITH_NO_G41_OR_G42);
     }
     if (h)
     {
@@ -372,6 +372,11 @@ void block_t::check_other_codes() const
         error_if((((motion != G_2) and (motion != G_3)) and
             ((motion < G_81) or (motion > G_89))),
             NCE_R_WORD_WITH_NO_G_CODE_THAT_USES_IT);
+    }
+    
+    if (!s)
+    {
+        error_if(g_modes[14] == G_96, NCE_S_WORD_MISSING_WITH_G96);
     }
 }
 

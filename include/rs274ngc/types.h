@@ -93,6 +93,12 @@ enum class FeedMode
 	InverseTime
 };
 
+enum class SpindleMode
+{
+	ConstantRPM,
+	ConstantSurface
+};
+
 enum class Side
 {
 	Right,

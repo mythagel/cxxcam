@@ -47,9 +47,9 @@ struct block_t
     maybe<double>   c;
     
     char     comment[256];
-    maybe<unsigned int>      d;
+    maybe<double>      d;
     maybe<double>   f;
-    int      g_modes[14];
+    int      g_modes[15];
     maybe<unsigned int>      h;
     
     maybe<double>   i;

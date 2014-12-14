@@ -87,6 +87,7 @@ private:
 	void convert_setup(block_t& block, setup_t& settings);
 	void convert_set_plane(int g_code, setup_t& settings);
 	void convert_speed(block_t& block, setup_t& settings);
+	void convert_spindle_mode(block_t& block, setup_t& settings);
 	int convert_stop(block_t& block, setup_t& settings);
 	void convert_straight(int move, block_t& block, setup_t& settings);
 	void convert_straight_comp1(int move, block_t& block, setup_t& settings, double px, double py, double end_z, double AA_end, double BB_end, double CC_end);
@@ -183,6 +184,7 @@ private:
 	virtual Direction spindle_state() const =0;
 	virtual void spindle_speed(double r) =0;
 	virtual double spindle_speed() const =0;
+	virtual void spindle_mode(double r) =0;
 	virtual void spindle_orient(double orientation, Direction direction) =0;
 
 	virtual void tool_length_offset(double length) =0;

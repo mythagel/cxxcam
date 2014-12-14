@@ -199,7 +199,7 @@ static const int _gees[] =
     /* 900 */   3, 4,-1,-1,-1,-1,-1,-1,-1,-1, 3, 4,-1,-1,-1,-1,-1,-1,-1,-1,
     /* 920 */   0, 0, 0, 0,-1,-1,-1,-1,-1,-1, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     /* 940 */   5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    /* 960 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    /* 960 */  14,-1,-1,-1,-1,-1,-1,-1,-1,-1,14,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     /* 980 */  10,-1,-1,-1,-1,-1,-1,-1,-1,-1,10,-1,-1,-1,-1,-1,-1,-1,-1,-1
 };
 
@@ -1377,7 +1377,7 @@ rs274ngc::rs274ngc()
 
         error_if(settings.plane != Plane::XY, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_OUT_OF_XY_PLANE);
         error_if(settings.cutter_comp_side != Side::Off, NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_WHEN_ON);
-        index = block.d ? *block.d : settings.current_slot;
+        index = block.d ? std::round(*block.d) : settings.current_slot;
         radius = ((settings.tool_table[index].diameter)/2.0);
 
         if (radius < 0.0)                         /* switch side & make radius positive if radius negative */
@@ -3492,6 +3492,23 @@ void rs274ngc::convert_ijk_distance_mode(int g_code,    //!< g_code being execut
         settings.speed = *block.s;
     }
 
+// Merged from linuxcnc
+void rs274ngc::convert_spindle_mode(
+    block_t& block,                          /* pointer to a block of RS274 instructions */
+    setup_t& settings)  
+{
+    if(block.g_modes[14] == G_97) {
+        settings.spindle_mode = SpindleMode::ConstantRPM;
+	    spindle_mode(0);
+    } else { /* G_96 */
+        settings.spindle_mode = SpindleMode::ConstantSurface;
+	if(block.d)
+	    spindle_mode(fabs(*block.d));
+	else
+	    spindle_mode(1e30);
+    }
+}
+
    /****************************************************************************/
 
    /* convert_stop
@@ -4303,6 +4320,10 @@ void rs274ngc::convert_ijk_distance_mode(int g_code,    //!< g_code being execut
         {
             convert_comment(block.comment);
         }
+        if (block.g_modes[14] != -1)
+        {
+            convert_spindle_mode(block, settings);
+        }
         if (block.g_modes[5] != -1)
         {
             convert_feed_mode(block.g_modes[5], settings);
@@ -5005,16 +5026,13 @@ void rs274ngc::convert_ijk_distance_mode(int g_code,    //!< g_code being execut
     block_t& block,                          /* pointer to a block being filled from the line */
     double * parameters) const                          /* array of system parameters                    */
     {
-        int value;
+        double value;
 
         error_if(line[*counter] != 'd', NCE_BUG_FUNCTION_SHOULD_NOT_HAVE_BEEN_CALLED);
         *counter = (*counter + 1);
         error_if(!!block.d, NCE_MULTIPLE_D_WORDS_ON_ONE_LINE);
-        read_integer_value(line, counter, &value, parameters);
-        error_if(value < 0, NCE_NEGATIVE_D_WORD_TOOL_RADIUS_INDEX_USED);
-        unsigned int d = value;
-        error_if(d > _setup.tool_max, NCE_TOOL_RADIUS_INDEX_TOO_BIG);
-        block.d = d;
+        read_real_value(line, counter, &value, parameters);
+        block.d = value;
     }
 
    /****************************************************************************/
@@ -7422,6 +7440,7 @@ void rs274ngc::convert_ijk_distance_mode(int g_code,    //!< g_code being execut
    //_setup.selected_tool_slot set in rs274ngc_synch
    //_setup.speed set in rs274ngc_synch
         _setup.speed_feed_mode = SpeedFeedMode::Independant;
+        _setup.spindle_mode = SpindleMode::ConstantRPM;
         _setup.speed_override = ON;
    //_setup.spindle_turning set in rs274ngc_synch
    //_setup.stack does not need initialization
