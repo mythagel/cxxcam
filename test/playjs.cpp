@@ -12,7 +12,7 @@ using namespace cxxcam;
 
 int main()
 {
-	Machine m(Machine::Type::Mill, Machine::Units::Metric, "Generic");
+	Machine m(Machine::Type::Mill, Machine::Units::Metric, "Generic", {});
 	m.SetMachineAxes("XYZA");
 	m.AddSpindleRange(100, 1000);
 	m.AddSpindleRange(2000, 6000);

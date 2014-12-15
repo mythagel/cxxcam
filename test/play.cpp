@@ -13,7 +13,7 @@ using namespace cxxcam;
 
 int main()
 {
-	Machine m(Machine::Type::Mill, Machine::Units::Metric, "Generic");
+	Machine m(Machine::Type::Mill, Machine::Units::Metric, "Generic", {});
 	m.AddSpindleRange(100, 3000);
 
 	{
