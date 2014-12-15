@@ -52,6 +52,7 @@ public:
 };
 
 bool is_linear(Axis::Type axis);
+auto to_axis(char c) -> Axis::Type;
 
 class X : public Axis
 {

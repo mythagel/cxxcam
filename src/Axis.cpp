@@ -24,6 +24,7 @@
 
 #include "Axis.h"
 #include <stdexcept>
+#include "Error.h"
 
 namespace cxxcam
 {
@@ -59,6 +60,33 @@ bool is_linear(Axis::Type axis)
 			return true;
 	}
 }
+
+auto to_axis(char c) -> Axis::Type
+{
+    switch(c)
+    {
+        case 'X':
+            return Axis::Type::X;
+        case 'Y':
+            return Axis::Type::Y;
+        case 'Z':
+            return Axis::Type::Z;
+        case 'A':
+            return Axis::Type::A;
+        case 'B':
+            return Axis::Type::B;
+        case 'C':
+            return Axis::Type::C;
+        case 'U':
+            return Axis::Type::U;
+        case 'V':
+            return Axis::Type::V;
+        case 'W':
+            return Axis::Type::W;
+    }
+    
+    throw error("Unrecognised Axis");
+};
 
 X::X()
  : Axis(Type::X)
