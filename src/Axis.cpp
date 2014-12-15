@@ -85,7 +85,7 @@ auto to_axis(char c) -> Axis::Type
             return Axis::Type::W;
     }
     
-    throw error("Unrecognised Axis");
+    throw error(std::string("Unrecognised Axis: ") + c);
 };
 
 X::X()
