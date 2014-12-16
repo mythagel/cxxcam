@@ -25,16 +25,22 @@
 #ifndef ERROR_H_
 #define ERROR_H_
 #include <exception>
+#include <string>
 
 struct error : std::exception
 {
-	int code;
+	std::string err;
 	
-	error(int code);
+	explicit error(int code);
+	explicit error(const std::string& err);
 	virtual const char* what() const noexcept;
 	virtual ~error() noexcept;
 };
 
-void error_if(bool bad, int error_code);
+template <typename T>
+void error_if(bool bad, T err)
+{
+	if(bad) throw error(err);
+}
 
 #endif /* ERROR_H_ */

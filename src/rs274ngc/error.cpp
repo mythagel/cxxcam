@@ -28,23 +28,21 @@
 extern const char * _rs274ngc_errors[];
 
 error::error(int code)
- : code(code)
+{
+	if ((code >= RS274NGC_MIN_ERROR) and (code <= RS274NGC_MAX_ERROR))
+		err = _rs274ngc_errors[code];
+	else
+		err = "Unknown error";
+}
+error::error(const std::string& err)
+ : err(err)
 {
 }
 const char* error::what() const noexcept
 {
-	if ((code >= RS274NGC_MIN_ERROR) and (code <= RS274NGC_MAX_ERROR))
-		return _rs274ngc_errors[code];
-	else
-		return "Unknown error";
+    return err.c_str();
 }
 error::~error() noexcept
 {
-}
-
-void error_if(bool bad, int error_code)
-{
-	if(bad)
-		throw error(error_code);
 }
 
