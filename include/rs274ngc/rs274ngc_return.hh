@@ -234,7 +234,7 @@ enum
 enum
 {
     RS274NGC_MIN_ERROR = 3,
-    RS274NGC_MAX_ERROR = 197
+    RS274NGC_MAX_ERROR = 201
 };
 
 #endif                                            /* RS274NGC_RETURN_H */
