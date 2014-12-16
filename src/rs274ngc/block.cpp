@@ -355,11 +355,18 @@ void block_t::check_other_codes() const
 
     if (p)
     {
-        error_if(((g_modes[0] != G_10) and
+        error_if(
+            (g_modes[0] != G_10) and
             (g_modes[0] != G_4) and
-            (motion != G_82) and (motion != G_86) and
-            (motion != G_88) and (motion != G_89)),
+            (motion != G_82) and 
+            (motion != G_86) and
+            (motion != G_88) and 
+            (motion != G_89) and
+            (motion != G_2) and 
+            (motion != G_3),
             NCE_P_WORD_WITH_NO_G4_G10_G82_G86_G88_G89);
+
+      error_if((motion == G_2 || motion == G_3) && std::round(*p) < 1, "P value should be 1 or greater with G2 or G3");            
     }
 
     if (q)
