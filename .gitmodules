@@ -1,0 +1,3 @@
+[submodule "deps/geom"]
+	path = deps/geom
+	url = git@github.com:mythagel/geom.git
