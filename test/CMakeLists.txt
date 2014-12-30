@@ -15,7 +15,6 @@ test_limits
 axes 
 path 
 math 
-fold_adjacent 
 helix 
 bbox 
 ex_trochoid 
