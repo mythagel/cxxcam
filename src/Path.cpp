@@ -107,7 +107,7 @@ units::plane_angle pseudo_cartesian_distance(const Position& start, const Positi
 	return units::plane_angle{sqrt((start.A-end.A)*(start.A-end.A) + (start.B-end.B)*(start.B-end.B) + (start.C-end.C)*(start.C-end.C))};
 }
 
-path_t expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm)
+path_t expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, ssize_t steps_per_mm)
 {
 	auto pos2step = [&geometry](const Position& pos) -> step
 	{
@@ -118,7 +118,7 @@ path_t expand_linear(const Position& start, const Position& end, const limits::A
 	auto sn = pos2step(end);
 	auto length = units::length_mm(distance(s0.position, sn.position)).value();
 	auto pseudo_cartesian_length = units::plane_angle_deg{pseudo_cartesian_distance(start, end)}.value();
-	
+
 	Position axis_movement;
 	axis_movement.X = end.X - start.X;
 	axis_movement.Y = end.Y - start.Y;
@@ -131,44 +131,59 @@ path_t expand_linear(const Position& start, const Position& end, const limits::A
 	axis_movement.U = end.U - start.U;
 	axis_movement.V = end.V - start.V;
 	axis_movement.W = end.W - start.W;
-	
+
 	path_t path;
 	path.length = units::length{length * units::millimeters};
 	path.angular_length = units::plane_angle{pseudo_cartesian_length * units::degrees};
-	auto total_steps = length * steps_per_mm;
-	
-	/*
-	If the length of the movement is less than the degrees travelled in the pseudo cartesian ABC coordinate system
-	then trade oversampling for undersampling by treating the degrees travelled as length units and reinterpret
-	steps_per_mm as steps_per_degree and use that to sample the path.
-	*/
-	if(length < pseudo_cartesian_length)
-		total_steps = pseudo_cartesian_length * steps_per_mm;
-	
-	for(size_t s = 0; s < total_steps; ++s)
-	{
-		auto scale = s / static_cast<double>(total_steps);
-		
-		// starting at `start` move a scaled amount towards `end`
-		Position p = start;
-		
-		p.X += axis_movement.X * scale;
-		p.Y += axis_movement.Y * scale;
-		p.Z += axis_movement.Z * scale;
 
-		p.A += axis_movement.A * scale;
-		p.B += axis_movement.B * scale;
-		p.C += axis_movement.C * scale;
+    auto is_pure_linear = [pseudo_cartesian_length]() -> bool
+    {
+        return pseudo_cartesian_length < 1e6;
+    };
 
-		p.U += axis_movement.U * scale;
-		p.V += axis_movement.V * scale;
-		p.W += axis_movement.W * scale;
-		
-		path.path.push_back(pos2step(p));
-	}
-	
-	if(path.path.empty() || path.path.back() != sn)
-		path.path.push_back(sn);
+    if(is_pure_linear() && steps_per_mm < 0)
+    {
+        path.path.push_back(s0);
+        path.path.push_back(sn);
+    }
+    else
+    {
+        steps_per_mm = std::abs(steps_per_mm);
+        auto total_steps = length * steps_per_mm;
+
+        /*
+        If the length of the movement is less than the degrees travelled in the pseudo cartesian ABC coordinate system
+        then trade oversampling for undersampling by treating the degrees travelled as length units and reinterpret
+        steps_per_mm as steps_per_degree and use that to sample the path.
+        */
+        if(length < pseudo_cartesian_length)
+            total_steps = pseudo_cartesian_length * steps_per_mm;
+
+        for(size_t s = 0; s < total_steps; ++s)
+        {
+            auto scale = s / static_cast<double>(total_steps);
+            
+            // starting at `start` move a scaled amount towards `end`
+            Position p = start;
+            
+            p.X += axis_movement.X * scale;
+            p.Y += axis_movement.Y * scale;
+            p.Z += axis_movement.Z * scale;
+
+            p.A += axis_movement.A * scale;
+            p.B += axis_movement.B * scale;
+            p.C += axis_movement.C * scale;
+
+            p.U += axis_movement.U * scale;
+            p.V += axis_movement.V * scale;
+            p.W += axis_movement.W * scale;
+            
+            path.path.push_back(pos2step(p));
+        }
+        
+        if(path.path.empty() || path.path.back() != sn)
+            path.path.push_back(sn);
+    }
 	
 	return path;
 }

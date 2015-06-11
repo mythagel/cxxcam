@@ -55,7 +55,11 @@ struct path_t
 	units::plane_angle angular_length;
 };
 
-path_t expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_mm = 10);
+/* if steps_per_mm < 0 then this will only expand linear motion IFF there is a corresponding
+ * angular motion.
+ * Otherwise the path will be left as the pure linear start and end steps.
+ * */
+path_t expand_linear(const Position& start, const Position& end, const limits::AvailableAxes& geometry, ssize_t steps_per_mm = 10);
 
 path_t expand_rotary(const Position& start, const Position& end, const limits::AvailableAxes& geometry, size_t steps_per_degree = 10);
 
