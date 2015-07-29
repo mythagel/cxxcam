@@ -317,6 +317,8 @@ path_t expand_arc(const Position& start, const Position& end, const Position_Car
 	auto rads_per_step = turn_theta / static_cast<double>(total_steps);
 	
 	auto step_dt = delta_theta < units::plane_angle(0) ? -rads_per_step : rads_per_step;
+    if(dir == ArcDirection::Clockwise)
+        step_dt = -step_dt;
 	
 	Position axis_movement;
 	axis_movement.A = end.A - start.A;
