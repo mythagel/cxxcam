@@ -289,17 +289,19 @@ path_t expand_arc(const Position& start, const Position& end, const Position_Car
 		{
 			if(delta_theta > units::plane_angle(0))
 				delta_theta -= PI2_r;
+			else if(delta_theta == units::plane_angle(0))
+				delta_theta = -PI2_r;
 			break;
 		}
 		case ArcDirection::CounterClockwise:
 		{
 			if(delta_theta < units::plane_angle(0))
 				delta_theta += PI2_r;
+			else if(delta_theta == units::plane_angle(0))
+				delta_theta = PI2_r;
 			break;
 		}
 	}
-	if(delta_theta == units::plane_angle(0))
-		delta_theta = PI2_r;
 	
 	turn_theta += fabs(delta_theta);
 	
