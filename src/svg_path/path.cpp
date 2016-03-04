@@ -232,6 +232,8 @@ bool parser::parse_smooth_curveto(const char*& c, const char* const end)
     point p2;
     point p;
     throw_if(!parse_coordinate_pair(c, end, p2), "expected coordinate-pair p2");
+    throw_if(c == end, "unexpected eof");
+    parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
     throw_if(!parse_coordinate_pair(c, end, p), "expected coordinate-pair p");
     smooth_curve_to(cmd == 'S', p2.x, p2.y, p.x, p.y);
 
@@ -264,6 +266,8 @@ bool parser::parse_quadratic_bezier_curveto(const char*& c, const char* const en
     point p1;
     point p;
     throw_if(!parse_coordinate_pair(c, end, p1), "expected coordinate-pair p1");
+    throw_if(c == end, "unexpected eof");
+    parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
     throw_if(!parse_coordinate_pair(c, end, p), "expected coordinate-pair p");
     bezier_curve_to(cmd == 'Q', p1.x, p1.y, p.x, p.y);
 
