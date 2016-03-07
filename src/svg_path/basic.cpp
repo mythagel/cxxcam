@@ -80,9 +80,34 @@ bool number_p(const char c)
 	}
 }
 
+bool nonnegative_number_p(const char c)
+{
+	switch(c)
+	{
+		case '.':
+			return true;
+		default:
+			return std::isdigit(c);
+	}
+}
+
 bool parse_number(const char*& c, const char* const end, float& x)
 {
     if(!number_p(*c))
+        return false;
+
+    const auto begin = c;
+
+    errno = 0;
+    x = strtof(c, const_cast<char**>(&c));
+    throw_if(c == begin || errno, "expected number");
+    throw_if(c > end, "unexpected eof; strtof consumed too much");
+    return true;
+}
+
+bool parse_nonnegative_number(const char*& c, const char* const end, float& x)
+{
+    if(!nonnegative_number_p(*c))
         return false;
 
     const auto begin = c;
@@ -109,13 +134,21 @@ bool parse_comma_wsp(const char*& c, const char* const end)
     return true;
 }
 
-bool parse_bool(const std::string& str)
+bool parse_flag(const char*& c, const char* const, bool& flag)
 {
-    if(str == "true")
+    if(*c == '0')
+    {
+        ++c;
+        flag = false;
         return true;
-    else if(str == "false")
-        return false;
-    throw std::invalid_argument("invalid value for bool: " + str);
+    }
+    else if (*c == '1')
+    {
+        ++c;
+        flag = true;
+        return true;
+    }
+    return false;
 }
 
 }

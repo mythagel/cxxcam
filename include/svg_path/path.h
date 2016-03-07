@@ -47,6 +47,7 @@ private:
 	bool parse_smooth_curveto(const char*& c, const char* const end);
 	bool parse_quadratic_bezier_curveto(const char*& c, const char* const end);
 	bool parse_smooth_quadratic_bezier_curveto(const char*& c, const char* const end);
+	bool parse_elliptical_arc(const char*& c, const char* const end);
 	bool parse_closepath(const char*& c, const char* const end);
 public:
 
@@ -67,6 +68,7 @@ public:
 
 	virtual void bezier_curve_to(bool abs, float x1, float y1, float x, float y) =0;
 	virtual void smooth_bezier_curve_to(bool abs, float x, float y) =0;
+	virtual void elliptical_arc_to(bool abs, float rx, float ry, float x_rotation, bool large_arc, bool sweep, float x, float y) =0;
 
 	virtual void close_path() =0;
 	virtual void eof() =0;

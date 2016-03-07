@@ -313,6 +313,77 @@ bool parser::parse_smooth_quadratic_bezier_curveto(const char*& c, const char* c
 
     return true;
 }
+bool parser::parse_elliptical_arc(const char*& c, const char* const end)
+{
+    if(*c != 'A' && *c != 'a')
+        return false;
+
+    const auto cmd = *c++;
+    throw_if(c == end, "unexpected eof");
+
+    parse_whitespace(c, end) && throw_if(c == end, "unexpected eof");
+
+    float rx, ry;
+    float x_rotation;
+    bool large_arc;
+    bool sweep;
+    point p;
+    throw_if(!parse_nonnegative_number(c, end, rx), "expected x radius");
+    throw_if(c == end, "unexpected eof");
+    parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+    throw_if(!parse_nonnegative_number(c, end, ry), "expected y radius");
+    throw_if(c == end, "unexpected eof");
+    
+    parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+    throw_if(!parse_number(c, end, x_rotation), "expected x axis rotation");
+    throw_if(c == end, "unexpected eof");
+
+    parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+    throw_if(!parse_flag(c, end, large_arc), "expected large arc flag");
+    throw_if(c == end, "unexpected eof");
+
+    parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+    throw_if(!parse_flag(c, end, sweep), "expected sweep flag");
+    throw_if(c == end, "unexpected eof");
+
+    parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+    throw_if(!parse_coordinate_pair(c, end, p), "expected coordinate-pair p");
+
+    elliptical_arc_to(cmd == 'A', rx, ry, x_rotation, large_arc, sweep, p.x, p.y);
+
+    if(c == end)
+        return true;
+
+    parse_comma_wsp(c, end);
+    while(c != end && parse_nonnegative_number(c, end, rx))
+    {
+        throw_if(c == end, "unexpected eof");
+        parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+        throw_if(!parse_nonnegative_number(c, end, ry), "expected y radius");
+        throw_if(c == end, "unexpected eof");
+        
+        parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+        throw_if(!parse_number(c, end, x_rotation), "expected x axis rotation");
+        throw_if(c == end, "unexpected eof");
+
+        parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+        throw_if(!parse_flag(c, end, large_arc), "expected large arc flag");
+        throw_if(c == end, "unexpected eof");
+
+        parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+        throw_if(!parse_flag(c, end, sweep), "expected sweep flag");
+        throw_if(c == end, "unexpected eof");
+
+        parse_comma_wsp(c, end) && throw_if(c == end, "unexpected eof");
+        throw_if(!parse_coordinate_pair(c, end, p), "expected coordinate-pair p");
+
+        elliptical_arc_to(cmd == 'A', rx, ry, x_rotation, large_arc, sweep, p.x, p.y);
+
+        parse_comma_wsp(c, end);
+    }
+
+    return true;
+}
 bool parser::parse_closepath(const char*& c, const char* const)
 {
     if(*c != 'Z' && *c != 'z')
@@ -343,10 +414,11 @@ void parser::parse(const char* c, const char* const end)
             parse_smooth_curveto(c, end) || 
             parse_quadratic_bezier_curveto(c, end) || 
             parse_smooth_quadratic_bezier_curveto(c, end) || 
+            parse_elliptical_arc(c, end) ||
             parse_closepath(c, end) )
 			continue;
 		else
-			throw error{"expected wsp / moveto / lineto / horizontal-lineto / vertical-lineto / curveto / smooth-curveto / quadratic-bezier-curveto / smooth-quadratic-bezier-curveto / closepath"};
+			throw error{"expected wsp / moveto / lineto / horizontal-lineto / vertical-lineto / curveto / smooth-curveto / quadratic-bezier-curveto / smooth-quadratic-bezier-curveto / elliptical-arc / closepath"};
 	}
 	eof();
 }

@@ -37,11 +37,13 @@ bool ws_p(const char c);
 bool parse_whitespace(const char*& c, const char* const end);
 
 bool number_p(const char c);
+bool nonnegative_number_p(const char c);
 bool parse_number(const char*& c, const char* const end, float& x);
+bool parse_nonnegative_number(const char*& c, const char* const end, float& x);
 
 bool parse_comma_wsp(const char*& c, const char* const end);
 
-bool parse_bool(const std::string& str);
+bool parse_flag(const char*& c, const char* const end, bool& flag);
 
 }
 }
