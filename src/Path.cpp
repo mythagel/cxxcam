@@ -275,7 +275,7 @@ path_t expand_arc(const Position& start, const Position& end, const Position_Car
 	else
 		throw std::runtime_error("Unsupported Arc Plane");
 	
-	if(!equidistant(arc_start, arc_end, arc_center, units::length{0.00000001 * units::millimeters}))
+	if(!equidistant(arc_start, arc_end, arc_center, units::length{1e-6 * units::millimeters}))
 		throw std::runtime_error("Arc center not equidistant from start and end points.");
 
 	auto r = distance(arc_start, arc_center);
