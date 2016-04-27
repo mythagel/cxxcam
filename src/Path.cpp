@@ -25,6 +25,7 @@
 #include "Path.h"
 #include <tuple>
 #include <boost/units/cmath.hpp>
+#include "Math.h"
 
 namespace cxxcam
 {
@@ -376,6 +377,85 @@ path_t expand_arc(const Position& start, const Position& end, const Position_Car
 		path.path.push_back(sn);
 	
 	return path;
+}
+
+units::length length_linear(const Position& start, const Position& end)
+{
+    return math::distance({start.X, start.Y, start.Z}, {end.X, end.Y, end.Z});
+}
+
+units::length length_arc(const Position& start, const Position& end, const Position_Cartesian& center, ArcDirection dir, const math::vector_3& plane, double turns)
+{
+	static const double PI = 3.14159265358979323846;
+	static const units::plane_angle PI2_r( 2 * PI * units::radians );
+
+	auto helix_length = [](double r, double h, double p) -> double
+	{
+		double c = h / (2*PI);
+		auto l = (2*PI*p) * sqrt((r*r) + (c*c));
+		return l;
+	};
+	
+	math::point_3 arc_start;
+	math::point_3 arc_end;
+	units::length helix;
+	math::point_3 arc_center;
+	
+	if(plane.z == 1)
+	{
+		arc_start = math::point_3{start.X, start.Y, 0};
+		arc_end = math::point_3{end.X, end.Y, 0};
+		helix = units::length(end.Z - start.Z);
+		arc_center = math::point_3{center.X, center.Y, 0};
+	}
+	else if(plane.y == 1)
+	{
+		arc_start = math::point_3{start.X, start.Z, 0};
+		arc_end = math::point_3{end.X, end.Z, 0};
+		helix = units::length(end.Y - start.Y);
+		arc_center = math::point_3{center.X, center.Z, 0};
+	}
+	else if(plane.x == 1)
+	{
+		arc_start = math::point_3{start.Z, start.Y, 0};
+		arc_end = math::point_3{end.Z, end.Y, 0};
+		helix = units::length(end.X - start.X);
+		arc_center = math::point_3{center.Z, center.Z, 0};
+	}
+	else
+		throw std::runtime_error("Unsupported Arc Plane");
+	
+	if(!equidistant(arc_start, arc_end, arc_center, units::length{1e-6 * units::millimeters}))
+		throw std::runtime_error("Arc center not equidistant from start and end points.");
+
+	auto r = distance(arc_start, arc_center);
+	auto start_theta = atan2(arc_start.y - arc_center.y, arc_start.x - arc_center.x);
+	auto end_theta = atan2(arc_end.y - arc_center.y, arc_end.x - arc_center.x);
+	auto turn_theta = PI2_r * (turns-1);
+	auto delta_theta = end_theta - start_theta;
+	switch(dir)
+	{
+		case ArcDirection::Clockwise:
+		{
+			if(delta_theta > units::plane_angle(0))
+				delta_theta -= PI2_r;
+			else if(delta_theta == units::plane_angle(0))
+				delta_theta = -PI2_r;
+			break;
+		}
+		case ArcDirection::CounterClockwise:
+		{
+			if(delta_theta < units::plane_angle(0))
+				delta_theta += PI2_r;
+			else if(delta_theta == units::plane_angle(0))
+				delta_theta = PI2_r;
+			break;
+		}
+	}
+	
+	turn_theta += fabs(delta_theta);
+	
+	return units::length(helix_length(units::length_mm(r).value(), units::length_mm{helix / units::plane_angle_rads{turn_theta}.value()}.value(), units::plane_angle_rads(turn_theta / (2*PI)).value()) * units::millimeters);
 }
 
 }
