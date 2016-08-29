@@ -22,7 +22,7 @@
  *      Author: nicholas
  */
 
-#include "Math.h"
+#include "cxxcam/Math.h"
 #include <boost/units/cmath.hpp>
 #include <tuple>
 #include <ostream>

@@ -22,9 +22,9 @@
  *      Author: nicholas
  */
 
-#include "Axis.h"
+#include "cxxcam/Axis.h"
 #include <stdexcept>
-#include "Error.h"
+#include "cxxcam/Error.h"
 
 namespace cxxcam
 {

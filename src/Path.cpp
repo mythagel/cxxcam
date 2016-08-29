@@ -22,10 +22,10 @@
  *      Author: nicholas
  */
 
-#include "Path.h"
+#include "cxxcam/Path.h"
 #include <tuple>
 #include <boost/units/cmath.hpp>
-#include "Math.h"
+#include "cxxcam/Math.h"
 
 namespace cxxcam
 {

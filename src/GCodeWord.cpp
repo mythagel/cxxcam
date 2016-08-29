@@ -22,7 +22,7 @@
  *      Author: nicholas
  */
 
-#include "GCodeWord.h"
+#include "cxxcam/GCodeWord.h"
 #include <sstream>
 #include <ostream>
 #include <stdexcept>

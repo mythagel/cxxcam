@@ -22,14 +22,14 @@
  *      Author: nicholas
  */
 
-#include "Position.h"
+#include "cxxcam/Position.h"
 #include <sstream>
 #include <tuple>
 
 namespace cxxcam
 {
 
-const Position Position::zero;
+const Position Position::zero{};
 
 namespace
 {

@@ -22,7 +22,7 @@
  *      Author: nicholas
  */
 
-#include "Bbox.h"
+#include "cxxcam/Bbox.h"
 #include <algorithm>
 #include <numeric>
 #include <ostream>

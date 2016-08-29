@@ -22,7 +22,7 @@
  *      Author: nicholas
  */
 
-#include "GCodeLine.h"
+#include "cxxcam/GCodeLine.h"
 #include <sstream>
 
 namespace cxxcam

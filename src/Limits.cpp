@@ -22,9 +22,9 @@
  *      Author: nicholas
  */
 
-#include "Limits.h"
-#include "Error.h"
-#include "Position.h"
+#include "cxxcam/Limits.h"
+#include "cxxcam/Error.h"
+#include "cxxcam/Position.h"
 #include <boost/units/cmath.hpp>
 #include <algorithm>
 

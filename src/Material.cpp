@@ -22,7 +22,7 @@
  *      Author: nicholas
  */
 
-#include "Material.h"
+#include "cxxcam/Material.h"
 
 namespace cxxcam
 {

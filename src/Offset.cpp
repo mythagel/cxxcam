@@ -22,7 +22,7 @@
  *      Author: nicholas
  */
 
-#include "Offset.h"
+#include "cxxcam/Offset.h"
 
 namespace cxxcam
 {

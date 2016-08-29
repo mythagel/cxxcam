@@ -22,11 +22,11 @@
  *      Author: nicholas
  */
 
-#include "Spindle.h"
+#include "cxxcam/Spindle.h"
 #include <sstream>
 #include <cmath>
 #include <limits>
-#include "Error.h"
+#include "cxxcam/Error.h"
 
 namespace cxxcam
 {
