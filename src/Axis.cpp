@@ -25,6 +25,7 @@
 #include "cxxcam/Axis.h"
 #include <stdexcept>
 #include "cxxcam/Error.h"
+#include <string>
 
 namespace cxxcam
 {
