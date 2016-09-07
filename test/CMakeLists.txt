@@ -1,5 +1,5 @@
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/deps/geom/include ${PROJECT_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include/cxxcam ${PROJECT_SOURCE_DIR}/deps/geom/include ${PROJECT_SOURCE_DIR}/src)
 
 MACRO(CXXCAM_TEST testname)
 	ADD_EXECUTABLE(${testname} EXCLUDE_FROM_ALL "${testname}.cpp")
